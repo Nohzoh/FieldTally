@@ -1,28 +1,65 @@
-/// Échec de parsing d'un export Ingress.
+/// Why an Ingress export could not be read.
 ///
-/// Le format n'est pas documenté par Niantic et peut changer sans préavis
-/// (§3.1, §6). La règle est donc d'échouer **proprement et bruyamment** :
-/// jamais de valeur devinée, jamais d'enregistrement silencieux de données
-/// fausses. Chaque exception porte de quoi construire un message
-/// compréhensible et, à terme, proposer une correction manuelle.
+/// The exception carries a *kind* plus structured details rather than a ready
+/// made sentence. Two reasons: user facing wording belongs to the
+/// localisation layer, not to the parser, and a caller that wants to react to
+/// a specific failure can switch on the kind instead of matching on text.
+enum ParseErrorKind {
+  emptyText,
+  headerOnly,
+  notTabSeparated,
+  blankHeader,
+  duplicateHeader,
+  columnCountMismatch,
+  missingColumn,
+  emptyValue,
+  notAnInteger,
+  outOfRange,
+  invalidDate,
+  invalidTime,
+  nonExistentDate,
+  tooManyRows,
+}
+
+/// Raised when an Ingress export cannot be parsed.
+///
+/// The format is undocumented and may change without notice (§3.1, §6), so the
+/// rule is to fail **cleanly and loudly**: never guess a value, never silently
+/// store wrong data. Every instance carries enough detail to build a helpful
+/// message and, later on, to offer a manual correction.
 class ExportParseException implements Exception {
-  const ExportParseException(this.message, {this.column, this.rawValue});
+  const ExportParseException(
+    this.kind, {
+    this.column,
+    this.rawValue,
+    this.position,
+    this.expected,
+    this.actual,
+  });
 
-  /// Message destiné à être montré tel quel à l'utilisateur.
-  final String message;
+  final ParseErrorKind kind;
 
-  /// En-tête de la colonne fautive, quand l'erreur est localisée.
+  /// Header of the offending column, when the failure is localised to one.
   final String? column;
 
-  /// Valeur brute rejetée, pour que l'utilisateur puisse la corriger.
+  /// Rejected raw value, so the user can see what was actually read.
   final String? rawValue;
+
+  /// 1-based row or column position, depending on [kind].
+  final int? position;
+
+  /// Expected and actual counts, for mismatches.
+  final int? expected;
+  final int? actual;
 
   @override
   String toString() {
     final details = [
-      if (column != null) 'colonne "$column"',
-      if (rawValue != null) 'valeur "$rawValue"',
+      if (column != null) 'column "$column"',
+      if (rawValue != null) 'value "$rawValue"',
     ];
-    return details.isEmpty ? message : '$message (${details.join(', ')})';
+    return details.isEmpty
+        ? 'ExportParseException(${kind.name})'
+        : 'ExportParseException(${kind.name}: ${details.join(', ')})';
   }
 }

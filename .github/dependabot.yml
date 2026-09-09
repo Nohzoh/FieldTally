@@ -1,4 +1,4 @@
-# Mises à jour de dépendances (spec §7.4).
+# Dependency updates (spec §7.4).
 version: 2
 updates:
   - package-ecosystem: pub

@@ -3,43 +3,42 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 part 'database.g.dart';
 
-/// Un relevé daté (§3.2).
+/// A dated snapshot (§3.2).
 ///
-/// L'identifiant est un UUID généré par l'app, pas un entier auto-incrémenté.
-/// C'est une précaution prise dès la v1 en prévision d'une éventuelle
-/// synchronisation en v2 (§6) : deux appareils qui créent des relevés hors
-/// ligne ne doivent pas produire d'identifiants qui se télescopent.
+/// The identifier is an app generated UUID rather than an auto-incrementing
+/// integer. This is a precaution taken in v1 with a possible v2 sync in mind
+/// (§6): two devices creating snapshots offline must not produce colliding
+/// identifiers.
 class Snapshots extends Table {
   TextColumn get id => text()();
   TextColumn get agentName => text()();
   TextColumn get faction => text()();
 
-  /// Période déclarée à l'import, conservée telle quelle : elle documente la
-  /// provenance du relevé, y compris quand l'utilisateur a passé outre un
-  /// garde-fou.
+  /// Period declared at import time, kept verbatim: it documents where the
+  /// snapshot came from, including when the user overrode a guard.
   TextColumn get timeSpan => text()();
 
   DateTimeColumn get recordedAt => dateTime()();
   IntColumn get level => integer()();
 
-  /// Date d'insertion, distincte de [recordedAt] : un import de migration peut
-  /// créer aujourd'hui un relevé daté d'il y a deux ans.
+  /// Insertion date, distinct from [recordedAt]: a migration import can create
+  /// a snapshot today that is dated two years ago.
   DateTimeColumn get importedAt => dateTime()();
 
   @override
   Set<Column> get primaryKey => {id};
 }
 
-/// La valeur d'un compteur pour un relevé donné.
+/// The value of one counter for one snapshot.
 ///
-/// Table séparée plutôt qu'une colonne par compteur : la liste des compteurs
-/// n'est pas connue à l'avance et change au fil des saisons du jeu (§3.1.2).
-/// Un schéma large obligerait à une migration à chaque nouvelle anomalie.
+/// A separate table rather than one column per counter: the counter list is
+/// not known upfront and changes with every season of the game (§3.1.2). A
+/// wide schema would force a migration on every new anomaly.
 class CounterValues extends Table {
   TextColumn get snapshotId =>
       text().references(Snapshots, #id, onDelete: KeyAction.cascade)();
 
-  /// Identité stable du compteur : son en-tête d'export.
+  /// Stable identity of the counter: its export header.
   TextColumn get exportHeader => text()();
 
   IntColumn get value => integer()();
@@ -59,8 +58,8 @@ class FieldTallyDatabase extends _$FieldTallyDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
         beforeOpen: (details) async {
-          // Sans ça, `onDelete: cascade` est ignoré par SQLite : supprimer un
-          // relevé laisserait ses valeurs de compteurs orphelines.
+          // Without this, SQLite ignores `onDelete: cascade`: deleting a
+          // snapshot would leave its counter values orphaned.
           await customStatement('PRAGMA foreign_keys = ON');
         },
       );

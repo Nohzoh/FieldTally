@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/router.dart';
+import 'l10n/app_localizations.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Les dates sont formatées en français dès maintenant ; la bascule complète
-  // FR/EN par fichiers .arb viendra avec le reste de l'i18n (§3.10).
-  await initializeDateFormatting('fr');
-
+void main() {
   runApp(const ProviderScope(child: FieldTallyApp()));
 }
 
@@ -20,15 +15,20 @@ class FieldTallyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'FieldTally',
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
-      // Thème clair/sombre suivant le système (§3.9).
-      theme: ThemeData(colorSchemeSeed: Colors.teal, brightness: Brightness.light),
-      darkTheme: ThemeData(colorSchemeSeed: Colors.teal, brightness: Brightness.dark),
+      // Light/dark theme following the system (§3.9).
+      theme:
+          ThemeData(colorSchemeSeed: Colors.teal, brightness: Brightness.light),
+      darkTheme:
+          ThemeData(colorSchemeSeed: Colors.teal, brightness: Brightness.dark),
+      // French is the default for now; the locale follows the device once more
+      // translations land (§3.10).
       locale: const Locale('fr'),
-      supportedLocales: const [Locale('fr'), Locale('en')],
+      supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

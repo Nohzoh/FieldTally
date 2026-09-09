@@ -16,27 +16,27 @@ void main() {
     registry = loader.parse(File(seedPath).readAsStringSync());
   });
 
-  group('registre embarqué', () {
-    test('se charge avec ses 59 compteurs et ses catégories', () {
+  group('bundled registry', () {
+    test('loads with its 59 counters and its categories', () {
       expect(registry.length, 59);
       expect(registry.categories, contains('discovery'));
       expect(registry.categories, contains(CounterRegistry.fallbackCategoryKey));
       expect(registry.schemaVersion, greaterThan(0));
     });
 
-    test('couvre exactement les compteurs de la fixture réelle', () {
-      final snapshot =
-          const IngressTsvParser().parseSingle(File(allTimePath).readAsStringSync());
+    test('covers exactly the counters of the real fixture', () {
+      final snapshot = const IngressTsvParser()
+          .parseSingle(File(allTimePath).readAsStringSync());
 
       final unknown = snapshot.counters.keys
           .where((h) => registry.forExportHeader(h) == null)
           .toList();
 
       expect(unknown, isEmpty,
-          reason: 'ces colonnes n\'ont pas d\'entrée d\'enrichissement');
+          reason: 'these columns have no enrichment entry');
     });
 
-    test('associe la bonne catégorie et les deux libellés', () {
+    test('maps to the right category and carries both labels', () {
       final explorer = registry.forExportHeader('Unique Portals Visited')!;
 
       expect(explorer.key, 'explorer');
@@ -46,43 +46,47 @@ void main() {
       expect(explorer.label('fr'), isNot(explorer.label('en')));
     });
 
-    test('range les compteurs d\'anomalie dans Events, comme le jeu', () {
-      // Le jeu ne les isole pas dans un écran à part : l'app fait pareil.
-      for (final header in ['Orion Tokens', 'Apollo Tokens', 'Mission Day(s) Attended']) {
+    test('files anomaly counters under Events, like the game does', () {
+      // The game does not isolate them on a separate screen, and neither does
+      // the app.
+      for (final header in [
+        'Orion Tokens',
+        'Apollo Tokens',
+        'Mission Day(s) Attended',
+      ]) {
         expect(registry.forExportHeader(header)!.categoryKey, 'events',
             reason: header);
       }
     });
 
-    test('marque Level, Lifetime AP et Current AP comme non périodisés', () {
+    test('marks Level, Lifetime AP and Current AP as non periodized', () {
       for (final header in ['Level', 'Lifetime AP', 'Current AP']) {
         expect(registry.isPeriodized(header), isFalse, reason: header);
       }
     });
 
-    test('aucun seuil de palier n\'est encore renseigné', () {
-      // L'Annexe A n'en fournit pas : les inventer serait pire que l'absence,
-      // puisque les projections du §3.6 s'appuieraient dessus.
-      expect(
-        registry.forExportHeader('Hacks')!.tiers,
-        isEmpty,
-      );
+    test('carries no badge threshold yet', () {
+      // Appendix A provides none, and inventing them would be worse than their
+      // absence since the projections of §3.6 would rely on them.
+      expect(registry.forExportHeader('Hacks')!.tiers, isEmpty);
     });
   });
 
-  group('compteur inconnu (§3.1.2)', () {
-    test('n\'a pas d\'entrée, tombe dans « Autres » et reste périodisé', () {
+  group('unknown counter (§3.1.2)', () {
+    test('has no entry, falls into "other" and stays periodized', () {
       expect(registry.forExportHeader('Zeta Anomaly Tokens'), isNull);
-      expect(registry.categoryKeyFor('Zeta Anomaly Tokens'),
-          CounterRegistry.fallbackCategoryKey);
-      // Périodisé par défaut : le garde-fou comportemental le surveille donc,
-      // ce qui est le côté prudent.
+      expect(
+        registry.categoryKeyFor('Zeta Anomaly Tokens'),
+        CounterRegistry.fallbackCategoryKey,
+      );
+      // Periodized by default, so the behavioural guard watches it — the
+      // cautious side.
       expect(registry.isPeriodized('Zeta Anomaly Tokens'), isTrue);
     });
   });
 
-  group('ordre d\'affichage', () {
-    test('suit les catégories du jeu puis l\'ordre interne', () {
+  group('display order', () {
+    test('follows the game categories, then the order within each', () {
       final sorted = registry.sortHeaders([
         'Recursions',
         'Hacks',
@@ -92,15 +96,15 @@ void main() {
       ]);
 
       expect(sorted, [
-        'Level', // core, en tête
+        'Level', // core, first
         'Unique Portals Visited', // discovery
         'Resonators Deployed', // building
         'Hacks', // resource gathering
-        'Recursions', // recursion, en fin
+        'Recursions', // recursion, last
       ]);
     });
 
-    test('relègue les compteurs inconnus en fin de liste', () {
+    test('pushes unknown counters to the end of the list', () {
       final sorted = registry.sortHeaders([
         'Zeta Anomaly Tokens',
         'Hacks',
@@ -108,13 +112,13 @@ void main() {
       ]);
 
       expect(sorted.first, 'Hacks');
-      // Entre inconnus, tri alphabétique pour un affichage stable.
+      // Among unknowns, alphabetical order keeps the display stable.
       expect(sorted.sublist(1), ['Alpha Unknown', 'Zeta Anomaly Tokens']);
     });
   });
 
-  group('résistance à un registre cassé', () {
-    test('un registre vide ne fait pas tomber l\'app', () {
+  group('resilience to a broken registry', () {
+    test('an empty registry does not bring the app down', () {
       final empty = CounterRegistry.empty();
 
       expect(empty.length, 0);

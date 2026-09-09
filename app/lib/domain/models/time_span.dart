@@ -1,32 +1,32 @@
-/// Période couverte par un relevé, telle que déclarée par la colonne
-/// `Time Span` de l'export Ingress (§3.1.3).
+/// Period covered by a snapshot, as declared by the `Time Span` column of the
+/// Ingress export (§3.1.3).
 ///
-/// Le principe directeur est une **liste blanche** : seul `ALL TIME` est
-/// accepté. Toute autre valeur — connue (`WEEK`, `MONTH`, `NOW`) ou inconnue,
-/// y compris une granularité qu'Ingress ajouterait demain — est traitée comme
-/// une période partielle et bloque l'import. Une liste noire laisserait passer
-/// toute nouveauté, ce qui fausserait silencieusement l'historique.
+/// The guiding principle is an **allowlist**: only `ALL TIME` is accepted. Any
+/// other value — known (`WEEK`, `MONTH`, `NOW`) or unknown, including a
+/// granularity Ingress might add tomorrow — is treated as a partial period and
+/// blocks the import. A denylist would let every novelty through, silently
+/// skewing the history.
 enum TimeSpan {
-  /// Total depuis toujours : la seule valeur exploitable pour l'historique.
+  /// All time total: the only value usable for history.
   allTime,
 
-  /// Période partielle connue.
+  /// Known partial periods.
   week,
   month,
   now,
 
-  /// Valeur non reconnue. Traitée exactement comme une période partielle : on
-  /// refuse par défaut plutôt que de supposer qu'elle vaut `ALL TIME`.
+  /// Unrecognised value. Handled exactly like a partial period: refuse by
+  /// default rather than assume it means `ALL TIME`.
   unknown;
 
-  /// Reconnaît la valeur brute d'un export, insensible à la casse et aux
-  /// espaces superflus.
+  /// Recognises the raw value from an export, ignoring case and stray spacing.
   ///
-  /// Ingress écrit `ALL TIME` avec une espace, mais on tolère aussi `ALLTIME`
-  /// et `ALL_TIME` : ces variantes ne changent rien au sens et une exigence
-  /// trop stricte transformerait un export valide en faux positif.
+  /// Ingress writes `ALL TIME` with a space, but `ALLTIME` and `ALL_TIME` are
+  /// tolerated too: those variants do not change the meaning, and being overly
+  /// strict would turn a valid export into a false positive.
   factory TimeSpan.parse(String raw) {
-    final normalized = raw.trim().toUpperCase().replaceAll(RegExp(r'[\s_-]+'), '');
+    final normalized =
+        raw.trim().toUpperCase().replaceAll(RegExp(r'[\s_-]+'), '');
     return switch (normalized) {
       'ALLTIME' => TimeSpan.allTime,
       'WEEK' || 'THISWEEK' => TimeSpan.week,
@@ -36,7 +36,7 @@ enum TimeSpan {
     };
   }
 
-  /// `true` uniquement pour `ALL TIME`. C'est le garde-fou déclaratif du
-  /// §3.1.3 réduit à son expression la plus simple.
+  /// True only for `ALL TIME`. This is the declarative guard of §3.1.3 reduced
+  /// to its simplest expression.
   bool get isCumulative => this == TimeSpan.allTime;
 }

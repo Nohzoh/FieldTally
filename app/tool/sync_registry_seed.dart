@@ -1,14 +1,13 @@
-// Régénère app/assets/counters_registry_seed.json à partir de la source de
-// vérité docs/registry/counters.json (spec §3.1.4, §7.4).
+// Regenerates app/assets/counters_registry_seed.json from the source of truth,
+// docs/registry/counters.json (spec §3.1.4, §7.4).
 //
-// Il ne doit exister qu'UN SEUL fichier maintenu à la main : celui de docs/.
-// Le seed embarqué n'est qu'une copie de secours pour le fonctionnement
-// hors-ligne au premier lancement.
+// Exactly one file is maintained by hand: the one under docs/. The bundled
+// seed is only a fallback so the app works offline on first launch.
 //
-//   dart run tool/sync_registry_seed.dart            # régénère le seed
-//   dart run tool/sync_registry_seed.dart --check    # échoue si désynchronisé
+//   dart run tool/sync_registry_seed.dart            # regenerate the seed
+//   dart run tool/sync_registry_seed.dart --check    # fail if out of sync
 //
-// Lancé automatiquement avant chaque build en CI.
+// Run automatically before every build in CI.
 
 import 'dart:convert';
 import 'dart:io';
@@ -21,14 +20,12 @@ void main(List<String> args) {
 
   final source = File(_source);
   if (!source.existsSync()) {
-    stderr.writeln(
-      'Introuvable : $_source — ce script doit être lancé depuis app/.',
-    );
+    stderr.writeln('Not found: $_source — run this script from app/.');
     exit(1);
   }
 
-  // On repasse par un décodage/encodage plutôt qu'une copie brute : ça valide
-  // au passage que le JSON est syntaxiquement correct et normalise le format.
+  // Decode then re-encode rather than copying bytes: this validates the JSON
+  // along the way and normalises the formatting.
   final decoded = jsonDecode(source.readAsStringSync());
   final rendered = '${const JsonEncoder.withIndent('  ').convert(decoded)}\n';
 
@@ -36,19 +33,19 @@ void main(List<String> args) {
   final current = seed.existsSync() ? seed.readAsStringSync() : null;
 
   if (current == rendered) {
-    stdout.writeln('Seed déjà à jour ($_seed).');
+    stdout.writeln('Seed already up to date ($_seed).');
     return;
   }
 
   if (checkOnly) {
     stderr.writeln(
-      'Le seed embarqué est désynchronisé de $_source.\n'
-      'Lance : dart run tool/sync_registry_seed.dart',
+      'The bundled seed is out of sync with $_source.\n'
+      'Run: dart run tool/sync_registry_seed.dart',
     );
     exit(1);
   }
 
   seed.parent.createSync(recursive: true);
   seed.writeAsStringSync(rendered);
-  stdout.writeln('Seed régénéré : $_seed');
+  stdout.writeln('Seed regenerated: $_seed');
 }

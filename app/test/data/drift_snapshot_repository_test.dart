@@ -5,7 +5,8 @@ import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-StatSnapshot snapshotAt(DateTime date, Map<String, int> counters) => StatSnapshot(
+StatSnapshot snapshotAt(DateTime date, Map<String, int> counters) =>
+    StatSnapshot(
       timeSpan: TimeSpan.allTime,
       agentName: 'AgentDemo',
       faction: 'Enlightened',
@@ -25,12 +26,12 @@ void main() {
 
   tearDown(() => db.close());
 
-  test('une base neuve est vide', () async {
+  test('a fresh database is empty', () async {
     expect(await repository.all(), isEmpty);
     expect(await repository.latest(), isNull);
   });
 
-  test('enregistre un relevé et le relit à l\'identique', () async {
+  test('saves a snapshot and reads it back unchanged', () async {
     final original = snapshotAt(DateTime(2026, 1, 15, 13, 7, 39), const {
       'Hacks': 78735,
       'Lifetime AP': 101542335,
@@ -52,26 +53,31 @@ void main() {
     expect(read.counters, equals(original.counters));
   });
 
-  test('conserve les compteurs à zéro', () async {
-    await repository.save(snapshotAt(DateTime(2026, 1, 15), const {'Seer Points': 0}));
+  test('keeps zero valued counters', () async {
+    await repository
+        .save(snapshotAt(DateTime(2026, 1, 15), const {'Seer Points': 0}));
 
     final read = (await repository.all()).single.snapshot;
     expect(read.counters['Seer Points'], 0);
     expect(read.counters.containsKey('Seer Points'), isTrue);
   });
 
-  test('chaque relevé reçoit un identifiant distinct', () async {
-    final a = await repository.save(snapshotAt(DateTime(2026, 1, 1), const {'Hacks': 1}));
-    final b = await repository.save(snapshotAt(DateTime(2026, 1, 2), const {'Hacks': 2}));
+  test('every snapshot gets a distinct identifier', () async {
+    final a = await repository
+        .save(snapshotAt(DateTime(2026, 1, 1), const {'Hacks': 1}));
+    final b = await repository
+        .save(snapshotAt(DateTime(2026, 1, 2), const {'Hacks': 2}));
 
     expect(a.id, isNot(b.id));
   });
 
-  test('trie du plus récent au plus ancien, quel que soit l\'ordre d\'insertion',
-      () async {
-    await repository.save(snapshotAt(DateTime(2026, 1, 10), const {'Hacks': 10}));
-    await repository.save(snapshotAt(DateTime(2026, 1, 30), const {'Hacks': 30}));
-    await repository.save(snapshotAt(DateTime(2026, 1, 20), const {'Hacks': 20}));
+  test('sorts most recent first, whatever the insertion order', () async {
+    await repository
+        .save(snapshotAt(DateTime(2026, 1, 10), const {'Hacks': 10}));
+    await repository
+        .save(snapshotAt(DateTime(2026, 1, 30), const {'Hacks': 30}));
+    await repository
+        .save(snapshotAt(DateTime(2026, 1, 20), const {'Hacks': 20}));
 
     final dates = (await repository.all()).map((s) => s.snapshot.recordedAt);
     expect(dates, [
@@ -81,39 +87,42 @@ void main() {
     ]);
   });
 
-  test('latest() renvoie le relevé le plus récent par date de relevé', () async {
-    // Volontairement inséré en dernier alors qu'il est le plus ancien : c'est
-    // la date du relevé qui compte pour le garde-fou, pas l'ordre d'import.
-    await repository.save(snapshotAt(DateTime(2026, 1, 30), const {'Hacks': 30}));
-    await repository.save(snapshotAt(DateTime(2026, 1, 10), const {'Hacks': 10}));
+  test('latest() returns the newest by snapshot date', () async {
+    // Deliberately inserted last while being the oldest: what matters to the
+    // guard is the snapshot date, not the import order.
+    await repository
+        .save(snapshotAt(DateTime(2026, 1, 30), const {'Hacks': 30}));
+    await repository
+        .save(snapshotAt(DateTime(2026, 1, 10), const {'Hacks': 10}));
 
     final latest = await repository.latest();
     expect(latest!.snapshot.recordedAt, DateTime(2026, 1, 30));
     expect(latest.snapshot.counters['Hacks'], 30);
   });
 
-  test('supprimer un relevé emporte ses compteurs', () async {
-    final stored =
-        await repository.save(snapshotAt(DateTime(2026, 1, 15), const {'Hacks': 1}));
+  test('deleting a snapshot takes its counters with it', () async {
+    final stored = await repository
+        .save(snapshotAt(DateTime(2026, 1, 15), const {'Hacks': 1}));
 
     await repository.delete(stored.id);
 
     expect(await repository.all(), isEmpty);
-    // Sans `PRAGMA foreign_keys = ON`, les valeurs resteraient orphelines.
+    // Without `PRAGMA foreign_keys = ON`, the values would be left orphaned.
     expect(await db.select(db.counterValues).get(), isEmpty);
   });
 
-  test('deux relevés ne mélangent pas leurs compteurs', () async {
+  test('two snapshots do not mix their counters', () async {
     await repository.save(snapshotAt(DateTime(2026, 1, 1), const {'Hacks': 10}));
     await repository.save(
-        snapshotAt(DateTime(2026, 1, 2), const {'Hacks': 20, 'Orion Tokens': 5}));
+      snapshotAt(DateTime(2026, 1, 2), const {'Hacks': 20, 'Orion Tokens': 5}),
+    );
 
     final all = await repository.all();
     expect(all.first.snapshot.counters, {'Hacks': 20, 'Orion Tokens': 5});
     expect(all.last.snapshot.counters, {'Hacks': 10});
   });
 
-  test('le flux réactif émet après chaque écriture', () async {
+  test('the reactive stream emits after every write', () async {
     final emissions = <int>[];
     final subscription =
         repository.watchAll().listen((list) => emissions.add(list.length));
@@ -126,9 +135,9 @@ void main() {
     expect(emissions.last, 2);
   });
 
-  test('une période partielle enregistrée reste identifiable', () async {
-    // Si l'utilisateur passe outre un garde-fou, le relevé doit garder la
-    // trace de ce qu'il était : on ne réécrit pas l'histoire.
+  test('a stored partial period stays identifiable', () async {
+    // If the user overrides a guard, the snapshot must keep a record of what
+    // it was: we do not rewrite history.
     await repository.save(StatSnapshot(
       timeSpan: TimeSpan.week,
       agentName: 'AgentDemo',

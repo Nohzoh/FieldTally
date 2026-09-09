@@ -1,11 +1,11 @@
 import '../models/stat_snapshot.dart';
 
-/// Un relevé tel qu'il existe une fois enregistré : les données parsées, plus
-/// ce que seul le stockage connaît.
+/// A snapshot as it exists once saved: the parsed data, plus what only storage
+/// knows about.
 ///
-/// [StatSnapshot] reste volontairement ignorant du stockage — c'est la sortie
-/// du parser, rien de plus. La séparation évite que le modèle métier traîne un
-/// identifiant nul tant qu'il n'a pas été sauvegardé.
+/// [StatSnapshot] stays deliberately unaware of storage — it is the parser's
+/// output, nothing more. Keeping them apart avoids a domain model carrying a
+/// null identifier until it happens to be saved.
 class StoredSnapshot {
   const StoredSnapshot({
     required this.id,
@@ -13,37 +13,36 @@ class StoredSnapshot {
     required this.snapshot,
   });
 
-  /// UUID généré à l'enregistrement (§6).
+  /// UUID assigned on save (§6).
   final String id;
 
-  /// Quand le relevé a été ajouté à l'app, par opposition à
-  /// `snapshot.recordedAt` qui est la date du relevé lui-même.
+  /// When the snapshot was added to the app, as opposed to
+  /// `snapshot.recordedAt`, which is the date of the snapshot itself.
   final DateTime importedAt;
 
   final StatSnapshot snapshot;
 }
 
-/// Accès aux relevés.
+/// Access to snapshots.
 ///
-/// Cette interface est le point de découplage prévu par le §5.2 : les écrans
-/// ne parlent qu'à elle, jamais à Drift. Introduire une synchronisation en v2
-/// ne demandera donc qu'une nouvelle implémentation, pas une réécriture de
-/// l'interface utilisateur.
+/// This interface is the decoupling point called for by §5.2: screens talk to
+/// it and never to Drift. Introducing cloud sync in v2 will therefore only
+/// require a new implementation, not a rewrite of the user interface.
 abstract interface class SnapshotRepository {
-  /// Du plus récent au plus ancien.
+  /// Most recent first.
   Future<List<StoredSnapshot>> all();
 
-  /// Le relevé le plus récent, ou `null` s'il n'y en a aucun.
+  /// The most recent snapshot, or null if there is none.
   ///
-  /// C'est la référence du garde-fou comportemental (§3.1.3) : sans lui, il
-  /// n'a rien à comparer.
+  /// This is the reference for the behavioural guard (§3.1.3): without it,
+  /// there is nothing to compare against.
   Future<StoredSnapshot?> latest();
 
   Future<StoredSnapshot> save(StatSnapshot snapshot);
 
   Future<void> delete(String id);
 
-  /// Flux réactif de la liste, pour que les écrans se remettent à jour seuls
-  /// après un ajout ou une suppression.
+  /// Reactive stream of the list, so screens refresh themselves after an
+  /// insert or a delete.
   Stream<List<StoredSnapshot>> watchAll();
 }

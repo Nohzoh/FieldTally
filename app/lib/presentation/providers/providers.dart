@@ -8,14 +8,14 @@ import '../../domain/guards/import_guards.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 
-/// Base locale. Surchargée dans les tests par une base en mémoire.
+/// Local database. Overridden with an in-memory one in tests.
 final databaseProvider = Provider<FieldTallyDatabase>((ref) {
   final db = FieldTallyDatabase();
   ref.onDispose(db.close);
   return db;
 });
 
-/// Les écrans ne dépendent que de cette interface, jamais de Drift (§5.2).
+/// Screens depend on this interface only, never on Drift (§5.2).
 final snapshotRepositoryProvider = Provider<SnapshotRepository>(
   (ref) => DriftSnapshotRepository(ref.watch(databaseProvider)),
 );
@@ -24,16 +24,16 @@ final parserProvider = Provider((ref) => const IngressTsvParser());
 
 final importGuardsProvider = Provider((ref) => const ImportGuards());
 
-/// Registre d'enrichissement (§3.1.2).
+/// Counter enrichment registry (§3.1.2).
 ///
-/// Ne peut pas échouer : le chargeur retombe sur un registre vide si la copie
-/// embarquée est illisible, auquel cas tous les compteurs s'affichent sous
-/// leur libellé brut. Dégradé, mais jamais bloquant.
+/// Cannot fail: the loader falls back to an empty registry if the bundled copy
+/// is unreadable, in which case every counter shows under its raw label.
+/// Degraded, but never blocking.
 final counterRegistryProvider = FutureProvider<CounterRegistry>(
   (ref) => const CounterRegistryLoader().loadSeed(),
 );
 
-/// Historique des relevés, remis à jour tout seul après chaque écriture.
+/// Snapshot history, refreshed on its own after every write.
 final snapshotsProvider = StreamProvider<List<StoredSnapshot>>(
   (ref) => ref.watch(snapshotRepositoryProvider).watchAll(),
 );

@@ -3,38 +3,38 @@ import 'package:go_router/go_router.dart';
 import '../presentation/screens/add_snapshot_screen.dart';
 import '../presentation/screens/home_screen.dart';
 
-/// Routes de l'app (§5.1 : go_router).
+/// Application routes (§5.1: go_router).
 ///
-/// Deux écrans à ce stade. Le tableau de bord personnalisable (§3.3), la vue
-/// détaillée (§3.4) et les graphiques (§3.5) viendront s'ajouter ici.
+/// Two screens at this stage. The customisable dashboard (§3.3), the detailed
+/// view (§3.4) and the charts (§3.5) will be added here.
 abstract final class Routes {
   static const home = '/';
-  static const addSnapshot = '/ajouter';
+  static const addSnapshot = '/add';
 }
 
-/// Construit un routeur neuf.
+/// Builds a fresh router.
 ///
-/// Une fabrique plutôt qu'une constante globale : un `GoRouter` porte l'état
-/// de navigation, et le partager entre plusieurs tests widget les rendrait
-/// dépendants de leur ordre d'exécution.
+/// A factory rather than a global constant: a `GoRouter` holds navigation
+/// state, and sharing it across widget tests would make them depend on their
+/// execution order.
 GoRouter createRouter() => GoRouter(
-  routes: [
-    GoRoute(
-      path: Routes.home,
-      builder: (context, state) => const HomeScreen(),
       routes: [
         GoRoute(
-          path: 'ajouter',
-          builder: (context, state) => AddSnapshotScreen(
-            // Le partage entrant (§3.1) déposera ici le texte reçu depuis
-            // Ingress, pour arriver directement sur l'aperçu.
-            initialText: state.extra as String?,
-          ),
+          path: Routes.home,
+          builder: (context, state) => const HomeScreen(),
+          routes: [
+            GoRoute(
+              path: 'add',
+              builder: (context, state) => AddSnapshotScreen(
+                // Incoming shares (§3.1) will drop the text received from
+                // Ingress here, landing straight on the preview.
+                initialText: state.extra as String?,
+              ),
+            ),
+          ],
         ),
       ],
-    ),
-  ],
-);
+    );
 
-/// Instance utilisée par l'app.
+/// Instance used by the application.
 final router = createRouter();

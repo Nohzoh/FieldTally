@@ -208,15 +208,14 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
   final String agentName;
   final String faction;
 
-  /// Période déclarée à l'import, conservée telle quelle : elle documente la
-  /// provenance du relevé, y compris quand l'utilisateur a passé outre un
-  /// garde-fou.
+  /// Period declared at import time, kept verbatim: it documents where the
+  /// snapshot came from, including when the user overrode a guard.
   final String timeSpan;
   final DateTime recordedAt;
   final int level;
 
-  /// Date d'insertion, distincte de [recordedAt] : un import de migration peut
-  /// créer aujourd'hui un relevé daté d'il y a deux ans.
+  /// Insertion date, distinct from [recordedAt]: a migration import can create
+  /// a snapshot today that is dated two years ago.
   final DateTime importedAt;
   const Snapshot({
     required this.id,
@@ -590,7 +589,7 @@ class $CounterValuesTable extends CounterValues
 class CounterValue extends DataClass implements Insertable<CounterValue> {
   final String snapshotId;
 
-  /// Identité stable du compteur : son en-tête d'export.
+  /// Stable identity of the counter: its export header.
   final String exportHeader;
   final int value;
   const CounterValue({

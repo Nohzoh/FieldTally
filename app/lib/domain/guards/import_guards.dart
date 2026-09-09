@@ -2,10 +2,10 @@ import '../models/counter_registry.dart';
 import '../models/stat_snapshot.dart';
 import '../models/time_span.dart';
 
-/// Un compteur monotone qui a diminué entre deux relevés.
+/// A monotonic counter that went down between two snapshots.
 ///
-/// Presque jamais une vraie régression du joueur : dans les faits, c'est un
-/// import de la mauvaise période, une faute de frappe ou une édition manuelle.
+/// Almost never a real regression by the player: in practice it means the
+/// wrong period was imported, a typo, or a manual edit.
 class CounterRegression {
   const CounterRegression({
     required this.exportHeader,
@@ -17,14 +17,18 @@ class CounterRegression {
   final int previous;
   final int current;
 
-  /// Toujours positif : de combien le compteur a reculé.
+  /// Always positive: how far the counter went back.
   int get drop => previous - current;
 
   @override
-  String toString() => '$exportHeader : $previous → $current (-$drop)';
+  String toString() => '$exportHeader: $previous -> $current (-$drop)';
 }
 
-/// Verdict des deux garde-fous, à présenter avant tout enregistrement.
+/// Verdict of both guards, to be shown before anything is saved.
+///
+/// Deliberately free of user facing wording: this is domain logic, and the
+/// sentences shown to the user belong to the localisation layer. Callers get
+/// structured facts and render them as they see fit.
 class ImportCheck {
   const ImportCheck({
     required this.declaredTimeSpan,
@@ -32,79 +36,51 @@ class ImportCheck {
     required this.comparedAgainstPrevious,
   });
 
-  /// Période déclarée par l'export. `unknown` si la source n'en fournit pas
-  /// (cas du CSV de migration, Annexe B).
+  /// Period declared by the export. `unknown` when the source provides none
+  /// (the migration CSV, Appendix B).
   final TimeSpan declaredTimeSpan;
 
-  /// Compteurs monotones ayant reculé, du plus gros recul au plus petit.
+  /// Monotonic counters that went down, largest drop first.
   final List<CounterRegression> regressions;
 
-  /// `false` s'il n'existait aucun relevé antérieur : le garde-fou
-  /// comportemental n'a alors rien à comparer, et son silence ne vaut pas
-  /// validation.
+  /// False when no earlier snapshot existed: the behavioural guard then had
+  /// nothing to compare against, and its silence is not an endorsement.
   final bool comparedAgainstPrevious;
 
-  /// Garde-fou n°1 — déclaratif. Voir [TimeSpan] : liste blanche stricte.
+  /// Guard 1 — declarative. See [TimeSpan]: strict allowlist.
   bool get isPartialPeriod =>
       declaredTimeSpan != TimeSpan.unknown && !declaredTimeSpan.isCumulative;
 
-  /// Garde-fou n°2 — comportemental.
+  /// Guard 2 — behavioural.
   bool get hasRegressions => regressions.isNotEmpty;
 
-  /// L'import doit être refusé par défaut. Passer outre reste possible, mais
-  /// ça doit être une action explicite et distincte, jamais un bouton
-  /// « forcer » posé à côté du message (§3.1.3).
+  /// The import must be refused by default. Overriding stays possible, but it
+  /// has to be an explicit and clearly separate action, never a "force" button
+  /// sitting next to the message (§3.1.3).
   bool get isBlocked => isPartialPeriod || hasRegressions;
-
-  /// Message principal, destiné à être montré tel quel.
-  String? get message {
-    if (isPartialPeriod) {
-      return "Ce relevé correspond à la période « $declaredTimeSpanLabel » et non à "
-          "un total depuis toujours — l'ajouter fausserait ton historique. "
-          "Vérifie que tu as bien sélectionné « All Time » dans Ingress avant "
-          "d'exporter.";
-    }
-    if (hasRegressions) {
-      final n = regressions.length;
-      return "$n compteur${n > 1 ? 's ont' : ' a'} diminué depuis ton dernier "
-          "relevé, ce qui n'arrive normalement jamais. C'est presque toujours "
-          "le signe d'un import de la mauvaise période. Vérifie la liste "
-          "ci-dessous avant de confirmer.";
-    }
-    return null;
-  }
-
-  String get declaredTimeSpanLabel => switch (declaredTimeSpan) {
-        TimeSpan.week => 'WEEK',
-        TimeSpan.month => 'MONTH',
-        TimeSpan.now => 'NOW',
-        TimeSpan.allTime => 'ALL TIME',
-        TimeSpan.unknown => 'inconnue',
-      };
 }
 
-/// Applique les deux garde-fous anti-import de période partielle (§3.1.3).
+/// Applies both guards against importing a partial period (§3.1.3).
 ///
-/// Ils se complètent et aucun ne remplace l'autre : le champ `Time Span` est
-/// absent du CSV de migration, et à l'inverse un `Time Span` correct n'exclut
-/// pas une autre source d'erreur. La cohérence des valeurs entre elles reste
-/// le filet de sécurité final.
+/// They complement each other and neither replaces the other: the `Time Span`
+/// column is absent from the migration CSV, and conversely a correct
+/// `Time Span` does not rule out another source of error. Consistency between
+/// values remains the final safety net.
 class ImportGuards {
   const ImportGuards({this.tolerance = 0});
 
-  /// Recul toléré avant de signaler un compteur.
+  /// Drop tolerated before a counter is flagged.
   ///
-  /// La valeur par défaut est **0** : les compteurs Ingress sont des entiers
-  /// cumulatifs, il n'y a donc aucun arrondi à absorber, et toute diminution
-  /// est un signal. Le paramètre existe pour le jour où un compteur se
-  /// révélerait non strictement monotone — pas pour amortir du bruit qui
-  /// n'existe pas.
+  /// The default is **0**: Ingress counters are cumulative integers, so there
+  /// is no rounding to absorb and any decrease is a signal. The parameter
+  /// exists for the day a counter turns out not to be strictly monotonic — not
+  /// to damp noise that does not exist.
   final int tolerance;
 
-  /// Compare un relevé candidat au dernier relevé connu.
+  /// Compares a candidate snapshot against the latest known one.
   ///
-  /// [previous] peut être `null` (premier import) : seul le garde-fou
-  /// déclaratif s'applique alors.
+  /// [previous] may be null (first import): only the declarative guard applies
+  /// then.
   ImportCheck check(
     StatSnapshot candidate, {
     StatSnapshot? previous,
@@ -116,17 +92,16 @@ class ImportGuards {
       for (final entry in candidate.counters.entries) {
         final header = entry.key;
 
-        // Level, Lifetime AP et Current AP ne sont jamais réduits à la période
-        // sélectionnée : les surveiller ne dirait rien : un import WEEK les
-        // laisse identiques. Le signal est ailleurs.
-        final periodized =
-            registry?.isPeriodized(header) ??
-                !StatSnapshot.nonPeriodizedHeaders.contains(header);
+        // Level, Lifetime AP and Current AP are never scoped to the selected
+        // period, so watching them would say nothing: a WEEK import leaves
+        // them identical. The signal is elsewhere.
+        final periodized = registry?.isPeriodized(header) ??
+            !StatSnapshot.nonPeriodizedHeaders.contains(header);
         if (!periodized) continue;
 
-        // Un compteur absent du relevé précédent n'a pas « diminué » : il
-        // vient d'apparaître. Et l'inverse — présent avant, absent
-        // maintenant — ne vaut pas retour à zéro (§3.1.2).
+        // A counter missing from the previous snapshot did not "go down": it
+        // just appeared. And the reverse — present before, absent now — is not
+        // a reset to zero either (§3.1.2).
         final before = previous.counters[header];
         if (before == null) continue;
 
@@ -142,8 +117,8 @@ class ImportGuards {
         }
       }
 
-      // Le plus gros recul en premier : c'est celui qui rend l'erreur évidente
-      // d'un coup d'œil.
+      // Largest drop first: that is the one that makes the mistake obvious at
+      // a glance.
       regressions.sort((a, b) => b.drop.compareTo(a.drop));
     }
 

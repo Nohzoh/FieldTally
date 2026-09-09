@@ -1,0 +1,43 @@
+# Template for the most likely point of friction (spec §7.4).
+name: "Parsing does not work"
+description: "An Ingress export is not read correctly by the app."
+labels: ["parsing"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **Before pasting anything: anonymise your sample.**
+        Replace your agent codename with a generic one. If you prefer, you can
+        also multiply every numeric value by one fixed factor — proportions are
+        enough to reproduce the problem.
+
+  - type: textarea
+    id: sample
+    attributes:
+      label: Anonymised export sample
+      description: "The header row plus the value row, as copied from Ingress."
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: time-span
+    attributes:
+      label: "Exported period (Time Span)"
+      placeholder: "ALL TIME / WEEK / MONTH / NOW"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened instead
+    validations:
+      required: true
+
+  - type: input
+    id: context
+    attributes:
+      label: "App version, Android version, language of the Ingress app"
+    validations:
+      required: false

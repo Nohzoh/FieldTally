@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Valide docs/registry/counters.json avant tout déploiement (spec §3.1.4, §7.3).
+"""Validates docs/registry/counters.json before any deployment (§3.1.4, §7.3).
 
-C'est le seul rempart contre une PR qui casserait la catégorisation pour tous
-les utilisateurs d'un coup : ce fichier est récupéré au démarrage par toutes
-les installations de l'app.
+This is the only thing standing between a malformed pull request and broken
+categorisation for every user at once: the file is fetched at startup by every
+install of the app.
 
-Vérifie : JSON valide, clés de compteur bien formées, catégories dans la liste
-autorisée, pas de doublon (clé ou en-tête d'export), seuils de palier croissants.
+Checks: valid JSON, well-formed counter keys, categories from the allowed list,
+no duplicates (key or export header), strictly increasing badge thresholds.
 
-    python3 tool/validate_registry.py [chemin]
+    python3 tool/validate_registry.py [path]
 """
 
 import json
@@ -26,75 +26,75 @@ def validate(path: Path) -> list[str]:
     try:
         doc = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        return [f"illisible ou JSON invalide : {exc}"]
+        return [f"unreadable or invalid JSON: {exc}"]
 
     if not isinstance(doc, dict):
-        return ["la racine doit être un objet JSON"]
+        return ["the root must be a JSON object"]
 
     for field in ("schema_version", "updated_at", "categories", "counters"):
         if field not in doc:
-            errors.append(f"champ racine manquant : {field}")
+            errors.append(f"missing root field: {field}")
     if errors:
         return errors
 
-    # --- Catégories ---
+    # --- Categories ---
     categories = doc["categories"]
     if not isinstance(categories, list) or not categories:
-        return ["'categories' doit être une liste non vide"]
+        return ["'categories' must be a non-empty list"]
 
     allowed: set[str] = set()
     seen_order: dict[int, str] = {}
     for i, cat in enumerate(categories):
         where = f"categories[{i}]"
         if not isinstance(cat, dict):
-            errors.append(f"{where} : doit être un objet")
+            errors.append(f"{where}: must be an object")
             continue
         key = cat.get("key")
         if not isinstance(key, str) or not KEY_RE.match(key):
-            errors.append(f"{where} : clé de catégorie mal formée ({key!r})")
+            errors.append(f"{where}: malformed category key ({key!r})")
             continue
         if key in allowed:
-            errors.append(f"{where} : catégorie en doublon ({key!r})")
+            errors.append(f"{where}: duplicate category ({key!r})")
         allowed.add(key)
         order = cat.get("order")
         if not isinstance(order, int):
-            errors.append(f"{where} : 'order' doit être un entier")
+            errors.append(f"{where}: 'order' must be an integer")
         elif order in seen_order:
             errors.append(
-                f"{where} : 'order' {order} déjà utilisé par {seen_order[order]!r}"
+                f"{where}: 'order' {order} already used by {seen_order[order]!r}"
             )
         else:
             seen_order[order] = key
         label = cat.get("label")
         if not isinstance(label, dict) or not label.get("en") or not label.get("fr"):
-            errors.append(f"{where} : 'label' doit contenir 'en' et 'fr' non vides")
+            errors.append(f"{where}: 'label' must carry non-empty 'en' and 'fr'")
 
-    # --- Compteurs ---
+    # --- Counters ---
     counters = doc["counters"]
     if not isinstance(counters, dict):
-        return errors + ["'counters' doit être un objet"]
+        return errors + ["'counters' must be an object"]
 
     headers: dict[str, str] = {}
     for key, entry in counters.items():
         where = f"counters.{key}"
         if not KEY_RE.match(key):
-            errors.append(f"{where} : clé mal formée (attendu snake_case)")
+            errors.append(f"{where}: malformed key (snake_case expected)")
         if not isinstance(entry, dict):
-            errors.append(f"{where} : doit être un objet")
+            errors.append(f"{where}: must be an object")
             continue
 
         for field in REQUIRED:
             if field not in entry:
-                errors.append(f"{where} : champ manquant '{field}'")
+                errors.append(f"{where}: missing field '{field}'")
 
         header = entry.get("export_header")
         if not isinstance(header, str) or not header.strip():
-            errors.append(f"{where} : 'export_header' doit être une chaîne non vide")
+            errors.append(f"{where}: 'export_header' must be a non-empty string")
         elif header in headers:
             errors.append(
-                f"{where} : 'export_header' {header!r} déjà utilisé par "
-                f"{headers[header]!r} — un en-tête d'export ne peut désigner "
-                f"qu'un seul compteur"
+                f"{where}: 'export_header' {header!r} already used by "
+                f"{headers[header]!r} — one export header can only name "
+                f"one counter"
             )
         else:
             headers[header] = key
@@ -102,49 +102,49 @@ def validate(path: Path) -> list[str]:
         category = entry.get("category")
         if category not in allowed:
             errors.append(
-                f"{where} : catégorie inconnue ({category!r}) — "
-                f"autorisées : {sorted(allowed)}"
+                f"{where}: unknown category ({category!r}) — "
+                f"allowed: {sorted(allowed)}"
             )
 
         if not isinstance(entry.get("order"), int):
-            errors.append(f"{where} : 'order' doit être un entier")
+            errors.append(f"{where}: 'order' must be an integer")
 
         label = entry.get("label")
         if not isinstance(label, dict) or not label.get("en") or not label.get("fr"):
-            errors.append(f"{where} : 'label' doit contenir 'en' et 'fr' non vides")
+            errors.append(f"{where}: 'label' must carry non-empty 'en' and 'fr'")
 
         if "periodized" in entry and not isinstance(entry["periodized"], bool):
-            errors.append(f"{where} : 'periodized' doit être un booléen")
+            errors.append(f"{where}: 'periodized' must be a boolean")
 
-        # Seuils de palier (§3.6) : optionnels, mais strictement croissants.
+        # Badge thresholds (§3.6): optional, but strictly increasing.
         tiers = entry.get("tiers")
         if tiers is not None:
             if not isinstance(tiers, list) or not tiers:
-                errors.append(f"{where} : 'tiers' doit être une liste non vide")
+                errors.append(f"{where}: 'tiers' must be a non-empty list")
                 continue
             values = []
             for j, tier in enumerate(tiers):
                 if not isinstance(tier, dict):
-                    errors.append(f"{where}.tiers[{j}] : doit être un objet")
+                    errors.append(f"{where}.tiers[{j}]: must be an object")
                     continue
                 name, value = tier.get("name"), tier.get("value")
                 if not isinstance(name, str) or not name:
-                    errors.append(f"{where}.tiers[{j}] : 'name' manquant")
+                    errors.append(f"{where}.tiers[{j}]: missing 'name'")
                 if not isinstance(value, (int, float)) or isinstance(value, bool):
-                    errors.append(f"{where}.tiers[{j}] : 'value' doit être un nombre")
+                    errors.append(f"{where}.tiers[{j}]: 'value' must be a number")
                 else:
                     values.append(value)
             if values != sorted(set(values)) or len(values) != len(set(values)):
                 errors.append(
-                    f"{where} : les seuils de palier doivent être strictement "
-                    f"croissants (reçu : {values})"
+                    f"{where}: badge thresholds must be strictly increasing "
+                    f"(got: {values})"
                 )
 
-    # Chaque catégorie déclarée doit servir, sauf le fourre-tout 'other' qui est
-    # la catégorie de repli côté app pour les compteurs pas encore enrichis.
+    # Every declared category must be used, except the catch-all 'other',
+    # which is the app-side fallback for counters not yet enriched.
     used = {e.get("category") for e in counters.values() if isinstance(e, dict)}
     for unused in sorted(allowed - used - {"other"}):
-        errors.append(f"catégorie déclarée mais inutilisée : {unused!r}")
+        errors.append(f"declared but unused category: {unused!r}")
 
     return errors
 
@@ -155,15 +155,15 @@ def main() -> int:
 
     errors = validate(path)
     if errors:
-        print(f"❌ {path} : {len(errors)} erreur(s)", file=sys.stderr)
+        print(f"❌ {path}: {len(errors)} error(s)", file=sys.stderr)
         for err in errors:
             print(f"  - {err}", file=sys.stderr)
         return 1
 
     doc = json.loads(path.read_text(encoding="utf-8"))
     print(
-        f"✅ {path} valide — {len(doc['counters'])} compteurs, "
-        f"{len(doc['categories'])} catégories."
+        f"✅ {path} is valid — {len(doc['counters'])} counters, "
+        f"{len(doc['categories'])} categories."
     )
     return 0
 

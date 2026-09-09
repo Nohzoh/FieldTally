@@ -18,11 +18,11 @@ TrackedCounter of(List<TrackedCounter> counters, String header) =>
 void main() {
   const tracker = CounterTracker();
 
-  test('sans relevé, il n\'y a rien à suivre', () {
+  test('with no snapshot there is nothing to track', () {
     expect(tracker.track(const []), isEmpty);
   });
 
-  test('retient première apparition, dernière apparition et dernière valeur', () {
+  test('records first seen, last seen and last value', () {
     final counters = tracker.track([
       at(DateTime(2026, 1, 1), {'Hacks': 10}),
       at(DateTime(2026, 1, 20), {'Hacks': 30}),
@@ -36,7 +36,7 @@ void main() {
     expect(hacks.isMonotonic, isTrue);
   });
 
-  test('l\'ordre des relevés fournis n\'a pas d\'importance', () {
+  test('the order snapshots are given in does not matter', () {
     final counters = tracker.track([
       at(DateTime(2026, 1, 20), {'Hacks': 30}),
       at(DateTime(2026, 1, 1), {'Hacks': 10}),
@@ -46,34 +46,34 @@ void main() {
     expect(of(counters, 'Hacks').firstSeen, DateTime(2026, 1, 1));
   });
 
-  group('bascule actif → inactif après 45 jours d\'absence (§3.1.2)', () {
-    test('un compteur absent depuis moins de 45 jours reste actif', () {
+  group('active to inactive after 45 days of absence (§3.1.2)', () {
+    test('a counter absent for less than 45 days stays active', () {
       final counters = tracker.track([
         at(DateTime(2026, 1, 1), {'Hacks': 10, 'Orion Tokens': 500}),
-        at(DateTime(2026, 2, 10), {'Hacks': 30}), // 40 jours plus tard
+        at(DateTime(2026, 2, 10), {'Hacks': 30}), // 40 days later
       ]);
 
       expect(of(counters, 'Orion Tokens').isActive, isTrue);
     });
 
-    test('au-delà de 45 jours, il passe inactif en gardant sa dernière valeur', () {
+    test('beyond 45 days it goes inactive but keeps its last value', () {
       final counters = tracker.track([
         at(DateTime(2026, 1, 1), {'Hacks': 10, 'Orion Tokens': 500}),
-        at(DateTime(2026, 3, 1), {'Hacks': 30}), // 59 jours plus tard
+        at(DateTime(2026, 3, 1), {'Hacks': 30}), // 59 days later
       ]);
 
       final orion = of(counters, 'Orion Tokens');
       expect(orion.isActive, isFalse);
-      // Figée, jamais ramenée à zéro.
+      // Frozen, never reset to zero.
       expect(orion.lastValue, 500);
       expect(of(counters, 'Hacks').isActive, isTrue);
     });
 
-    test('un compteur qui réapparaît reprend son historique là où il l\'avait laissé', () {
+    test('a counter coming back picks its history up where it left off', () {
       final counters = tracker.track([
         at(DateTime(2026, 1, 1), {'Orion Tokens': 500}),
-        at(DateTime(2026, 3, 1), {}), // absent : saison terminée
-        at(DateTime(2026, 6, 1), {'Orion Tokens': 800}), // l'anomalie revient
+        at(DateTime(2026, 3, 1), {}), // absent: season over
+        at(DateTime(2026, 6, 1), {'Orion Tokens': 800}), // anomaly returns
       ]);
 
       final orion = of(counters, 'Orion Tokens');
@@ -82,22 +82,19 @@ void main() {
       expect(orion.lastValue, 800);
     });
 
-    test(
-      'l\'ancienneté se mesure sur le dernier relevé, pas sur la date du jour',
-      () {
-        // Un agent qui cesse d'importer pendant six mois ne doit pas retrouver
-        // tous ses compteurs en inactif : la règle mesure une absence *dans
-        // les imports*, pas le simple passage du temps.
-        final counters = tracker.track([
-          at(DateTime(2020, 1, 1), {'Hacks': 10}),
-          at(DateTime(2020, 1, 15), {'Hacks': 20}),
-        ]);
+    test('age is measured against the last snapshot, not against today', () {
+      // An agent who stops importing for six months must not find every
+      // counter inactive: the rule measures absence *from the imports*, not
+      // the mere passage of time.
+      final counters = tracker.track([
+        at(DateTime(2020, 1, 1), {'Hacks': 10}),
+        at(DateTime(2020, 1, 15), {'Hacks': 20}),
+      ]);
 
-        expect(of(counters, 'Hacks').isActive, isTrue);
-      },
-    );
+      expect(of(counters, 'Hacks').isActive, isTrue);
+    });
 
-    test('le seuil est ajustable', () {
+    test('the threshold is configurable', () {
       const strict = CounterTracker(inactivityThreshold: Duration(days: 7));
       final counters = strict.track([
         at(DateTime(2026, 1, 1), {'Hacks': 10, 'Orion Tokens': 500}),

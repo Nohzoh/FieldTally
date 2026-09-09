@@ -1,8 +1,8 @@
-# Publication du site GitHub Pages (spec §7.3).
+# GitHub Pages deployment (spec §7.3).
 #
-# Le site sert aussi de CDN pour docs/registry/counters.json, récupéré au
-# démarrage par toutes les installations de l'app (§3.1.4) — d'où la
-# validation bloquante avant tout déploiement.
+# The site doubles as the CDN for docs/registry/counters.json, fetched at
+# startup by every install of the app (§3.1.4) — hence the blocking validation
+# before any deployment.
 name: Pages
 
 on:
@@ -19,21 +19,21 @@ permissions:
   pages: write
   id-token: write
 
-# Une seule publication à la fois ; on ne coupe pas un déploiement en cours.
+# One deployment at a time; never cancel one in flight.
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
   build:
-    name: Valide le registre & construit le site
+    name: Validate the registry & build the site
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
-      # Étape 1 du §7.3 : seul rempart contre une PR qui casserait la
-      # catégorisation des compteurs pour tous les utilisateurs d'un coup.
-      - name: Valide docs/registry/counters.json
+      # Step 1 of §7.3: the only thing standing between a malformed pull
+      # request and broken counter categorisation for every user at once.
+      - name: Validate docs/registry/counters.json
         run: python3 tool/validate_registry.py
 
       - uses: actions/configure-pages@v6
@@ -47,7 +47,7 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
 
   deploy:
-    name: Déploie
+    name: Deploy
     needs: build
     runs-on: ubuntu-latest
     environment:

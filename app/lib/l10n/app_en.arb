@@ -1,0 +1,110 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "FieldTally",
+  "cancel": "Cancel",
+  "delete": "Delete",
+
+  "homeEmptyTitle": "No snapshot yet",
+  "homeEmptyDetail": "Share your stats from Ingress, or paste the exported text to create your first snapshot.",
+  "homeLoadError": "Could not read your history",
+  "snapshotDateFormat": "d MMMM y 'at' HH:mm",
+  "snapshotSubtitle": "{count} counters • {agent}",
+  "@snapshotSubtitle": {
+    "placeholders": { "count": { "type": "int" }, "agent": { "type": "String" } }
+  },
+  "deleteSnapshotTooltip": "Delete this snapshot",
+  "deleteSnapshotTitle": "Delete this snapshot?",
+  "deleteSnapshotBody": "It will disappear from your history and charts. This cannot be undone.",
+
+  "addSnapshotTitle": "Add a snapshot",
+  "addSnapshotAction": "Add a snapshot",
+  "instructionsTitle": "From Ingress",
+  "instructionsBody": "Stats screen → select \"All Time\" → Share. Double-check the period: a \"This Week\" export would skew your history.",
+  "pasteFieldLabel": "Text exported from Ingress",
+  "pasteFieldHint": "Paste the text shared from the stats screen here…",
+  "analyze": "Analyze",
+
+  "previewTitle": "Preview",
+  "previewNotSavedYet": "Nothing is saved until you confirm.",
+  "previewDetailedDateFormat": "d MMMM y 'at' HH:mm:ss",
+  "fieldAgent": "Agent",
+  "fieldFaction": "Faction",
+  "fieldPeriod": "Period",
+  "fieldRecordedAt": "Recorded on",
+  "fieldLevel": "Level",
+  "fieldCounterCount": "Counters detected",
+  "detectedValues": "Detected values",
+  "counterCount": "{count} counters",
+  "@counterCount": { "placeholders": { "count": { "type": "int" } } },
+  "fallbackCategory": "Other",
+
+  "saveSnapshot": "Save this snapshot",
+  "doNotSave": "Do not save",
+  "saveAnyway": "Save anyway…",
+  "saveAnywayTitle": "Save despite the anomaly?",
+  "saveAnywayBody": "This snapshot is inconsistent with your history. Saving it will durably skew your diffs, charts and badge projections.\n\nOnly continue if you know exactly why.",
+  "saveAnywayConfirm": "Save anyway",
+  "snapshotSaved": "Snapshot saved.",
+
+  "anomalyPartialPeriodTitle": "Partial period detected",
+  "anomalyRegressionTitle": "Inconsistent with your history",
+  "anomalyPartialPeriod": "This snapshot covers the \"{period}\" period rather than an all-time total — adding it would skew your history. Make sure you selected \"All Time\" in Ingress before exporting.",
+  "@anomalyPartialPeriod": { "placeholders": { "period": { "type": "String" } } },
+  "anomalyRegression": "{count, plural, one{1 counter has gone down} other{{count} counters have gone down}} since your last snapshot, which normally never happens. It is almost always a sign that the wrong period was imported. Check the list below before confirming.",
+  "@anomalyRegression": { "placeholders": { "count": { "type": "int" } } },
+  "anomalyRegressionLine": "{counter}: {previous} → {current} (−{drop})",
+  "@anomalyRegressionLine": {
+    "placeholders": {
+      "counter": { "type": "String" },
+      "previous": { "type": "int" },
+      "current": { "type": "int" },
+      "drop": { "type": "int" }
+    }
+  },
+  "anomalyRegressionMore": "… and {count} more.",
+  "@anomalyRegressionMore": { "placeholders": { "count": { "type": "int" } } },
+
+  "timeSpanAllTime": "ALL TIME",
+  "timeSpanWeek": "WEEK",
+  "timeSpanMonth": "MONTH",
+  "timeSpanNow": "NOW",
+  "timeSpanUnknown": "unknown",
+
+  "parseErrorTitle": "Could not read this text",
+  "parseErrorEmptyText": "The pasted text is empty — there is nothing to import.",
+  "parseErrorHeaderOnly": "The export only contains a header row, without any values. Make sure you copied the whole text from Ingress.",
+  "parseErrorNotTabSeparated": "This does not look like an Ingress export: no tab-separated columns were found. Use the Ingress share button rather than copying from the screen by hand.",
+  "parseErrorBlankHeader": "The export contains a column without a name (position {position}), which makes matching values ambiguous.",
+  "@parseErrorBlankHeader": { "placeholders": { "position": { "type": "int" } } },
+  "parseErrorDuplicateHeader": "The export contains two columns named \"{column}\". There is no way to tell which one to use.",
+  "@parseErrorDuplicateHeader": { "placeholders": { "column": { "type": "String" } } },
+  "parseErrorColumnCountMismatch": "Row {row}: {values} values for {headers} columns. The text was most likely truncated while copying.",
+  "@parseErrorColumnCountMismatch": {
+    "placeholders": {
+      "row": { "type": "int" },
+      "values": { "type": "int" },
+      "headers": { "type": "int" }
+    }
+  },
+  "parseErrorMissingColumn": "The \"{column}\" column is missing from the export. The Ingress format may have changed — please report it with an anonymised sample.",
+  "@parseErrorMissingColumn": { "placeholders": { "column": { "type": "String" } } },
+  "parseErrorEmptyValue": "The \"{column}\" column is empty.",
+  "@parseErrorEmptyValue": { "placeholders": { "column": { "type": "String" } } },
+  "parseErrorNotAnInteger": "The \"{column}\" column does not contain a whole number.",
+  "@parseErrorNotAnInteger": { "placeholders": { "column": { "type": "String" } } },
+  "parseErrorOutOfRange": "The value of \"{column}\" is outside the acceptable range.",
+  "@parseErrorOutOfRange": { "placeholders": { "column": { "type": "String" } } },
+  "parseErrorInvalidDate": "The date \"{value}\" is not in the expected format (yyyy-mm-dd).",
+  "@parseErrorInvalidDate": { "placeholders": { "value": { "type": "String" } } },
+  "parseErrorInvalidTime": "The time \"{value}\" is not in the expected format (hh:mm:ss).",
+  "@parseErrorInvalidTime": { "placeholders": { "value": { "type": "String" } } },
+  "parseErrorNonExistentDate": "The date \"{value}\" does not exist.",
+  "@parseErrorNonExistentDate": { "placeholders": { "value": { "type": "String" } } },
+  "parseErrorTooManyRows": "The export contains {count} snapshots when only one is expected here.",
+  "@parseErrorTooManyRows": { "placeholders": { "count": { "type": "int" } } },
+  "parseErrorRawValue": "Value read: \"{value}\"",
+  "@parseErrorRawValue": { "placeholders": { "value": { "type": "String" } } },
+
+  "disclaimer": "Unofficial tool, not affiliated with Niantic. \"Ingress\" is a trademark of Niantic, Inc."
+}
