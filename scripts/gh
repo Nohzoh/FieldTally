@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Wrapper `gh` scopé au projet FieldTally.
+#
+# Charge le PAT fine-grained dédié au repo depuis .secrets/gh_token (non
+# versionné) dans GH_TOKEN, puis délègue au vrai `gh`. GH_TOKEN a priorité sur
+# l'authentification stockée dans le trousseau, donc l'identité du compte perso
+# n'est jamais utilisée ici — et on ne fait JAMAIS `gh auth login`, qui
+# basculerait le compte actif globalement.
+#
+# Usage :  ./scripts/gh repo view
+#          ./scripts/gh auth status
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+token_file="$repo_root/.secrets/gh_token"
+
+if [[ ! -f "$token_file" ]]; then
+  echo "Token introuvable : $token_file" >&2
+  echo "Crée un PAT fine-grained pour Nohzoh/FieldTally et écris-le dans ce fichier." >&2
+  exit 1
+fi
+
+# Tolère un fichier écrit avec un retour à la ligne ou des espaces parasites.
+GH_TOKEN="$(tr -d '[:space:]' < "$token_file")"
+if [[ -z "$GH_TOKEN" ]]; then
+  echo "Token vide : $token_file" >&2
+  exit 1
+fi
+export GH_TOKEN
+
+# Neutralise les autres sources d'auth pour être sûr de ne pas retomber sur le
+# compte perso si le token est refusé.
+unset GITHUB_TOKEN GH_ENTERPRISE_TOKEN GITHUB_ENTERPRISE_TOKEN
+
+exec gh "$@"

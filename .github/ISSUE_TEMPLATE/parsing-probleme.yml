@@ -1,0 +1,43 @@
+# Template dédié au point de friction le plus probable (spec §7.4).
+name: "Le parsing ne fonctionne pas"
+description: "Un export Ingress n'est pas lu correctement par l'app."
+labels: ["parsing"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **Avant de coller quoi que ce soit : anonymise ton extrait.**
+        Remplace ton pseudo d'agent par un nom générique. Si tu préfères, tu
+        peux aussi multiplier toutes les valeurs numériques par un même facteur
+        — les proportions suffisent pour reproduire le problème.
+
+  - type: textarea
+    id: extrait
+    attributes:
+      label: Extrait anonymisé de l'export
+      description: "La ligne d'en-têtes + la ligne de valeurs, telles que copiées depuis Ingress."
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: time-span
+    attributes:
+      label: "Période exportée (Time Span)"
+      placeholder: "ALL TIME / WEEK / MONTH / NOW"
+    validations:
+      required: true
+
+  - type: textarea
+    id: attendu
+    attributes:
+      label: Ce que tu attendais / ce qui s'est passé
+    validations:
+      required: true
+
+  - type: input
+    id: contexte
+    attributes:
+      label: "Version de l'app, version d'Android, langue de l'appli Ingress"
+    validations:
+      required: false

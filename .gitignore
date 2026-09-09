@@ -1,0 +1,45 @@
+# --- Secrets du projet (JAMAIS versionnés) ---
+# Token GitHub fine-grained dédié à FieldTally, chargé dans GH_TOKEN par
+# scripts/gh-env.sh — voir CONTRIBUTING.md.
+.secrets/
+*.token
+.env
+.env.*
+
+# --- Divers OS / éditeurs ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# --- Flutter / Dart ---
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/build/
+app/coverage/
+app/.packages
+
+# --- Android ---
+app/android/.gradle/
+app/android/local.properties
+app/android/key.properties
+app/android/app/*.jks
+app/android/app/*.keystore
+app/android/.idea/
+
+# --- iOS (pas de cible v1, mais la porte reste ouverte) ---
+app/ios/Pods/
+app/ios/.symlinks/
+app/ios/Flutter/Flutter.framework
+app/ios/Flutter/Flutter.podspec
+app/ios/Flutter/Generated.xcconfig
+app/ios/Flutter/flutter_export_environment.sh
+
+# --- Site GitHub Pages (Jekyll) ---
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+docs/Gemfile.lock

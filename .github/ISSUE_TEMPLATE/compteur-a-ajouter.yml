@@ -1,0 +1,47 @@
+# Contribution la plus attendue de la communauté (spec §7.4) : déclarer un
+# nouveau compteur, typiquement lié à une anomalie qui démarre.
+name: "Ajouter ou corriger un compteur"
+description: "Un compteur manque dans la catégorisation, ou son libellé/sa catégorie est faux."
+labels: ["registry"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Pas besoin de savoir coder : tout se joue dans un seul fichier,
+        [`docs/registry/counters.json`](https://github.com/Nohzoh/FieldTally/blob/main/docs/registry/counters.json).
+        Une PR directe sur ce fichier est encore plus rapide qu'une issue —
+        l'app le récupère sans attendre de nouvelle version.
+
+        Un compteur absent de ce fichier **fonctionne quand même** : il est
+        juste affiché sous son nom brut, dans la catégorie « Autres ».
+
+  - type: input
+    id: header
+    attributes:
+      label: "Nom exact de la colonne dans l'export Ingress"
+      placeholder: "Orion Tokens"
+    validations:
+      required: true
+
+  - type: input
+    id: categorie
+    attributes:
+      label: "Catégorie affichée dans l'écran de stats du jeu"
+      placeholder: "Events"
+    validations:
+      required: true
+
+  - type: input
+    id: libelle-fr
+    attributes:
+      label: "Libellé français souhaité (si tu en as un)"
+    validations:
+      required: false
+
+  - type: textarea
+    id: seuils
+    attributes:
+      label: "Seuils de palier connus (bronze / argent / or / platine / onyx)"
+      description: "Uniquement si tu les connais de source sûre — sinon laisse vide."
+    validations:
+      required: false

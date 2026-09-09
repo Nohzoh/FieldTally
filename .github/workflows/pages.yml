@@ -1,0 +1,58 @@
+# Publication du site GitHub Pages (spec §7.3).
+#
+# Le site sert aussi de CDN pour docs/registry/counters.json, récupéré au
+# démarrage par toutes les installations de l'app (§3.1.4) — d'où la
+# validation bloquante avant tout déploiement.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'tool/validate_registry.py'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une seule publication à la fois ; on ne coupe pas un déploiement en cours.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Valide le registre & construit le site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Étape 1 du §7.3 : seul rempart contre une PR qui casserait la
+      # catégorisation des compteurs pour tous les utilisateurs d'un coup.
+      - name: Valide docs/registry/counters.json
+        run: python3 tool/validate_registry.py
+
+      - uses: actions/configure-pages@v5
+
+      - name: Build Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    name: Déploie
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

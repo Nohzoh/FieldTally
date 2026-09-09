@@ -1,0 +1,647 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-09",
+  "_readme": "Couche d'enrichissement des compteurs FieldTally (spec §3.1.2, §3.1.4, Annexe A). Ce fichier N'EST PAS la liste des compteurs supportés : le registre de l'app est dérivé des imports réels. Un compteur absent d'ici reste suivi normalement, affiché sous son libellé brut dans la catégorie 'other'. Ajouter un compteur = une PR sur ce seul fichier, sans toucher au code Dart.",
+  "categories": [
+    {
+      "key": "core",
+      "order": 0,
+      "label": {
+        "en": "Level & AP",
+        "fr": "Niveau & AP"
+      }
+    },
+    {
+      "key": "discovery",
+      "order": 1,
+      "label": {
+        "en": "Discovery",
+        "fr": "Découverte"
+      }
+    },
+    {
+      "key": "building",
+      "order": 2,
+      "label": {
+        "en": "Building",
+        "fr": "Construction"
+      }
+    },
+    {
+      "key": "resource_gathering",
+      "order": 3,
+      "label": {
+        "en": "Resource Gathering",
+        "fr": "Collecte de ressources"
+      }
+    },
+    {
+      "key": "streaks",
+      "order": 4,
+      "label": {
+        "en": "Streaks",
+        "fr": "Séries"
+      }
+    },
+    {
+      "key": "combat",
+      "order": 5,
+      "label": {
+        "en": "Combat",
+        "fr": "Combat"
+      }
+    },
+    {
+      "key": "defense",
+      "order": 6,
+      "label": {
+        "en": "Defense",
+        "fr": "Défense"
+      }
+    },
+    {
+      "key": "health",
+      "order": 7,
+      "label": {
+        "en": "Health",
+        "fr": "Santé"
+      }
+    },
+    {
+      "key": "missions",
+      "order": 8,
+      "label": {
+        "en": "Missions",
+        "fr": "Missions"
+      }
+    },
+    {
+      "key": "bounties",
+      "order": 9,
+      "label": {
+        "en": "Bounties",
+        "fr": "Primes"
+      }
+    },
+    {
+      "key": "events",
+      "order": 10,
+      "label": {
+        "en": "Events",
+        "fr": "Événements"
+      }
+    },
+    {
+      "key": "recursion",
+      "order": 11,
+      "label": {
+        "en": "Recursion",
+        "fr": "Récursion"
+      }
+    },
+    {
+      "key": "other",
+      "order": 12,
+      "label": {
+        "en": "Other",
+        "fr": "Autres"
+      }
+    }
+  ],
+  "counters": {
+    "level": {
+      "export_header": "Level",
+      "category": "core",
+      "order": 0,
+      "label": {
+        "en": "Level",
+        "fr": "Niveau"
+      },
+      "periodized": false
+    },
+    "lifetime_ap": {
+      "export_header": "Lifetime AP",
+      "category": "core",
+      "order": 1,
+      "label": {
+        "en": "Lifetime AP",
+        "fr": "AP total"
+      },
+      "periodized": false
+    },
+    "ap": {
+      "export_header": "Current AP",
+      "category": "core",
+      "order": 2,
+      "label": {
+        "en": "Current AP",
+        "fr": "AP actuel"
+      },
+      "periodized": false
+    },
+    "explorer": {
+      "export_header": "Unique Portals Visited",
+      "category": "discovery",
+      "order": 0,
+      "label": {
+        "en": "Unique Portals Visited",
+        "fr": "Portails uniques visités"
+      }
+    },
+    "drone_explorer": {
+      "export_header": "Unique Portals Drone Visited",
+      "category": "discovery",
+      "order": 1,
+      "label": {
+        "en": "Unique Portals Drone Visited",
+        "fr": "Portails uniques visités par drone"
+      }
+    },
+    "drone_distance": {
+      "export_header": "Furthest Drone Distance",
+      "category": "discovery",
+      "order": 2,
+      "label": {
+        "en": "Furthest Drone Distance",
+        "fr": "Distance maximale du drone"
+      }
+    },
+    "seer": {
+      "export_header": "Seer Points",
+      "category": "discovery",
+      "order": 3,
+      "label": {
+        "en": "Seer Points",
+        "fr": "Points Seer"
+      }
+    },
+    "collector": {
+      "export_header": "XM Collected",
+      "category": "discovery",
+      "order": 4,
+      "label": {
+        "en": "XM Collected",
+        "fr": "XM collecté"
+      }
+    },
+    "recon": {
+      "export_header": "OPR Agreements",
+      "category": "discovery",
+      "order": 5,
+      "label": {
+        "en": "OPR Agreements",
+        "fr": "Accords OPR"
+      }
+    },
+    "scout": {
+      "export_header": "Portal Scans Uploaded",
+      "category": "discovery",
+      "order": 6,
+      "label": {
+        "en": "Portal Scans Uploaded",
+        "fr": "Scans de portails envoyés"
+      }
+    },
+    "scout_controller": {
+      "export_header": "Uniques Scout Controlled",
+      "category": "discovery",
+      "order": 7,
+      "label": {
+        "en": "Uniques Scout Controlled",
+        "fr": "Portails uniques contrôlés (Scout)"
+      }
+    },
+    "builder": {
+      "export_header": "Resonators Deployed",
+      "category": "building",
+      "order": 0,
+      "label": {
+        "en": "Resonators Deployed",
+        "fr": "Résonateurs déployés"
+      }
+    },
+    "connector": {
+      "export_header": "Links Created",
+      "category": "building",
+      "order": 1,
+      "label": {
+        "en": "Links Created",
+        "fr": "Liens créés"
+      }
+    },
+    "mind_controller": {
+      "export_header": "Control Fields Created",
+      "category": "building",
+      "order": 2,
+      "label": {
+        "en": "Control Fields Created",
+        "fr": "Champs de contrôle créés"
+      }
+    },
+    "illuminator": {
+      "export_header": "Mind Units Captured",
+      "category": "building",
+      "order": 3,
+      "label": {
+        "en": "Mind Units Captured",
+        "fr": "Unités mentales capturées"
+      }
+    },
+    "binder": {
+      "export_header": "Longest Link Ever Created",
+      "category": "building",
+      "order": 4,
+      "label": {
+        "en": "Longest Link Ever Created",
+        "fr": "Lien le plus long créé"
+      }
+    },
+    "country_master": {
+      "export_header": "Largest Control Field",
+      "category": "building",
+      "order": 5,
+      "label": {
+        "en": "Largest Control Field",
+        "fr": "Plus grand champ de contrôle"
+      }
+    },
+    "recharger": {
+      "export_header": "XM Recharged",
+      "category": "building",
+      "order": 6,
+      "label": {
+        "en": "XM Recharged",
+        "fr": "XM rechargé"
+      }
+    },
+    "liberator": {
+      "export_header": "Portals Captured",
+      "category": "building",
+      "order": 7,
+      "label": {
+        "en": "Portals Captured",
+        "fr": "Portails capturés"
+      }
+    },
+    "pioneer": {
+      "export_header": "Unique Portals Captured",
+      "category": "building",
+      "order": 8,
+      "label": {
+        "en": "Unique Portals Captured",
+        "fr": "Portails uniques capturés"
+      }
+    },
+    "engineer": {
+      "export_header": "Mods Deployed",
+      "category": "building",
+      "order": 9,
+      "label": {
+        "en": "Mods Deployed",
+        "fr": "Mods déployés"
+      }
+    },
+    "hacker": {
+      "export_header": "Hacks",
+      "category": "resource_gathering",
+      "order": 0,
+      "label": {
+        "en": "Hacks",
+        "fr": "Hacks"
+      }
+    },
+    "maverick": {
+      "export_header": "Drone Hacks",
+      "category": "resource_gathering",
+      "order": 1,
+      "label": {
+        "en": "Drone Hacks",
+        "fr": "Hacks de drone"
+      }
+    },
+    "translator": {
+      "export_header": "Glyph Hack Points",
+      "category": "resource_gathering",
+      "order": 2,
+      "label": {
+        "en": "Glyph Hack Points",
+        "fr": "Points de hack glyphique"
+      }
+    },
+    "overclocker": {
+      "export_header": "Overclock Hack Points",
+      "category": "resource_gathering",
+      "order": 3,
+      "label": {
+        "en": "Overclock Hack Points",
+        "fr": "Points de hack Overclock"
+      }
+    },
+    "epoch": {
+      "export_header": "Completed Hackstreaks",
+      "category": "streaks",
+      "order": 0,
+      "label": {
+        "en": "Completed Hackstreaks",
+        "fr": "Séries de hacks complétées"
+      }
+    },
+    "sojourner": {
+      "export_header": "Longest Sojourner Streak",
+      "category": "streaks",
+      "order": 1,
+      "label": {
+        "en": "Longest Sojourner Streak",
+        "fr": "Plus longue série Sojourner"
+      }
+    },
+    "purifier": {
+      "export_header": "Resonators Destroyed",
+      "category": "combat",
+      "order": 0,
+      "label": {
+        "en": "Resonators Destroyed",
+        "fr": "Résonateurs détruits"
+      }
+    },
+    "neutralizer": {
+      "export_header": "Portals Neutralized",
+      "category": "combat",
+      "order": 1,
+      "label": {
+        "en": "Portals Neutralized",
+        "fr": "Portails neutralisés"
+      }
+    },
+    "disruptor": {
+      "export_header": "Enemy Links Destroyed",
+      "category": "combat",
+      "order": 2,
+      "label": {
+        "en": "Enemy Links Destroyed",
+        "fr": "Liens ennemis détruits"
+      }
+    },
+    "salvator": {
+      "export_header": "Enemy Fields Destroyed",
+      "category": "combat",
+      "order": 3,
+      "label": {
+        "en": "Enemy Fields Destroyed",
+        "fr": "Champs ennemis détruits"
+      }
+    },
+    "bb_combatant": {
+      "export_header": "Battle Beacon Combatant",
+      "category": "combat",
+      "order": 4,
+      "label": {
+        "en": "Battle Beacon Combatant",
+        "fr": "Combattant Battle Beacon"
+      }
+    },
+    "drone_sender": {
+      "export_header": "Drones Returned",
+      "category": "combat",
+      "order": 5,
+      "label": {
+        "en": "Drones Returned",
+        "fr": "Drones renvoyés"
+      }
+    },
+    "red_disruptor": {
+      "export_header": "Machina Links Destroyed",
+      "category": "combat",
+      "order": 6,
+      "label": {
+        "en": "Machina Links Destroyed",
+        "fr": "Liens Machina détruits"
+      }
+    },
+    "red_purifier": {
+      "export_header": "Machina Resonators Destroyed",
+      "category": "combat",
+      "order": 7,
+      "label": {
+        "en": "Machina Resonators Destroyed",
+        "fr": "Résonateurs Machina détruits"
+      }
+    },
+    "red_neutralizer": {
+      "export_header": "Machina Portals Neutralized",
+      "category": "combat",
+      "order": 8,
+      "label": {
+        "en": "Machina Portals Neutralized",
+        "fr": "Portails Machina neutralisés"
+      }
+    },
+    "reclaimer": {
+      "export_header": "Machina Portals Reclaimed",
+      "category": "combat",
+      "order": 9,
+      "label": {
+        "en": "Machina Portals Reclaimed",
+        "fr": "Portails Machina repris"
+      }
+    },
+    "guardian": {
+      "export_header": "Max Time Portal Held",
+      "category": "defense",
+      "order": 0,
+      "label": {
+        "en": "Max Time Portal Held",
+        "fr": "Durée max de détention d'un portail"
+      }
+    },
+    "smuggler": {
+      "export_header": "Max Time Link Maintained",
+      "category": "defense",
+      "order": 1,
+      "label": {
+        "en": "Max Time Link Maintained",
+        "fr": "Durée max de maintien d'un lien"
+      }
+    },
+    "link_master": {
+      "export_header": "Max Link Length x Days",
+      "category": "defense",
+      "order": 2,
+      "label": {
+        "en": "Max Link Length x Days",
+        "fr": "Longueur de lien max × jours"
+      }
+    },
+    "controller": {
+      "export_header": "Max Time Field Held",
+      "category": "defense",
+      "order": 3,
+      "label": {
+        "en": "Max Time Field Held",
+        "fr": "Durée max de détention d'un champ"
+      }
+    },
+    "field_master": {
+      "export_header": "Largest Field MUs x Days",
+      "category": "defense",
+      "order": 4,
+      "label": {
+        "en": "Largest Field MUs x Days",
+        "fr": "MU du plus grand champ × jours"
+      }
+    },
+    "drone_recalls": {
+      "export_header": "Forced Drone Recalls",
+      "category": "defense",
+      "order": 5,
+      "label": {
+        "en": "Forced Drone Recalls",
+        "fr": "Rappels forcés de drone"
+      }
+    },
+    "trekker": {
+      "export_header": "Distance Walked",
+      "category": "health",
+      "order": 0,
+      "label": {
+        "en": "Distance Walked",
+        "fr": "Distance parcourue à pied"
+      }
+    },
+    "crafter": {
+      "export_header": "Kinetic Capsules Completed",
+      "category": "health",
+      "order": 1,
+      "label": {
+        "en": "Kinetic Capsules Completed",
+        "fr": "Capsules cinétiques complétées"
+      }
+    },
+    "specops": {
+      "export_header": "Unique Missions Completed",
+      "category": "missions",
+      "order": 0,
+      "label": {
+        "en": "Unique Missions Completed",
+        "fr": "Missions uniques complétées"
+      }
+    },
+    "research_bounties": {
+      "export_header": "Research Bounties Completed",
+      "category": "bounties",
+      "order": 0,
+      "label": {
+        "en": "Research Bounties Completed",
+        "fr": "Primes de recherche complétées"
+      }
+    },
+    "research_days": {
+      "export_header": "Research Days Completed",
+      "category": "bounties",
+      "order": 1,
+      "label": {
+        "en": "Research Days Completed",
+        "fr": "Jours de recherche complétés"
+      }
+    },
+    "missionday": {
+      "export_header": "Mission Day(s) Attended",
+      "category": "events",
+      "order": 0,
+      "label": {
+        "en": "Mission Day(s) Attended",
+        "fr": "Mission Day(s) suivi(s)"
+      }
+    },
+    "nl_1331_meetups": {
+      "export_header": "NL-1331 Meetup(s) Attended",
+      "category": "events",
+      "order": 1,
+      "label": {
+        "en": "NL-1331 Meetup(s) Attended",
+        "fr": "Meetup(s) NL-1331 suivi(s)"
+      }
+    },
+    "ifs": {
+      "export_header": "First Saturday Events",
+      "category": "events",
+      "order": 2,
+      "label": {
+        "en": "First Saturday Events",
+        "fr": "Événements First Saturday"
+      }
+    },
+    "second_sunday": {
+      "export_header": "Second Sunday Events",
+      "category": "events",
+      "order": 3,
+      "label": {
+        "en": "Second Sunday Events",
+        "fr": "Événements Second Sunday"
+      }
+    },
+    "opr_live": {
+      "export_header": "OPR Live Events",
+      "category": "events",
+      "order": 4,
+      "label": {
+        "en": "OPR Live Events",
+        "fr": "Événements OPR Live"
+      }
+    },
+    "anomaly_unique_hacks": {
+      "export_header": "Anomaly Unique Hacks",
+      "category": "events",
+      "order": 5,
+      "label": {
+        "en": "Anomaly Unique Hacks",
+        "fr": "Hacks uniques d'anomalie"
+      }
+    },
+    "orion_tokens": {
+      "export_header": "Orion Tokens",
+      "category": "events",
+      "order": 6,
+      "label": {
+        "en": "Orion Tokens",
+        "fr": "Jetons Orion"
+      }
+    },
+    "orion_link_and_field_points": {
+      "export_header": "Orion Link And Field Points",
+      "category": "events",
+      "order": 7,
+      "label": {
+        "en": "Orion Link And Field Points",
+        "fr": "Points liens et champs Orion"
+      }
+    },
+    "apollo_tokens": {
+      "export_header": "Apollo Tokens",
+      "category": "events",
+      "order": 8,
+      "label": {
+        "en": "Apollo Tokens",
+        "fr": "Jetons Apollo"
+      }
+    },
+    "apollo_mod_battle_points": {
+      "export_header": "Apollo Mod Battle Points",
+      "category": "events",
+      "order": 9,
+      "label": {
+        "en": "Apollo Mod Battle Points",
+        "fr": "Points de bataille de mods Apollo"
+      }
+    },
+    "recursions": {
+      "export_header": "Recursions",
+      "category": "recursion",
+      "order": 0,
+      "label": {
+        "en": "Recursions",
+        "fr": "Récursions"
+      }
+    }
+  }
+}
