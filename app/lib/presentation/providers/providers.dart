@@ -4,6 +4,7 @@ import '../../data/db/database.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
 import '../../data/registry/counter_registry_loader.dart';
 import '../../data/repositories/drift_snapshot_repository.dart';
+import '../../data/sharing/incoming_share.dart';
 import '../../domain/counter_list.dart';
 import '../../domain/guards/import_guards.dart';
 import '../../domain/models/counter_registry.dart';
@@ -23,6 +24,12 @@ final snapshotRepositoryProvider = Provider<SnapshotRepository>(
 );
 
 final parserProvider = Provider((ref) => const IngressTsvParser());
+
+/// Text shared into the app from Ingress (§3.1). Overridden in tests, where no
+/// real Android share can be produced.
+final incomingShareProvider = Provider<IncomingShareSource>(
+  (ref) => const PluginIncomingShareSource(),
+);
 
 final importGuardsProvider = Provider((ref) => const ImportGuards());
 
