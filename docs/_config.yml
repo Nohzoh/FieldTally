@@ -1,18 +1,17 @@
-# Site GitHub Pages de FieldTally (spec §7.3, §9).
+# FieldTally GitHub Pages site (spec §7.3, §9).
 #
-# Volontairement minimal pour cette première itération : le thème de
-# documentation type just-the-docs proposé au §7.3 et les vraies pages
-# (Installer / FAQ / Confidentialité / Roadmap) arrivent avec le contenu.
+# Deliberately minimal for now: the documentation theme suggested in §7.3 and
+# the real pages (Install / FAQ / Privacy / Roadmap) come with the content.
 title: FieldTally
 description: >-
-  Suivi de statistiques Ingress, mobile-first et 100 % local.
-  Outil non-officiel, sans lien avec Niantic.
-lang: fr
+  Ingress stats tracking, mobile-first and fully local.
+  An unofficial tool, not affiliated with Niantic.
+lang: en
 theme: jekyll-theme-minimal
 
-# La spec (§3.1.4) impose une URL stable pour le registre des compteurs :
+# The spec (§3.1.4) requires a stable URL for the counter registry:
 #   https://nohzoh.github.io/FieldTally/registry/counters.json
-# Le fichier n'a pas de front matter : Jekyll le recopie tel quel.
+# The file carries no front matter, so Jekyll copies it verbatim.
 include:
   - registry
 

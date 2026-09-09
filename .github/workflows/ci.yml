@@ -1,5 +1,5 @@
-# Build & tests (spec §7.1) — volontairement minimaliste à ce stade, mais
-# complet sur les trois portes qui doivent bloquer une PR : analyze, test, build.
+# Build and tests (spec §7.1). Deliberately lean, but strict on the gates that
+# should block a pull request: consistency, analyze, tests, build.
 name: CI
 
 on:
@@ -22,11 +22,11 @@ env:
 
 jobs:
   registry:
-    name: Valide le registre des compteurs
+    name: Validate the counter registry
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Valide docs/registry/counters.json
+      - name: Validate docs/registry/counters.json
         run: python3 tool/validate_registry.py
 
   build:
@@ -50,28 +50,28 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
-      - name: Installe les dépendances
+      - name: Install dependencies
         run: flutter pub get
 
-      # Le seed embarqué est généré, jamais édité à la main (§3.1.4, §7.4).
-      # En CI on vérifie seulement qu'il est à jour : une divergence est une
-      # erreur de contribution, pas quelque chose à corriger silencieusement.
-      - name: Vérifie que le seed du registre est synchronisé
+      # The bundled seed is generated, never hand-edited (§3.1.4, §7.4). CI only
+      # checks that it is current: a mismatch is a contribution mistake, not
+      # something to silently fix.
+      - name: Check the registry seed is in sync
         run: dart run tool/sync_registry_seed.dart --check
 
-      # Le code généré par Drift est versionné pour que le repo se compile sans
-      # étape de génération. En contrepartie, il peut diverger de sa source :
-      # on le régénère et on exige qu'il n'ait pas bougé.
-      - name: Vérifie que le code généré est à jour
+      # Drift's generated code is committed so the repo builds without a
+      # generation step. The trade-off is that it can drift from its source, so
+      # regenerate it and require that nothing moved.
+      - name: Check generated code is up to date
         run: |
           dart run build_runner build
           git diff --exit-code
 
-      # Dependabot résout les dépendances sans les contraintes du SDK Flutter :
-      # il peut donc committer un lock que `flutter pub get` ne sait pas
-      # produire. Comme pub réécrit un lock incohérent au lieu d'échouer, la
-      # dérive passerait inaperçue sans cette vérification explicite.
-      - name: Vérifie que pubspec.lock est synchronisé
+      # Dependabot resolves dependencies without the Flutter SDK constraints, so
+      # it can commit a lock file `flutter pub get` cannot reproduce. Since pub
+      # rewrites an inconsistent lock instead of failing, the drift would go
+      # unnoticed without this explicit check.
+      - name: Check pubspec.lock is in sync
         run: git diff --exit-code pubspec.lock
 
       - name: Analyze
@@ -80,7 +80,7 @@ jobs:
       - name: Tests
         run: flutter test --coverage
 
-      - name: Publie la couverture
+      - name: Upload coverage
         uses: actions/upload-artifact@v7
         if: always()
         with:
@@ -91,7 +91,7 @@ jobs:
       - name: Build APK (debug)
         run: flutter build apk --debug
 
-      - name: Publie l'APK
+      - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
           name: fieldtally-debug-apk

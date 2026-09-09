@@ -2,27 +2,26 @@ import '../../domain/models/stat_snapshot.dart';
 import '../../domain/models/time_span.dart';
 import 'parse_exception.dart';
 
-/// Parser de l'export de stats d'Ingress Prime (§3.1.1).
+/// Parser for the Ingress Prime stats export (§3.1.1).
 ///
-/// L'export est un texte tabulé avec une ligne d'en-têtes explicite. Le point
-/// central de ce parser, et la raison pour laquelle le format est jugé
-/// exploitable malgré son absence de documentation officielle :
-/// **chaque colonne est retrouvée par son nom, jamais par sa position.**
-/// Un mapping positionnel casserait dès que Niantic ajoute, retire ou
-/// réordonne une colonne — ce qui arrive à chaque saison d'anomalie.
+/// The export is tab separated text with an explicit header row. The central
+/// design choice here — and the reason the format is workable at all despite
+/// being undocumented — is that **every column is found by name, never by
+/// position**. Positional mapping would break the moment Niantic adds, removes
+/// or reorders a column, which happens every anomaly season.
 ///
-/// Corollaire assumé : tout ce qui n'est pas une colonne de métadonnée connue
-/// est un compteur, y compris un nom jamais vu. C'est le §3.1.2 : le registre
-/// est piloté par les données, pas par une liste codée en dur.
+/// The deliberate consequence: anything that is not a known metadata column is
+/// a counter, including a name never seen before. That is §3.1.2 — the
+/// registry is driven by the data, not by a hard coded list.
 class IngressTsvParser {
   const IngressTsvParser();
 
-  /// Noms acceptés pour chaque colonne de métadonnée.
+  /// Accepted names for each metadata column.
   ///
-  /// Ingress suffixe certains en-têtes du format attendu (`Date (yyyy-mm-dd)`).
-  /// On compare sur une forme normalisée — minuscules, parenthèses retirées —
-  /// pour ne pas casser si ce suffixe change ou disparaît, sans pour autant
-  /// tomber dans une reconnaissance approximative.
+  /// Ingress suffixes some headers with the expected format
+  /// (`Date (yyyy-mm-dd)`). Comparison happens on a normalised form —
+  /// lowercased, parenthesised part removed — so a change to that suffix does
+  /// not break parsing, without resorting to fuzzy matching.
   static const _timeSpanNames = {'time span'};
   static const _agentNameNames = {'agent name'};
   static const _factionNames = {'agent faction'};
@@ -38,22 +37,17 @@ class IngressTsvParser {
     ..._timeNames,
   };
 
-  /// Parse un export complet et renvoie un relevé par ligne de données.
+  /// Parses a full export and returns one snapshot per data row.
   ///
-  /// Un export Ingress n'en contient qu'une, mais rien n'impose cette limite
-  /// et la traiter comme un cas général coûte moins cher que de la supposer.
+  /// An Ingress export only ever holds one, but nothing enforces that and
+  /// handling the general case is cheaper than assuming it.
   List<StatSnapshot> parse(String raw) {
     final lines = _splitLines(raw);
     if (lines.isEmpty) {
-      throw const ExportParseException(
-        "Le texte collé est vide — rien à importer.",
-      );
+      throw const ExportParseException(ParseErrorKind.emptyText);
     }
     if (lines.length < 2) {
-      throw const ExportParseException(
-        "L'export ne contient qu'une ligne d'en-têtes, sans aucune valeur. "
-        "Vérifie que tu as bien copié le texte entier depuis Ingress.",
-      );
+      throw const ExportParseException(ParseErrorKind.headerOnly);
     }
 
     final headers = _parseHeaders(lines.first);
@@ -62,21 +56,21 @@ class IngressTsvParser {
     ];
   }
 
-  /// Raccourci pour le cas courant : un export, un relevé.
+  /// Shortcut for the common case: one export, one snapshot.
   StatSnapshot parseSingle(String raw) {
     final snapshots = parse(raw);
     if (snapshots.length > 1) {
       throw ExportParseException(
-        "L'export contient ${snapshots.length} relevés alors qu'un seul est "
-        "attendu ici.",
+        ParseErrorKind.tooManyRows,
+        actual: snapshots.length,
       );
     }
     return snapshots.first;
   }
 
   List<String> _splitLines(String raw) {
-    // On retire le BOM éventuel : un copier-coller depuis certaines apps le
-    // laisse traîner, et il se collerait au premier en-tête.
+    // Strip a leading BOM: pasting from some apps leaves one behind, and it
+    // would stick to the first header.
     final cleaned = raw.replaceFirst('﻿', '');
     return cleaned
         .split(RegExp(r'\r\n|\r|\n'))
@@ -88,29 +82,24 @@ class IngressTsvParser {
     final headers = line.split('\t').map((h) => h.trim()).toList();
 
     if (headers.length < 2) {
-      throw const ExportParseException(
-        "Ce texte ne ressemble pas à un export Ingress : aucune colonne tabulée "
-        "n'a été trouvée. Utilise le bouton de partage d'Ingress plutôt qu'une "
-        "copie manuelle depuis l'écran.",
-      );
+      throw const ExportParseException(ParseErrorKind.notTabSeparated);
     }
 
     final blank = headers.indexWhere((h) => h.isEmpty);
     if (blank >= 0) {
       throw ExportParseException(
-        "L'export contient une colonne sans nom (position ${blank + 1}), ce qui "
-        "rend l'association des valeurs ambiguë.",
+        ParseErrorKind.blankHeader,
+        position: blank + 1,
       );
     }
 
-    // Des en-têtes en doublon rendraient le mapping par nom indéterminé : on
-    // ne peut pas choisir à la place de l'utilisateur quelle colonne gagne.
+    // Duplicate headers would make name based mapping undecidable: we cannot
+    // pick a winner on the user's behalf.
     final seen = <String>{};
     for (final header in headers) {
       if (!seen.add(header)) {
         throw ExportParseException(
-          "L'export contient deux colonnes nommées « $header ». Impossible de "
-          "savoir laquelle utiliser.",
+          ParseErrorKind.duplicateHeader,
           column: header,
         );
       }
@@ -124,8 +113,10 @@ class IngressTsvParser {
 
     if (values.length != headers.length) {
       throw ExportParseException(
-        "Ligne $lineNumber : ${values.length} valeurs pour ${headers.length} "
-        "colonnes. Le texte a probablement été tronqué à la copie.",
+        ParseErrorKind.columnCountMismatch,
+        position: lineNumber,
+        actual: values.length,
+        expected: headers.length,
       );
     }
 
@@ -140,9 +131,9 @@ class IngressTsvParser {
     final time = _require(byName, _timeNames, 'Time');
     final level = _require(byName, _levelNames, 'Level');
 
-    // Tout ce qui n'est pas une métadonnée est un compteur — y compris `Level`,
-    // qui sert à la fois de métadonnée du relevé (§3.1.1) et de valeur suivie
-    // dans le temps (Annexe A).
+    // Everything that is not metadata is a counter — including `Level`, which
+    // is both snapshot metadata (§3.1.1) and a value tracked over time
+    // (Appendix A).
     final counters = <String, int>{};
     for (var i = 0; i < headers.length; i++) {
       final header = headers[i];
@@ -160,8 +151,8 @@ class IngressTsvParser {
     );
   }
 
-  /// Minuscules, espaces normalisés, et suffixe de format entre parenthèses
-  /// retiré : `Date (yyyy-mm-dd)` devient `date`.
+  /// Lowercase, collapsed whitespace, parenthesised format hint removed:
+  /// `Date (yyyy-mm-dd)` becomes `date`.
   String _normalize(String header) => header
       .replaceAll(RegExp(r'\([^)]*\)'), '')
       .trim()
@@ -173,20 +164,15 @@ class IngressTsvParser {
       final value = byName[name];
       if (value != null) return value;
     }
-    throw ExportParseException(
-      "La colonne « $label » est absente de l'export. Le format d'Ingress a "
-      "peut-être changé — signale-le avec un extrait anonymisé.",
-      column: label,
-    );
+    throw ExportParseException(ParseErrorKind.missingColumn, column: label);
   }
 
-  /// Séparateurs de milliers rencontrés selon la langue et la région du
-  /// téléphone (§6) : espace fine ou insécable, virgule, point, apostrophe.
+  /// Thousands separators vary with the phone's language and region (§6):
+  /// thin or non breaking space, comma, period, apostrophe.
   ///
-  /// Les compteurs Ingress sont tous entiers, donc aucun de ces caractères ne
-  /// peut être une virgule décimale : les retirer est sans ambiguïté. Ce qui
-  /// reste doit être exclusivement des chiffres, sans quoi on refuse plutôt
-  /// que de deviner.
+  /// Ingress counters are all integers, so none of these characters can be a
+  /// decimal mark — removing them is unambiguous. Whatever remains must be
+  /// digits only; anything else is rejected rather than guessed.
   static final _separators = RegExp(r"[\s,.  ']");
   static final _integer = RegExp(r'^-?\d+$');
 
@@ -195,14 +181,14 @@ class IngressTsvParser {
 
     if (stripped.isEmpty) {
       throw ExportParseException(
-        "La colonne « $column » est vide.",
+        ParseErrorKind.emptyValue,
         column: column,
         rawValue: raw,
       );
     }
     if (!_integer.hasMatch(stripped)) {
       throw ExportParseException(
-        "La colonne « $column » ne contient pas un nombre entier.",
+        ParseErrorKind.notAnInteger,
         column: column,
         rawValue: raw,
       );
@@ -210,10 +196,10 @@ class IngressTsvParser {
 
     final parsed = int.tryParse(stripped);
     if (parsed == null) {
-      // Dépassement de capacité : un entier Dart natif tient sur 64 bits, donc
-      // ça suppose une valeur absurde, pas un vrai compteur.
+      // Overflow: a native Dart int is 64 bits, so this means an absurd value
+      // rather than a real counter.
       throw ExportParseException(
-        "La valeur de « $column » est hors des limites acceptables.",
+        ParseErrorKind.outOfRange,
         column: column,
         rawValue: raw,
       );
@@ -228,39 +214,40 @@ class IngressTsvParser {
     final dateMatch = _datePattern.firstMatch(date);
     if (dateMatch == null) {
       throw ExportParseException(
-        "La date « $date » n'est pas au format attendu (aaaa-mm-jj).",
+        ParseErrorKind.invalidDate,
         column: 'Date',
         rawValue: date,
       );
     }
 
-    // L'heure est optionnelle sur le chemin CSV de migration (Annexe B), où
-    // elle vaut minuit par défaut. On applique la même tolérance ici.
+    // Time is optional on the migration CSV path (Appendix B), where it
+    // defaults to midnight. The same tolerance applies here.
     final timeMatch = time.isEmpty ? null : _timePattern.firstMatch(time);
     if (time.isNotEmpty && timeMatch == null) {
       throw ExportParseException(
-        "L'heure « $time » n'est pas au format attendu (hh:mm:ss).",
+        ParseErrorKind.invalidTime,
         column: 'Time',
         rawValue: time,
       );
     }
 
+    final month = int.parse(dateMatch.group(2)!);
+    final day = int.parse(dateMatch.group(3)!);
+
     final parsed = DateTime(
       int.parse(dateMatch.group(1)!),
-      int.parse(dateMatch.group(2)!),
-      int.parse(dateMatch.group(3)!),
+      month,
+      day,
       timeMatch == null ? 0 : int.parse(timeMatch.group(1)!),
       timeMatch == null ? 0 : int.parse(timeMatch.group(2)!),
       timeMatch?.group(3) == null ? 0 : int.parse(timeMatch!.group(3)!),
     );
 
-    // DateTime normalise silencieusement les dates impossibles (le 32 janvier
-    // devient le 1er février). On refuse plutôt que d'enregistrer une date que
-    // l'utilisateur n'a pas saisie.
-    if (parsed.month != int.parse(dateMatch.group(2)!) ||
-        parsed.day != int.parse(dateMatch.group(3)!)) {
+    // DateTime silently normalises impossible dates (January 32nd becomes
+    // February 1st). Reject rather than store a date the user never entered.
+    if (parsed.month != month || parsed.day != day) {
       throw ExportParseException(
-        "La date « $date » n'existe pas.",
+        ParseErrorKind.nonExistentDate,
         column: 'Date',
         rawValue: date,
       );

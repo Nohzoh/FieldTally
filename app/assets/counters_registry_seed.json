@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_at": "2026-09-09",
-  "_readme": "Couche d'enrichissement des compteurs FieldTally (spec §3.1.2, §3.1.4, Annexe A). Ce fichier N'EST PAS la liste des compteurs supportés : le registre de l'app est dérivé des imports réels. Un compteur absent d'ici reste suivi normalement, affiché sous son libellé brut dans la catégorie 'other'. Ajouter un compteur = une PR sur ce seul fichier, sans toucher au code Dart.",
+  "_readme": "FieldTally counter enrichment layer (spec §3.1.2, §3.1.4). This is NOT the list of supported counters: the app's registry is derived from actual imports. A counter missing from here is still tracked normally, shown under its raw label in the 'other' category. Adding a counter means one pull request on this single file, with no Dart change.",
   "categories": [
     {
       "key": "core",

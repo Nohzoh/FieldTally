@@ -10,21 +10,30 @@ const weekPath = 'test/fixtures/sample_export_week.tsv';
 
 String fixture(String path) => File(path).readAsStringSync();
 
-/// Reconstruit un export à partir d'en-têtes et de valeurs.
+/// Rebuilds an export from headers and values.
 String buildExport(List<String> headers, List<String> values) =>
     '${headers.join('\t')}\n${values.join('\t')}\n';
 
-/// Découpe une fixture en (en-têtes, valeurs).
+/// Splits a fixture into (headers, values).
 (List<String>, List<String>) split(String raw) {
   final lines = raw.trim().split('\n');
   return (lines[0].split('\t'), lines[1].split('\t'));
 }
 
+/// Matches an exception of the given kind, optionally on a given column.
+Matcher throwsParseError(ParseErrorKind kind, {String? column}) {
+  var matcher = isA<ExportParseException>().having((e) => e.kind, 'kind', kind);
+  if (column != null) {
+    matcher = matcher.having((e) => e.column, 'column', column);
+  }
+  return throwsA(matcher);
+}
+
 void main() {
   const parser = IngressTsvParser();
 
-  group('export ALL TIME réel', () {
-    test('extrait les métadonnées du relevé', () {
+  group('real ALL TIME export', () {
+    test('extracts snapshot metadata', () {
       final snapshot = parser.parseSingle(fixture(allTimePath));
 
       expect(snapshot.timeSpan, TimeSpan.allTime);
@@ -34,11 +43,11 @@ void main() {
       expect(snapshot.recordedAt, DateTime(2026, 1, 15, 13, 7, 39));
     });
 
-    test('extrait les 59 compteurs', () {
+    test('extracts all 59 counters', () {
       final snapshot = parser.parseSingle(fixture(allTimePath));
 
-      // 64 colonnes au total, dont 5 de métadonnées pures. `Level` est compté
-      // comme compteur : il est suivi dans le temps (Annexe A).
+      // 64 columns in total, 5 of which are pure metadata. `Level` counts as a
+      // counter: it is tracked over time (Appendix A).
       expect(snapshot.counters, hasLength(59));
       expect(snapshot.counters['Lifetime AP'], 101542335);
       expect(snapshot.counters['Unique Portals Visited'], 9756);
@@ -46,29 +55,29 @@ void main() {
       expect(snapshot.counters['Level'], 9);
     });
 
-    test('conserve les compteurs à zéro plutôt que de les omettre', () {
+    test('keeps zero valued counters rather than dropping them', () {
       final snapshot = parser.parseSingle(fixture(allTimePath));
 
-      // Un zéro est une information : « jamais fait », pas « inconnu ».
+      // A zero is information: "never done", not "unknown".
       expect(snapshot.counters['OPR Live Events'], 0);
       expect(snapshot.counters.containsKey('OPR Live Events'), isTrue);
     });
   });
 
-  group('export WEEK réel', () {
-    test('expose la période déclarée sans la corriger', () {
-      // Le parser ne juge pas : il rapporte fidèlement. C'est le garde-fou
-      // (§3.1.3) qui décide de bloquer.
+  group('real WEEK export', () {
+    test('reports the declared period without correcting it', () {
+      // The parser does not judge, it reports faithfully. Blocking is the
+      // guards' job (§3.1.3).
       expect(parser.parseSingle(fixture(weekPath)).timeSpan, TimeSpan.week);
     });
   });
 
-  group('mapping par nom d\'en-tête, jamais par position (§3.1.1)', () {
-    test('un export aux colonnes réordonnées donne le même résultat', () {
+  group('mapping by header name, never by position (§3.1.1)', () {
+    test('an export with reordered columns yields the same result', () {
       final (headers, values) = split(fixture(allTimePath));
 
-      // On inverse complètement l'ordre des colonnes : un parser positionnel
-      // produirait n'importe quoi, celui-ci doit être insensible.
+      // Fully reverse the column order: a positional parser would produce
+      // nonsense, this one must be indifferent.
       final indices = List.generate(headers.length, (i) => i).reversed.toList();
       final shuffled = buildExport(
         [for (final i in indices) headers[i]],
@@ -84,7 +93,7 @@ void main() {
       expect(reordered.counters, equals(original.counters));
     });
 
-    test('une colonne inconnue devient un compteur suivi (§3.1.2)', () {
+    test('an unknown column becomes a tracked counter (§3.1.2)', () {
       final (headers, values) = split(fixture(allTimePath));
       final raw = buildExport(
         [...headers, 'Zeta Anomaly Tokens'],
@@ -93,13 +102,13 @@ void main() {
 
       final snapshot = parser.parseSingle(raw);
 
-      // Aucune liste codée en dur : un compteur inédit est suivi dès sa
-      // première apparition, sans attendre une mise à jour de l'app.
+      // No hard coded list: a brand new counter is tracked from its first
+      // appearance, without waiting for an app update.
       expect(snapshot.counters['Zeta Anomaly Tokens'], 4242);
       expect(snapshot.counters, hasLength(60));
     });
 
-    test('la disparition d\'un compteur ne casse pas le parsing', () {
+    test('a counter disappearing does not break parsing', () {
       final (headers, values) = split(fixture(allTimePath));
       final index = headers.indexOf('Orion Tokens');
       headers.removeAt(index);
@@ -112,7 +121,7 @@ void main() {
       expect(snapshot.counters['Apollo Tokens'], 12802);
     });
 
-    test('tolère un suffixe de format changeant sur Date et Time', () {
+    test('tolerates a changing format hint on Date and Time', () {
       final (headers, values) = split(fixture(allTimePath));
       headers[headers.indexOf('Date (yyyy-mm-dd)')] = 'Date';
       headers[headers.indexOf('Time (hh:mm:ss)')] = 'Time';
@@ -123,14 +132,14 @@ void main() {
     });
   });
 
-  group('formats numériques locaux (§6)', () {
+  group('locale specific number formats (§6)', () {
     for (final entry in {
-      'espace fine': '101 542 335',
-      'virgule anglo-saxonne': '101,542,335',
-      'point allemand': '101.542.335',
-      'apostrophe suisse': "101'542'335",
+      'thin space': '101 542 335',
+      'anglo-saxon comma': '101,542,335',
+      'german period': '101.542.335',
+      'swiss apostrophe': "101'542'335",
     }.entries) {
-      test('accepte un séparateur de milliers : ${entry.key}', () {
+      test('accepts a thousands separator: ${entry.key}', () {
         final (headers, values) = split(fixture(allTimePath));
         values[headers.indexOf('Lifetime AP')] = entry.value;
 
@@ -141,27 +150,27 @@ void main() {
     }
   });
 
-  group('échecs propres (§3.1)', () {
-    test('texte vide', () {
-      expect(() => parser.parse(''), throwsA(isA<ExportParseException>()));
+  group('clean failures (§3.1)', () {
+    test('empty text', () {
+      expect(() => parser.parse(''), throwsParseError(ParseErrorKind.emptyText));
     });
 
-    test('en-têtes sans ligne de valeurs', () {
+    test('headers without a value row', () {
       final (headers, _) = split(fixture(allTimePath));
       expect(
         () => parser.parse('${headers.join('\t')}\n'),
-        throwsA(isA<ExportParseException>()),
+        throwsParseError(ParseErrorKind.headerOnly),
       );
     });
 
-    test('texte non tabulé', () {
+    test('text that is not tab separated', () {
       expect(
-        () => parser.parse('bonjour\nceci n\'est pas un export'),
-        throwsA(isA<ExportParseException>()),
+        () => parser.parse('hello\nthis is not an export'),
+        throwsParseError(ParseErrorKind.notTabSeparated),
       );
     });
 
-    test('colonne de métadonnée absente', () {
+    test('missing metadata column, reported by name', () {
       final (headers, values) = split(fixture(allTimePath));
       final index = headers.indexOf('Agent Name');
       headers.removeAt(index);
@@ -169,92 +178,100 @@ void main() {
 
       expect(
         () => parser.parseSingle(buildExport(headers, values)),
-        throwsA(
-          isA<ExportParseException>()
-              .having((e) => e.column, 'column', 'Agent Name'),
-        ),
+        throwsParseError(ParseErrorKind.missingColumn, column: 'Agent Name'),
       );
     });
 
-    test('en-têtes en doublon', () {
+    test('duplicate headers', () {
       final raw = buildExport(
-        ['Time Span', 'Agent Name', 'Agent Faction', 'Date', 'Time', 'Level', 'Hacks', 'Hacks'],
-        ['ALL TIME', 'AgentDemo', 'Enlightened', '2026-01-15', '13:07:39', '9', '1', '2'],
+        [
+          'Time Span',
+          'Agent Name',
+          'Agent Faction',
+          'Date',
+          'Time',
+          'Level',
+          'Hacks',
+          'Hacks',
+        ],
+        [
+          'ALL TIME',
+          'AgentDemo',
+          'Enlightened',
+          '2026-01-15',
+          '13:07:39',
+          '9',
+          '1',
+          '2',
+        ],
       );
 
       expect(
         () => parser.parseSingle(raw),
-        throwsA(isA<ExportParseException>().having(
-          (e) => e.toString(),
-          'message',
-          contains('deux colonnes'),
-        )),
+        throwsParseError(ParseErrorKind.duplicateHeader, column: 'Hacks'),
       );
     });
 
-    test('nombre de valeurs incohérent avec les en-têtes', () {
+    test('value count inconsistent with headers', () {
       final (headers, values) = split(fixture(allTimePath));
       values.removeLast();
 
       expect(
         () => parser.parseSingle(buildExport(headers, values)),
-        throwsA(isA<ExportParseException>()),
+        throwsParseError(ParseErrorKind.columnCountMismatch),
       );
     });
 
-    test('valeur non numérique, signalée avec sa colonne et sa valeur brute', () {
+    test('non numeric value, reported with its column and raw value', () {
       final (headers, values) = split(fixture(allTimePath));
-      values[headers.indexOf('Hacks')] = 'beaucoup';
+      values[headers.indexOf('Hacks')] = 'lots';
 
       expect(
         () => parser.parseSingle(buildExport(headers, values)),
         throwsA(
           isA<ExportParseException>()
+              .having((e) => e.kind, 'kind', ParseErrorKind.notAnInteger)
               .having((e) => e.column, 'column', 'Hacks')
-              .having((e) => e.rawValue, 'rawValue', 'beaucoup'),
+              .having((e) => e.rawValue, 'rawValue', 'lots'),
         ),
       );
     });
 
-    test('date inexistante', () {
+    test('non existent date', () {
       final (headers, values) = split(fixture(allTimePath));
       values[headers.indexOf('Date (yyyy-mm-dd)')] = '2026-02-30';
 
       expect(
         () => parser.parseSingle(buildExport(headers, values)),
-        throwsA(isA<ExportParseException>()
-            .having((e) => e.column, 'column', 'Date')),
+        throwsParseError(ParseErrorKind.nonExistentDate, column: 'Date'),
       );
     });
 
-    test('rien n\'est enregistré à moitié en cas d\'erreur', () {
+    test('nothing is half stored when a value fails', () {
       final (headers, values) = split(fixture(allTimePath));
       values[headers.indexOf('Hacks')] = '';
 
-      // Le parser lève plutôt que de renvoyer un relevé partiel : mieux vaut
-      // un échec visible qu'un historique faussé en silence.
+      // The parser throws rather than returning a partial snapshot: a visible
+      // failure beats a silently skewed history.
       expect(
         () => parser.parseSingle(buildExport(headers, values)),
-        throwsA(isA<ExportParseException>()),
+        throwsParseError(ParseErrorKind.emptyValue, column: 'Hacks'),
       );
     });
   });
 
-  group('robustesse du copier-coller', () {
-    test('supporte les fins de ligne Windows et un BOM', () {
+  group('paste robustness', () {
+    test('handles Windows line endings and a BOM', () {
       final raw = '﻿${fixture(allTimePath).replaceAll('\n', '\r\n')}';
 
       expect(parser.parseSingle(raw).agentName, 'AgentDemo');
     });
 
-    test('ignore les lignes vides en fin de texte', () {
-      expect(
-        parser.parseSingle('${fixture(allTimePath)}\n\n  \n').level,
-        9,
-      );
+    test('ignores trailing blank lines', () {
+      expect(parser.parseSingle('${fixture(allTimePath)}\n\n  \n').level, 9);
     });
 
-    test('l\'heure est optionnelle et vaut minuit par défaut (Annexe B)', () {
+    test('time is optional and defaults to midnight (Appendix B)', () {
       final (headers, values) = split(fixture(allTimePath));
       values[headers.indexOf('Time (hh:mm:ss)')] = '';
 

@@ -1,35 +1,35 @@
 #!/usr/bin/env bash
-# Wrapper `gh` scopé au projet FieldTally.
+# Project-scoped `gh` wrapper for FieldTally.
 #
-# Charge le PAT fine-grained dédié au repo depuis .secrets/gh_token (non
-# versionné) dans GH_TOKEN, puis délègue au vrai `gh`. GH_TOKEN a priorité sur
-# l'authentification stockée dans le trousseau, donc l'identité du compte perso
-# n'est jamais utilisée ici — et on ne fait JAMAIS `gh auth login`, qui
-# basculerait le compte actif globalement.
+# Loads the repo's dedicated fine-grained PAT from .secrets/gh_token (never
+# committed) into GH_TOKEN, then delegates to the real `gh`. GH_TOKEN takes
+# precedence over the credential stored in the keyring, so the personal account
+# identity is never used here — and we NEVER run `gh auth login`, which would
+# switch the active account globally.
 #
-# Usage :  ./scripts/gh repo view
-#          ./scripts/gh auth status
+# Usage:  ./scripts/gh repo view
+#         ./scripts/gh auth status
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 token_file="$repo_root/.secrets/gh_token"
 
 if [[ ! -f "$token_file" ]]; then
-  echo "Token introuvable : $token_file" >&2
-  echo "Crée un PAT fine-grained pour Nohzoh/FieldTally et écris-le dans ce fichier." >&2
+  echo "Token not found: $token_file" >&2
+  echo "Create a fine-grained PAT for Nohzoh/FieldTally and write it there." >&2
   exit 1
 fi
 
-# Tolère un fichier écrit avec un retour à la ligne ou des espaces parasites.
+# Tolerate a file written with a trailing newline or stray whitespace.
 GH_TOKEN="$(tr -d '[:space:]' < "$token_file")"
 if [[ -z "$GH_TOKEN" ]]; then
-  echo "Token vide : $token_file" >&2
+  echo "Empty token: $token_file" >&2
   exit 1
 fi
 export GH_TOKEN
 
-# Neutralise les autres sources d'auth pour être sûr de ne pas retomber sur le
-# compte perso si le token est refusé.
+# Neutralise the other auth sources so a rejected token cannot silently fall
+# back to the personal account.
 unset GITHUB_TOKEN GH_ENTERPRISE_TOKEN GITHUB_ENTERPRISE_TOKEN
 
 exec gh "$@"

@@ -5,41 +5,41 @@ import 'package:intl/intl.dart';
 
 import '../../core/router.dart';
 import '../../domain/repositories/snapshot_repository.dart';
+import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
-/// Liste des relevés enregistrés.
+/// List of saved snapshots.
 ///
-/// Ce n'est **pas** le tableau de bord du §3.3 : celui-ci viendra remplacer
-/// cet écran, avec ses cartes épinglées et ses sparklines. En attendant, il
-/// faut bien un endroit d'où ajouter un relevé et vérifier ce qui a été
-/// enregistré.
+/// This is **not** the dashboard of §3.3: that one will replace this screen,
+/// with its pinned cards and sparklines. In the meantime there has to be
+/// somewhere to add a snapshot from and to check what was saved.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final snapshots = ref.watch(snapshotsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('FieldTally')),
+      appBar: AppBar(title: Text(l10n.appTitle)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go(Routes.addSnapshot),
         icon: const Icon(Icons.add),
-        label: const Text('Ajouter un relevé'),
+        label: Text(l10n.addSnapshotAction),
       ),
       body: snapshots.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => _Message(
+        error: (error, stackTrace) => _Message(
           icon: Icons.error_outline,
-          title: 'Impossible de lire l\'historique',
+          title: l10n.homeLoadError,
           detail: '$error',
         ),
         data: (list) => list.isEmpty
-            ? const _Message(
+            ? _Message(
                 icon: Icons.query_stats,
-                title: 'Aucun relevé pour l\'instant',
-                detail: 'Partage tes stats depuis Ingress, ou colle le texte '
-                    'exporté pour créer ton premier relevé.',
+                title: l10n.homeEmptyTitle,
+                detail: l10n.homeEmptyDetail,
               )
             : _SnapshotList(snapshots: list),
       ),
@@ -54,7 +54,9 @@ class _SnapshotList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final format = DateFormat('d MMMM y \'à\' HH:mm', 'fr');
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toString();
+    final format = DateFormat(l10n.snapshotDateFormat, locale);
 
     return ListView.separated(
       padding: const EdgeInsets.only(bottom: 88),
@@ -68,11 +70,11 @@ class _SnapshotList extends ConsumerWidget {
           leading: CircleAvatar(child: Text('${snapshot.level}')),
           title: Text(format.format(snapshot.recordedAt)),
           subtitle: Text(
-            '${snapshot.counters.length} compteurs • ${snapshot.agentName}',
+            l10n.snapshotSubtitle(snapshot.counters.length, snapshot.agentName),
           ),
           trailing: IconButton(
             icon: const Icon(Icons.delete_outline),
-            tooltip: 'Supprimer ce relevé',
+            tooltip: l10n.deleteSnapshotTooltip,
             onPressed: () => _confirmDelete(context, ref, stored),
           ),
         );
@@ -85,22 +87,21 @@ class _SnapshotList extends ConsumerWidget {
     WidgetRef ref,
     StoredSnapshot stored,
   ) async {
+    final l10n = AppLocalizations.of(context);
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Supprimer ce relevé ?'),
-        content: const Text(
-          'Il disparaîtra de l\'historique et des graphiques. '
-          'Cette action est définitive.',
-        ),
+        title: Text(l10n.deleteSnapshotTitle),
+        content: Text(l10n.deleteSnapshotBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Supprimer'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -113,7 +114,11 @@ class _SnapshotList extends ConsumerWidget {
 }
 
 class _Message extends StatelessWidget {
-  const _Message({required this.icon, required this.title, required this.detail});
+  const _Message({
+    required this.icon,
+    required this.title,
+    required this.detail,
+  });
 
   final IconData icon;
   final String title;
@@ -130,7 +135,11 @@ class _Message extends StatelessWidget {
           children: [
             Icon(icon, size: 48, color: theme.colorScheme.outline),
             const SizedBox(height: 16),
-            Text(title, style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
+            Text(
+              title,
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
             Text(
               detail,

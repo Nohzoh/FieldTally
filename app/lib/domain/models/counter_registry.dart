@@ -1,18 +1,18 @@
-/// Couche d'enrichissement des compteurs (§3.1.2, §3.1.4).
+/// Counter enrichment layer (§3.1.2, §3.1.4).
 ///
-/// **Ce n'est pas la liste des compteurs supportés.** L'app suit tout compteur
-/// qu'elle rencontre dans un export, connu ou non. Le registre n'ajoute que du
-/// confort : une catégorie, un libellé traduit, un ordre d'affichage et, quand
-/// ils sont connus, des seuils de palier. Un compteur absent d'ici reste
-/// pleinement fonctionnel, affiché sous son libellé brut dans la catégorie
-/// [CounterRegistry.fallbackCategoryKey], en fin de liste.
+/// **This is not the list of supported counters.** The app tracks every
+/// counter it meets in an export, known or not. The registry only adds
+/// comfort: a category, a translated label, a display order and, when known,
+/// badge thresholds. A counter missing from it stays fully functional, shown
+/// under its raw label in the [CounterRegistry.fallbackCategoryKey] category,
+/// at the end of the list.
 ///
-/// Le fichier source est `docs/registry/counters.json`, servi par GitHub Pages
-/// et récupéré au démarrage, avec une copie embarquée en repli.
+/// The source file is `docs/registry/counters.json`, served by GitHub Pages
+/// and fetched at startup, with a bundled copy as fallback.
 library;
 
-/// Une catégorie d'affichage, reprise telle quelle de l'écran de stats
-/// d'Ingress Prime plutôt qu'inventée.
+/// A display category, taken as-is from the Ingress Prime stats screen rather
+/// than invented.
 class CounterCategory {
   const CounterCategory({
     required this.key,
@@ -23,7 +23,7 @@ class CounterCategory {
   final String key;
   final int order;
 
-  /// Libellés par code langue (`en`, `fr`).
+  /// Labels by language code (`en`, `fr`).
   final Map<String, String> labels;
 
   String label(String languageCode) =>
@@ -37,8 +37,8 @@ class CounterCategory {
       );
 }
 
-/// Un seuil de palier de médaille (bronze, argent, or, platine, onyx) ou de
-/// niveau d'agent, utilisé par les projections du §3.6.
+/// A badge threshold (bronze, silver, gold, platinum, onyx) or agent level,
+/// used by the projections of §3.6.
 class CounterTier {
   const CounterTier({required this.name, required this.value});
 
@@ -51,7 +51,7 @@ class CounterTier {
       );
 }
 
-/// L'entrée d'enrichissement d'un compteur.
+/// The enrichment entry for one counter.
 class CounterEnrichment {
   const CounterEnrichment({
     required this.key,
@@ -63,25 +63,25 @@ class CounterEnrichment {
     this.tiers = const [],
   });
 
-  /// Clé technique (`explorer`), distincte de l'en-tête d'export
-  /// (`Unique Portals Visited`). Elle sert aux libellés stables et à
-  /// l'import CSV de migration, dont les colonnes portent ces noms (Annexe B).
+  /// Technical key (`explorer`), distinct from the export header
+  /// (`Unique Portals Visited`). It provides stable identity for labels and is
+  /// also what the migration CSV columns are named after (Appendix B).
   final String key;
 
-  /// Nom exact de la colonne dans l'export TSV. C'est par lui que se fait la
-  /// correspondance avec un relevé.
+  /// Exact column name in the TSV export. This is what a snapshot is matched
+  /// against.
   final String exportHeader;
 
   final String categoryKey;
   final int order;
   final Map<String, String> labels;
 
-  /// `false` pour les trois champs qu'Ingress ne réduit jamais à la période
-  /// sélectionnée (§3.1.3). Le garde-fou comportemental les ignore.
+  /// False for the three fields Ingress never scopes to the selected period
+  /// (§3.1.3). The behavioural guard skips them.
   final bool periodized;
 
-  /// Vide tant que les seuils ne sont pas connus : aucune projection de palier
-  /// n'est alors calculée, seul l'historique brut est affiché.
+  /// Empty until thresholds are known: no badge projection is computed then,
+  /// only the raw history is shown.
   final List<CounterTier> tiers;
 
   String label(String languageCode) =>
@@ -102,7 +102,7 @@ class CounterEnrichment {
       );
 }
 
-/// Le registre chargé, prêt à répondre sur un en-tête d'export.
+/// The loaded registry, ready to answer questions about an export header.
 class CounterRegistry {
   CounterRegistry({
     required this.schemaVersion,
@@ -113,7 +113,7 @@ class CounterRegistry {
         _byExportHeader = {for (final c in counters) c.exportHeader: c},
         _byKey = {for (final c in counters) c.key: c};
 
-  /// Catégorie de repli pour tout compteur pas encore enrichi.
+  /// Fallback category for any counter not yet enriched.
   static const fallbackCategoryKey = 'other';
 
   final int schemaVersion;
@@ -123,8 +123,8 @@ class CounterRegistry {
   final Map<String, CounterEnrichment> _byExportHeader;
   final Map<String, CounterEnrichment> _byKey;
 
-  /// Registre vide : tout compteur y est inconnu. Utile comme repli si même la
-  /// copie embarquée est illisible — l'app doit rester fonctionnelle.
+  /// Empty registry: every counter is unknown to it. Useful as a last resort
+  /// if even the bundled copy is unreadable — the app has to keep working.
   factory CounterRegistry.empty() => CounterRegistry(
         schemaVersion: 0,
         updatedAt: '',
@@ -137,7 +137,8 @@ class CounterRegistry {
     final raw = json['counters'] as Map<String, dynamic>? ?? const {};
     for (final entry in raw.entries) {
       counters.add(
-        CounterEnrichment.fromJson(entry.key, entry.value as Map<String, dynamic>),
+        CounterEnrichment.fromJson(
+            entry.key, entry.value as Map<String, dynamic>),
       );
     }
 
@@ -154,25 +155,26 @@ class CounterRegistry {
 
   int get length => _byExportHeader.length;
 
-  /// `null` si le compteur n'est pas encore enrichi — ce qui est un cas normal
-  /// et attendu, pas une erreur.
+  /// Null when the counter is not enriched yet — a normal, expected case
+  /// rather than an error.
   CounterEnrichment? forExportHeader(String header) => _byExportHeader[header];
 
   CounterEnrichment? forKey(String key) => _byKey[key];
 
-  /// Catégorie d'affichage d'un en-tête, avec repli sur `other`.
+  /// Display category for a header, falling back to `other`.
   String categoryKeyFor(String header) =>
       _byExportHeader[header]?.categoryKey ?? fallbackCategoryKey;
 
-  /// Les trois champs non périodisés sont marqués comme tels dans le registre.
-  /// En l'absence d'entrée, on suppose le compteur périodisé : c'est le cas de
-  /// l'immense majorité, et cette valeur par défaut fait pencher le garde-fou
-  /// comportemental du côté prudent (il surveille plutôt que d'ignorer).
-  bool isPeriodized(String header) => _byExportHeader[header]?.periodized ?? true;
+  /// The three non periodized fields are marked as such in the registry.
+  /// Without an entry, a counter is assumed to be periodized: that is true of
+  /// the vast majority, and this default tips the behavioural guard towards
+  /// caution (it watches rather than ignores).
+  bool isPeriodized(String header) =>
+      _byExportHeader[header]?.periodized ?? true;
 
-  /// Ordonne des en-têtes comme l'écran de stats du jeu : par catégorie, puis
-  /// par ordre interne. Les compteurs inconnus se retrouvent en fin de liste,
-  /// triés alphabétiquement pour rester stables d'un affichage à l'autre.
+  /// Orders headers the way the in-game stats screen does: by category, then
+  /// by order within it. Unknown counters end up last, sorted alphabetically
+  /// so the display stays stable between runs.
   List<String> sortHeaders(Iterable<String> headers) {
     final sorted = headers.toList();
     sorted.sort((a, b) {

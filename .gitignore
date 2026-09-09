@@ -1,12 +1,12 @@
-# --- Secrets du projet (JAMAIS versionnés) ---
-# Token GitHub fine-grained dédié à FieldTally, chargé dans GH_TOKEN par
-# scripts/gh-env.sh — voir CONTRIBUTING.md.
+# --- Project secrets (NEVER committed) ---
+# Fine-grained GitHub PAT scoped to FieldTally, loaded into GH_TOKEN by
+# scripts/gh — see CONTRIBUTING.md.
 .secrets/
 *.token
 .env
 .env.*
 
-# --- Divers OS / éditeurs ---
+# --- OS and editors ---
 .DS_Store
 Thumbs.db
 .idea/
@@ -30,7 +30,7 @@ app/android/app/*.jks
 app/android/app/*.keystore
 app/android/.idea/
 
-# --- iOS (pas de cible v1, mais la porte reste ouverte) ---
+# --- iOS (not a v1 target, but the door stays open) ---
 app/ios/Pods/
 app/ios/.symlinks/
 app/ios/Flutter/Flutter.framework
@@ -38,7 +38,7 @@ app/ios/Flutter/Flutter.podspec
 app/ios/Flutter/Generated.xcconfig
 app/ios/Flutter/flutter_export_environment.sh
 
-# --- Site GitHub Pages (Jekyll) ---
+# --- GitHub Pages site (Jekyll) ---
 docs/_site/
 docs/.jekyll-cache/
 docs/.jekyll-metadata

@@ -8,18 +8,20 @@ import '../../data/parsing/parse_exception.dart';
 import '../../domain/guards/import_guards.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/models/stat_snapshot.dart';
+import '../../l10n/app_localizations.dart';
+import '../messages.dart';
 import '../providers/providers.dart';
 
-/// Écran « Ajouter un relevé » (§3.1).
+/// "Add a snapshot" screen (§3.1).
 ///
-/// Le principe qui structure cet écran : **rien n'est enregistré avant que
-/// l'utilisateur ait vu ce qui a été détecté.** Le format d'export n'est pas
-/// documenté et peut changer sans préavis (§6) ; l'aperçu est ce qui permet de
-/// repérer une anomalie de parsing avant qu'elle ne pollue l'historique.
+/// The principle behind this screen: **nothing is saved before the user has
+/// seen what was detected.** The export format is undocumented and can change
+/// without notice (§6); the preview is what lets a parsing anomaly be spotted
+/// before it pollutes the history.
 class AddSnapshotScreen extends ConsumerStatefulWidget {
   const AddSnapshotScreen({super.key, this.initialText});
 
-  /// Texte pré-rempli, à terme fourni par la feuille de partage Android.
+  /// Pre-filled text, eventually supplied by the Android share sheet.
   final String? initialText;
 
   @override
@@ -32,18 +34,18 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
 
   StatSnapshot? _parsed;
   ImportCheck? _check;
-  String? _error;
+  ExportParseException? _error;
   bool _saving = false;
 
-  /// L'analyse a produit quelque chose à montrer — un aperçu ou une erreur.
+  /// The analysis produced something to show — a preview or an error.
   bool get _hasResult => _parsed != null || _error != null;
 
   @override
   void initState() {
     super.initState();
     if ((widget.initialText ?? '').isNotEmpty) {
-      // Arrivée depuis un partage : on va droit à l'aperçu, sans faire
-      // retaper sur un bouton.
+      // Arriving from a share: go straight to the preview instead of making
+      // the user press a button again.
       WidgetsBinding.instance.addPostFrameCallback((_) => _analyze());
     }
   }
@@ -64,8 +66,7 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
     try {
       final snapshot = ref.read(parserProvider).parseSingle(_controller.text);
       final previous = await ref.read(snapshotRepositoryProvider).latest();
-      final registry =
-          await ref.read(counterRegistryProvider.future);
+      final registry = await ref.read(counterRegistryProvider.future);
 
       if (!mounted) return;
       setState(() {
@@ -78,7 +79,7 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
       });
     } on ExportParseException catch (e) {
       if (!mounted) return;
-      setState(() => _error = e.toString());
+      setState(() => _error = e);
     }
   }
 
@@ -86,38 +87,35 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
     final snapshot = _parsed;
     if (snapshot == null || _saving) return;
 
+    final l10n = AppLocalizations.of(context);
     setState(() => _saving = true);
     await ref.read(snapshotRepositoryProvider).save(snapshot);
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Relevé enregistré.')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(l10n.snapshotSaved)));
     context.go(Routes.home);
   }
 
-  /// Passer outre un garde-fou est possible, mais jamais d'un simple clic à
-  /// côté du message (§3.1.3) : il faut une action distincte, puis une
-  /// confirmation qui rappelle la conséquence.
+  /// Overriding a guard is possible, but never one click away from the message
+  /// (§3.1.3): it takes a separate action, then a confirmation that spells out
+  /// the consequence.
   Future<void> _saveAnyway() async {
+    final l10n = AppLocalizations.of(context);
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Enregistrer malgré l\'anomalie ?'),
-        content: const Text(
-          'Ce relevé est incohérent avec ton historique. L\'enregistrer '
-          'faussera durablement tes diffs, tes graphiques et tes projections '
-          'de paliers.\n\n'
-          'Ne continue que si tu sais précisément pourquoi.',
-        ),
+        title: Text(l10n.saveAnywayTitle),
+        content: Text(l10n.saveAnywayBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Enregistrer quand même'),
+            child: Text(l10n.saveAnywayConfirm),
           ),
         ],
       ),
@@ -128,9 +126,11 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajouter un relevé'),
+        title: Text(l10n.addSnapshotTitle),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => context.go(Routes.home),
@@ -142,11 +142,10 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Une fois qu'il y a un résultat, la consigne a fait son office
-                // et le champ n'a plus besoin d'occuper six lignes. Sur un
-                // petit écran, les garder afficherait les boutons de décision
-                // sans la raison qui les justifie, reléguée sous la ligne de
-                // flottaison.
+                // Once there is a result the instructions have done their job,
+                // and the field no longer needs six lines. On a small screen,
+                // keeping both would show the decision buttons without the
+                // reason behind them, pushed below the fold.
                 if (!_hasResult) ...[
                   const _Instructions(),
                   const SizedBox(height: 16),
@@ -155,26 +154,24 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
                   controller: _controller,
                   maxLines: _hasResult ? 2 : 6,
                   minLines: _hasResult ? 1 : 3,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Texte exporté par Ingress',
-                    hintText:
-                        'Colle ici le texte partagé depuis l\'écran de stats…',
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: l10n.pasteFieldLabel,
+                    hintText: l10n.pasteFieldHint,
                   ),
                 ),
                 const SizedBox(height: 12),
                 FilledButton.icon(
                   onPressed: _analyze,
                   icon: const Icon(Icons.search),
-                  label: const Text('Analyser'),
+                  label: Text(l10n.analyze),
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 16),
-                  _ErrorCard(message: _error!),
+                  _ErrorCard(error: _error!),
                 ],
-                // L'anomalie passe avant l'aperçu : c'est l'information qui
-                // conditionne la décision, elle ne doit pas se mériter au
-                // défilement.
+                // The anomaly comes before the preview: it is the information
+                // the decision hinges on, it should not have to be scrolled to.
                 if (_check?.isBlocked ?? false) ...[
                   const SizedBox(height: 16),
                   _AnomalyCard(check: _check!),
@@ -186,10 +183,9 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
               ],
             ),
           ),
-          // Épinglée en bas : sans ça, il faudrait faire défiler les 59
-          // compteurs de l'aperçu pour atteindre le bouton d'enregistrement,
-          // et l'anomalie éventuelle sortirait du champ de vision au moment
-          // précis où il faut décider.
+          // Pinned at the bottom: otherwise the 59 counters of the preview
+          // would have to be scrolled past to reach the save button, and any
+          // anomaly would leave the screen at the very moment of deciding.
           if (_parsed != null && _check != null)
             _SaveActionBar(
               check: _check!,
@@ -208,19 +204,19 @@ class _Instructions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Depuis Ingress', style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 8),
-            const Text(
-              'Écran de stats → sélectionne « All Time » → Partager. '
-              'Vérifie bien la période : un export « This Week » fausserait '
-              'ton historique.',
+            Text(
+              l10n.instructionsTitle,
+              style: Theme.of(context).textTheme.titleSmall,
             ),
+            const SizedBox(height: 8),
+            Text(l10n.instructionsBody),
           ],
         ),
       ),
@@ -229,13 +225,16 @@ class _Instructions extends StatelessWidget {
 }
 
 class _ErrorCard extends StatelessWidget {
-  const _ErrorCard({required this.message});
+  const _ErrorCard({required this.error});
 
-  final String message;
+  final ExportParseException error;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
+    final hint = error.rawValueHint(l10n);
+
     return Card(
       color: scheme.errorContainer,
       child: Padding(
@@ -250,14 +249,24 @@ class _ErrorCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Lecture impossible',
+                    l10n.parseErrorTitle,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: scheme.onErrorContainer,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(message, style: TextStyle(color: scheme.onErrorContainer)),
+                  Text(
+                    error.message(l10n),
+                    style: TextStyle(color: scheme.onErrorContainer),
+                  ),
+                  if (hint != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      hint,
+                      style: TextStyle(color: scheme.onErrorContainer),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -268,7 +277,7 @@ class _ErrorCard extends StatelessWidget {
   }
 }
 
-/// Aperçu des valeurs détectées, montré **avant** tout enregistrement.
+/// Preview of the detected values, shown **before** anything is saved.
 class _Preview extends ConsumerWidget {
   const _Preview({required this.snapshot, required this.check});
 
@@ -277,9 +286,11 @@ class _Preview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final registry = ref.watch(counterRegistryProvider).asData?.value;
     final theme = Theme.of(context);
-    final format = DateFormat('d MMMM y \'à\' HH:mm:ss', 'fr');
+    final format = DateFormat(l10n.previewDetailedDateFormat, locale);
 
     final headers = registry?.sortHeaders(snapshot.counters.keys) ??
         snapshot.counters.keys.toList();
@@ -287,10 +298,10 @@ class _Preview extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Aperçu', style: theme.textTheme.titleLarge),
+        Text(l10n.previewTitle, style: theme.textTheme.titleLarge),
         const SizedBox(height: 4),
         Text(
-          'Rien n\'est enregistré tant que tu n\'as pas confirmé.',
+          l10n.previewNotSavedYet,
           style: theme.textTheme.bodySmall
               ?.copyWith(color: theme.colorScheme.outline),
         ),
@@ -301,13 +312,19 @@ class _Preview extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Field(label: 'Agent', value: snapshot.agentName),
-                _Field(label: 'Faction', value: snapshot.faction),
-                _Field(label: 'Période', value: check.declaredTimeSpanLabel),
-                _Field(label: 'Relevé du', value: format.format(snapshot.recordedAt)),
-                _Field(label: 'Niveau', value: '${snapshot.level}'),
+                _Field(label: l10n.fieldAgent, value: snapshot.agentName),
+                _Field(label: l10n.fieldFaction, value: snapshot.faction),
                 _Field(
-                  label: 'Compteurs détectés',
+                  label: l10n.fieldPeriod,
+                  value: check.declaredTimeSpan.label(l10n),
+                ),
+                _Field(
+                  label: l10n.fieldRecordedAt,
+                  value: format.format(snapshot.recordedAt),
+                ),
+                _Field(label: l10n.fieldLevel, value: '${snapshot.level}'),
+                _Field(
+                  label: l10n.fieldCounterCount,
                   value: '${snapshot.counters.length}',
                 ),
               ],
@@ -315,31 +332,34 @@ class _Preview extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text('Valeurs détectées', style: theme.textTheme.titleMedium),
+        Text(l10n.detectedValues, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
-        ...(_grouped(headers, registry).entries.map(
+        ..._grouped(headers, registry, l10n, locale).entries.map(
               (group) => _CategoryBlock(
                 title: group.key,
                 headers: group.value,
                 snapshot: snapshot,
                 registry: registry,
               ),
-            )),
+            ),
       ],
     );
   }
 
-  /// Regroupe les en-têtes par catégorie, dans l'ordre déjà calculé par le
-  /// registre — donc celui de l'écran de stats du jeu.
+  /// Groups headers by category, in the order already computed by the
+  /// registry — that is, the order of the in-game stats screen.
   Map<String, List<String>> _grouped(
     List<String> headers,
     CounterRegistry? registry,
+    AppLocalizations l10n,
+    String language,
   ) {
     final groups = <String, List<String>>{};
     for (final header in headers) {
       final key = registry?.categoryKeyFor(header) ??
           CounterRegistry.fallbackCategoryKey;
-      final label = registry?.categories[key]?.label('fr') ?? 'Autres';
+      final label =
+          registry?.categories[key]?.label(language) ?? l10n.fallbackCategory;
       (groups[label] ??= []).add(header);
     }
     return groups;
@@ -361,10 +381,13 @@ class _CategoryBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final theme = Theme.of(context);
+
     return ExpansionTile(
       title: Text(title),
-      subtitle: Text('${headers.length} compteurs'),
+      subtitle: Text(l10n.counterCount(headers.length)),
       children: [
         for (final header in headers)
           Padding(
@@ -372,18 +395,19 @@ class _CategoryBlock extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  // Un compteur pas encore enrichi s'affiche sous son libellé
-                  // brut plutôt que d'être masqué (§3.1.2).
+                  // A counter that is not enriched yet shows under its raw
+                  // label rather than being hidden (§3.1.2).
                   child: Text(
-                    registry?.forExportHeader(header)?.label('fr') ?? header,
+                    registry?.forExportHeader(header)?.label(locale) ?? header,
                     style: theme.textTheme.bodyMedium,
                   ),
                 ),
                 Text(
-                  NumberFormat.decimalPattern('fr')
+                  NumberFormat.decimalPattern(locale)
                       .format(snapshot.counters[header]),
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ],
             ),
@@ -399,10 +423,17 @@ class _AnomalyCard extends ConsumerWidget {
 
   final ImportCheck check;
 
+  /// How many regressions are listed before falling back to a count. Enough to
+  /// judge, short of a wall of text.
+  static const _maxListed = 10;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     final scheme = Theme.of(context).colorScheme;
     final registry = ref.watch(counterRegistryProvider).asData?.value;
+    final extra = check.regressions.length - _maxListed;
 
     return Card(
       color: scheme.errorContainer,
@@ -417,9 +448,7 @@ class _AnomalyCard extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    check.isPartialPeriod
-                        ? 'Période partielle détectée'
-                        : 'Incohérence avec ton historique',
+                    check.title(l10n),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: scheme.onErrorContainer,
@@ -430,28 +459,34 @@ class _AnomalyCard extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              check.message ?? '',
+              check.message(l10n) ?? '',
               style: TextStyle(color: scheme.onErrorContainer),
             ),
             if (check.hasRegressions) ...[
               const SizedBox(height: 12),
-              // La liste précise de ce qui a reculé, et de combien : c'est ce
-              // qui permet à l'utilisateur de juger par lui-même.
-              for (final regression in check.regressions.take(10))
+              // The precise list of what went down, and by how much: this is
+              // what lets the user judge for themselves.
+              for (final regression in check.regressions.take(_maxListed))
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Text(
-                    '• ${registry?.forExportHeader(regression.exportHeader)?.label('fr') ?? regression.exportHeader} : '
-                    '${regression.previous} → ${regression.current} '
-                    '(−${regression.drop})',
+                    '• ${l10n.anomalyRegressionLine(
+                      registry
+                              ?.forExportHeader(regression.exportHeader)
+                              ?.label(locale) ??
+                          regression.exportHeader,
+                      regression.previous,
+                      regression.current,
+                      regression.drop,
+                    )}',
                     style: TextStyle(color: scheme.onErrorContainer),
                   ),
                 ),
-              if (check.regressions.length > 10)
+              if (extra > 0)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
-                    '… et ${check.regressions.length - 10} autres.',
+                    l10n.anomalyRegressionMore(extra),
                     style: TextStyle(color: scheme.onErrorContainer),
                   ),
                 ),
@@ -484,40 +519,43 @@ class _SaveActionBar extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: check.isBlocked ? _blocked(context) : _allowed(),
+          child: check.isBlocked ? _blocked(context) : _allowed(context),
         ),
       ),
     );
   }
 
-  Widget _allowed() => SizedBox(
+  Widget _allowed(BuildContext context) => SizedBox(
         width: double.infinity,
         child: FilledButton.icon(
           onPressed: saving ? null : onSave,
           icon: const Icon(Icons.check),
-          label: const Text('Enregistrer ce relevé'),
+          label: Text(AppLocalizations.of(context).saveSnapshot),
         ),
       );
 
-  /// Quand un garde-fou se déclenche, l'action mise en avant est celle qui
-  /// protège l'historique. Le contournement existe, mais discret et derrière
-  /// une confirmation — jamais un bouton posé à côté du message (§3.1.3).
-  Widget _blocked(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FilledButton.icon(
-            onPressed: () => context.go(Routes.home),
-            icon: const Icon(Icons.arrow_back),
-            label: const Text('Ne pas enregistrer'),
-          ),
-          const SizedBox(height: 4),
-          TextButton(
-            onPressed: saving ? null : onSaveAnyway,
-            child: const Text('Enregistrer quand même…'),
-          ),
-        ],
-      );
+  /// When a guard fires, the prominent action is the one that protects the
+  /// history. The override exists, but discreetly and behind a confirmation —
+  /// never a button sitting next to the message (§3.1.3).
+  Widget _blocked(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FilledButton.icon(
+          onPressed: () => context.go(Routes.home),
+          icon: const Icon(Icons.arrow_back),
+          label: Text(l10n.doNotSave),
+        ),
+        const SizedBox(height: 4),
+        TextButton(
+          onPressed: saving ? null : onSaveAnyway,
+          child: Text(l10n.saveAnyway),
+        ),
+      ],
+    );
+  }
 }
 
 class _Field extends StatelessWidget {

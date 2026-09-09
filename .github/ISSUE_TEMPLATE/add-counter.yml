@@ -1,0 +1,47 @@
+# The contribution most expected from the community (spec §7.4): declaring a
+# new counter, typically when an anomaly starts.
+name: "Add or fix a counter"
+description: "A counter is missing from the categorisation, or its label/category is wrong."
+labels: ["registry"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        No coding required: everything happens in a single file,
+        [`docs/registry/counters.json`](https://github.com/Nohzoh/FieldTally/blob/main/docs/registry/counters.json).
+        A direct pull request on that file is even quicker than an issue — the
+        app picks it up without waiting for a new release.
+
+        A counter missing from that file **still works**: it is simply shown
+        under its raw name, in the "Other" category.
+
+  - type: input
+    id: header
+    attributes:
+      label: "Exact column name in the Ingress export"
+      placeholder: "Orion Tokens"
+    validations:
+      required: true
+
+  - type: input
+    id: category
+    attributes:
+      label: "Category shown on the in-game stats screen"
+      placeholder: "Events"
+    validations:
+      required: true
+
+  - type: input
+    id: label-fr
+    attributes:
+      label: "Preferred French label, if you have one"
+    validations:
+      required: false
+
+  - type: textarea
+    id: tiers
+    attributes:
+      label: "Known badge thresholds (bronze / silver / gold / platinum / onyx)"
+      description: "Only if you know them from a reliable source — otherwise leave blank."
+    validations:
+      required: false

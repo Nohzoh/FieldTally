@@ -1,56 +1,63 @@
 # FieldTally
 
-Suivi de statistiques **Ingress**, mobile-first et **100 % local** : pas de
-compte, pas de serveur, aucune donnée envoyée.
+Ingress stats tracking, mobile-first and **fully local**: no account, no
+server, no data leaving your phone.
 
-> **Statut : squelette.** Le dépôt contient la structure du projet, la stack
-> figée et le registre des compteurs. Le parsing des exports, les écrans et les
-> garde-fous d'import arrivent à l'itération suivante. Il n'y a pas encore
-> d'application installable.
+> **Status: early days.** Paste an export, review it, save it. The dashboard,
+> charts and badge projections are still to come, and there is no installable
+> release yet.
 
-## Non-affiliation
+## Not affiliated with Niantic
 
-FieldTally est un outil **non-officiel, fan-made**, sans aucun lien avec
-Niantic, Inc. « Ingress », les noms de médailles et de compteurs sont des
-marques et contenus de Niantic, Inc. Ce projet n'utilise aucun asset protégé.
+FieldTally is an **unofficial, fan-made** tool with no connection to Niantic,
+Inc. "Ingress", along with badge and counter names, are trademarks and content
+of Niantic, Inc. This project uses no protected asset.
 
-## Ce que fera l'app (v1)
+## What the app will do (v1)
 
-- Ajouter un relevé en collant le texte de partage d'Ingress Prime, ou
-  directement depuis la feuille de partage Android.
-- Détecter et **bloquer** un import de période partielle (`WEEK` / `MONTH` /
-  `NOW`) qui fausserait silencieusement l'historique.
-- Tableau de bord personnalisable, graphique par compteur, heatmap d'activité,
-  projections de paliers, objectifs personnels et notifications locales.
-- Import CSV depuis Agent Stats, export CSV, carte de stats partageable.
+- Add a snapshot by pasting the text Ingress Prime shares, or straight from the
+  Android share sheet.
+- Detect and **block** a partial period import (`WEEK` / `MONTH` / `NOW`) that
+  would silently skew your history.
+- Customisable dashboard, per-counter charts, activity heatmap, badge
+  projections, personal goals and local notifications.
+- CSV import from Agent Stats, CSV export, shareable stats card.
 
-Le détail complet est dans [`docs/spec/SPECIFICATION-v1.md`](docs/spec/SPECIFICATION-v1.md).
+The full picture is in [`docs/spec/SPECIFICATION-v1.md`](docs/spec/SPECIFICATION-v1.md)
+— note that the specification itself is written in French.
 
-## Structure du dépôt
+## Repository layout
 
 ```
-app/        projet Flutter (assets/, lib/, test/, tool/)
-docs/       site GitHub Pages + spécification + registre des compteurs
-tool/       outillage hors-Flutter (validation du registre)
-scripts/    outillage local (wrapper gh scopé au projet)
-.github/    workflows, templates d'issue, dependabot
+app/        Flutter project (assets/, lib/, test/, tool/)
+docs/       GitHub Pages site, specification and counter registry
+tool/       non-Flutter tooling (registry validation)
+scripts/    local tooling
+.github/    workflows, issue templates, dependabot
 ```
 
-## Le registre des compteurs
+## The counter registry
 
-`docs/registry/counters.json` est la **source de vérité** de la catégorisation,
-des libellés et des seuils de palier. Ce n'est **pas** la liste des compteurs
-supportés : l'app suit tout compteur qu'elle rencontre dans un export, même
-inconnu. Le registre ne fait qu'ajouter le confort (catégorie, libellé traduit,
-projections).
+`docs/registry/counters.json` is the **source of truth** for categories,
+labels and badge thresholds. It is **not** the list of supported counters: the
+app tracks every counter it meets in an export, even an unknown one. The
+registry only adds comfort — category, translated label, projections.
 
-Il est publié sur GitHub Pages et récupéré par l'app au démarrage, ce qui
-permet de déclarer un nouveau compteur d'anomalie par une simple PR, sans
-publier de nouvelle version de l'app.
+It is published on GitHub Pages and fetched by the app at startup, so a new
+anomaly counter can be declared with a single pull request, without shipping a
+new version of the app.
 
-## Démarrer en local
+## Language
 
-Prérequis : Flutter 3.44+ (canal stable) et le SDK Android.
+Everything in this repository is written in English — code, comments, commits,
+issues and pull requests — so that anyone in the Ingress community can
+contribute. User-facing text lives in the localisation files
+(`app/lib/l10n/*.arb`) and in the `label` fields of the counter registry; those
+carry French and English.
+
+## Running it locally
+
+Requirements: Flutter 3.44+ (stable channel) and the Android SDK.
 
 ```bash
 cd app
@@ -59,30 +66,28 @@ flutter test
 flutter run
 ```
 
-Régénérer la copie de secours embarquée du registre après avoir modifié
-`docs/registry/counters.json` :
+After editing `docs/registry/counters.json`, regenerate the bundled fallback
+copy and validate the file:
 
 ```bash
 cd app && dart run tool/sync_registry_seed.dart
-python3 tool/validate_registry.py   # depuis la racine
+python3 tool/validate_registry.py   # from the repository root
 ```
 
-## Confidentialité
+## Privacy
 
-Aucune collecte, aucune télémétrie, aucun compte. Une seule requête réseau dans
-toute la v1 : la lecture du fichier public `counters.json` sur GitHub Pages,
-sans transmettre la moindre donnée personnelle, et désactivable dans les
-préférences.
+No collection, no telemetry, no account. A single network request in the whole
+of v1: reading the public `counters.json` file from GitHub Pages, sending no
+personal data, and switchable off in the settings.
 
 ## Licence
 
 [GNU AGPL v3](LICENSE) — Copyright (C) 2026 Nohzoh.
 
-FieldTally est un logiciel libre : tu peux le redistribuer et le modifier selon
-les termes de la licence publique générale GNU Affero, version 3. Il est
-distribué sans aucune garantie.
+FieldTally is free software: you may redistribute and modify it under the terms
+of the GNU Affero General Public License, version 3. It comes with no warranty.
 
-Concrètement, l'AGPL impose que toute version modifiée reste sous la même
-licence, y compris — c'est sa particularité par rapport à la GPL — si elle est
-seulement mise à disposition via un service en réseau plutôt que distribuée.
-Ce point devient pertinent au moment où la v2 ajoutera un backend.
+In practice the AGPL requires any modified version to stay under the same
+licence — including, and this is what sets it apart from the GPL, when that
+version is merely made available over a network rather than distributed. That
+becomes relevant the day v2 adds a backend.
