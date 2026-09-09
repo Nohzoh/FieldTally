@@ -76,4 +76,13 @@ préférences.
 
 ## Licence
 
-[MIT](LICENSE).
+[GNU AGPL v3](LICENSE) — Copyright (C) 2026 Nohzoh.
+
+FieldTally est un logiciel libre : tu peux le redistribuer et le modifier selon
+les termes de la licence publique générale GNU Affero, version 3. Il est
+distribué sans aucune garantie.
+
+Concrètement, l'AGPL impose que toute version modifiée reste sous la même
+licence, y compris — c'est sa particularité par rapport à la GPL — si elle est
+seulement mise à disposition via un service en réseau plutôt que distribuée.
+Ce point devient pertinent au moment où la v2 ajoutera un backend.

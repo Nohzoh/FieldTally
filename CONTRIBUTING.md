@@ -82,4 +82,4 @@ Deux templates d'issue existent : un pour « le parsing ne fonctionne pas »
 ## Licence
 
 En contribuant, tu acceptes que ta contribution soit publiée sous licence
-[MIT](LICENSE).
+[GNU AGPL v3](LICENSE), comme le reste du projet.
