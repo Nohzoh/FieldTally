@@ -259,4 +259,72 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get disclaimer =>
       'Outil non-officiel, sans lien avec Niantic. « Ingress » est une marque de Niantic, Inc.';
+
+  @override
+  String get countersTitle => 'Tous les compteurs';
+
+  @override
+  String get countersAction => 'Tous les compteurs';
+
+  @override
+  String get countersEmpty =>
+      'Les compteurs apparaissent une fois un relevé enregistré.';
+
+  @override
+  String get searchCounters => 'Rechercher un compteur';
+
+  @override
+  String get sortLabel => 'Trier';
+
+  @override
+  String get sortByCategory => 'Ordre du jeu';
+
+  @override
+  String get sortByName => 'Nom';
+
+  @override
+  String get sortByRecentProgress => 'Progression récente';
+
+  @override
+  String get showInactive => 'Afficher les compteurs inactifs';
+
+  @override
+  String inactiveSince(String date) {
+    return 'inactif depuis le $date';
+  }
+
+  @override
+  String get shortDateFormat => 'd MMM y';
+
+  @override
+  String get noDelta => 'pas encore de comparaison';
+
+  @override
+  String deltaSince(String delta) {
+    return '$delta depuis le relevé précédent';
+  }
+
+  @override
+  String get counterHistory => 'Historique';
+
+  @override
+  String get counterFirstSeen => 'Première apparition';
+
+  @override
+  String get counterLastSeen => 'Dernière apparition';
+
+  @override
+  String get counterCurrentValue => 'Valeur actuelle';
+
+  @override
+  String get counterNoTiers =>
+      'Aucun seuil de palier n\'est connu pour ce compteur, donc aucune projection n\'est calculée.';
+
+  @override
+  String counterSearchEmpty(String search) {
+    return 'Aucun compteur ne correspond à « $search ».';
+  }
+
+  @override
+  String get counterExportHeader => 'Nom de colonne à l\'export';
 }

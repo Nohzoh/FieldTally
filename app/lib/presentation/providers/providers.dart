@@ -4,8 +4,10 @@ import '../../data/db/database.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
 import '../../data/registry/counter_registry_loader.dart';
 import '../../data/repositories/drift_snapshot_repository.dart';
+import '../../domain/counter_list.dart';
 import '../../domain/guards/import_guards.dart';
 import '../../domain/models/counter_registry.dart';
+import '../../domain/models/tracked_counter.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 
 /// Local database. Overridden with an in-memory one in tests.
@@ -36,4 +38,33 @@ final counterRegistryProvider = FutureProvider<CounterRegistry>(
 /// Snapshot history, refreshed on its own after every write.
 final snapshotsProvider = StreamProvider<List<StoredSnapshot>>(
   (ref) => ref.watch(snapshotRepositoryProvider).watchAll(),
+);
+
+/// Counter state derived from the whole history (§3.1.2, §3.2).
+///
+/// Recomputed from the snapshots rather than stored, so it stays correct when
+/// a snapshot is edited or deleted.
+final trackedCountersProvider = Provider<AsyncValue<List<TrackedCounter>>>(
+  (ref) => ref.watch(snapshotsProvider).whenData(
+        (stored) => const CounterTracker()
+            .track([for (final s in stored) s.snapshot]),
+      ),
+);
+
+/// What the counter list is currently filtered and sorted by (§3.4).
+class CounterQueryNotifier extends Notifier<CounterQuery> {
+  @override
+  CounterQuery build() => const CounterQuery();
+
+  void search(String value) => state = state.copyWith(search: value);
+
+  void sortBy(CounterSort sort) => state = state.copyWith(sort: sort);
+
+  void showInactive(bool value) =>
+      state = state.copyWith(includeInactive: value);
+}
+
+final counterQueryProvider =
+    NotifierProvider<CounterQueryNotifier, CounterQuery>(
+  CounterQueryNotifier.new,
 );

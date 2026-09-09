@@ -46,6 +46,51 @@ void main() {
     expect(of(counters, 'Hacks').firstSeen, DateTime(2026, 1, 1));
   });
 
+  group('progress since the previous snapshot', () {
+    test('is null with a single snapshot, which is not the same as zero', () {
+      final counters = tracker.track([
+        at(DateTime(2026, 1, 1), {'Hacks': 10}),
+      ]);
+
+      expect(of(counters, 'Hacks').previousValue, isNull);
+      expect(of(counters, 'Hacks').delta, isNull);
+    });
+
+    test('compares the two most recent values', () {
+      final counters = tracker.track([
+        at(DateTime(2026, 1, 1), {'Hacks': 10}),
+        at(DateTime(2026, 1, 10), {'Hacks': 30}),
+        at(DateTime(2026, 1, 20), {'Hacks': 75}),
+      ]);
+
+      expect(of(counters, 'Hacks').previousValue, 30);
+      expect(of(counters, 'Hacks').delta, 45);
+    });
+
+    test('zero progress is reported as zero, not as unknown', () {
+      final counters = tracker.track([
+        at(DateTime(2026, 1, 1), {'Hacks': 10}),
+        at(DateTime(2026, 1, 10), {'Hacks': 10}),
+      ]);
+
+      expect(of(counters, 'Hacks').delta, 0);
+    });
+
+    test('skips snapshots that did not carry the counter', () {
+      // A counter absent from an import has not moved, it was simply not
+      // reported (§3.1.2). Comparing against a snapshot where it does not
+      // exist would invent a delta.
+      final counters = tracker.track([
+        at(DateTime(2026, 1, 1), {'Orion Tokens': 100}),
+        at(DateTime(2026, 1, 10), {'Hacks': 5}),
+        at(DateTime(2026, 1, 20), {'Orion Tokens': 160}),
+      ]);
+
+      expect(of(counters, 'Orion Tokens').previousValue, 100);
+      expect(of(counters, 'Orion Tokens').delta, 60);
+    });
+  });
+
   group('active to inactive after 45 days of absence (§3.1.2)', () {
     test('a counter absent for less than 45 days stays active', () {
       final counters = tracker.track([
