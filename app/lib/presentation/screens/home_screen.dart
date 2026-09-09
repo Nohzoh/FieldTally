@@ -22,7 +22,16 @@ class HomeScreen extends ConsumerWidget {
     final snapshots = ref.watch(snapshotsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.appTitle)),
+      appBar: AppBar(
+        title: Text(l10n.appTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.list_alt),
+            tooltip: l10n.countersTitle,
+            onPressed: () => context.go(Routes.counters),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go(Routes.addSnapshot),
         icon: const Icon(Icons.add),
