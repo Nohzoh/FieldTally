@@ -59,6 +59,13 @@ jobs:
       - name: Vérifie que le seed du registre est synchronisé
         run: dart run tool/sync_registry_seed.dart --check
 
+      # Dependabot résout les dépendances sans les contraintes du SDK Flutter :
+      # il peut donc committer un lock que `flutter pub get` ne sait pas
+      # produire. Comme pub réécrit un lock incohérent au lieu d'échouer, la
+      # dérive passerait inaperçue sans cette vérification explicite.
+      - name: Vérifie que pubspec.lock est synchronisé
+        run: git diff --exit-code pubspec.lock
+
       - name: Analyze
         run: flutter analyze
 
