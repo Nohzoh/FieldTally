@@ -59,7 +59,7 @@ class ImportCheck {
   /// Message principal, destiné à être montré tel quel.
   String? get message {
     if (isPartialPeriod) {
-      return "Ce relevé correspond à la période « $_timeSpanLabel » et non à "
+      return "Ce relevé correspond à la période « $declaredTimeSpanLabel » et non à "
           "un total depuis toujours — l'ajouter fausserait ton historique. "
           "Vérifie que tu as bien sélectionné « All Time » dans Ingress avant "
           "d'exporter.";
@@ -74,7 +74,7 @@ class ImportCheck {
     return null;
   }
 
-  String get _timeSpanLabel => switch (declaredTimeSpan) {
+  String get declaredTimeSpanLabel => switch (declaredTimeSpan) {
         TimeSpan.week => 'WEEK',
         TimeSpan.month => 'MONTH',
         TimeSpan.now => 'NOW',

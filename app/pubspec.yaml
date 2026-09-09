@@ -59,6 +59,7 @@ dependencies:
   intl: ^0.20.2
   # Client HTTP — unique usage réseau de la v1 : fetch de counters.json (§3.1.4)
   http: ^1.6.0
+  uuid: ^4.6.0
 
 dev_dependencies:
   flutter_test:
