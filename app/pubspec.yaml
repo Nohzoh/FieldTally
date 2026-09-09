@@ -39,7 +39,7 @@ dependencies:
   # Gestion d'état
   flutter_riverpod: ^3.4.3
   # Navigation
-  go_router: ^17.5.0
+  go_router: ^18.0.1
   # Stockage local (SQLite typé)
   drift: ^2.34.4
   drift_flutter: ^0.3.1
