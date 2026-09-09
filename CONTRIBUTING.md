@@ -39,6 +39,32 @@ Le second régénère `app/assets/counters_registry_seed.json`, la copie de
 secours embarquée dans l'app. **Ne l'édite jamais à la main** : la CI vérifie
 qu'il correspond bien au fichier de `docs/`.
 
+## Messages de commit
+
+Le projet suit [Conventional Commits](https://www.conventionalcommits.org/fr/) :
+
+```
+type(scope): sujet à l'impératif, en minuscule, sans point final
+
+Corps libre, séparé par une ligne vide, pour expliquer le pourquoi.
+```
+
+Types utilisés : `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`,
+`ci`, `chore`, `style`, `revert`. Le scope est optionnel et désigne la zone
+touchée : `registry`, `parser`, `app`, `docs`, `ci`…
+
+```
+feat(parser): mappe les colonnes d'export par nom d'en-tête
+fix(registry): corrige la catégorie de anomaly_unique_hacks
+ci: ajoute la validation du registre avant déploiement Pages
+```
+
+Un changement cassant se signale par un `!` avant le `:` (`feat(db)!: …`) et un
+paragraphe `BREAKING CHANGE:` dans le corps.
+
+Cette convention n'est pas cosmétique : la pipeline de release (§7.2 de la
+spec) génère le changelog à partir des commits.
+
 ## Contribuer au code
 
 ```bash
