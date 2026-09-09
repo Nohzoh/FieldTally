@@ -25,7 +25,7 @@ jobs:
     name: Valide le registre des compteurs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Valide docs/registry/counters.json
         run: python3 tool/validate_registry.py
 
@@ -37,9 +37,9 @@ jobs:
       run:
         working-directory: app
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
@@ -66,7 +66,7 @@ jobs:
         run: flutter test --coverage
 
       - name: Publie la couverture
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage
@@ -77,7 +77,7 @@ jobs:
         run: flutter build apk --debug
 
       - name: Publie l'APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fieldtally-debug-apk
           path: app/build/app/outputs/flutter-apk/app-debug.apk
