@@ -18,6 +18,7 @@ class TrackedCounter {
     required this.lastSeen,
     required this.lastValue,
     required this.status,
+    this.previousValue,
     this.isMonotonic = true,
   });
 
@@ -31,6 +32,15 @@ class TrackedCounter {
   /// inactive — never read as a reset to zero.
   final int lastValue;
 
+  /// Value at the previous snapshot that carried this counter, or null when
+  /// there is only one.
+  ///
+  /// "Previous snapshot that carried it" rather than "previous snapshot": a
+  /// counter absent from one import has not moved, it was simply not reported
+  /// (§3.1.2). Comparing against a snapshot where it does not exist would
+  /// invent a delta.
+  final int? previousValue;
+
   final CounterStatus status;
 
   /// Feeds the behavioural guard. True by default: nearly every Ingress
@@ -38,6 +48,12 @@ class TrackedCounter {
   final bool isMonotonic;
 
   bool get isActive => status == CounterStatus.active;
+
+  /// Progress since the previous snapshot, or null when there is nothing to
+  /// compare against. Null and zero mean different things: "not known yet"
+  /// versus "no progress".
+  int? get delta =>
+      previousValue == null ? null : lastValue - previousValue!;
 
   @override
   String toString() =>
@@ -71,10 +87,16 @@ class CounterTracker {
     final firstSeen = <String, DateTime>{};
     final lastSeen = <String, DateTime>{};
     final lastValue = <String, int>{};
+    final previousValue = <String, int>{};
 
     for (final snapshot in sorted) {
       for (final entry in snapshot.counters.entries) {
         firstSeen.putIfAbsent(entry.key, () => snapshot.recordedAt);
+        // The value being replaced becomes the previous one, so the delta
+        // always spans two snapshots that actually carried the counter.
+        if (lastValue.containsKey(entry.key)) {
+          previousValue[entry.key] = lastValue[entry.key]!;
+        }
         lastSeen[entry.key] = snapshot.recordedAt;
         lastValue[entry.key] = entry.value;
       }
@@ -87,6 +109,7 @@ class CounterTracker {
           firstSeen: firstSeen[header]!,
           lastSeen: lastSeen[header]!,
           lastValue: lastValue[header]!,
+          previousValue: previousValue[header],
           status: reference.difference(lastSeen[header]!) > inactivityThreshold
               ? CounterStatus.inactive
               : CounterStatus.active,

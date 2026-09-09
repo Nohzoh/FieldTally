@@ -492,6 +492,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unofficial tool, not affiliated with Niantic. \"Ingress\" is a trademark of Niantic, Inc.'**
   String get disclaimer;
+
+  /// No description provided for @countersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All counters'**
+  String get countersTitle;
+
+  /// No description provided for @countersAction.
+  ///
+  /// In en, this message translates to:
+  /// **'All counters'**
+  String get countersAction;
+
+  /// No description provided for @countersEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Counters appear once you have saved a snapshot.'**
+  String get countersEmpty;
+
+  /// No description provided for @searchCounters.
+  ///
+  /// In en, this message translates to:
+  /// **'Search a counter'**
+  String get searchCounters;
+
+  /// No description provided for @sortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sortLabel;
+
+  /// No description provided for @sortByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'In-game order'**
+  String get sortByCategory;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get sortByName;
+
+  /// No description provided for @sortByRecentProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent progress'**
+  String get sortByRecentProgress;
+
+  /// No description provided for @showInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Show inactive counters'**
+  String get showInactive;
+
+  /// No description provided for @inactiveSince.
+  ///
+  /// In en, this message translates to:
+  /// **'inactive since {date}'**
+  String inactiveSince(String date);
+
+  /// No description provided for @shortDateFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'d MMM y'**
+  String get shortDateFormat;
+
+  /// No description provided for @noDelta.
+  ///
+  /// In en, this message translates to:
+  /// **'no comparison yet'**
+  String get noDelta;
+
+  /// No description provided for @deltaSince.
+  ///
+  /// In en, this message translates to:
+  /// **'{delta} since the previous snapshot'**
+  String deltaSince(String delta);
+
+  /// No description provided for @counterHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get counterHistory;
+
+  /// No description provided for @counterFirstSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'First seen'**
+  String get counterFirstSeen;
+
+  /// No description provided for @counterLastSeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Last seen'**
+  String get counterLastSeen;
+
+  /// No description provided for @counterCurrentValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current value'**
+  String get counterCurrentValue;
+
+  /// No description provided for @counterNoTiers.
+  ///
+  /// In en, this message translates to:
+  /// **'No badge threshold is known for this counter yet, so no projection is computed.'**
+  String get counterNoTiers;
+
+  /// No description provided for @counterSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No counter matches “{search}”.'**
+  String counterSearchEmpty(String search);
+
+  /// No description provided for @counterExportHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Export header'**
+  String get counterExportHeader;
 }
 
 class _AppLocalizationsDelegate

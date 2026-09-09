@@ -258,4 +258,71 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get disclaimer =>
       'Unofficial tool, not affiliated with Niantic. \"Ingress\" is a trademark of Niantic, Inc.';
+
+  @override
+  String get countersTitle => 'All counters';
+
+  @override
+  String get countersAction => 'All counters';
+
+  @override
+  String get countersEmpty => 'Counters appear once you have saved a snapshot.';
+
+  @override
+  String get searchCounters => 'Search a counter';
+
+  @override
+  String get sortLabel => 'Sort';
+
+  @override
+  String get sortByCategory => 'In-game order';
+
+  @override
+  String get sortByName => 'Name';
+
+  @override
+  String get sortByRecentProgress => 'Recent progress';
+
+  @override
+  String get showInactive => 'Show inactive counters';
+
+  @override
+  String inactiveSince(String date) {
+    return 'inactive since $date';
+  }
+
+  @override
+  String get shortDateFormat => 'd MMM y';
+
+  @override
+  String get noDelta => 'no comparison yet';
+
+  @override
+  String deltaSince(String delta) {
+    return '$delta since the previous snapshot';
+  }
+
+  @override
+  String get counterHistory => 'History';
+
+  @override
+  String get counterFirstSeen => 'First seen';
+
+  @override
+  String get counterLastSeen => 'Last seen';
+
+  @override
+  String get counterCurrentValue => 'Current value';
+
+  @override
+  String get counterNoTiers =>
+      'No badge threshold is known for this counter yet, so no projection is computed.';
+
+  @override
+  String counterSearchEmpty(String search) {
+    return 'No counter matches “$search”.';
+  }
+
+  @override
+  String get counterExportHeader => 'Export header';
 }

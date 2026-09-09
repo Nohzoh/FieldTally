@@ -1,10 +1,8 @@
 {
   "@@locale": "fr",
-
   "appTitle": "FieldTally",
   "cancel": "Annuler",
   "delete": "Supprimer",
-
   "homeEmptyTitle": "Aucun relevé pour l'instant",
   "homeEmptyDetail": "Partage tes stats depuis Ingress, ou colle le texte exporté pour créer ton premier relevé.",
   "homeLoadError": "Impossible de lire l'historique",
@@ -13,7 +11,6 @@
   "deleteSnapshotTooltip": "Supprimer ce relevé",
   "deleteSnapshotTitle": "Supprimer ce relevé ?",
   "deleteSnapshotBody": "Il disparaîtra de l'historique et des graphiques. Cette action est définitive.",
-
   "addSnapshotTitle": "Ajouter un relevé",
   "addSnapshotAction": "Ajouter un relevé",
   "instructionsTitle": "Depuis Ingress",
@@ -21,7 +18,6 @@
   "pasteFieldLabel": "Texte exporté par Ingress",
   "pasteFieldHint": "Colle ici le texte partagé depuis l'écran de stats…",
   "analyze": "Analyser",
-
   "previewTitle": "Aperçu",
   "previewNotSavedYet": "Rien n'est enregistré tant que tu n'as pas confirmé.",
   "previewDetailedDateFormat": "d MMMM y 'à' HH:mm:ss",
@@ -34,7 +30,6 @@
   "detectedValues": "Valeurs détectées",
   "counterCount": "{count} compteurs",
   "fallbackCategory": "Autres",
-
   "saveSnapshot": "Enregistrer ce relevé",
   "doNotSave": "Ne pas enregistrer",
   "saveAnyway": "Enregistrer quand même…",
@@ -42,20 +37,17 @@
   "saveAnywayBody": "Ce relevé est incohérent avec ton historique. L'enregistrer faussera durablement tes diffs, tes graphiques et tes projections de paliers.\n\nNe continue que si tu sais précisément pourquoi.",
   "saveAnywayConfirm": "Enregistrer quand même",
   "snapshotSaved": "Relevé enregistré.",
-
   "anomalyPartialPeriodTitle": "Période partielle détectée",
   "anomalyRegressionTitle": "Incohérence avec ton historique",
   "anomalyPartialPeriod": "Ce relevé correspond à la période « {period} » et non à un total depuis toujours — l'ajouter fausserait ton historique. Vérifie que tu as bien sélectionné « All Time » dans Ingress avant d'exporter.",
   "anomalyRegression": "{count, plural, one{1 compteur a diminué} other{{count} compteurs ont diminué}} depuis ton dernier relevé, ce qui n'arrive normalement jamais. C'est presque toujours le signe d'un import de la mauvaise période. Vérifie la liste ci-dessous avant de confirmer.",
   "anomalyRegressionLine": "{counter} : {previous} → {current} (−{drop})",
   "anomalyRegressionMore": "… et {count} autres.",
-
   "timeSpanAllTime": "ALL TIME",
   "timeSpanWeek": "WEEK",
   "timeSpanMonth": "MONTH",
   "timeSpanNow": "NOW",
   "timeSpanUnknown": "inconnue",
-
   "parseErrorTitle": "Lecture impossible",
   "parseErrorEmptyText": "Le texte collé est vide — rien à importer.",
   "parseErrorHeaderOnly": "L'export ne contient qu'une ligne d'en-têtes, sans aucune valeur. Vérifie que tu as bien copié le texte entier depuis Ingress.",
@@ -72,6 +64,25 @@
   "parseErrorNonExistentDate": "La date « {value} » n'existe pas.",
   "parseErrorTooManyRows": "L'export contient {count} relevés alors qu'un seul est attendu ici.",
   "parseErrorRawValue": "Valeur lue : « {value} »",
-
-  "disclaimer": "Outil non-officiel, sans lien avec Niantic. « Ingress » est une marque de Niantic, Inc."
+  "disclaimer": "Outil non-officiel, sans lien avec Niantic. « Ingress » est une marque de Niantic, Inc.",
+  "countersTitle": "Tous les compteurs",
+  "countersAction": "Tous les compteurs",
+  "countersEmpty": "Les compteurs apparaissent une fois un relevé enregistré.",
+  "searchCounters": "Rechercher un compteur",
+  "sortLabel": "Trier",
+  "sortByCategory": "Ordre du jeu",
+  "sortByName": "Nom",
+  "sortByRecentProgress": "Progression récente",
+  "showInactive": "Afficher les compteurs inactifs",
+  "inactiveSince": "inactif depuis le {date}",
+  "shortDateFormat": "d MMM y",
+  "noDelta": "pas encore de comparaison",
+  "deltaSince": "{delta} depuis le relevé précédent",
+  "counterHistory": "Historique",
+  "counterFirstSeen": "Première apparition",
+  "counterLastSeen": "Dernière apparition",
+  "counterCurrentValue": "Valeur actuelle",
+  "counterNoTiers": "Aucun seuil de palier n'est connu pour ce compteur, donc aucune projection n'est calculée.",
+  "counterSearchEmpty": "Aucun compteur ne correspond à « {search} ».",
+  "counterExportHeader": "Nom de colonne à l'export"
 }
