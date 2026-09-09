@@ -65,6 +65,38 @@ paragraphe `BREAKING CHANGE:` dans le corps.
 Cette convention n'est pas cosmétique : la pipeline de release (§7.2 de la
 spec) génère le changelog à partir des commits.
 
+## Commits signés
+
+Les commits doivent être signés. Le projet utilise la signature **SSH** plutôt
+que GPG — moins de mise en place, et suffisant pour que GitHub affiche
+*Verified*.
+
+Génère une clé de signature dédiée (distincte de ta clé d'authentification),
+puis ajoute-la à ton compte GitHub dans **Settings → SSH and GPG keys → New SSH
+key**, en choisissant bien **Key type : Signing Key** (et non *Authentication
+Key*, qui ne vérifie aucune signature).
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/fieldtally_signing_ed25519 -C "fieldtally-signing-key"
+
+git config gpg.format ssh
+git config user.signingkey ~/.ssh/fieldtally_signing_ed25519.pub
+git config commit.gpgsign true
+git config tag.gpgsign true
+```
+
+Pour que `git log --show-signature` sache vérifier les signatures en local,
+déclare les clés de confiance :
+
+```bash
+echo "ton@email ssh-ed25519 AAAA..." >> ~/.ssh/allowed_signers
+git config gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers
+```
+
+L'adresse déclarée à gauche doit être celle de tes commits (`git config
+user.email`), sinon la vérification locale échoue même si GitHub affiche
+*Verified*.
+
 ## Contribuer au code
 
 ```bash
