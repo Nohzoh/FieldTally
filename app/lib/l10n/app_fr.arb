@@ -107,5 +107,12 @@
   "activitySubtitle": "AP gagnés, au jour du relevé qui les a mesurés.",
   "activityEmpty": "Il faut deux relevés pour que l'activité apparaisse.",
   "activitySummary": "{days, plural, one{1 jour de progression} other{{days} jours de progression}} · meilleur jour {peak} AP",
-  "chartAxisDateFormat": "d MMM"
+  "chartAxisDateFormat": "d MMM",
+  "settingsTitle": "Réglages",
+  "settingsDataSection": "Catégorisation des compteurs",
+  "settingsOnlineUpdates": "Mettre à jour en ligne",
+  "settingsOnlineUpdatesDetail": "Télécharge depuis le site du projet la liste publique des noms et catégories de compteurs, pour que les nouveaux compteurs d'anomalie soient nommés sans attendre une mise à jour de l'app. Rien te concernant, ni concernant ton appareil, n'est envoyé. Désactive-le pour garder l'app totalement hors-ligne.",
+  "settingsRegistryCounters": "{count} compteurs connus",
+  "settingsRegistryUpdatedAt": "Version {date}",
+  "settingsAboutSection": "À propos"
 }

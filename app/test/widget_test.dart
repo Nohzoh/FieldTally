@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
-import 'package:fieldtally/data/registry/counter_registry_loader.dart';
 import 'package:fieldtally/domain/repositories/snapshot_repository.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
@@ -11,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'support/fixed_registry.dart';
 
 const allTimePath = 'test/fixtures/sample_export_all_time.tsv';
 const weekPath = 'test/fixtures/sample_export_week.tsv';
@@ -42,12 +43,9 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    final registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
-
     container = ProviderContainer(overrides: [
       databaseProvider.overrideWithValue(db),
-      counterRegistryProvider.overrideWith((ref) async => registry),
+      counterRegistryProvider.overrideWith(fixedRegistry),
     ]);
     // Order matters: tearDowns run last-registered-first, so the container is
     // disposed before the database is closed. Closing Drift while a stream
@@ -90,8 +88,11 @@ void main() {
   }
 
   /// The snapshot list is no longer the home screen: the dashboard took its
-  /// place (§3.3), and bookkeeping moved behind its own route.
+  /// place (§3.3), and the destinations moved into the overflow menu so the
+  /// app bar title stops being ellipsised on a narrow phone.
   Future<void> goToSnapshots(WidgetTester tester) async {
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.history));
     await tester.pumpAndSettle();
   }

@@ -25,21 +25,43 @@ class DashboardScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.dashboardTitle),
+        // One icon for the action that belongs to this screen, and a menu for
+        // the destinations: four icons left no room for the title on a narrow
+        // phone, and the title was being ellipsised.
         actions: [
           IconButton(
             icon: const Icon(Icons.tune),
             tooltip: l10n.customise,
             onPressed: () => context.go(Routes.customisePins),
           ),
-          IconButton(
-            icon: const Icon(Icons.list_alt),
-            tooltip: l10n.countersTitle,
-            onPressed: () => context.go(Routes.counters),
-          ),
-          IconButton(
-            icon: const Icon(Icons.history),
-            tooltip: l10n.snapshotsTitle,
-            onPressed: () => context.go(Routes.snapshots),
+          PopupMenuButton<String>(
+            onSelected: context.go,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: Routes.counters,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.list_alt),
+                  title: Text(l10n.countersTitle),
+                ),
+              ),
+              PopupMenuItem(
+                value: Routes.snapshots,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.history),
+                  title: Text(l10n.snapshotsTitle),
+                ),
+              ),
+              PopupMenuItem(
+                value: Routes.settings,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.settings_outlined),
+                  title: Text(l10n.settingsTitle),
+                ),
+              ),
+            ],
           ),
         ],
       ),
