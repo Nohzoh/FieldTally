@@ -47,7 +47,6 @@ dependencies:
   path: ^1.9.1
   # Graphiques
   fl_chart: ^1.2.0
-  flutter_heatmap_calendar: ^1.0.5
   # Partage entrant (share sheet Android) / sortant
   receive_sharing_intent: ^1.9.0
   share_plus: ^13.3.0

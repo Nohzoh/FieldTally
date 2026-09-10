@@ -287,5 +287,50 @@
   },
   "save": "Save",
   "snapshotsTitle": "Snapshots",
-  "notEnoughHistory": "1 snapshot"
+  "notEnoughHistory": "1 snapshot",
+  "chartNeedsTwoSnapshots": "At least two snapshots are needed to draw a chart.",
+  "chartSemantics": "Chart from {first} to {last}, {count} points.",
+  "@chartSemantics": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rangeWeek": "Week",
+  "rangeMonth": "Month",
+  "rangeAll": "All",
+  "rangeGain": "{gain} over this period",
+  "@rangeGain": {
+    "placeholders": {
+      "gain": {
+        "type": "String"
+      }
+    }
+  },
+  "rangeNoData": "Nothing recorded over this period.",
+  "activityTitle": "Activity",
+  "activitySubtitle": "AP gained, on the day each snapshot was taken.",
+  "activityEmpty": "Two snapshots are needed before activity shows up.",
+  "activitySummary": "{days, plural, one{1 day with progress} other{{days} days with progress}} · best day {peak} AP",
+  "@activitySummary": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "peak": {
+        "type": "String"
+      }
+    }
+  },
+  "chartAxisDateFormat": "d MMM",
+  "@chartAxisDateFormat": {
+    "description": "Axis labels: no year, the chart is too narrow for it"
+  }
 }

@@ -5,8 +5,10 @@ import 'package:intl/intl.dart';
 
 import '../../core/router.dart';
 import '../../domain/repositories/snapshot_repository.dart';
+import '../../domain/counter_series.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
+import '../widgets/activity_heatmap.dart';
 
 /// List of saved snapshots (§3.2).
 ///
@@ -64,12 +66,33 @@ class _SnapshotList extends ConsumerWidget {
     final locale = Localizations.localeOf(context).toString();
     final format = DateFormat(l10n.snapshotDateFormat, locale);
 
+    // The calendar sits above the list: §3.5 wants it in a global view, and
+    // this is the screen that already answers "when did I record what".
+    final dates = [for (final stored in snapshots) stored.snapshot.recordedAt]
+      ..sort();
+    final activity = const CounterSeriesBuilder()
+        .activityByDay([for (final stored in snapshots) stored.snapshot]);
+
     return ListView.separated(
       padding: const EdgeInsets.only(bottom: 88),
-      itemCount: snapshots.length,
+      itemCount: snapshots.length + 1,
       separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, index) {
-        final stored = snapshots[index];
+        if (index == 0) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ActivityHeatmap(
+                activityByDay: activity,
+                from: dates.first,
+                to: dates.last,
+              ),
+              const SizedBox(height: 12),
+            ],
+          );
+        }
+
+        final stored = snapshots[index - 1];
         final snapshot = stored.snapshot;
 
         return ListTile(

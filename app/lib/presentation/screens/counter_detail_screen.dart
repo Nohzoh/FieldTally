@@ -4,22 +4,34 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/router.dart';
+import '../../domain/counter_series.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
+import '../widgets/counter_chart.dart';
 
-/// Detail view for one counter (§3.4 → §3.5).
+/// Detail view for one counter (§3.4, §3.5).
 ///
-/// The chart of §3.5 will land here. For now the history is shown as a plain
-/// list of values, which is already what the chart will be drawn from — and,
-/// per §3.9, the numbers must remain readable without the chart anyway.
-class CounterDetailScreen extends ConsumerWidget {
+/// The chart is scaled to this counter alone — the point of §3.5, since the
+/// audit found Agent Stats unreadable for sharing one axis between sixty
+/// series. Per §3.9 the numbers stay listed underneath: the chart is never the
+/// only way to read the data.
+class CounterDetailScreen extends ConsumerStatefulWidget {
   const CounterDetailScreen({super.key, required this.exportHeader});
 
   /// Stable identity of the counter, as it appears in the export.
   final String exportHeader;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CounterDetailScreen> createState() =>
+      _CounterDetailScreenState();
+}
+
+class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
+  ChartRange _range = ChartRange.all;
+
+  @override
+  Widget build(BuildContext context) {
+    final exportHeader = widget.exportHeader;
     final l10n = AppLocalizations.of(context);
     final language = Localizations.localeOf(context).languageCode;
     final locale = Localizations.localeOf(context).toString();
@@ -40,6 +52,12 @@ class CounterDetailScreen extends ConsumerWidget {
         if (stored.snapshot.counters.containsKey(exportHeader))
           (stored.snapshot.recordedAt, stored.snapshot.counters[exportHeader]!),
     ];
+
+    final series = const CounterSeriesBuilder().series(
+      snapshots: [for (final stored in snapshots) stored.snapshot],
+      exportHeader: exportHeader,
+      range: _range,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -81,6 +99,43 @@ class CounterDetailScreen extends ConsumerWidget {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          SegmentedButton<ChartRange>(
+            segments: [
+              ButtonSegment(value: ChartRange.week, label: Text(l10n.rangeWeek)),
+              ButtonSegment(
+                  value: ChartRange.month, label: Text(l10n.rangeMonth)),
+              ButtonSegment(value: ChartRange.all, label: Text(l10n.rangeAll)),
+            ],
+            selected: {_range},
+            showSelectedIcon: false,
+            onSelectionChanged: (selection) =>
+                setState(() => _range = selection.first),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 200,
+            child: series.isEmpty
+                ? Center(
+                    child: Text(
+                      l10n.rangeNoData,
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: theme.colorScheme.outline),
+                    ),
+                  )
+                : CounterChart(series: series),
+          ),
+          if (series.gain != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.rangeGain(
+                '${series.gain! >= 0 ? '+' : '−'}'
+                '${numbers.format(series.gain!.abs())}',
+              ),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.outline),
+            ),
+          ],
           if (enrichment == null || enrichment.tiers.isEmpty) ...[
             const SizedBox(height: 12),
             Text(
