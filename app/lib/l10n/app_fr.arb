@@ -95,5 +95,17 @@
   "customiseTooFew": "Choisis-en au moins {min}.",
   "save": "Enregistrer",
   "snapshotsTitle": "Relevés",
-  "notEnoughHistory": "1 relevé"
+  "notEnoughHistory": "1 relevé",
+  "chartNeedsTwoSnapshots": "Il faut au moins deux relevés pour tracer un graphique.",
+  "chartSemantics": "Graphique de {first} à {last}, {count} points.",
+  "rangeWeek": "Semaine",
+  "rangeMonth": "Mois",
+  "rangeAll": "Tout",
+  "rangeGain": "{gain} sur cette période",
+  "rangeNoData": "Rien d'enregistré sur cette période.",
+  "activityTitle": "Activité",
+  "activitySubtitle": "AP gagnés, au jour du relevé qui les a mesurés.",
+  "activityEmpty": "Il faut deux relevés pour que l'activité apparaisse.",
+  "activitySummary": "{days, plural, one{1 jour de progression} other{{days} jours de progression}} · meilleur jour {peak} AP",
+  "chartAxisDateFormat": "d MMM"
 }

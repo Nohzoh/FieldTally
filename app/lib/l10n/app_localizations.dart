@@ -678,6 +678,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'1 snapshot'**
   String get notEnoughHistory;
+
+  /// No description provided for @chartNeedsTwoSnapshots.
+  ///
+  /// In en, this message translates to:
+  /// **'At least two snapshots are needed to draw a chart.'**
+  String get chartNeedsTwoSnapshots;
+
+  /// No description provided for @chartSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Chart from {first} to {last}, {count} points.'**
+  String chartSemantics(String first, String last, int count);
+
+  /// No description provided for @rangeWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get rangeWeek;
+
+  /// No description provided for @rangeMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get rangeMonth;
+
+  /// No description provided for @rangeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get rangeAll;
+
+  /// No description provided for @rangeGain.
+  ///
+  /// In en, this message translates to:
+  /// **'{gain} over this period'**
+  String rangeGain(String gain);
+
+  /// No description provided for @rangeNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing recorded over this period.'**
+  String get rangeNoData;
+
+  /// No description provided for @activityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityTitle;
+
+  /// No description provided for @activitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AP gained, on the day each snapshot was taken.'**
+  String get activitySubtitle;
+
+  /// No description provided for @activityEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Two snapshots are needed before activity shows up.'**
+  String get activityEmpty;
+
+  /// No description provided for @activitySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, one{1 day with progress} other{{days} days with progress}} · best day {peak} AP'**
+  String activitySummary(int days, String peak);
+
+  /// Axis labels: no year, the chart is too narrow for it
+  ///
+  /// In en, this message translates to:
+  /// **'d MMM'**
+  String get chartAxisDateFormat;
 }
 
 class _AppLocalizationsDelegate

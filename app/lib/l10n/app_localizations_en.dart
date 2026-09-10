@@ -365,4 +365,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notEnoughHistory => '1 snapshot';
+
+  @override
+  String get chartNeedsTwoSnapshots =>
+      'At least two snapshots are needed to draw a chart.';
+
+  @override
+  String chartSemantics(String first, String last, int count) {
+    return 'Chart from $first to $last, $count points.';
+  }
+
+  @override
+  String get rangeWeek => 'Week';
+
+  @override
+  String get rangeMonth => 'Month';
+
+  @override
+  String get rangeAll => 'All';
+
+  @override
+  String rangeGain(String gain) {
+    return '$gain over this period';
+  }
+
+  @override
+  String get rangeNoData => 'Nothing recorded over this period.';
+
+  @override
+  String get activityTitle => 'Activity';
+
+  @override
+  String get activitySubtitle =>
+      'AP gained, on the day each snapshot was taken.';
+
+  @override
+  String get activityEmpty =>
+      'Two snapshots are needed before activity shows up.';
+
+  @override
+  String activitySummary(int days, String peak) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days with progress',
+      one: '1 day with progress',
+    );
+    return '$_temp0 · best day $peak AP';
+  }
+
+  @override
+  String get chartAxisDateFormat => 'd MMM';
 }

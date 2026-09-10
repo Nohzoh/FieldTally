@@ -367,4 +367,55 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notEnoughHistory => '1 relevé';
+
+  @override
+  String get chartNeedsTwoSnapshots =>
+      'Il faut au moins deux relevés pour tracer un graphique.';
+
+  @override
+  String chartSemantics(String first, String last, int count) {
+    return 'Graphique de $first à $last, $count points.';
+  }
+
+  @override
+  String get rangeWeek => 'Semaine';
+
+  @override
+  String get rangeMonth => 'Mois';
+
+  @override
+  String get rangeAll => 'Tout';
+
+  @override
+  String rangeGain(String gain) {
+    return '$gain sur cette période';
+  }
+
+  @override
+  String get rangeNoData => 'Rien d\'enregistré sur cette période.';
+
+  @override
+  String get activityTitle => 'Activité';
+
+  @override
+  String get activitySubtitle =>
+      'AP gagnés, au jour du relevé qui les a mesurés.';
+
+  @override
+  String get activityEmpty =>
+      'Il faut deux relevés pour que l\'activité apparaisse.';
+
+  @override
+  String activitySummary(int days, String peak) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days jours de progression',
+      one: '1 jour de progression',
+    );
+    return '$_temp0 · meilleur jour $peak AP';
+  }
+
+  @override
+  String get chartAxisDateFormat => 'd MMM';
 }
