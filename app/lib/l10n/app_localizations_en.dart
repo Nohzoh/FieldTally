@@ -325,4 +325,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get counterExportHeader => 'Export header';
+
+  @override
+  String get dashboardTitle => 'FieldTally';
+
+  @override
+  String get dashboardEmptyTitle => 'Nothing to show yet';
+
+  @override
+  String get dashboardEmptyDetail =>
+      'Add a snapshot and your pinned counters will appear here.';
+
+  @override
+  String get customise => 'Customise';
+
+  @override
+  String get customiseTitle => 'Pinned counters';
+
+  @override
+  String customiseHint(int min, int max) {
+    return 'Pick between $min and $max counters to show on the dashboard.';
+  }
+
+  @override
+  String customiseSelected(int count, int max) {
+    return '$count of $max selected';
+  }
+
+  @override
+  String customiseTooFew(int min) {
+    return 'Pick at least $min.';
+  }
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get snapshotsTitle => 'Snapshots';
+
+  @override
+  String get notEnoughHistory => 'one snapshot only';
 }

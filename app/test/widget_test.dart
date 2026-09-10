@@ -49,8 +49,12 @@ void main() {
       databaseProvider.overrideWithValue(db),
       counterRegistryProvider.overrideWith((ref) async => registry),
     ]);
-    addTearDown(container.dispose);
+    // Order matters: tearDowns run last-registered-first, so the container is
+    // disposed before the database is closed. Closing Drift while a stream
+    // query is still subscribed hangs, and the dashboard adds a second one on
+    // top of the snapshots stream.
     addTearDown(db.close);
+    addTearDown(container.dispose);
 
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -81,14 +85,28 @@ void main() {
   }
 
   Future<void> goToAddScreen(WidgetTester tester) async {
-    await tester.tap(find.text('Add a snapshot').first);
+    await tester.tap(find.widgetWithText(FloatingActionButton, 'Add a snapshot'));
+    await tester.pumpAndSettle();
+  }
+
+  /// The snapshot list is no longer the home screen: the dashboard took its
+  /// place (§3.3), and bookkeeping moved behind its own route.
+  Future<void> goToSnapshots(WidgetTester tester) async {
+    await tester.tap(find.byIcon(Icons.history));
     await tester.pumpAndSettle();
   }
 
   group('home screen', () {
-    testWidgets('shows an empty state when there is no snapshot',
+    testWidgets('the dashboard says there is nothing to show yet',
         (tester) async {
       await pumpApp(tester);
+
+      expect(find.text('Nothing to show yet'), findsOneWidget);
+    });
+
+    testWidgets('the snapshot list is reachable and empty', (tester) async {
+      await pumpApp(tester);
+      await goToSnapshots(tester);
 
       expect(find.text('No snapshot yet'), findsOneWidget);
     });
@@ -159,7 +177,8 @@ void main() {
       final all = await repository.all();
       expect(all, hasLength(1));
       expect(all.single.snapshot.counters, hasLength(59));
-      expect(find.text('No snapshot yet'), findsNothing);
+      // Saving returns to the dashboard, which now has something to show.
+      expect(find.text('Nothing to show yet'), findsNothing);
     });
   });
 
@@ -269,6 +288,7 @@ void main() {
       await tester.tap(find.text('Save this snapshot'));
       await tester.pumpAndSettle();
 
+      await goToSnapshots(tester);
       await tester.tap(find.byIcon(Icons.delete_outline));
       await tester.pumpAndSettle();
       expect(find.text('Delete this snapshot?'), findsOneWidget);
@@ -286,9 +306,10 @@ void main() {
         (tester) async {
       await pumpApp(tester, locale: const Locale('fr'));
 
-      expect(find.text('Aucun relevé pour l\'instant'), findsOneWidget);
+      expect(find.text('Rien à afficher pour l\'instant'), findsOneWidget);
 
-      await tester.tap(find.text('Ajouter un relevé').first);
+      await tester.tap(
+          find.widgetWithText(FloatingActionButton, 'Ajouter un relevé'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), fixture(allTimePath));
       await tester.tap(find.widgetWithText(FilledButton, 'Analyser'));

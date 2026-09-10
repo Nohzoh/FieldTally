@@ -249,5 +249,43 @@
       }
     }
   },
-  "counterExportHeader": "Export header"
+  "counterExportHeader": "Export header",
+  "dashboardTitle": "FieldTally",
+  "dashboardEmptyTitle": "Nothing to show yet",
+  "dashboardEmptyDetail": "Add a snapshot and your pinned counters will appear here.",
+  "customise": "Customise",
+  "customiseTitle": "Pinned counters",
+  "customiseHint": "Pick between {min} and {max} counters to show on the dashboard.",
+  "@customiseHint": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "customiseSelected": "{count} of {max} selected",
+  "@customiseSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "customiseTooFew": "Pick at least {min}.",
+  "@customiseTooFew": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "save": "Save",
+  "snapshotsTitle": "Snapshots",
+  "notEnoughHistory": "one snapshot only"
 }

@@ -327,4 +327,44 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get counterExportHeader => 'Nom de colonne à l\'export';
+
+  @override
+  String get dashboardTitle => 'FieldTally';
+
+  @override
+  String get dashboardEmptyTitle => 'Rien à afficher pour l\'instant';
+
+  @override
+  String get dashboardEmptyDetail =>
+      'Ajoute un relevé et tes compteurs épinglés apparaîtront ici.';
+
+  @override
+  String get customise => 'Personnaliser';
+
+  @override
+  String get customiseTitle => 'Compteurs épinglés';
+
+  @override
+  String customiseHint(int min, int max) {
+    return 'Choisis entre $min et $max compteurs à afficher sur le tableau de bord.';
+  }
+
+  @override
+  String customiseSelected(int count, int max) {
+    return '$count sur $max sélectionnés';
+  }
+
+  @override
+  String customiseTooFew(int min) {
+    return 'Choisis-en au moins $min.';
+  }
+
+  @override
+  String get save => 'Enregistrer';
+
+  @override
+  String get snapshotsTitle => 'Relevés';
+
+  @override
+  String get notEnoughHistory => 'un seul relevé';
 }

@@ -3,16 +3,21 @@ import 'package:go_router/go_router.dart';
 import '../presentation/screens/add_snapshot_screen.dart';
 import '../presentation/screens/counter_detail_screen.dart';
 import '../presentation/screens/counter_list_screen.dart';
-import '../presentation/screens/home_screen.dart';
+import '../presentation/screens/customise_pins_screen.dart';
+import '../presentation/screens/dashboard_screen.dart';
+import '../presentation/screens/snapshot_list_screen.dart';
 
 /// Application routes (§5.1: go_router).
 ///
-/// The customisable dashboard (§3.3) and the per-counter charts (§3.5) will be
-/// added here.
+/// The per-counter charts (§3.5) will be added here.
 abstract final class Routes {
+  /// The dashboard (§3.3) is the home screen; the snapshot list moved to its
+  /// own route once it stopped being the first thing an agent sees.
   static const home = '/';
   static const addSnapshot = '/add';
   static const counters = '/counters';
+  static const snapshots = '/snapshots';
+  static const customisePins = '/pins';
 
   /// A counter is addressed by its export header, which is its stable identity
   /// (§3.1.2). Headers carry spaces and parentheses, so the segment is
@@ -30,7 +35,7 @@ GoRouter createRouter() => GoRouter(
       routes: [
         GoRoute(
           path: Routes.home,
-          builder: (context, state) => const HomeScreen(),
+          builder: (context, state) => const DashboardScreen(),
           routes: [
             GoRoute(
               path: 'add',
@@ -39,6 +44,14 @@ GoRouter createRouter() => GoRouter(
                 // Ingress here, landing straight on the preview.
                 initialText: state.extra as String?,
               ),
+            ),
+            GoRoute(
+              path: 'snapshots',
+              builder: (context, state) => const SnapshotListScreen(),
+            ),
+            GoRoute(
+              path: 'pins',
+              builder: (context, state) => const CustomisePinsScreen(),
             ),
             GoRoute(
               path: 'counters',

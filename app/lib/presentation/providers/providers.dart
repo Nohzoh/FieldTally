@@ -3,12 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/db/database.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
 import '../../data/registry/counter_registry_loader.dart';
+import '../../data/repositories/drift_pinned_counter_repository.dart';
 import '../../data/repositories/drift_snapshot_repository.dart';
 import '../../data/sharing/incoming_share.dart';
 import '../../domain/counter_list.dart';
+import '../../domain/dashboard.dart';
 import '../../domain/guards/import_guards.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/models/tracked_counter.dart';
+import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 
 /// Local database. Overridden with an in-memory one in tests.
@@ -75,3 +78,31 @@ final counterQueryProvider =
     NotifierProvider<CounterQueryNotifier, CounterQuery>(
   CounterQueryNotifier.new,
 );
+
+final pinnedCounterRepositoryProvider = Provider<PinnedCounterRepository>(
+  (ref) => DriftPinnedCounterRepository(ref.watch(databaseProvider)),
+);
+
+/// Counters shown on the dashboard, falling back to the defaults until the
+/// agent has picked their own (§3.3).
+final pinnedCountersProvider = StreamProvider<List<String>>(
+  (ref) => ref.watch(pinnedCounterRepositoryProvider).watchPinned().map(
+        (pinned) =>
+            pinned.isEmpty ? PinnedCounterRepository.defaults : pinned,
+      ),
+);
+
+/// The dashboard cards, rebuilt whenever the history or the selection changes.
+final dashboardProvider = Provider<AsyncValue<List<DashboardCard>>>((ref) {
+  final snapshots = ref.watch(snapshotsProvider);
+  final pinned = ref.watch(pinnedCountersProvider);
+
+  if (snapshots.isLoading || pinned.isLoading) return const AsyncValue.loading();
+
+  return snapshots.whenData(
+    (stored) => const DashboardBuilder().build(
+      snapshots: [for (final s in stored) s.snapshot],
+      pinned: pinned.asData?.value ?? const [],
+    ),
+  );
+});

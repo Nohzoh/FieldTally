@@ -84,5 +84,16 @@
   "counterCurrentValue": "Valeur actuelle",
   "counterNoTiers": "Aucun seuil de palier n'est connu pour ce compteur, donc aucune projection n'est calculée.",
   "counterSearchEmpty": "Aucun compteur ne correspond à « {search} ».",
-  "counterExportHeader": "Nom de colonne à l'export"
+  "counterExportHeader": "Nom de colonne à l'export",
+  "dashboardTitle": "FieldTally",
+  "dashboardEmptyTitle": "Rien à afficher pour l'instant",
+  "dashboardEmptyDetail": "Ajoute un relevé et tes compteurs épinglés apparaîtront ici.",
+  "customise": "Personnaliser",
+  "customiseTitle": "Compteurs épinglés",
+  "customiseHint": "Choisis entre {min} et {max} compteurs à afficher sur le tableau de bord.",
+  "customiseSelected": "{count} sur {max} sélectionnés",
+  "customiseTooFew": "Choisis-en au moins {min}.",
+  "save": "Enregistrer",
+  "snapshotsTitle": "Relevés",
+  "notEnoughHistory": "un seul relevé"
 }
