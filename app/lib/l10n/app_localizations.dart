@@ -612,6 +612,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export header'**
   String get counterExportHeader;
+
+  /// No description provided for @dashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FieldTally'**
+  String get dashboardTitle;
+
+  /// No description provided for @dashboardEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to show yet'**
+  String get dashboardEmptyTitle;
+
+  /// No description provided for @dashboardEmptyDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a snapshot and your pinned counters will appear here.'**
+  String get dashboardEmptyDetail;
+
+  /// No description provided for @customise.
+  ///
+  /// In en, this message translates to:
+  /// **'Customise'**
+  String get customise;
+
+  /// No description provided for @customiseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned counters'**
+  String get customiseTitle;
+
+  /// No description provided for @customiseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick between {min} and {max} counters to show on the dashboard.'**
+  String customiseHint(int min, int max);
+
+  /// No description provided for @customiseSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {max} selected'**
+  String customiseSelected(int count, int max);
+
+  /// No description provided for @customiseTooFew.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick at least {min}.'**
+  String customiseTooFew(int min);
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @snapshotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapshots'**
+  String get snapshotsTitle;
+
+  /// No description provided for @notEnoughHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'one snapshot only'**
+  String get notEnoughHistory;
 }
 
 class _AppLocalizationsDelegate

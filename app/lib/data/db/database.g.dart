@@ -754,11 +754,236 @@ class CounterValuesCompanion extends UpdateCompanion<CounterValue> {
   }
 }
 
+class $PinnedCountersTable extends PinnedCounters
+    with TableInfo<$PinnedCountersTable, PinnedCounter> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PinnedCountersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _exportHeaderMeta = const VerificationMeta(
+    'exportHeader',
+  );
+  @override
+  late final GeneratedColumn<String> exportHeader = GeneratedColumn<String>(
+    'export_header',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [exportHeader, position];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pinned_counters';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PinnedCounter> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('export_header')) {
+      context.handle(
+        _exportHeaderMeta,
+        exportHeader.isAcceptableOrUnknown(
+          data['export_header']!,
+          _exportHeaderMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_exportHeaderMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {exportHeader};
+  @override
+  PinnedCounter map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PinnedCounter(
+      exportHeader: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}export_header'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+    );
+  }
+
+  @override
+  $PinnedCountersTable createAlias(String alias) {
+    return $PinnedCountersTable(attachedDatabase, alias);
+  }
+}
+
+class PinnedCounter extends DataClass implements Insertable<PinnedCounter> {
+  /// Export header, the stable identity of a counter (§3.1.2).
+  final String exportHeader;
+  final int position;
+  const PinnedCounter({required this.exportHeader, required this.position});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['export_header'] = Variable<String>(exportHeader);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  PinnedCountersCompanion toCompanion(bool nullToAbsent) {
+    return PinnedCountersCompanion(
+      exportHeader: Value(exportHeader),
+      position: Value(position),
+    );
+  }
+
+  factory PinnedCounter.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PinnedCounter(
+      exportHeader: serializer.fromJson<String>(json['exportHeader']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'exportHeader': serializer.toJson<String>(exportHeader),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  PinnedCounter copyWith({String? exportHeader, int? position}) =>
+      PinnedCounter(
+        exportHeader: exportHeader ?? this.exportHeader,
+        position: position ?? this.position,
+      );
+  PinnedCounter copyWithCompanion(PinnedCountersCompanion data) {
+    return PinnedCounter(
+      exportHeader: data.exportHeader.present
+          ? data.exportHeader.value
+          : this.exportHeader,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PinnedCounter(')
+          ..write('exportHeader: $exportHeader, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(exportHeader, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PinnedCounter &&
+          other.exportHeader == this.exportHeader &&
+          other.position == this.position);
+}
+
+class PinnedCountersCompanion extends UpdateCompanion<PinnedCounter> {
+  final Value<String> exportHeader;
+  final Value<int> position;
+  final Value<int> rowid;
+  const PinnedCountersCompanion({
+    this.exportHeader = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PinnedCountersCompanion.insert({
+    required String exportHeader,
+    required int position,
+    this.rowid = const Value.absent(),
+  }) : exportHeader = Value(exportHeader),
+       position = Value(position);
+  static Insertable<PinnedCounter> custom({
+    Expression<String>? exportHeader,
+    Expression<int>? position,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (exportHeader != null) 'export_header': exportHeader,
+      if (position != null) 'position': position,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PinnedCountersCompanion copyWith({
+    Value<String>? exportHeader,
+    Value<int>? position,
+    Value<int>? rowid,
+  }) {
+    return PinnedCountersCompanion(
+      exportHeader: exportHeader ?? this.exportHeader,
+      position: position ?? this.position,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (exportHeader.present) {
+      map['export_header'] = Variable<String>(exportHeader.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PinnedCountersCompanion(')
+          ..write('exportHeader: $exportHeader, ')
+          ..write('position: $position, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FieldTallyDatabase extends GeneratedDatabase {
   _$FieldTallyDatabase(QueryExecutor e) : super(e);
   $FieldTallyDatabaseManager get managers => $FieldTallyDatabaseManager(this);
   late final $SnapshotsTable snapshots = $SnapshotsTable(this);
   late final $CounterValuesTable counterValues = $CounterValuesTable(this);
+  late final $PinnedCountersTable pinnedCounters = $PinnedCountersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -766,6 +991,7 @@ abstract class _$FieldTallyDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     snapshots,
     counterValues,
+    pinnedCounters,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -1417,6 +1643,170 @@ typedef $$CounterValuesTableProcessedTableManager =
       CounterValue,
       PrefetchHooks Function({bool snapshotId})
     >;
+typedef $$PinnedCountersTableCreateCompanionBuilder =
+    PinnedCountersCompanion Function({
+      required String exportHeader,
+      required int position,
+      Value<int> rowid,
+    });
+typedef $$PinnedCountersTableUpdateCompanionBuilder =
+    PinnedCountersCompanion Function({
+      Value<String> exportHeader,
+      Value<int> position,
+      Value<int> rowid,
+    });
+
+class $$PinnedCountersTableFilterComposer
+    extends Composer<_$FieldTallyDatabase, $PinnedCountersTable> {
+  $$PinnedCountersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get exportHeader => $composableBuilder(
+    column: $table.exportHeader,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PinnedCountersTableOrderingComposer
+    extends Composer<_$FieldTallyDatabase, $PinnedCountersTable> {
+  $$PinnedCountersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get exportHeader => $composableBuilder(
+    column: $table.exportHeader,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PinnedCountersTableAnnotationComposer
+    extends Composer<_$FieldTallyDatabase, $PinnedCountersTable> {
+  $$PinnedCountersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get exportHeader => $composableBuilder(
+    column: $table.exportHeader,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+}
+
+class $$PinnedCountersTableTableManager
+    extends
+        RootTableManager<
+          _$FieldTallyDatabase,
+          $PinnedCountersTable,
+          PinnedCounter,
+          $$PinnedCountersTableFilterComposer,
+          $$PinnedCountersTableOrderingComposer,
+          $$PinnedCountersTableAnnotationComposer,
+          $$PinnedCountersTableCreateCompanionBuilder,
+          $$PinnedCountersTableUpdateCompanionBuilder,
+          (
+            PinnedCounter,
+            BaseReferences<
+              _$FieldTallyDatabase,
+              $PinnedCountersTable,
+              PinnedCounter
+            >,
+          ),
+          PinnedCounter,
+          PrefetchHooks Function()
+        > {
+  $$PinnedCountersTableTableManager(
+    _$FieldTallyDatabase db,
+    $PinnedCountersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PinnedCountersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PinnedCountersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PinnedCountersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> exportHeader = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PinnedCountersCompanion(
+                exportHeader: exportHeader,
+                position: position,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String exportHeader,
+                required int position,
+                Value<int> rowid = const Value.absent(),
+              }) => PinnedCountersCompanion.insert(
+                exportHeader: exportHeader,
+                position: position,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PinnedCountersTable, PinnedCounter>(table),
+                  BaseReferences<
+                    _$FieldTallyDatabase,
+                    $PinnedCountersTable,
+                    PinnedCounter
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PinnedCountersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FieldTallyDatabase,
+      $PinnedCountersTable,
+      PinnedCounter,
+      $$PinnedCountersTableFilterComposer,
+      $$PinnedCountersTableOrderingComposer,
+      $$PinnedCountersTableAnnotationComposer,
+      $$PinnedCountersTableCreateCompanionBuilder,
+      $$PinnedCountersTableUpdateCompanionBuilder,
+      (
+        PinnedCounter,
+        BaseReferences<
+          _$FieldTallyDatabase,
+          $PinnedCountersTable,
+          PinnedCounter
+        >,
+      ),
+      PinnedCounter,
+      PrefetchHooks Function()
+    >;
 
 class $FieldTallyDatabaseManager {
   final _$FieldTallyDatabase _db;
@@ -1425,4 +1815,6 @@ class $FieldTallyDatabaseManager {
       $$SnapshotsTableTableManager(_db, _db.snapshots);
   $$CounterValuesTableTableManager get counterValues =>
       $$CounterValuesTableTableManager(_db, _db.counterValues);
+  $$PinnedCountersTableTableManager get pinnedCounters =>
+      $$PinnedCountersTableTableManager(_db, _db.pinnedCounters);
 }

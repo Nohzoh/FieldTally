@@ -8,13 +8,13 @@ import '../../domain/repositories/snapshot_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
-/// List of saved snapshots.
+/// List of saved snapshots (§3.2).
 ///
-/// This is **not** the dashboard of §3.3: that one will replace this screen,
-/// with its pinned cards and sparklines. In the meantime there has to be
-/// somewhere to add a snapshot from and to check what was saved.
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
+/// Split out of the home screen once the dashboard took its place: reviewing,
+/// correcting and deleting snapshots is bookkeeping, not something to put in
+/// front of someone opening the app to check their progress.
+class SnapshotListScreen extends ConsumerWidget {
+  const SnapshotListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,14 +23,11 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.appTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.list_alt),
-            tooltip: l10n.countersTitle,
-            onPressed: () => context.go(Routes.counters),
-          ),
-        ],
+        title: Text(l10n.snapshotsTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go(Routes.home),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go(Routes.addSnapshot),

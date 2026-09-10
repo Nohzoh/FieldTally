@@ -45,8 +45,12 @@ void main() {
       databaseProvider.overrideWithValue(db),
       counterRegistryProvider.overrideWith((ref) async => registry),
     ]);
-    addTearDown(container.dispose);
+    // Order matters: tearDowns run last-registered-first, so the container is
+    // disposed before the database is closed. Closing Drift while a stream
+    // query is still subscribed hangs, and the dashboard adds a second one on
+    // top of the snapshots stream.
     addTearDown(db.close);
+    addTearDown(container.dispose);
 
     final repository = container.read(snapshotRepositoryProvider);
     const parser = IngressTsvParser();

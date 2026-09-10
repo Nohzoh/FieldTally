@@ -47,16 +47,36 @@ class CounterValues extends Table {
   Set<Column> get primaryKey => {snapshotId, exportHeader};
 }
 
-@DriftDatabase(tables: [Snapshots, CounterValues])
+/// Counters the user chose to pin on the dashboard (§3.3).
+///
+/// Stored rather than derived: it is a preference, not something that can be
+/// recomputed from the snapshots. [position] keeps the order the user arranged
+/// them in.
+class PinnedCounters extends Table {
+  /// Export header, the stable identity of a counter (§3.1.2).
+  TextColumn get exportHeader => text()();
+
+  IntColumn get position => integer()();
+
+  @override
+  Set<Column> get primaryKey => {exportHeader};
+}
+
+@DriftDatabase(tables: [Snapshots, CounterValues, PinnedCounters])
 class FieldTallyDatabase extends _$FieldTallyDatabase {
   FieldTallyDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'fieldtally'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (m, from, to) async {
+          // v2 adds the dashboard pins. Nothing to backfill: an empty table
+          // simply means the dashboard falls back to its defaults.
+          if (from < 2) await m.createTable(pinnedCounters);
+        },
         beforeOpen: (details) async {
           // Without this, SQLite ignores `onDelete: cascade`: deleting a
           // snapshot would leave its counter values orphaned.
