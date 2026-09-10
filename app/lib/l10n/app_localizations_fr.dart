@@ -366,5 +366,5 @@ class AppLocalizationsFr extends AppLocalizations {
   String get snapshotsTitle => 'Relevés';
 
   @override
-  String get notEnoughHistory => 'un seul relevé';
+  String get notEnoughHistory => '1 relevé';
 }

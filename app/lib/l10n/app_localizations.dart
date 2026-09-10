@@ -676,7 +676,7 @@ abstract class AppLocalizations {
   /// No description provided for @notEnoughHistory.
   ///
   /// In en, this message translates to:
-  /// **'one snapshot only'**
+  /// **'1 snapshot'**
   String get notEnoughHistory;
 }
 

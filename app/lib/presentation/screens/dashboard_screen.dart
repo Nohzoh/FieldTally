@@ -53,21 +53,31 @@ class DashboardScreen extends ConsumerWidget {
         error: (error, stackTrace) => Center(child: Text('$error')),
         data: (list) => list.isEmpty
             ? _Empty(title: l10n.dashboardEmptyTitle, detail: l10n.dashboardEmptyDetail)
-            : GridView.count(
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 88),
-                crossAxisCount: 2,
-                // Cells are deliberately tall: the card carries a label that
-                // may wrap, a large number, a diff and a sparkline, and §3.9
-                // requires honouring the system text size — a tight ratio
-                // overflows as soon as someone scales their fonts up.
-                childAspectRatio: 0.78,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                children: [for (final card in list) _Card(card: card)],
+            : LayoutBuilder(
+                builder: (context, constraints) => GridView.count(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 88),
+                  // Two columns are too narrow below roughly 340pt: counter
+                  // names are long, and a 110pt card clipped both the label
+                  // and the caption. One column there, three on a tablet.
+                  crossAxisCount: _columnsFor(constraints.maxWidth),
+                  // A fixed height rather than an aspect ratio: the card must
+                  // keep the same room whatever the column count, and §3.9
+                  // requires it to survive the system text size being scaled.
+                  mainAxisExtent: 176,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  children: [for (final card in list) _Card(card: card)],
+                ),
               ),
       ),
     );
   }
+}
+
+int _columnsFor(double width) {
+  if (width < 340) return 1;
+  if (width < 700) return 2;
+  return 3;
 }
 
 class _Card extends ConsumerWidget {
@@ -102,7 +112,7 @@ class _Card extends ConsumerWidget {
                 child: Text(
                   label,
                   style: theme.textTheme.labelLarge,
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -120,9 +130,12 @@ class _Card extends ConsumerWidget {
                   ),
                 ),
               ),
+              // An em dash rather than a sentence: the card is narrow, and the
+              // line below already says why there is nothing to compare
+              // against. Spelling it out twice truncated both.
               Text(
                 delta == null
-                    ? l10n.noDelta
+                    ? '—'
                     : '${delta >= 0 ? '+' : '−'}${numbers.format(delta.abs())}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

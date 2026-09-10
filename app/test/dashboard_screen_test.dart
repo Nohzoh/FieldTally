@@ -11,6 +11,7 @@ import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
 import 'package:fieldtally/presentation/widgets/sparkline.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -140,8 +141,10 @@ void main() {
       );
 
       expect(find.byType(Sparkline), findsNothing);
-      expect(find.text('one snapshot only'), findsOneWidget);
-      expect(find.text('no comparison yet'), findsOneWidget);
+      expect(find.text('1 snapshot'), findsOneWidget);
+      // An em dash, not a sentence: see the card, which explains why just
+      // below. Two wordy lines truncated each other on a narrow card.
+      expect(find.text('—'), findsOneWidget);
     });
 
     testWidgets('cards keep the order the agent pinned them in',
@@ -180,6 +183,37 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+
+    testWidgets('no card text is truncated on a small screen', (tester) async {
+      // Caught on the emulator: the placeholder for a missing diff was a full
+      // sentence, ellipsised, and said the same thing as the line below it.
+      //
+      // Asks the render objects whether they actually clipped, rather than
+      // re-measuring by hand: that is the same decision the painter made.
+      await pumpDashboard(
+        tester,
+        size: const Size(320, 640),
+        pixelRatio: 1.0,
+        pinned: const ['Lifetime AP', 'Unique Portals Visited'],
+        history: [
+          at(DateTime(2026, 1, 1),
+              const {'Lifetime AP': 101542335, 'Unique Portals Visited': 9756}),
+        ],
+      );
+
+      final clipped = <String>[];
+      void visit(RenderObject node) {
+        if (node is RenderParagraph && node.didExceedMaxLines) {
+          clipped.add(node.text.toPlainText());
+        }
+        node.visitChildren(visit);
+      }
+
+      // Scoped to the cards: the app bar title ellipsising next to its
+      // actions is standard Material behaviour, and a separate concern.
+      visit(tester.renderObject(find.byType(GridView)));
+      expect(clipped, isEmpty, reason: 'clipped text: $clipped');
+    });
 
     testWidgets('survives a small screen', (tester) async {
       await pumpDashboard(

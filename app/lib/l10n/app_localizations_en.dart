@@ -364,5 +364,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get snapshotsTitle => 'Snapshots';
 
   @override
-  String get notEnoughHistory => 'one snapshot only';
+  String get notEnoughHistory => '1 snapshot';
 }
