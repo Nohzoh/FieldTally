@@ -68,8 +68,11 @@ void main() {
       counterRegistryProvider.overrideWith((ref) async => registry),
       incomingShareProvider.overrideWithValue(share),
     ]);
-    addTearDown(container.dispose);
+    // Order matters: tearDowns run last-registered-first, so the container is
+    // disposed before the database is closed. Closing Drift while a stream
+    // query is still subscribed hangs.
     addTearDown(db.close);
+    addTearDown(container.dispose);
     addTearDown(share.dispose);
 
     final router = createRouter();
@@ -101,7 +104,7 @@ void main() {
     testWidgets('a share received while running lands on the preview',
         (tester) async {
       await pumpApp(tester);
-      expect(find.text('No snapshot yet'), findsOneWidget);
+      expect(find.text('Nothing to show yet'), findsOneWidget);
 
       share.share(fixture(allTimePath));
       await tester.pumpAndSettle();
@@ -168,7 +171,7 @@ void main() {
         (tester) async {
       await pumpApp(tester);
 
-      expect(find.text('No snapshot yet'), findsOneWidget);
+      expect(find.text('Nothing to show yet'), findsOneWidget);
       expect(find.text('Preview'), findsNothing);
       expect(share.resetCount, 0);
     });
