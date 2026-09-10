@@ -51,6 +51,21 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
   }
 
   @override
+  void didUpdateWidget(AddSnapshotScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // A second share while already sitting on this screen reuses the same
+    // State: go_router rebuilds the route rather than recreating the widget,
+    // so initState does not run again. Without this, sharing a corrected
+    // export after spotting a wrong period would keep showing the first one.
+    final text = widget.initialText;
+    if (text != null && text.isNotEmpty && text != oldWidget.initialText) {
+      _controller.text = text;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _analyze());
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
