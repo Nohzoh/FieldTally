@@ -444,4 +444,68 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsAboutSection => 'À propos';
+
+  @override
+  String get importCsvTitle => 'Importer depuis Agent Stats';
+
+  @override
+  String get importCsvAction => 'Importer depuis Agent Stats';
+
+  @override
+  String get importCsvInstructions =>
+      'Colle l\'export CSV d\'Agent Stats. Tout ton historique arrive d\'un coup — rien n\'est enregistré tant que tu n\'as pas confirmé.';
+
+  @override
+  String get importCsvField => 'CSV Agent Stats';
+
+  @override
+  String importCsvSummary(int count, int counters) {
+    return '$count relevés, $counters compteurs';
+  }
+
+  @override
+  String importCsvRange(String from, String to) {
+    return 'Du $from au $to';
+  }
+
+  @override
+  String get importCsvNoTimeSpan =>
+      'Ce format ne porte pas de colonne de période : seule la vérification de cohérence protège l\'import. Toutes les paires de lignes ont été vérifiées.';
+
+  @override
+  String importCsvConfirm(int count) {
+    return 'Importer $count relevés';
+  }
+
+  @override
+  String importCsvDone(int count) {
+    return '$count relevés importés.';
+  }
+
+  @override
+  String get importCsvAnomalyTitle => 'Lignes incohérentes dans ce fichier';
+
+  @override
+  String importCsvAnomaly(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count compteurs reculent',
+      one: '1 compteur recule',
+    );
+    return '$_temp0 à l\'intérieur de ce fichier, ce qui n\'arrive normalement jamais. L\'importer fausserait ton historique à partir de cette date.';
+  }
+
+  @override
+  String importCsvAnomalyLine(
+    String date,
+    String counter,
+    int previous,
+    int current,
+  ) {
+    return '$date · $counter : $previous → $current';
+  }
+
+  @override
+  String get unknownValue => '—';
 }

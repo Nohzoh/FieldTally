@@ -792,6 +792,89 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About'**
   String get settingsAboutSection;
+
+  /// No description provided for @importCsvTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from Agent Stats'**
+  String get importCsvTitle;
+
+  /// No description provided for @importCsvAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from Agent Stats'**
+  String get importCsvAction;
+
+  /// No description provided for @importCsvInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the CSV export from Agent Stats. Your whole history comes across at once — nothing is saved until you confirm.'**
+  String get importCsvInstructions;
+
+  /// No description provided for @importCsvField.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent Stats CSV'**
+  String get importCsvField;
+
+  /// No description provided for @importCsvSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} snapshots, {counters} counters'**
+  String importCsvSummary(int count, int counters);
+
+  /// No description provided for @importCsvRange.
+  ///
+  /// In en, this message translates to:
+  /// **'From {from} to {to}'**
+  String importCsvRange(String from, String to);
+
+  /// No description provided for @importCsvNoTimeSpan.
+  ///
+  /// In en, this message translates to:
+  /// **'This format carries no period column, so only the consistency check protects the import. Every pair of rows has been checked.'**
+  String get importCsvNoTimeSpan;
+
+  /// No description provided for @importCsvConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Import {count} snapshots'**
+  String importCsvConfirm(int count);
+
+  /// No description provided for @importCsvDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} snapshots imported.'**
+  String importCsvDone(int count);
+
+  /// No description provided for @importCsvAnomalyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inconsistent rows in this file'**
+  String get importCsvAnomalyTitle;
+
+  /// No description provided for @importCsvAnomaly.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 counter goes backwards} other{{count} counters go backwards}} inside this file, which normally never happens. Importing it would skew your history from that date onwards.'**
+  String importCsvAnomaly(int count);
+
+  /// No description provided for @importCsvAnomalyLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {counter}: {previous} → {current}'**
+  String importCsvAnomalyLine(
+    String date,
+    String counter,
+    int previous,
+    int current,
+  );
+
+  /// No description provided for @unknownValue.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get unknownValue;
 }
 
 class _AppLocalizationsDelegate

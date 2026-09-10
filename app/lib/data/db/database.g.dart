@@ -67,9 +67,9 @@ class $SnapshotsTable extends Snapshots
   late final GeneratedColumn<int> level = GeneratedColumn<int>(
     'level',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _importedAtMeta = const VerificationMeta(
     'importedAt',
@@ -146,8 +146,6 @@ class $SnapshotsTable extends Snapshots
         _levelMeta,
         level.isAcceptableOrUnknown(data['level']!, _levelMeta),
       );
-    } else if (isInserting) {
-      context.missing(_levelMeta);
     }
     if (data.containsKey('imported_at')) {
       context.handle(
@@ -189,7 +187,7 @@ class $SnapshotsTable extends Snapshots
       level: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}level'],
-      )!,
+      ),
       importedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}imported_at'],
@@ -212,7 +210,10 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
   /// snapshot came from, including when the user overrode a guard.
   final String timeSpan;
   final DateTime recordedAt;
-  final int level;
+
+  /// Null when the source did not carry it — the migration CSV of Appendix B
+  /// has no level column.
+  final int? level;
 
   /// Insertion date, distinct from [recordedAt]: a migration import can create
   /// a snapshot today that is dated two years ago.
@@ -223,7 +224,7 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
     required this.faction,
     required this.timeSpan,
     required this.recordedAt,
-    required this.level,
+    this.level,
     required this.importedAt,
   });
   @override
@@ -234,7 +235,9 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
     map['faction'] = Variable<String>(faction);
     map['time_span'] = Variable<String>(timeSpan);
     map['recorded_at'] = Variable<DateTime>(recordedAt);
-    map['level'] = Variable<int>(level);
+    if (!nullToAbsent || level != null) {
+      map['level'] = Variable<int>(level);
+    }
     map['imported_at'] = Variable<DateTime>(importedAt);
     return map;
   }
@@ -246,7 +249,9 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
       faction: Value(faction),
       timeSpan: Value(timeSpan),
       recordedAt: Value(recordedAt),
-      level: Value(level),
+      level: level == null && nullToAbsent
+          ? const Value.absent()
+          : Value(level),
       importedAt: Value(importedAt),
     );
   }
@@ -262,7 +267,7 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
       faction: serializer.fromJson<String>(json['faction']),
       timeSpan: serializer.fromJson<String>(json['timeSpan']),
       recordedAt: serializer.fromJson<DateTime>(json['recordedAt']),
-      level: serializer.fromJson<int>(json['level']),
+      level: serializer.fromJson<int?>(json['level']),
       importedAt: serializer.fromJson<DateTime>(json['importedAt']),
     );
   }
@@ -275,7 +280,7 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
       'faction': serializer.toJson<String>(faction),
       'timeSpan': serializer.toJson<String>(timeSpan),
       'recordedAt': serializer.toJson<DateTime>(recordedAt),
-      'level': serializer.toJson<int>(level),
+      'level': serializer.toJson<int?>(level),
       'importedAt': serializer.toJson<DateTime>(importedAt),
     };
   }
@@ -286,7 +291,7 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
     String? faction,
     String? timeSpan,
     DateTime? recordedAt,
-    int? level,
+    Value<int?> level = const Value.absent(),
     DateTime? importedAt,
   }) => Snapshot(
     id: id ?? this.id,
@@ -294,7 +299,7 @@ class Snapshot extends DataClass implements Insertable<Snapshot> {
     faction: faction ?? this.faction,
     timeSpan: timeSpan ?? this.timeSpan,
     recordedAt: recordedAt ?? this.recordedAt,
-    level: level ?? this.level,
+    level: level.present ? level.value : this.level,
     importedAt: importedAt ?? this.importedAt,
   );
   Snapshot copyWithCompanion(SnapshotsCompanion data) {
@@ -356,7 +361,7 @@ class SnapshotsCompanion extends UpdateCompanion<Snapshot> {
   final Value<String> faction;
   final Value<String> timeSpan;
   final Value<DateTime> recordedAt;
-  final Value<int> level;
+  final Value<int?> level;
   final Value<DateTime> importedAt;
   final Value<int> rowid;
   const SnapshotsCompanion({
@@ -375,7 +380,7 @@ class SnapshotsCompanion extends UpdateCompanion<Snapshot> {
     required String faction,
     required String timeSpan,
     required DateTime recordedAt,
-    required int level,
+    this.level = const Value.absent(),
     required DateTime importedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -383,7 +388,6 @@ class SnapshotsCompanion extends UpdateCompanion<Snapshot> {
        faction = Value(faction),
        timeSpan = Value(timeSpan),
        recordedAt = Value(recordedAt),
-       level = Value(level),
        importedAt = Value(importedAt);
   static Insertable<Snapshot> custom({
     Expression<String>? id,
@@ -413,7 +417,7 @@ class SnapshotsCompanion extends UpdateCompanion<Snapshot> {
     Value<String>? faction,
     Value<String>? timeSpan,
     Value<DateTime>? recordedAt,
-    Value<int>? level,
+    Value<int?>? level,
     Value<DateTime>? importedAt,
     Value<int>? rowid,
   }) {
@@ -1222,7 +1226,7 @@ typedef $$SnapshotsTableCreateCompanionBuilder =
       required String faction,
       required String timeSpan,
       required DateTime recordedAt,
-      required int level,
+      Value<int?> level,
       required DateTime importedAt,
       Value<int> rowid,
     });
@@ -1233,7 +1237,7 @@ typedef $$SnapshotsTableUpdateCompanionBuilder =
       Value<String> faction,
       Value<String> timeSpan,
       Value<DateTime> recordedAt,
-      Value<int> level,
+      Value<int?> level,
       Value<DateTime> importedAt,
       Value<int> rowid,
     });
@@ -1470,7 +1474,7 @@ class $$SnapshotsTableTableManager
                 Value<String> faction = const Value.absent(),
                 Value<String> timeSpan = const Value.absent(),
                 Value<DateTime> recordedAt = const Value.absent(),
-                Value<int> level = const Value.absent(),
+                Value<int?> level = const Value.absent(),
                 Value<DateTime> importedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SnapshotsCompanion(
@@ -1490,7 +1494,7 @@ class $$SnapshotsTableTableManager
                 required String faction,
                 required String timeSpan,
                 required DateTime recordedAt,
-                required int level,
+                Value<int?> level = const Value.absent(),
                 required DateTime importedAt,
                 Value<int> rowid = const Value.absent(),
               }) => SnapshotsCompanion.insert(

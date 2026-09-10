@@ -337,7 +337,10 @@ class _Preview extends ConsumerWidget {
                   label: l10n.fieldRecordedAt,
                   value: format.format(snapshot.recordedAt),
                 ),
-                _Field(label: l10n.fieldLevel, value: '${snapshot.level}'),
+                _Field(
+                  label: l10n.fieldLevel,
+                  value: snapshot.level?.toString() ?? l10n.unknownValue,
+                ),
                 _Field(
                   label: l10n.fieldCounterCount,
                   value: '${snapshot.counters.length}',

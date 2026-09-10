@@ -49,7 +49,7 @@ class DriftSnapshotRepository implements SnapshotRepository {
               faction: snapshot.faction,
               timeSpan: snapshot.timeSpan.name,
               recordedAt: snapshot.recordedAt,
-              level: snapshot.level,
+              level: Value(snapshot.level),
               importedAt: importedAt,
             ),
           );

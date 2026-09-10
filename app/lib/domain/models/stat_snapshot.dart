@@ -18,7 +18,7 @@ class StatSnapshot {
     required this.agentName,
     required this.faction,
     required this.recordedAt,
-    required this.level,
+    this.level,
     required this.counters,
   });
 
@@ -31,7 +31,11 @@ class StatSnapshot {
   /// Snapshot date and time, rebuilt from the `Date` and `Time` columns.
   final DateTime recordedAt;
 
-  final int level;
+  /// Null when the source does not carry it.
+  ///
+  /// The Agent Stats migration CSV (Appendix B) has no level column at all, and
+  /// a zero there would read as "level 0" rather than "not known".
+  final int? level;
 
   /// Raw values, keyed by export header.
   final Map<String, int> counters;

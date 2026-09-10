@@ -19,7 +19,9 @@ class Snapshots extends Table {
   TextColumn get timeSpan => text()();
 
   DateTimeColumn get recordedAt => dateTime()();
-  IntColumn get level => integer()();
+  /// Null when the source did not carry it — the migration CSV of Appendix B
+  /// has no level column.
+  IntColumn get level => integer().nullable()();
 
   /// Insertion date, distinct from [recordedAt]: a migration import can create
   /// a snapshot today that is dated two years ago.
@@ -81,7 +83,7 @@ class FieldTallyDatabase extends _$FieldTallyDatabase {
       : super(executor ?? driftDatabase(name: 'fieldtally'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -92,6 +94,12 @@ class FieldTallyDatabase extends _$FieldTallyDatabase {
           // v3 adds preferences and the cached registry (§3.1.4). Empty means
           // "never fetched", which is exactly the state a fresh install is in.
           if (from < 3) await m.createTable(appSettings);
+          // v4 makes `level` nullable: the migration CSV has no such column,
+          // and storing 0 would read as "level 0" rather than "not known".
+          // SQLite cannot drop a NOT NULL in place, so the table is recreated.
+          if (from < 4) {
+            await m.alterTable(TableMigration(snapshots));
+          }
         },
         beforeOpen: (details) async {
           // Without this, SQLite ignores `onDelete: cascade`: deleting a
