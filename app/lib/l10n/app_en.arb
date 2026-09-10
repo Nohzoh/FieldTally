@@ -332,5 +332,26 @@
   "chartAxisDateFormat": "d MMM",
   "@chartAxisDateFormat": {
     "description": "Axis labels: no year, the chart is too narrow for it"
-  }
+  },
+  "settingsTitle": "Settings",
+  "settingsDataSection": "Counter categorisation",
+  "settingsOnlineUpdates": "Update online",
+  "settingsOnlineUpdatesDetail": "Downloads the public list of counter names and categories from the project site, so new anomaly counters are labelled without waiting for an app update. Nothing about you or your device is sent. Turn it off to keep the app entirely offline.",
+  "settingsRegistryCounters": "{count} counters known",
+  "@settingsRegistryCounters": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsRegistryUpdatedAt": "Version {date}",
+  "@settingsRegistryUpdatedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAboutSection": "About"
 }

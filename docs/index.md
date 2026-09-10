@@ -24,6 +24,18 @@ of Niantic, Inc. This project uses no protected asset.
 - The [counter registry](registry/counters.json), source of truth for
   categorisation, labels and — eventually — badge thresholds.
 
+## Privacy
+
+FieldTally collects nothing, sends nothing, and has no account. Your snapshots
+stay on your phone.
+
+There is exactly one network request in the whole app: it downloads the public
+[counter registry](registry/counters.json) from this site, so that new counters
+added by an anomaly get proper names and categories without waiting for an app
+update. It is a plain read of a public file — nothing about you or your device
+is sent, and you are not identified. It can be switched off in the app's
+settings, which leaves FieldTally entirely offline.
+
 ## Contributing
 
 The most useful contribution, and the simplest, is adding or fixing an entry in

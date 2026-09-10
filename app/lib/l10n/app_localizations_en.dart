@@ -416,4 +416,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chartAxisDateFormat => 'd MMM';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsDataSection => 'Counter categorisation';
+
+  @override
+  String get settingsOnlineUpdates => 'Update online';
+
+  @override
+  String get settingsOnlineUpdatesDetail =>
+      'Downloads the public list of counter names and categories from the project site, so new anomaly counters are labelled without waiting for an app update. Nothing about you or your device is sent. Turn it off to keep the app entirely offline.';
+
+  @override
+  String settingsRegistryCounters(int count) {
+    return '$count counters known';
+  }
+
+  @override
+  String settingsRegistryUpdatedAt(String date) {
+    return 'Version $date';
+  }
+
+  @override
+  String get settingsAboutSection => 'About';
 }

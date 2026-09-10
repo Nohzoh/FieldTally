@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
-import 'package:fieldtally/data/registry/counter_registry_loader.dart';
 import 'package:fieldtally/data/sharing/incoming_share.dart';
 import 'package:fieldtally/domain/repositories/snapshot_repository.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
@@ -14,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'support/fixed_registry.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 const allTimePath = 'test/fixtures/sample_export_all_time.tsv';
@@ -60,12 +61,9 @@ void main() {
 
     db = FieldTallyDatabase(NativeDatabase.memory());
     share = FakeShareSource(initial: initialShare);
-    final registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
-
     container = ProviderContainer(overrides: [
       databaseProvider.overrideWithValue(db),
-      counterRegistryProvider.overrideWith((ref) async => registry),
+      counterRegistryProvider.overrideWith(fixedRegistry),
       incomingShareProvider.overrideWithValue(share),
     ]);
     // Order matters: tearDowns run last-registered-first, so the container is

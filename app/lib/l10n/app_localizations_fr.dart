@@ -418,4 +418,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chartAxisDateFormat => 'd MMM';
+
+  @override
+  String get settingsTitle => 'Réglages';
+
+  @override
+  String get settingsDataSection => 'Catégorisation des compteurs';
+
+  @override
+  String get settingsOnlineUpdates => 'Mettre à jour en ligne';
+
+  @override
+  String get settingsOnlineUpdatesDetail =>
+      'Télécharge depuis le site du projet la liste publique des noms et catégories de compteurs, pour que les nouveaux compteurs d\'anomalie soient nommés sans attendre une mise à jour de l\'app. Rien te concernant, ni concernant ton appareil, n\'est envoyé. Désactive-le pour garder l\'app totalement hors-ligne.';
+
+  @override
+  String settingsRegistryCounters(int count) {
+    return '$count compteurs connus';
+  }
+
+  @override
+  String settingsRegistryUpdatedAt(String date) {
+    return 'Version $date';
+  }
+
+  @override
+  String get settingsAboutSection => 'À propos';
 }

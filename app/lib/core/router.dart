@@ -5,6 +5,7 @@ import '../presentation/screens/counter_detail_screen.dart';
 import '../presentation/screens/counter_list_screen.dart';
 import '../presentation/screens/customise_pins_screen.dart';
 import '../presentation/screens/dashboard_screen.dart';
+import '../presentation/screens/settings_screen.dart';
 import '../presentation/screens/snapshot_list_screen.dart';
 
 /// Application routes (§5.1: go_router).
@@ -18,6 +19,7 @@ abstract final class Routes {
   static const counters = '/counters';
   static const snapshots = '/snapshots';
   static const customisePins = '/pins';
+  static const settings = '/settings';
 
   /// A counter is addressed by its export header, which is its stable identity
   /// (§3.1.2). Headers carry spaces and parentheses, so the segment is
@@ -52,6 +54,10 @@ GoRouter createRouter() => GoRouter(
             GoRoute(
               path: 'pins',
               builder: (context, state) => const CustomisePinsScreen(),
+            ),
+            GoRoute(
+              path: 'settings',
+              builder: (context, state) => const SettingsScreen(),
             ),
             GoRoute(
               path: 'counters',

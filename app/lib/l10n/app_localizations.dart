@@ -750,6 +750,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'d MMM'**
   String get chartAxisDateFormat;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsDataSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter categorisation'**
+  String get settingsDataSection;
+
+  /// No description provided for @settingsOnlineUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Update online'**
+  String get settingsOnlineUpdates;
+
+  /// No description provided for @settingsOnlineUpdatesDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads the public list of counter names and categories from the project site, so new anomaly counters are labelled without waiting for an app update. Nothing about you or your device is sent. Turn it off to keep the app entirely offline.'**
+  String get settingsOnlineUpdatesDetail;
+
+  /// No description provided for @settingsRegistryCounters.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} counters known'**
+  String settingsRegistryCounters(int count);
+
+  /// No description provided for @settingsRegistryUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {date}'**
+  String settingsRegistryUpdatedAt(String date);
+
+  /// No description provided for @settingsAboutSection.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsAboutSection;
 }
 
 class _AppLocalizationsDelegate

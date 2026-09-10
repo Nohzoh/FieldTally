@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
-import 'package:fieldtally/data/registry/counter_registry_loader.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
@@ -14,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'support/fixed_registry.dart';
 
 const seedPath = 'assets/counters_registry_seed.json';
 
@@ -40,12 +39,9 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    final registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
-
     container = ProviderContainer(overrides: [
       databaseProvider.overrideWithValue(db),
-      counterRegistryProvider.overrideWith((ref) async => registry),
+      counterRegistryProvider.overrideWith(fixedRegistry),
     ]);
     // Dispose the container before closing the database: closing Drift while a
     // stream query is still subscribed hangs.

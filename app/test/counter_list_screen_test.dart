@@ -4,7 +4,6 @@ import 'package:drift/native.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
 import 'package:fieldtally/data/parsing/ingress_tsv_parser.dart';
-import 'package:fieldtally/data/registry/counter_registry_loader.dart';
 import 'package:fieldtally/domain/counter_list.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
@@ -15,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'support/fixed_registry.dart';
 
 const allTimePath = 'test/fixtures/sample_export_all_time.tsv';
 const weekPath = 'test/fixtures/sample_export_week.tsv';
@@ -38,12 +39,9 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    final registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
-
     container = ProviderContainer(overrides: [
       databaseProvider.overrideWithValue(db),
-      counterRegistryProvider.overrideWith((ref) async => registry),
+      counterRegistryProvider.overrideWith(fixedRegistry),
     ]);
     // Order matters: tearDowns run last-registered-first, so the container is
     // disposed before the database is closed. Closing Drift while a stream

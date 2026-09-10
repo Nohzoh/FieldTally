@@ -62,13 +62,26 @@ class PinnedCounters extends Table {
   Set<Column> get primaryKey => {exportHeader};
 }
 
-@DriftDatabase(tables: [Snapshots, CounterValues, PinnedCounters])
+/// Small key/value store for preferences and cached remote content.
+///
+/// A table rather than shared_preferences: the app already carries a database,
+/// and the cached counter registry (§3.1.4) belongs next to the setting that
+/// governs it rather than split across two storage mechanisms.
+class AppSettings extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
+
+@DriftDatabase(tables: [Snapshots, CounterValues, PinnedCounters, AppSettings])
 class FieldTallyDatabase extends _$FieldTallyDatabase {
   FieldTallyDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'fieldtally'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -76,6 +89,9 @@ class FieldTallyDatabase extends _$FieldTallyDatabase {
           // v2 adds the dashboard pins. Nothing to backfill: an empty table
           // simply means the dashboard falls back to its defaults.
           if (from < 2) await m.createTable(pinnedCounters);
+          // v3 adds preferences and the cached registry (§3.1.4). Empty means
+          // "never fetched", which is exactly the state a fresh install is in.
+          if (from < 3) await m.createTable(appSettings);
         },
         beforeOpen: (details) async {
           // Without this, SQLite ignores `onDelete: cascade`: deleting a
