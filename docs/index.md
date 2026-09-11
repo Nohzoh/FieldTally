@@ -1,44 +1,54 @@
 ---
 layout: default
-title: Home
+title: FieldTally
+lang_alt: /en/
 ---
+{% include nav-fr.html %}
 
 # FieldTally
 
-**FieldTally** is a mobile app for tracking your [Ingress](https://ingress.com)
-statistics, designed for the phone and running **entirely locally**: no
-account, no server, no data sent anywhere.
+**Suis tes statistiques Ingress sur ton téléphone, sans compte et sans serveur.**
+Tout reste sur l'appareil : aucune inscription, aucune donnée envoyée nulle part.
 
-> ⚠️ **Under construction.** The repository holds the parser, the import guards
-> and a first screen; there is no installable release yet.
+> ⚠️ **Non-officiel.** FieldTally est un outil de fan, sans aucun lien avec
+> Niantic, Inc. « Ingress », ainsi que les noms de médailles et de compteurs,
+> sont des marques et du contenu de Niantic, Inc. Ce projet n'utilise aucun
+> visuel protégé.
 
-## Not affiliated with Niantic
+<p>
+<img src="{{ '/assets/screenshots/dashboard.png' | relative_url }}" alt="Tableau de bord : quatre compteurs épinglés avec leur valeur, leur progression et une courbe" width="240">
+<img src="{{ '/assets/screenshots/detail.png' | relative_url }}" alt="Détail d'un compteur : graphique sur toute la période et projection de la prochaine médaille" width="240">
+<img src="{{ '/assets/screenshots/share-card.png' | relative_url }}" alt="Carte de stats partageable en image" width="240">
+</p>
 
-FieldTally is an **unofficial, fan-made** tool with no connection to Niantic,
-Inc. "Ingress", along with badge and counter names, are trademarks and content
-of Niantic, Inc. This project uses no protected asset.
+## Comment ça marche
 
-## What already exists
+1. Dans Ingress, ouvre ton écran de stats et appuie sur **Partager**.
+2. Choisis **FieldTally** dans la liste. Le texte arrive directement dans l'app.
+3. Vérifie l'aperçu et enregistre. C'est tout.
 
-- The [full v1 specification](spec/SPECIFICATION-v1.md) (written in French).
-- The [counter registry](registry/counters.json), source of truth for
-  categorisation, labels and — eventually — badge thresholds.
+Chaque relevé est daté et conservé. Au fil du temps, l'app te montre ta
+progression compteur par compteur, avec une courbe à l'échelle de chaque
+compteur plutôt qu'un graphique unique illisible.
 
-## Privacy
+## Ce qu'elle t'apporte
 
-FieldTally collects nothing, sends nothing, and has no account. Your snapshots
-stay on your phone.
+- **Un tableau de bord** avec les quelques compteurs que *tu* as choisis.
+- **Un graphique par compteur**, sur sa propre échelle.
+- **Une projection de médaille** : combien il te reste, et à quelle date à ton
+  rythme récent — ou rien du tout quand ton rythme ne permet pas d'estimation
+  honnête.
+- **Des objectifs personnels** et des **rappels** planifiés sur l'appareil.
+- **Une carte de stats** en image, prête à publier.
+- **Un export CSV** de tout ton historique, à tout moment.
 
-There is exactly one network request in the whole app: it downloads the public
-[counter registry](registry/counters.json) from this site, so that new counters
-added by an anomaly get proper names and categories without waiting for an app
-update. It is a plain read of a public file — nothing about you or your device
-is sent, and you are not identified. It can be switched off in the app's
-settings, which leaves FieldTally entirely offline.
+[Voir toutes les fonctionnalités]({{ '/fonctionnalites' | relative_url }}) ·
+[Installer l'app]({{ '/installer' | relative_url }})
 
-## Contributing
+## Pourquoi pas simplement Agent Stats ?
 
-The most useful contribution, and the simplest, is adding or fixing an entry in
-`docs/registry/counters.json` when a new counter shows up in the game. No Dart
-knowledge required: see
-[CONTRIBUTING.md](https://github.com/Nohzoh/FieldTally/blob/main/CONTRIBUTING.md).
+FieldTally n'a pas vocation à remplacer Agent Stats, et peut lire son export
+pour que tu récupères ton historique existant. La différence tient en trois
+points : tout reste sur ton téléphone, chaque compteur a sa propre échelle, et
+l'app refuse d'enregistrer un relevé partiel (« cette semaine » au lieu du
+cumul) qui fausserait ton historique sans que tu t'en aperçoives.
