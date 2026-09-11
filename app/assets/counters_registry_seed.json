@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-09",
+  "updated_at": "2026-09-11",
   "_readme": "FieldTally counter enrichment layer (spec §3.1.2, §3.1.4). This is NOT the list of supported counters: the app's registry is derived from actual imports. A counter missing from here is still tracked normally, shown under its raw label in the 'other' category. Adding a counter means one pull request on this single file, with no Dart change.",
   "categories": [
     {
@@ -146,7 +146,29 @@
       "label": {
         "en": "Unique Portals Visited",
         "fr": "Portails uniques visités"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 100
+        },
+        {
+          "name": "silver",
+          "value": 1000
+        },
+        {
+          "name": "gold",
+          "value": 2000
+        },
+        {
+          "name": "platinum",
+          "value": 10000
+        },
+        {
+          "name": "onyx",
+          "value": 30000
+        }
+      ]
     },
     "drone_explorer": {
       "export_header": "Unique Portals Drone Visited",
@@ -200,7 +222,29 @@
       "label": {
         "en": "Portal Scans Uploaded",
         "fr": "Scans de portails envoyés"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 50
+        },
+        {
+          "name": "silver",
+          "value": 250
+        },
+        {
+          "name": "gold",
+          "value": 1000
+        },
+        {
+          "name": "platinum",
+          "value": 3000
+        },
+        {
+          "name": "onyx",
+          "value": 6000
+        }
+      ]
     },
     "scout_controller": {
       "export_header": "Uniques Scout Controlled",
@@ -209,7 +253,29 @@
       "label": {
         "en": "Uniques Scout Controlled",
         "fr": "Portails uniques contrôlés (Scout)"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 100
+        },
+        {
+          "name": "silver",
+          "value": 500
+        },
+        {
+          "name": "gold",
+          "value": 1000
+        },
+        {
+          "name": "platinum",
+          "value": 5000
+        },
+        {
+          "name": "onyx",
+          "value": 15000
+        }
+      ]
     },
     "builder": {
       "export_header": "Resonators Deployed",
@@ -218,7 +284,29 @@
       "label": {
         "en": "Resonators Deployed",
         "fr": "Résonateurs déployés"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 2000
+        },
+        {
+          "name": "silver",
+          "value": 10000
+        },
+        {
+          "name": "gold",
+          "value": 30000
+        },
+        {
+          "name": "platinum",
+          "value": 100000
+        },
+        {
+          "name": "onyx",
+          "value": 200000
+        }
+      ]
     },
     "connector": {
       "export_header": "Links Created",
@@ -227,7 +315,29 @@
       "label": {
         "en": "Links Created",
         "fr": "Liens créés"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 50
+        },
+        {
+          "name": "silver",
+          "value": 100
+        },
+        {
+          "name": "gold",
+          "value": 800
+        },
+        {
+          "name": "platinum",
+          "value": 5000
+        },
+        {
+          "name": "onyx",
+          "value": 10000
+        }
+      ]
     },
     "mind_controller": {
       "export_header": "Control Fields Created",
@@ -236,7 +346,29 @@
       "label": {
         "en": "Control Fields Created",
         "fr": "Champs de contrôle créés"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 100
+        },
+        {
+          "name": "silver",
+          "value": 500
+        },
+        {
+          "name": "gold",
+          "value": 2000
+        },
+        {
+          "name": "platinum",
+          "value": 10000
+        },
+        {
+          "name": "onyx",
+          "value": 40000
+        }
+      ]
     },
     "illuminator": {
       "export_header": "Mind Units Captured",
@@ -245,7 +377,29 @@
       "label": {
         "en": "Mind Units Captured",
         "fr": "Unités mentales capturées"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 5000
+        },
+        {
+          "name": "silver",
+          "value": 50000
+        },
+        {
+          "name": "gold",
+          "value": 250000
+        },
+        {
+          "name": "platinum",
+          "value": 1000000
+        },
+        {
+          "name": "onyx",
+          "value": 4000000
+        }
+      ]
     },
     "binder": {
       "export_header": "Longest Link Ever Created",
@@ -272,7 +426,29 @@
       "label": {
         "en": "XM Recharged",
         "fr": "XM rechargé"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 100000
+        },
+        {
+          "name": "silver",
+          "value": 1000000
+        },
+        {
+          "name": "gold",
+          "value": 3000000
+        },
+        {
+          "name": "platinum",
+          "value": 10000000
+        },
+        {
+          "name": "onyx",
+          "value": 25000000
+        }
+      ]
     },
     "liberator": {
       "export_header": "Portals Captured",
@@ -281,7 +457,29 @@
       "label": {
         "en": "Portals Captured",
         "fr": "Portails capturés"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 100
+        },
+        {
+          "name": "silver",
+          "value": 1000
+        },
+        {
+          "name": "gold",
+          "value": 5000
+        },
+        {
+          "name": "platinum",
+          "value": 15000
+        },
+        {
+          "name": "onyx",
+          "value": 40000
+        }
+      ]
     },
     "pioneer": {
       "export_header": "Unique Portals Captured",
@@ -290,7 +488,29 @@
       "label": {
         "en": "Unique Portals Captured",
         "fr": "Portails uniques capturés"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 20
+        },
+        {
+          "name": "silver",
+          "value": 200
+        },
+        {
+          "name": "gold",
+          "value": 1000
+        },
+        {
+          "name": "platinum",
+          "value": 5000
+        },
+        {
+          "name": "onyx",
+          "value": 20000
+        }
+      ]
     },
     "engineer": {
       "export_header": "Mods Deployed",
@@ -299,7 +519,29 @@
       "label": {
         "en": "Mods Deployed",
         "fr": "Mods déployés"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 150
+        },
+        {
+          "name": "silver",
+          "value": 1500
+        },
+        {
+          "name": "gold",
+          "value": 5000
+        },
+        {
+          "name": "platinum",
+          "value": 20000
+        },
+        {
+          "name": "onyx",
+          "value": 50000
+        }
+      ]
     },
     "hacker": {
       "export_header": "Hacks",
@@ -308,7 +550,29 @@
       "label": {
         "en": "Hacks",
         "fr": "Hacks"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 2000
+        },
+        {
+          "name": "silver",
+          "value": 10000
+        },
+        {
+          "name": "gold",
+          "value": 30000
+        },
+        {
+          "name": "platinum",
+          "value": 100000
+        },
+        {
+          "name": "onyx",
+          "value": 200000
+        }
+      ]
     },
     "maverick": {
       "export_header": "Drone Hacks",
@@ -317,7 +581,29 @@
       "label": {
         "en": "Drone Hacks",
         "fr": "Hacks de drone"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 250
+        },
+        {
+          "name": "silver",
+          "value": 1000
+        },
+        {
+          "name": "gold",
+          "value": 2000
+        },
+        {
+          "name": "platinum",
+          "value": 5000
+        },
+        {
+          "name": "onyx",
+          "value": 10000
+        }
+      ]
     },
     "translator": {
       "export_header": "Glyph Hack Points",
@@ -326,7 +612,29 @@
       "label": {
         "en": "Glyph Hack Points",
         "fr": "Points de hack glyphique"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 900
+        },
+        {
+          "name": "silver",
+          "value": 6000
+        },
+        {
+          "name": "gold",
+          "value": 20000
+        },
+        {
+          "name": "platinum",
+          "value": 60000
+        },
+        {
+          "name": "onyx",
+          "value": 200000
+        }
+      ]
     },
     "overclocker": {
       "export_header": "Overclock Hack Points",
@@ -362,7 +670,29 @@
       "label": {
         "en": "Resonators Destroyed",
         "fr": "Résonateurs détruits"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 2000
+        },
+        {
+          "name": "silver",
+          "value": 10000
+        },
+        {
+          "name": "gold",
+          "value": 50000
+        },
+        {
+          "name": "platinum",
+          "value": 100000
+        },
+        {
+          "name": "onyx",
+          "value": 300000
+        }
+      ]
     },
     "neutralizer": {
       "export_header": "Portals Neutralized",
@@ -506,7 +836,29 @@
       "label": {
         "en": "Distance Walked",
         "fr": "Distance parcourue à pied"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 10
+        },
+        {
+          "name": "silver",
+          "value": 100
+        },
+        {
+          "name": "gold",
+          "value": 300
+        },
+        {
+          "name": "platinum",
+          "value": 750
+        },
+        {
+          "name": "onyx",
+          "value": 2500
+        }
+      ]
     },
     "crafter": {
       "export_header": "Kinetic Capsules Completed",
@@ -524,7 +876,29 @@
       "label": {
         "en": "Unique Missions Completed",
         "fr": "Missions uniques complétées"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 5
+        },
+        {
+          "name": "silver",
+          "value": 25
+        },
+        {
+          "name": "gold",
+          "value": 100
+        },
+        {
+          "name": "platinum",
+          "value": 250
+        },
+        {
+          "name": "onyx",
+          "value": 500
+        }
+      ]
     },
     "research_bounties": {
       "export_header": "Research Bounties Completed",
