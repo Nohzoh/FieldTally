@@ -1,0 +1,151 @@
+# Signed release build (spec §7.2).
+#
+# Deliberately never triggered by `pull_request` or `pull_request_target`: this
+# workflow holds the signing key, and a public repository must not let a branch
+# proposed by anyone else reach it.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+# Only the release job writes, and only to create the release itself.
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_CHANNEL: stable
+  FLUTTER_VERSION: 3.44.9
+
+jobs:
+  release:
+    name: Build and publish a signed APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The generated changelog needs the history back to the previous tag.
+          fetch-depth: 0
+
+      # Fails here rather than producing a debug-signed APK further down. An
+      # APK signed with the debug key installs perfectly well and is the worst
+      # possible artifact to publish: no later update could ever replace it.
+      - name: Check the signing secrets are present
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: |
+          missing=
+          [ -n "$KEYSTORE" ] || missing="$missing ANDROID_KEYSTORE_BASE64"
+          [ -n "$ALIAS" ] || missing="$missing KEY_ALIAS"
+          [ -n "$KEY_PASSWORD" ] || missing="$missing KEY_PASSWORD"
+          [ -n "$STORE_PASSWORD" ] || missing="$missing STORE_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing — see docs/release.md"
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        working-directory: app
+        run: flutter pub get
+
+      # Same gate as CI (§7.4): a release must not ship a bundled registry that
+      # disagrees with the published one.
+      - name: Check the registry seed is in sync
+        working-directory: app
+        run: dart run tool/sync_registry_seed.dart --check
+
+      # Written outside the checkout so a stray `git add -A` in a later step
+      # could not pick it up. Both files are gitignored anyway; this is the
+      # second lock on the same door.
+      - name: Restore the keystore
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: |
+          keystore="$RUNNER_TEMP/fieldtally-release.jks"
+          echo "$KEYSTORE" | base64 --decode > "$keystore"
+          cat > app/android/key.properties <<EOF
+          storeFile=$keystore
+          storePassword=$STORE_PASSWORD
+          keyAlias=$ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      # One APK holding every ABI rather than three per-ABI ones: this app is
+      # sideloaded, so the file is chosen by a person reading a release page,
+      # and a person cannot pick the wrong one if there is only one. The cost
+      # is download size, which is the right thing to trade here.
+      - name: Build the signed APK
+        working-directory: app
+        run: flutter build apk --release
+
+      # Proves the artifact carries the real key. Without this the whole
+      # workflow could succeed and still publish something debug-signed, since
+      # Gradle falls back silently when the keystore is missing.
+      #
+      # apksigner rather than `keytool -printcert -jarfile`: minSdk is 26, so
+      # AGP signs with v2/v3 only, and keytool reads nothing but the v1 JAR
+      # signature — it calls a correctly signed APK unsigned.
+      - name: Verify it is not debug-signed
+        run: |
+          apk=app/build/app/outputs/flutter-apk/app-release.apk
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$apksigner" verify --print-certs "$apk" | tee certificate.txt
+          if grep -q "CN=Android Debug" certificate.txt; then
+            echo "::error::The APK is signed with the Android debug key."
+            exit 1
+          fi
+          # Published in the job log so anyone can check that an APK they
+          # downloaded carries the same certificate as the one built here.
+          {
+            echo '### Signing certificate'
+            echo '```'
+            grep -i 'SHA-256 digest' certificate.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove the signing material
+        if: always()
+        run: rm -f app/android/key.properties "$RUNNER_TEMP/fieldtally-release.jks"
+
+      # A manual run is for checking that signing works, so it stops at an
+      # artifact. Only a tag publishes.
+      - name: Upload the APK
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v7
+        with:
+          name: fieldtally-release-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            app/build/app/outputs/flutter-apk/app-release.apk \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag
