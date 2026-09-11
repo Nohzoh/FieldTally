@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon (§3.9). The launcher masks the foreground to a circle, a
+     squircle or a rounded square depending on the device, so the mark is kept
+     inside the central safe zone by tool/generate_icons.py. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+    <monochrome android:drawable="@drawable/ic_notification"/>
+</adaptive-icon>
