@@ -31,6 +31,15 @@ abstract final class SettingKeys {
   /// Days without a snapshot before the reminder fires. Absent means seven.
   static const reminderDays = 'notifications.reminder_days';
 
+  /// Theme: 'system', 'light' or 'dark' (§3.9). Absent means following the
+  /// system, which is the documented default.
+  static const themeMode = 'appearance.theme_mode';
+
+  /// Whether the app is tinted with the agent's faction colour (§3.9).
+  /// Absent means off: the app's own colour is its identity, and it should not
+  /// change the day a first snapshot is imported.
+  static const factionColours = 'appearance.faction_colours';
+
   /// When a fetch was last attempted — successful or not. Failures count, so a
   /// device with no network does not retry on every single launch.
   static const lastFetchAttempt = 'registry.last_fetch';

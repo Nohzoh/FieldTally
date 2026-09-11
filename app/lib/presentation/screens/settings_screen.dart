@@ -3,15 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router.dart';
+import '../../domain/repositories/settings_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
-/// Preferences (§3.1.4, §3.7).
+/// Preferences (§3.1.4, §3.7, §3.9).
 ///
-/// Two groups. The first is the one the spec insists on: the single network
+/// Three groups. The first is the one the spec insists on: the single network
 /// request the app makes must be switchable off, so anyone who wants a
-/// strictly offline app can have one. The second is the local notifications.
-/// Both wordings state plainly what happens and that nothing is sent.
+/// strictly offline app can have one. Then the local notifications, and the
+/// appearance. Every wording states plainly what happens and that nothing is
+/// sent.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -29,6 +31,11 @@ class SettingsScreen extends ConsumerWidget {
     final notifications =
         ref.watch(notificationsEnabledProvider).asData?.value ?? false;
     final reminderDays = ref.watch(reminderDaysProvider).asData?.value ?? 7;
+    final themeMode =
+        ref.watch(themeModeProvider).asData?.value ?? ThemeMode.system;
+    final factionColours =
+        ref.watch(factionColoursProvider).asData?.value ?? false;
+    final faction = ref.watch(currentFactionProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -86,6 +93,45 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const Divider(),
+          _SectionHeader(title: l10n.settingsAppearanceSection),
+          ListTile(
+            title: Text(l10n.settingsTheme),
+            trailing: DropdownButton<ThemeMode>(
+              value: themeMode,
+              onChanged: (value) => _setThemeMode(ref, value),
+              items: [
+                DropdownMenuItem(
+                  value: ThemeMode.system,
+                  child: Text(l10n.settingsThemeSystem),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.light,
+                  child: Text(l10n.settingsThemeLight),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.dark,
+                  child: Text(l10n.settingsThemeDark),
+                ),
+              ],
+            ),
+          ),
+          SwitchListTile(
+            value: factionColours,
+            title: Text(l10n.settingsFactionColours),
+            // The switch still works without a snapshot — it simply has
+            // nothing to follow yet, and saying so beats a dead control.
+            subtitle: Text(
+              faction == null
+                  ? l10n.settingsFactionUnknown
+                  : l10n.settingsFactionColoursDetail,
+            ),
+            isThreeLine: faction != null,
+            onChanged: (value) => ref.read(settingsRepositoryProvider).write(
+                  SettingKeys.factionColours,
+                  value ? 'true' : 'false',
+                ),
+          ),
+          const Divider(),
           _SectionHeader(title: l10n.settingsAboutSection),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -98,6 +144,14 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _setThemeMode(WidgetRef ref, ThemeMode? mode) async {
+    if (mode == null) return;
+    await ref.read(settingsRepositoryProvider).write(
+          SettingKeys.themeMode,
+          mode.name,
+        );
   }
 
   /// Switching reminders on asks Android for the permission first: storing

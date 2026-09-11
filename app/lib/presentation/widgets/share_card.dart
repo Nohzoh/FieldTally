@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/share_card.dart';
 import '../../l10n/app_localizations.dart';
+import '../faction.dart';
 
 /// The image an agent posts (§3.8).
 ///
@@ -36,56 +37,55 @@ class ShareCard extends StatelessWidget {
   static const _text = Color(0xFFF2F7F6);
   static const _muted = Color(0xFF9BB8B3);
 
-  /// A nod to the factions (§3.9), read from the export rather than from a
-  /// setting. An unknown faction gets the app's own accent rather than a
-  /// guess: fan-made tools have invented factions before.
-  static Color factionColour(String faction) =>
-      switch (faction.trim().toLowerCase()) {
-        'enlightened' => const Color(0xFF2FBF71),
-        'resistance' => const Color(0xFF3E8FE0),
-        _ => _accent,
-      };
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
     final numbers = NumberFormat.decimalPattern(language);
     final dates = DateFormat(l10n.shortDateFormat, locale.toString());
-    final faction = factionColour(data.faction);
+    // Read from the export rather than from the appearance setting (§3.9):
+    // the card states what the snapshot said, whatever the app is painted.
+    final faction = factionColour(data.faction) ?? _accent;
 
-    return SizedBox(
-      width: width,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _background,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: _panel),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _header(l10n, dates, faction),
-              const SizedBox(height: 16),
-              for (final line in data.lines) ...[
-                _Line(
-                  label: registry
-                          ?.forExportHeader(line.exportHeader)
-                          ?.label(language) ??
-                      line.exportHeader,
-                  value: numbers.format(line.value),
-                  gain: line.gain == null
-                      ? null
-                      : '+${numbers.format(line.gain)}',
-                ),
-                const SizedBox(height: 10),
+    // The app honours the system text size (§3.9), but this card does not: it
+    // becomes an image other people look at, and an agent reading at 200%
+    // would hand out a PNG with enormous text and truncated labels. Fixed
+    // width, fixed palette, fixed text size — the image comes out the same for
+    // everyone, which is the whole point of it.
+    return MediaQuery.withNoTextScaling(
+      child: SizedBox(
+        width: width,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: _background,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: _panel),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _header(l10n, dates, faction),
+                const SizedBox(height: 16),
+                for (final line in data.lines) ...[
+                  _Line(
+                    label: registry
+                            ?.forExportHeader(line.exportHeader)
+                            ?.label(language) ??
+                        line.exportHeader,
+                    value: numbers.format(line.value),
+                    gain: line.gain == null
+                        ? null
+                        : '+${numbers.format(line.gain)}',
+                  ),
+                  const SizedBox(height: 10),
+                ],
+                const SizedBox(height: 2),
+                _footer(l10n, dates),
               ],
-              const SizedBox(height: 2),
-              _footer(l10n, dates),
-            ],
+            ),
           ),
         ),
       ),
