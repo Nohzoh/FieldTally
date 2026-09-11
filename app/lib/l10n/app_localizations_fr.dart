@@ -567,4 +567,59 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get projectionPaceMonth => '30 derniers jours';
+
+  @override
+  String get editSnapshotTitle => 'Corriger ce relevé';
+
+  @override
+  String get editSnapshotTooltip => 'Corriger ce relevé';
+
+  @override
+  String get editRecordedAt => 'Relevé du';
+
+  @override
+  String get editPickDate => 'Changer la date';
+
+  @override
+  String get editPickTime => 'Changer l\'heure';
+
+  @override
+  String get editSave => 'Enregistrer la correction';
+
+  @override
+  String get editSaved => 'Relevé corrigé.';
+
+  @override
+  String get editCounterSection => 'Valeurs des compteurs';
+
+  @override
+  String get editInvalidValue => 'Nombres entiers uniquement';
+
+  @override
+  String get editAnomalyTitle => 'Cette correction casse la séquence';
+
+  @override
+  String editAnomaly(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count compteurs reculeraient',
+      one: '1 compteur reculerait',
+    );
+    return '$_temp0 par rapport aux relevés voisins.';
+  }
+
+  @override
+  String get exportCsv => 'Exporter l\'historique';
+
+  @override
+  String get exportCsvSubject => 'Historique FieldTally';
+
+  @override
+  String get exportCsvEmpty => 'Rien à exporter pour l\'instant.';
+
+  @override
+  String exportCsvDone(int count) {
+    return '$count relevés exportés.';
+  }
 }

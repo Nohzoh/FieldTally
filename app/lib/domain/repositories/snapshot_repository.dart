@@ -40,6 +40,13 @@ abstract interface class SnapshotRepository {
 
   Future<StoredSnapshot> save(StatSnapshot snapshot);
 
+  /// Replaces an existing snapshot wholesale.
+  ///
+  /// §3.2 requires being able to correct a field entered by mistake. Every
+  /// view recomputes from the snapshots, so a correction propagates on its own
+  /// — which is exactly why nothing derived is ever stored.
+  Future<StoredSnapshot> update(String id, StatSnapshot snapshot);
+
   Future<void> delete(String id);
 
   /// Reactive stream of the list, so screens refresh themselves after an

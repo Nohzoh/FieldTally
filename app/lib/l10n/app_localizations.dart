@@ -977,6 +977,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last 30 days'**
   String get projectionPaceMonth;
+
+  /// No description provided for @editSnapshotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct this snapshot'**
+  String get editSnapshotTitle;
+
+  /// No description provided for @editSnapshotTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct this snapshot'**
+  String get editSnapshotTooltip;
+
+  /// No description provided for @editRecordedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded on'**
+  String get editRecordedAt;
+
+  /// No description provided for @editPickDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the date'**
+  String get editPickDate;
+
+  /// No description provided for @editPickTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the time'**
+  String get editPickTime;
+
+  /// No description provided for @editSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the correction'**
+  String get editSave;
+
+  /// No description provided for @editSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapshot corrected.'**
+  String get editSaved;
+
+  /// No description provided for @editCounterSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Counter values'**
+  String get editCounterSection;
+
+  /// No description provided for @editInvalidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole numbers only'**
+  String get editInvalidValue;
+
+  /// No description provided for @editAnomalyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This correction breaks the sequence'**
+  String get editAnomalyTitle;
+
+  /// No description provided for @editAnomaly.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 counter would go backwards} other{{count} counters would go backwards}} compared with the neighbouring snapshots.'**
+  String editAnomaly(int count);
+
+  /// No description provided for @exportCsv.
+  ///
+  /// In en, this message translates to:
+  /// **'Export the history'**
+  String get exportCsv;
+
+  /// No description provided for @exportCsvSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'FieldTally history'**
+  String get exportCsvSubject;
+
+  /// No description provided for @exportCsvEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to export yet.'**
+  String get exportCsvEmpty;
+
+  /// No description provided for @exportCsvDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} snapshots exported.'**
+  String exportCsvDone(int count);
 }
 
 class _AppLocalizationsDelegate

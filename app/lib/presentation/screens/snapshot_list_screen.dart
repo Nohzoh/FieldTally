@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/router.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 import '../../domain/counter_series.dart';
+import '../../domain/history_export.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../widgets/activity_heatmap.dart';
@@ -31,12 +36,17 @@ class SnapshotListScreen extends ConsumerWidget {
           onPressed: () => context.go(Routes.home),
         ),
         actions: [
-          // The migration import lives here rather than on the dashboard: it
-          // is a one-off, and this is the screen about the history itself.
+          // Import and export both live here rather than on the dashboard:
+          // this is the screen about the history itself.
           IconButton(
             icon: const Icon(Icons.file_download_outlined),
             tooltip: l10n.importCsvAction,
             onPressed: () => context.go(Routes.importCsv),
+          ),
+          IconButton(
+            icon: const Icon(Icons.ios_share),
+            tooltip: l10n.exportCsv,
+            onPressed: () => _exportHistory(context, ref),
           ),
         ],
       ),
@@ -62,6 +72,44 @@ class SnapshotListScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Hands the whole history to the system share sheet as a CSV (§3.8).
+///
+/// Shared rather than written somewhere fixed: on Android the agent then picks
+/// where it goes — Drive, mail, a file manager — instead of the app deciding
+/// for them and hiding the file in its own storage.
+Future<void> _exportHistory(BuildContext context, WidgetRef ref) async {
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+
+  final stored = await ref.read(snapshotRepositoryProvider).all();
+  if (stored.isEmpty) {
+    messenger.showSnackBar(SnackBar(content: Text(l10n.exportCsvEmpty)));
+    return;
+  }
+
+  final registry = ref.read(counterRegistryProvider).asData?.value;
+  final exporter = HistoryCsvExporter(registry: registry);
+  final csv = exporter.build(stored);
+
+  // Written to a real temporary file rather than handed over as bytes:
+  // share_plus names a data-backed file after a UUID, so the export landed in
+  // the agent's Drive as "de7-11f1-….csv".
+  final directory = await getTemporaryDirectory();
+  final file = File('${directory.path}/${exporter.fileNameFor(DateTime.now())}');
+  await file.writeAsString(csv);
+
+  await SharePlus.instance.share(
+    ShareParams(
+      subject: l10n.exportCsvSubject,
+      files: [XFile(file.path, mimeType: 'text/csv')],
+    ),
+  );
+
+  messenger.showSnackBar(
+    SnackBar(content: Text(l10n.exportCsvDone(stored.length))),
+  );
 }
 
 class _SnapshotList extends ConsumerWidget {
@@ -117,10 +165,20 @@ class _SnapshotList extends ConsumerWidget {
           subtitle: Text(
             l10n.snapshotSubtitle(snapshot.counters.length, snapshot.agentName),
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: l10n.deleteSnapshotTooltip,
-            onPressed: () => _confirmDelete(context, ref, stored),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: l10n.editSnapshotTooltip,
+                onPressed: () => context.go(Routes.editSnapshot(stored.id)),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: l10n.deleteSnapshotTooltip,
+                onPressed: () => _confirmDelete(context, ref, stored),
+              ),
+            ],
           ),
         );
       },

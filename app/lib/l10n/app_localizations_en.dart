@@ -565,4 +565,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get projectionPaceMonth => 'Last 30 days';
+
+  @override
+  String get editSnapshotTitle => 'Correct this snapshot';
+
+  @override
+  String get editSnapshotTooltip => 'Correct this snapshot';
+
+  @override
+  String get editRecordedAt => 'Recorded on';
+
+  @override
+  String get editPickDate => 'Change the date';
+
+  @override
+  String get editPickTime => 'Change the time';
+
+  @override
+  String get editSave => 'Save the correction';
+
+  @override
+  String get editSaved => 'Snapshot corrected.';
+
+  @override
+  String get editCounterSection => 'Counter values';
+
+  @override
+  String get editInvalidValue => 'Whole numbers only';
+
+  @override
+  String get editAnomalyTitle => 'This correction breaks the sequence';
+
+  @override
+  String editAnomaly(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count counters would go backwards',
+      one: '1 counter would go backwards',
+    );
+    return '$_temp0 compared with the neighbouring snapshots.';
+  }
+
+  @override
+  String get exportCsv => 'Export the history';
+
+  @override
+  String get exportCsvSubject => 'FieldTally history';
+
+  @override
+  String get exportCsvEmpty => 'Nothing to export yet.';
+
+  @override
+  String exportCsvDone(int count) {
+    return '$count snapshots exported.';
+  }
 }

@@ -5,6 +5,7 @@ import '../presentation/screens/counter_detail_screen.dart';
 import '../presentation/screens/counter_list_screen.dart';
 import '../presentation/screens/customise_pins_screen.dart';
 import '../presentation/screens/dashboard_screen.dart';
+import '../presentation/screens/edit_snapshot_screen.dart';
 import '../presentation/screens/import_csv_screen.dart';
 import '../presentation/screens/settings_screen.dart';
 import '../presentation/screens/snapshot_list_screen.dart';
@@ -22,6 +23,9 @@ abstract final class Routes {
   static const customisePins = '/pins';
   static const settings = '/settings';
   static const importCsv = '/import';
+
+  /// Correcting a snapshot (§3.2) addresses it by its stored id.
+  static String editSnapshot(String id) => '/snapshots/$id';
 
   /// A counter is addressed by its export header, which is its stable identity
   /// (§3.1.2). Headers carry spaces and parentheses, so the segment is
@@ -52,6 +56,14 @@ GoRouter createRouter() => GoRouter(
             GoRoute(
               path: 'snapshots',
               builder: (context, state) => const SnapshotListScreen(),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) => EditSnapshotScreen(
+                    snapshotId: state.pathParameters['id']!,
+                  ),
+                ),
+              ],
             ),
             GoRoute(
               path: 'pins',

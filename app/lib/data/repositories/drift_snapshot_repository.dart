@@ -70,6 +70,49 @@ class DriftSnapshotRepository implements SnapshotRepository {
   }
 
   @override
+  Future<StoredSnapshot> update(String id, StatSnapshot snapshot) async {
+    final existing = await (_db.select(_db.snapshots)
+          ..where((s) => s.id.equals(id)))
+        .getSingle();
+
+    // The counters are replaced rather than merged: an edit that removes a
+    // value must actually remove it, and a leftover row would resurface in
+    // every view that recomputes from the snapshots.
+    await _db.transaction(() async {
+      await (_db.update(_db.snapshots)..where((s) => s.id.equals(id))).write(
+        SnapshotsCompanion(
+          agentName: Value(snapshot.agentName),
+          faction: Value(snapshot.faction),
+          timeSpan: Value(snapshot.timeSpan.name),
+          recordedAt: Value(snapshot.recordedAt),
+          level: Value(snapshot.level),
+        ),
+      );
+
+      await (_db.delete(_db.counterValues)
+            ..where((c) => c.snapshotId.equals(id)))
+          .go();
+
+      await _db.batch((batch) {
+        batch.insertAll(_db.counterValues, [
+          for (final entry in snapshot.counters.entries)
+            CounterValuesCompanion.insert(
+              snapshotId: id,
+              exportHeader: entry.key,
+              value: entry.value,
+            ),
+        ]);
+      });
+    });
+
+    return StoredSnapshot(
+      id: id,
+      importedAt: existing.importedAt,
+      snapshot: snapshot,
+    );
+  }
+
+  @override
   Future<void> delete(String id) async {
     await (_db.delete(_db.snapshots)..where((s) => s.id.equals(id))).go();
   }

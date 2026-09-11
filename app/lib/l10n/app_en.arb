@@ -467,5 +467,34 @@
   "projectionWindowWeek": "week",
   "projectionWindowMonth": "month",
   "projectionPaceWeek": "Last 7 days",
-  "projectionPaceMonth": "Last 30 days"
+  "projectionPaceMonth": "Last 30 days",
+  "editSnapshotTitle": "Correct this snapshot",
+  "editSnapshotTooltip": "Correct this snapshot",
+  "editRecordedAt": "Recorded on",
+  "editPickDate": "Change the date",
+  "editPickTime": "Change the time",
+  "editSave": "Save the correction",
+  "editSaved": "Snapshot corrected.",
+  "editCounterSection": "Counter values",
+  "editInvalidValue": "Whole numbers only",
+  "editAnomalyTitle": "This correction breaks the sequence",
+  "editAnomaly": "{count, plural, one{1 counter would go backwards} other{{count} counters would go backwards}} compared with the neighbouring snapshots.",
+  "@editAnomaly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exportCsv": "Export the history",
+  "exportCsvSubject": "FieldTally history",
+  "exportCsvEmpty": "Nothing to export yet.",
+  "exportCsvDone": "{count} snapshots exported.",
+  "@exportCsvDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
