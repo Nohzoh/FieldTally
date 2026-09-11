@@ -77,5 +77,13 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+
+        <!-- Android 11 hides other apps unless they are declared here. Without
+             this, opening the two links in the About section fails silently:
+             url_launcher cannot see that a browser exists. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
     </queries>
 </manifest>

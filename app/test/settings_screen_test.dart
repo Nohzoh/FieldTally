@@ -1,10 +1,12 @@
 import 'package:drift/native.dart';
+import 'package:fieldtally/core/build_info.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
 import 'package:fieldtally/domain/repositories/settings_repository.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fieldtally/data/registry/counter_registry_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +35,19 @@ void main() {
   late ProviderContainer container;
   late FakeNotificationService notifications;
 
-  Future<void> pumpSettings(WidgetTester tester, {double textScale = 1.0}) async {
+  /// Stands in for the platform: PackageInfo reads a channel no widget test
+  /// has, so the provider is overridden rather than the plugin mocked.
+  const runningBuild = BuildInfo(
+    version: '1.2.3',
+    build: '7',
+    commit: 'abc1234',
+  );
+
+  Future<void> pumpSettings(
+    WidgetTester tester, {
+    double textScale = 1.0,
+    BuildInfo? build = runningBuild,
+  }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3.0;
     addTearDown(tester.view.reset);
@@ -44,6 +58,7 @@ void main() {
       databaseProvider.overrideWithValue(db),
       // No test asks Android for anything.
       notificationServiceProvider.overrideWithValue(notifications),
+      if (build != null) buildInfoProvider.overrideWith((ref) async => build),
       // No test touches the real network. This one always fails, which is also
       // the case that must leave the app fully usable.
       counterRegistryServiceProvider.overrideWith(
@@ -272,6 +287,68 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+  });
+
+  group('about (§9)', () {
+    testWidgets('names the running build and copies it on tap',
+        (tester) async {
+      // The first question on any bug report is "which version?".
+      //
+      // The clipboard is a platform channel, so it is mocked rather than read
+      // back: Clipboard.getData never completes under the widget-test clock.
+      final copied = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            copied.add((call.arguments as Map)['text'] as String);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+
+      await pumpSettings(tester);
+      await scrollTo(tester, find.textContaining('Version'));
+
+      await tester.tap(find.textContaining('Version'));
+      await tester.pumpAndSettle();
+
+      expect(copied.single, 'FieldTally 1.2.3 (7) · abc1234');
+      expect(find.text('Version copied.'), findsOneWidget);
+    });
+
+    testWidgets('a build with no commit says so rather than naming one',
+        (tester) async {
+      // A working copy must not claim a commit that may not hold what runs.
+      await pumpSettings(
+        tester,
+        build: const BuildInfo(version: '1.2.3', build: '7', commit: null),
+      );
+      await scrollTo(tester, find.textContaining('working copy'));
+
+      expect(find.textContaining('working copy'), findsOneWidget);
+      expect(find.text('Version 1.2.3 (7)'), findsOneWidget);
+    });
+
+    testWidgets('shows the commit when the build carries one', (tester) async {
+      await pumpSettings(tester);
+      await scrollTo(tester, find.text('Version 1.2.3 (7)'));
+
+      expect(find.text('abc1234'), findsOneWidget);
+    });
+
+    testWidgets('offers the source and a way to support the project',
+        (tester) async {
+      await pumpSettings(tester);
+      await scrollTo(tester, find.text('Source code'));
+
+      expect(find.text('Support the project'), findsOneWidget);
+      expect(find.text('Source code'), findsOneWidget);
+    });
   });
 
   group('reaching settings', () {

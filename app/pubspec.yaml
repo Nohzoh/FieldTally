@@ -59,6 +59,11 @@ dependencies:
   # HTTP client — the only network use in v1: fetching counters.json (§3.1.4)
   http: ^1.6.0
   uuid: ^4.6.0
+  # About section: the installed version as Android actually holds it, and the
+  # two outgoing links. Reading the version rather than compiling it in means
+  # it cannot drift from the APK someone is reporting a bug about.
+  package_info_plus: ^10.2.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

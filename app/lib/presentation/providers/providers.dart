@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../core/build_info.dart';
 import '../../data/db/database.dart';
 import '../../data/notifications/notification_service.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
@@ -274,4 +276,14 @@ final themeSeedProvider = Provider<Color>((ref) {
 
   final faction = ref.watch(currentFactionProvider);
   return (faction == null ? null : factionColour(faction)) ?? Colors.teal;
+});
+
+/// Which build is running, for a bug report that can be acted on.
+final buildInfoProvider = FutureProvider<BuildInfo>((ref) async {
+  final info = await PackageInfo.fromPlatform();
+  return BuildInfo(
+    version: info.version,
+    build: info.buildNumber,
+    commit: BuildInfo.commitFromEnvironment,
+  );
 });
