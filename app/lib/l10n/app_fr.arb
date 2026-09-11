@@ -144,5 +144,20 @@
   "projectionWindowWeek": "la dernière semaine",
   "projectionWindowMonth": "le dernier mois",
   "projectionPaceWeek": "7 derniers jours",
-  "projectionPaceMonth": "30 derniers jours"
+  "projectionPaceMonth": "30 derniers jours",
+  "editSnapshotTitle": "Corriger ce relevé",
+  "editSnapshotTooltip": "Corriger ce relevé",
+  "editRecordedAt": "Relevé du",
+  "editPickDate": "Changer la date",
+  "editPickTime": "Changer l'heure",
+  "editSave": "Enregistrer la correction",
+  "editSaved": "Relevé corrigé.",
+  "editCounterSection": "Valeurs des compteurs",
+  "editInvalidValue": "Nombres entiers uniquement",
+  "editAnomalyTitle": "Cette correction casse la séquence",
+  "editAnomaly": "{count, plural, one{1 compteur reculerait} other{{count} compteurs reculeraient}} par rapport aux relevés voisins.",
+  "exportCsv": "Exporter l'historique",
+  "exportCsvSubject": "Historique FieldTally",
+  "exportCsvEmpty": "Rien à exporter pour l'instant.",
+  "exportCsvDone": "{count} relevés exportés."
 }
