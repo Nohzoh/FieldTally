@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/badge_projection.dart';
 import '../../l10n/app_localizations.dart';
+import '../tier_labels.dart';
 
 /// Where a counter stands against its badge tiers, and when the next one is
 /// likely to land (§3.6).
@@ -51,7 +52,7 @@ class BadgeProjectionCard extends StatelessWidget {
               Text(
                 l10n.projectionRemaining(
                   numbers.format(projection.remaining),
-                  _tierLabel(l10n, next.name),
+                  tierLabel(l10n, next.name),
                 ),
                 style: theme.textTheme.bodyLarge,
               ),
@@ -118,17 +119,6 @@ class BadgeProjectionCard extends StatelessWidget {
     if (pace == null || pace <= 0) return l10n.projectionNoPace;
     return l10n.projectionTooFar;
   }
-
-  String _tierLabel(AppLocalizations l10n, String name) => switch (name) {
-        'bronze' => l10n.projectionTier_bronze,
-        'silver' => l10n.projectionTier_silver,
-        'gold' => l10n.projectionTier_gold,
-        'platinum' => l10n.projectionTier_platinum,
-        'onyx' => l10n.projectionTier_onyx,
-        // A tier the app does not know the name of still shows, under whatever
-        // the registry called it.
-        _ => name,
-      };
 
   String _windowLabel(AppLocalizations l10n, ProjectionWindow window) =>
       switch (window) {

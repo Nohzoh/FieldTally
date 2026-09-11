@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/db/database.dart';
+import '../../data/notifications/notification_service.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
 import '../../data/registry/counter_registry_service.dart';
 import '../../data/repositories/drift_goal_repository.dart';
@@ -18,6 +19,7 @@ import '../../domain/repositories/goal_repository.dart';
 import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
+import '../notification_coordinator.dart';
 
 /// Local database. Overridden with an in-memory one in tests.
 final databaseProvider = Provider<FieldTallyDatabase>((ref) {
@@ -167,4 +169,34 @@ final goalRepositoryProvider = Provider<GoalRepository>(
 /// Personal targets (§3.7), refreshed as they are set and removed.
 final goalsProvider = StreamProvider<List<Goal>>(
   (ref) => ref.watch(goalRepositoryProvider).watchAll(),
+);
+
+final notificationServiceProvider = Provider<NotificationService>(
+  (ref) => PluginNotificationService(),
+);
+
+/// Phrases and posts the notifications of §3.7.
+final notificationCoordinatorProvider = Provider<NotificationCoordinator>(
+  (ref) => NotificationCoordinator(
+    service: ref.watch(notificationServiceProvider),
+    settings: ref.watch(settingsRepositoryProvider),
+  ),
+);
+
+/// Whether reminders and milestone alerts may be posted (§3.7). Absent means
+/// off: Android 13 grants the permission to nobody by default, so anything
+/// else would be a switch that claims more than the system allows.
+final notificationsEnabledProvider = StreamProvider<bool>(
+  (ref) => ref
+      .watch(settingsRepositoryProvider)
+      .watch(SettingKeys.notifications)
+      .map((value) => value == 'true'),
+);
+
+/// Days without a snapshot before the reminder fires.
+final reminderDaysProvider = StreamProvider<int>(
+  (ref) => ref
+      .watch(settingsRepositoryProvider)
+      .watch(SettingKeys.reminderDays)
+      .map((value) => int.tryParse(value ?? '') ?? 7),
 );

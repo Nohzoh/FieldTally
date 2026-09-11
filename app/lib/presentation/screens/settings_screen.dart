@@ -6,14 +6,18 @@ import '../../core/router.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 
-/// Preferences (§3.1.4).
+/// Preferences (§3.1.4, §3.7).
 ///
-/// One setting so far, and it is the one the spec insists on: the single
-/// network request the app makes must be switchable off, so anyone who wants a
-/// strictly offline app can have one. The wording states plainly what is
-/// downloaded and that nothing is sent.
+/// Two groups. The first is the one the spec insists on: the single network
+/// request the app makes must be switchable off, so anyone who wants a
+/// strictly offline app can have one. The second is the local notifications.
+/// Both wordings state plainly what happens and that nothing is sent.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  /// Offered delays, in days. Short enough to build a habit, long enough not
+  /// to nag someone who plays once a week.
+  static const _reminderChoices = [3, 7, 14, 30];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,6 +26,9 @@ class SettingsScreen extends ConsumerWidget {
 
     final enabled = ref.watch(onlineRegistryUpdatesProvider).asData?.value ?? true;
     final registry = ref.watch(counterRegistryProvider).asData?.value;
+    final notifications =
+        ref.watch(notificationsEnabledProvider).asData?.value ?? false;
+    final reminderDays = ref.watch(reminderDaysProvider).asData?.value ?? 7;
 
     return Scaffold(
       appBar: AppBar(
@@ -52,6 +59,33 @@ class SettingsScreen extends ConsumerWidget {
                   : Text(l10n.settingsRegistryUpdatedAt(registry.updatedAt)),
             ),
           const Divider(),
+          _SectionHeader(title: l10n.settingsNotificationsSection),
+          SwitchListTile(
+            value: notifications,
+            title: Text(l10n.settingsNotifications),
+            subtitle: Text(l10n.settingsNotificationsDetail),
+            isThreeLine: true,
+            onChanged: (value) => _setNotifications(context, ref, value),
+          ),
+          ListTile(
+            // Greyed out rather than hidden when notifications are off: the
+            // delay stays readable, so switching them back on holds no
+            // surprise.
+            enabled: notifications,
+            title: Text(l10n.settingsReminderDelay(reminderDays)),
+            trailing: DropdownButton<int>(
+              value:
+                  _reminderChoices.contains(reminderDays) ? reminderDays : null,
+              onChanged: notifications
+                  ? (value) => _setReminderDays(context, ref, value)
+                  : null,
+              items: [
+                for (final days in _reminderChoices)
+                  DropdownMenuItem(value: days, child: Text('$days')),
+              ],
+            ),
+          ),
+          const Divider(),
           _SectionHeader(title: l10n.settingsAboutSection),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -64,6 +98,50 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Switching reminders on asks Android for the permission first: storing
+  /// "on" while the system refuses would leave a switch that lies.
+  Future<void> _setNotifications(
+    BuildContext context,
+    WidgetRef ref,
+    bool value,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final service = ref.read(notificationServiceProvider);
+
+    if (value && !await service.ensurePermission()) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.settingsNotificationsDenied)),
+      );
+      return;
+    }
+
+    await ref.read(notificationCoordinatorProvider).setEnabled(value);
+    await _reschedule(ref, l10n);
+  }
+
+  Future<void> _setReminderDays(
+    BuildContext context,
+    WidgetRef ref,
+    int? days,
+  ) async {
+    if (days == null) return;
+
+    final l10n = AppLocalizations.of(context);
+    await ref.read(notificationCoordinatorProvider).setReminderDays(days);
+    await _reschedule(ref, l10n);
+  }
+
+  /// Every change here moves when the reminder is due, so it is re-armed at
+  /// once rather than waiting for the next snapshot or the next launch.
+  Future<void> _reschedule(WidgetRef ref, AppLocalizations l10n) async {
+    final latest = await ref.read(snapshotRepositoryProvider).latest();
+    await ref.read(notificationCoordinatorProvider).rescheduleReminder(
+          latestSnapshot: latest?.snapshot.recordedAt,
+          l10n: l10n,
+        );
   }
 }
 

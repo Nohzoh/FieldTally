@@ -79,6 +79,15 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
       await repository.save(snapshot);
     }
 
+    // Deliberately no milestone notifications here: importing a year of
+    // history crosses tiers that were earned long ago, and announcing them
+    // would be a burst of stale congratulations (§3.7). The reminder is still
+    // re-armed, because the newest snapshot has just moved.
+    await ref.read(notificationCoordinatorProvider).rescheduleReminder(
+          latestSnapshot: (await repository.latest())?.snapshot.recordedAt,
+          l10n: l10n,
+        );
+
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.importCsvDone(plan.snapshots.length))),

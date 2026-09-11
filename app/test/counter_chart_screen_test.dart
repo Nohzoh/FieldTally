@@ -13,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fixed_registry.dart';
+import 'support/fake_notification_service.dart';
 
 const seedPath = 'assets/counters_registry_seed.json';
 
@@ -41,6 +42,8 @@ void main() {
     db = FieldTallyDatabase(NativeDatabase.memory());
     container = ProviderContainer(overrides: [
       databaseProvider.overrideWithValue(db),
+      // No test asks Android to post anything (§3.7).
+      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
       counterRegistryProvider.overrideWith(fixedRegistry),
     ]);
     // Dispose the container before closing the database: closing Drift while a
