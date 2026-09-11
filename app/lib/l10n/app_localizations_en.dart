@@ -620,4 +620,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String exportCsvDone(int count) {
     return '$count snapshots exported.';
   }
+
+  @override
+  String get goalTitle => 'Personal goal';
+
+  @override
+  String get goalNone => 'No goal on this counter yet.';
+
+  @override
+  String get goalSet => 'Set a goal';
+
+  @override
+  String get goalEdit => 'Change';
+
+  @override
+  String get goalRemove => 'Remove';
+
+  @override
+  String get goalTarget => 'Target value';
+
+  @override
+  String get goalDeadline => 'Deadline';
+
+  @override
+  String get goalNoDeadline => 'No deadline';
+
+  @override
+  String get goalPickDeadline => 'Pick a date';
+
+  @override
+  String get goalClearDeadline => 'Clear';
+
+  @override
+  String get goalSave => 'Save the goal';
+
+  @override
+  String get goalSaved => 'Goal saved.';
+
+  @override
+  String get goalRemoved => 'Goal removed.';
+
+  @override
+  String get goalInvalid => 'Must be above the current value';
+
+  @override
+  String goalRemaining(String remaining, String target) {
+    return '$remaining to go, out of $target';
+  }
+
+  @override
+  String get goalReached => 'Reached.';
+
+  @override
+  String goalOnTrack(String date) {
+    return 'On track for $date';
+  }
+
+  @override
+  String goalBehind(String date) {
+    return 'Behind for $date';
+  }
+
+  @override
+  String goalMissed(String date) {
+    return 'Deadline of $date passed.';
+  }
+
+  @override
+  String get goalNoOpinion => 'No estimate at your recent pace.';
+
+  @override
+  String get goalsTitle => 'Goals';
+
+  @override
+  String get goalsEmpty => 'Set a goal from any counter to see it here.';
 }

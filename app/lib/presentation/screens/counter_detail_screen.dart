@@ -6,10 +6,12 @@ import 'package:intl/intl.dart';
 import '../../core/router.dart';
 import '../../domain/badge_projection.dart';
 import '../../domain/counter_series.dart';
+import '../../domain/goal.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../widgets/badge_projection_card.dart';
 import '../widgets/counter_chart.dart';
+import '../widgets/goal_card.dart';
 
 /// Detail view for one counter (§3.4, §3.5).
 ///
@@ -47,6 +49,12 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
     final label = enrichment?.label(language) ?? exportHeader;
 
     final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+    final goal = ref
+        .watch(goalsProvider)
+        .asData
+        ?.value
+        .where((g) => g.exportHeader == exportHeader)
+        .firstOrNull;
 
     // Oldest first so the history reads chronologically, and so each delta can
     // be computed against the previous point that actually carried the value.
@@ -164,6 +172,16 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
               l10n.counterNoTiers,
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: theme.colorScheme.outline),
+            ),
+          ],
+          if (points.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            GoalCard(
+              exportHeader: exportHeader,
+              currentValue: points.last.$2,
+              progress: goal == null
+                  ? null
+                  : const GoalTracker().progressFor(goal, full.points),
             ),
           ],
           const SizedBox(height: 24),

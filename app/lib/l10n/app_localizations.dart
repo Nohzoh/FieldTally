@@ -1067,6 +1067,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} snapshots exported.'**
   String exportCsvDone(int count);
+
+  /// No description provided for @goalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal goal'**
+  String get goalTitle;
+
+  /// No description provided for @goalNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No goal on this counter yet.'**
+  String get goalNone;
+
+  /// No description provided for @goalSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a goal'**
+  String get goalSet;
+
+  /// No description provided for @goalEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get goalEdit;
+
+  /// No description provided for @goalRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get goalRemove;
+
+  /// No description provided for @goalTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Target value'**
+  String get goalTarget;
+
+  /// No description provided for @goalDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get goalDeadline;
+
+  /// No description provided for @goalNoDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'No deadline'**
+  String get goalNoDeadline;
+
+  /// No description provided for @goalPickDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get goalPickDeadline;
+
+  /// No description provided for @goalClearDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get goalClearDeadline;
+
+  /// No description provided for @goalSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the goal'**
+  String get goalSave;
+
+  /// No description provided for @goalSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal saved.'**
+  String get goalSaved;
+
+  /// No description provided for @goalRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal removed.'**
+  String get goalRemoved;
+
+  /// No description provided for @goalInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be above the current value'**
+  String get goalInvalid;
+
+  /// No description provided for @goalRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} to go, out of {target}'**
+  String goalRemaining(String remaining, String target);
+
+  /// No description provided for @goalReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Reached.'**
+  String get goalReached;
+
+  /// No description provided for @goalOnTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'On track for {date}'**
+  String goalOnTrack(String date);
+
+  /// No description provided for @goalBehind.
+  ///
+  /// In en, this message translates to:
+  /// **'Behind for {date}'**
+  String goalBehind(String date);
+
+  /// No description provided for @goalMissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline of {date} passed.'**
+  String goalMissed(String date);
+
+  /// No description provided for @goalNoOpinion.
+  ///
+  /// In en, this message translates to:
+  /// **'No estimate at your recent pace.'**
+  String get goalNoOpinion;
+
+  /// No description provided for @goalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals'**
+  String get goalsTitle;
+
+  /// No description provided for @goalsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a goal from any counter to see it here.'**
+  String get goalsEmpty;
 }
 
 class _AppLocalizationsDelegate
