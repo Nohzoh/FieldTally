@@ -78,8 +78,27 @@ class IngressTsvParser {
         .toList();
   }
 
+  /// Splits one line into cells.
+  ///
+  /// A line that ends with the separator yields a last cell that is empty:
+  /// that is punctuation left by the exporter, not a column. Real exports from
+  /// the game do end with a tab — both on the header row and on the data row —
+  /// and rejecting them for an "unnamed column" made the app unusable with the
+  /// actual format while every fixture, which happened to have no trailing
+  /// tab, passed.
+  ///
+  /// Only one trailing cell is dropped, and only when the line really ends
+  /// with the separator. An empty cell anywhere else stays: there, the mapping
+  /// between names and values is genuinely ambiguous and guessing would be
+  /// worse than refusing.
+  List<String> _splitCells(String line) {
+    final cells = line.split('\t').map((cell) => cell.trim()).toList();
+    if (cells.length > 1 && line.endsWith('\t')) cells.removeLast();
+    return cells;
+  }
+
   List<String> _parseHeaders(String line) {
-    final headers = line.split('\t').map((h) => h.trim()).toList();
+    final headers = _splitCells(line);
 
     if (headers.length < 2) {
       throw const ExportParseException(ParseErrorKind.notTabSeparated);
@@ -109,7 +128,7 @@ class IngressTsvParser {
   }
 
   StatSnapshot _parseRow(List<String> headers, String line, int lineNumber) {
-    final values = line.split('\t').map((v) => v.trim()).toList();
+    final values = _splitCells(line);
 
     if (values.length != headers.length) {
       throw ExportParseException(

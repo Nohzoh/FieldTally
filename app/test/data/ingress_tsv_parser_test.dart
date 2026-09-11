@@ -132,6 +132,56 @@ void main() {
     });
   });
 
+  group('trailing separator (§3.1.1)', () {
+    // Found on a real phone, against a real export: the game ends both the
+    // header row and the data row with a tab. Every fixture here happened not
+    // to, so the app refused the actual format while the suite stayed green.
+    String withTrailingTabs(String raw) {
+      final lines = raw.trim().split('\n');
+      return '${lines.map((line) => '$line\t').join('\n')}\n';
+    }
+
+    test('an export ending each line with a tab is read normally', () {
+      final expected = parser.parseSingle(fixture(allTimePath));
+      final actual =
+          parser.parseSingle(withTrailingTabs(fixture(allTimePath)));
+
+      expect(actual.agentName, expected.agentName);
+      expect(actual.level, expected.level);
+      expect(actual.counters, expected.counters);
+    });
+
+    test('only the header row ending with a tab is read normally', () {
+      final (headers, values) = split(fixture(allTimePath));
+      final raw = '${headers.join('\t')}\t\n${values.join('\t')}\n';
+
+      expect(parser.parseSingle(raw).counters, isNotEmpty);
+    });
+
+    test('a genuinely unnamed column in the middle is still refused', () {
+      // The trailing cell is punctuation; an empty one anywhere else makes the
+      // mapping ambiguous, and guessing would be worse than refusing.
+      final (headers, values) = split(fixture(allTimePath));
+      headers.insert(8, '');
+      values.insert(8, '0');
+
+      expect(
+        () => parser.parseSingle(buildExport(headers, values)),
+        throwsParseError(ParseErrorKind.blankHeader),
+      );
+    });
+
+    test('two trailing tabs stay ambiguous', () {
+      final (headers, values) = split(fixture(allTimePath));
+      final raw = '${headers.join('\t')}\t\t\n${values.join('\t')}\t\t\n';
+
+      expect(
+        () => parser.parseSingle(raw),
+        throwsParseError(ParseErrorKind.blankHeader),
+      );
+    });
+  });
+
   group('locale specific number formats (§6)', () {
     for (final entry in {
       'thin space': '101 542 335',
