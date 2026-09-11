@@ -76,6 +76,70 @@ void main() {
     await db.close();
   });
 
+  /// A v3 file: pins and settings exist, level is still NOT NULL.
+  void createV3Database() {
+    createV1Database();
+    final db = sqlite3.open(file.path);
+    db.execute('''
+      CREATE TABLE pinned_counters (
+        export_header TEXT NOT NULL,
+        position INTEGER NOT NULL,
+        PRIMARY KEY (export_header));
+    ''');
+    db.execute('''
+      CREATE TABLE app_settings (
+        key TEXT NOT NULL,
+        value TEXT NOT NULL,
+        PRIMARY KEY (key));
+    ''');
+    db.execute("INSERT INTO pinned_counters VALUES ('Hacks', 0);");
+    db.execute('PRAGMA user_version = 3;');
+    db.close();
+  }
+
+  test('a v3 database keeps its data when level becomes nullable', () async {
+    // v4 recreates the snapshots table, since SQLite cannot drop a NOT NULL in
+    // place — the one migration in this app that rewrites existing rows, and
+    // therefore the one most worth testing.
+    createV3Database();
+
+    final db = FieldTallyDatabase(NativeDatabase(file));
+
+    final snapshots = await db.select(db.snapshots).get();
+    expect(snapshots, hasLength(1));
+    expect(snapshots.single.agentName, 'AgentDemo');
+    expect(snapshots.single.level, 9, reason: 'an existing level survives');
+
+    expect((await db.select(db.counterValues).get()).single.value, 78735);
+    expect((await db.select(db.pinnedCounters).get()).single.exportHeader,
+        'Hacks');
+
+    await db.close();
+  });
+
+  test('after upgrading, a snapshot without a level can be stored', () async {
+    createV3Database();
+    final db = FieldTallyDatabase(NativeDatabase(file));
+
+    await db.into(db.snapshots).insert(
+          SnapshotsCompanion.insert(
+            id: 'migrated',
+            agentName: '',
+            faction: '',
+            timeSpan: 'unknown',
+            recordedAt: DateTime(2020, 1, 1),
+            importedAt: DateTime(2026, 1, 1),
+          ),
+        );
+
+    final stored = await (db.select(db.snapshots)
+          ..where((s) => s.id.equals('migrated')))
+        .getSingle();
+    expect(stored.level, isNull);
+
+    await db.close();
+  });
+
   test('the upgraded database is usable for writes', () async {
     createV1Database();
     final db = FieldTallyDatabase(NativeDatabase(file));

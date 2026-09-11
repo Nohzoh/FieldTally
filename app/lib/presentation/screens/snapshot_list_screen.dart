@@ -30,6 +30,15 @@ class SnapshotListScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go(Routes.home),
         ),
+        actions: [
+          // The migration import lives here rather than on the dashboard: it
+          // is a one-off, and this is the screen about the history itself.
+          IconButton(
+            icon: const Icon(Icons.file_download_outlined),
+            tooltip: l10n.importCsvAction,
+            onPressed: () => context.go(Routes.importCsv),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.go(Routes.addSnapshot),
@@ -96,7 +105,14 @@ class _SnapshotList extends ConsumerWidget {
         final snapshot = stored.snapshot;
 
         return ListTile(
-          leading: CircleAvatar(child: Text('${snapshot.level}')),
+          // A migrated snapshot has no level: the Agent Stats format carries
+          // no such column (Appendix B), so the avatar says so rather than
+          // printing the absence.
+          leading: CircleAvatar(
+            child: Text(
+              snapshot.level?.toString() ?? l10n.unknownValue,
+            ),
+          ),
           title: Text(format.format(snapshot.recordedAt)),
           subtitle: Text(
             l10n.snapshotSubtitle(snapshot.counters.length, snapshot.agentName),

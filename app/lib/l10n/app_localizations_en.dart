@@ -442,4 +442,68 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAboutSection => 'About';
+
+  @override
+  String get importCsvTitle => 'Import from Agent Stats';
+
+  @override
+  String get importCsvAction => 'Import from Agent Stats';
+
+  @override
+  String get importCsvInstructions =>
+      'Paste the CSV export from Agent Stats. Your whole history comes across at once — nothing is saved until you confirm.';
+
+  @override
+  String get importCsvField => 'Agent Stats CSV';
+
+  @override
+  String importCsvSummary(int count, int counters) {
+    return '$count snapshots, $counters counters';
+  }
+
+  @override
+  String importCsvRange(String from, String to) {
+    return 'From $from to $to';
+  }
+
+  @override
+  String get importCsvNoTimeSpan =>
+      'This format carries no period column, so only the consistency check protects the import. Every pair of rows has been checked.';
+
+  @override
+  String importCsvConfirm(int count) {
+    return 'Import $count snapshots';
+  }
+
+  @override
+  String importCsvDone(int count) {
+    return '$count snapshots imported.';
+  }
+
+  @override
+  String get importCsvAnomalyTitle => 'Inconsistent rows in this file';
+
+  @override
+  String importCsvAnomaly(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count counters go backwards',
+      one: '1 counter goes backwards',
+    );
+    return '$_temp0 inside this file, which normally never happens. Importing it would skew your history from that date onwards.';
+  }
+
+  @override
+  String importCsvAnomalyLine(
+    String date,
+    String counter,
+    int previous,
+    int current,
+  ) {
+    return '$date · $counter: $previous → $current';
+  }
+
+  @override
+  String get unknownValue => '—';
 }

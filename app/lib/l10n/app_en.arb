@@ -353,5 +353,75 @@
       }
     }
   },
-  "settingsAboutSection": "About"
+  "settingsAboutSection": "About",
+  "importCsvTitle": "Import from Agent Stats",
+  "importCsvAction": "Import from Agent Stats",
+  "importCsvInstructions": "Paste the CSV export from Agent Stats. Your whole history comes across at once — nothing is saved until you confirm.",
+  "importCsvField": "Agent Stats CSV",
+  "importCsvSummary": "{count} snapshots, {counters} counters",
+  "@importCsvSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "counters": {
+        "type": "int"
+      }
+    }
+  },
+  "importCsvRange": "From {from} to {to}",
+  "@importCsvRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "importCsvNoTimeSpan": "This format carries no period column, so only the consistency check protects the import. Every pair of rows has been checked.",
+  "importCsvConfirm": "Import {count} snapshots",
+  "@importCsvConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importCsvDone": "{count} snapshots imported.",
+  "@importCsvDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importCsvAnomalyTitle": "Inconsistent rows in this file",
+  "importCsvAnomaly": "{count, plural, one{1 counter goes backwards} other{{count} counters go backwards}} inside this file, which normally never happens. Importing it would skew your history from that date onwards.",
+  "@importCsvAnomaly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importCsvAnomalyLine": "{date} · {counter}: {previous} → {current}",
+  "@importCsvAnomalyLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "counter": {
+        "type": "String"
+      },
+      "previous": {
+        "type": "int"
+      },
+      "current": {
+        "type": "int"
+      }
+    }
+  },
+  "unknownValue": "—"
 }

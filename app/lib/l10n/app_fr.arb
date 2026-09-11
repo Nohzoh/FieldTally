@@ -114,5 +114,18 @@
   "settingsOnlineUpdatesDetail": "Télécharge depuis le site du projet la liste publique des noms et catégories de compteurs, pour que les nouveaux compteurs d'anomalie soient nommés sans attendre une mise à jour de l'app. Rien te concernant, ni concernant ton appareil, n'est envoyé. Désactive-le pour garder l'app totalement hors-ligne.",
   "settingsRegistryCounters": "{count} compteurs connus",
   "settingsRegistryUpdatedAt": "Version {date}",
-  "settingsAboutSection": "À propos"
+  "settingsAboutSection": "À propos",
+  "importCsvTitle": "Importer depuis Agent Stats",
+  "importCsvAction": "Importer depuis Agent Stats",
+  "importCsvInstructions": "Colle l'export CSV d'Agent Stats. Tout ton historique arrive d'un coup — rien n'est enregistré tant que tu n'as pas confirmé.",
+  "importCsvField": "CSV Agent Stats",
+  "importCsvSummary": "{count} relevés, {counters} compteurs",
+  "importCsvRange": "Du {from} au {to}",
+  "importCsvNoTimeSpan": "Ce format ne porte pas de colonne de période : seule la vérification de cohérence protège l'import. Toutes les paires de lignes ont été vérifiées.",
+  "importCsvConfirm": "Importer {count} relevés",
+  "importCsvDone": "{count} relevés importés.",
+  "importCsvAnomalyTitle": "Lignes incohérentes dans ce fichier",
+  "importCsvAnomaly": "{count, plural, one{1 compteur recule} other{{count} compteurs reculent}} à l'intérieur de ce fichier, ce qui n'arrive normalement jamais. L'importer fausserait ton historique à partir de cette date.",
+  "importCsvAnomalyLine": "{date} · {counter} : {previous} → {current}",
+  "unknownValue": "—"
 }
