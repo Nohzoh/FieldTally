@@ -694,4 +694,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get goalsEmpty => 'Set a goal from any counter to see it here.';
+
+  @override
+  String get settingsNotificationsSection => 'Reminders';
+
+  @override
+  String get settingsNotifications => 'Local notifications';
+
+  @override
+  String get settingsNotificationsDetail =>
+      'Reminds you when no snapshot has been recorded for a while, and tells you when a new badge tier is reached. Everything is scheduled on the device; nothing is sent anywhere.';
+
+  @override
+  String get settingsNotificationsDenied =>
+      'Android refused the notification permission. Allow it for FieldTally in the system settings.';
+
+  @override
+  String settingsReminderDelay(int days) {
+    return 'Remind me after $days days without a snapshot';
+  }
+
+  @override
+  String get notificationReminderTitle => 'Time for a snapshot';
+
+  @override
+  String notificationReminderBody(int days) {
+    return 'Nothing recorded for $days days. Share your stats from Ingress to keep your history going.';
+  }
+
+  @override
+  String notificationMilestoneTitle(String tier) {
+    return '$tier reached';
+  }
+
+  @override
+  String notificationMilestoneBody(String counter, String value) {
+    return '$counter is now at $value.';
+  }
+
+  @override
+  String notificationMilestoneMore(String counter, int count) {
+    return '$counter and $count other badges reached.';
+  }
 }

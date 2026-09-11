@@ -16,6 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fixed_registry.dart';
+import 'support/fake_notification_service.dart';
 
 const allTimePath = 'test/fixtures/sample_export_all_time.tsv';
 const weekPath = 'test/fixtures/sample_export_week.tsv';
@@ -41,6 +42,8 @@ void main() {
     db = FieldTallyDatabase(NativeDatabase.memory());
     container = ProviderContainer(overrides: [
       databaseProvider.overrideWithValue(db),
+      // No test asks Android to post anything (§3.7).
+      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
       counterRegistryProvider.overrideWith(fixedRegistry),
     ]);
     // Order matters: tearDowns run last-registered-first, so the container is

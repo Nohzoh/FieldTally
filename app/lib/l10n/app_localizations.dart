@@ -1199,6 +1199,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set a goal from any counter to see it here.'**
   String get goalsEmpty;
+
+  /// No description provided for @settingsNotificationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get settingsNotificationsSection;
+
+  /// No description provided for @settingsNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Local notifications'**
+  String get settingsNotifications;
+
+  /// No description provided for @settingsNotificationsDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminds you when no snapshot has been recorded for a while, and tells you when a new badge tier is reached. Everything is scheduled on the device; nothing is sent anywhere.'**
+  String get settingsNotificationsDetail;
+
+  /// No description provided for @settingsNotificationsDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Android refused the notification permission. Allow it for FieldTally in the system settings.'**
+  String get settingsNotificationsDenied;
+
+  /// No description provided for @settingsReminderDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me after {days} days without a snapshot'**
+  String settingsReminderDelay(int days);
+
+  /// No description provided for @notificationReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Time for a snapshot'**
+  String get notificationReminderTitle;
+
+  /// No description provided for @notificationReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing recorded for {days} days. Share your stats from Ingress to keep your history going.'**
+  String notificationReminderBody(int days);
+
+  /// No description provided for @notificationMilestoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} reached'**
+  String notificationMilestoneTitle(String tier);
+
+  /// No description provided for @notificationMilestoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{counter} is now at {value}.'**
+  String notificationMilestoneBody(String counter, String value);
+
+  /// No description provided for @notificationMilestoneMore.
+  ///
+  /// In en, this message translates to:
+  /// **'{counter} and {count} other badges reached.'**
+  String notificationMilestoneMore(String counter, int count);
 }
 
 class _AppLocalizationsDelegate

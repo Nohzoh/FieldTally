@@ -181,5 +181,15 @@
   "goalMissed": "Échéance du {date} dépassée.",
   "goalNoOpinion": "Pas d'estimation à ton rythme récent.",
   "goalsTitle": "Objectifs",
-  "goalsEmpty": "Définis un objectif depuis un compteur pour le voir ici."
+  "goalsEmpty": "Définis un objectif depuis un compteur pour le voir ici.",
+  "settingsNotificationsSection": "Rappels",
+  "settingsNotifications": "Notifications locales",
+  "settingsNotificationsDetail": "Te rappelle quand aucun relevé n'a été enregistré depuis un moment, et t'annonce le franchissement d'un palier de médaille. Tout est planifié sur l'appareil ; rien n'est envoyé nulle part.",
+  "settingsNotificationsDenied": "Android a refusé l'autorisation de notification. Autorise-la pour FieldTally dans les réglages système.",
+  "settingsReminderDelay": "Me rappeler après {days} jours sans relevé",
+  "notificationReminderTitle": "C'est l'heure d'un relevé",
+  "notificationReminderBody": "Rien d'enregistré depuis {days} jours. Partage tes stats depuis Ingress pour que ton historique continue.",
+  "notificationMilestoneTitle": "{tier} atteint",
+  "notificationMilestoneBody": "{counter} est maintenant à {value}.",
+  "notificationMilestoneMore": "{counter} et {count} autres médailles atteintes."
 }

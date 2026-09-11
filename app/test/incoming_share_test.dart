@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/fixed_registry.dart';
+import 'support/fake_notification_service.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 const allTimePath = 'test/fixtures/sample_export_all_time.tsv';
@@ -63,6 +64,8 @@ void main() {
     share = FakeShareSource(initial: initialShare);
     container = ProviderContainer(overrides: [
       databaseProvider.overrideWithValue(db),
+      // No test asks Android to post anything (§3.7).
+      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
       counterRegistryProvider.overrideWith(fixedRegistry),
       incomingShareProvider.overrideWithValue(share),
     ]);

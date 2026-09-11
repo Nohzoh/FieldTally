@@ -549,5 +549,56 @@
   },
   "goalNoOpinion": "No estimate at your recent pace.",
   "goalsTitle": "Goals",
-  "goalsEmpty": "Set a goal from any counter to see it here."
+  "goalsEmpty": "Set a goal from any counter to see it here.",
+  "settingsNotificationsSection": "Reminders",
+  "settingsNotifications": "Local notifications",
+  "settingsNotificationsDetail": "Reminds you when no snapshot has been recorded for a while, and tells you when a new badge tier is reached. Everything is scheduled on the device; nothing is sent anywhere.",
+  "settingsNotificationsDenied": "Android refused the notification permission. Allow it for FieldTally in the system settings.",
+  "settingsReminderDelay": "Remind me after {days} days without a snapshot",
+  "@settingsReminderDelay": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationReminderTitle": "Time for a snapshot",
+  "notificationReminderBody": "Nothing recorded for {days} days. Share your stats from Ingress to keep your history going.",
+  "@notificationReminderBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationMilestoneTitle": "{tier} reached",
+  "@notificationMilestoneTitle": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationMilestoneBody": "{counter} is now at {value}.",
+  "@notificationMilestoneBody": {
+    "placeholders": {
+      "counter": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationMilestoneMore": "{counter} and {count} other badges reached.",
+  "@notificationMilestoneMore": {
+    "placeholders": {
+      "counter": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -103,8 +103,29 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
     if (snapshot == null || _saving) return;
 
     final l10n = AppLocalizations.of(context);
+    final language = Localizations.localeOf(context).languageCode;
     setState(() => _saving = true);
-    await ref.read(snapshotRepositoryProvider).save(snapshot);
+
+    final repository = ref.read(snapshotRepositoryProvider);
+    // Read before saving: afterwards the newest snapshot is this one.
+    final previous = (await repository.latest())?.snapshot;
+    await repository.save(snapshot);
+
+    // A milestone and the reminder are both consequences of the history
+    // moving, so both are re-evaluated here rather than left to drift (§3.7).
+    final coordinator = ref.read(notificationCoordinatorProvider);
+    final registry = await ref.read(counterRegistryProvider.future);
+    await coordinator.announceMilestones(
+      current: snapshot,
+      previous: previous,
+      registry: registry,
+      l10n: l10n,
+      language: language,
+    );
+    await coordinator.rescheduleReminder(
+      latestSnapshot: (await repository.latest())?.snapshot.recordedAt,
+      l10n: l10n,
+    );
 
     if (!mounted) return;
     ScaffoldMessenger.of(context)

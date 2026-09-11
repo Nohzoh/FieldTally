@@ -697,4 +697,46 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get goalsEmpty =>
       'Définis un objectif depuis un compteur pour le voir ici.';
+
+  @override
+  String get settingsNotificationsSection => 'Rappels';
+
+  @override
+  String get settingsNotifications => 'Notifications locales';
+
+  @override
+  String get settingsNotificationsDetail =>
+      'Te rappelle quand aucun relevé n\'a été enregistré depuis un moment, et t\'annonce le franchissement d\'un palier de médaille. Tout est planifié sur l\'appareil ; rien n\'est envoyé nulle part.';
+
+  @override
+  String get settingsNotificationsDenied =>
+      'Android a refusé l\'autorisation de notification. Autorise-la pour FieldTally dans les réglages système.';
+
+  @override
+  String settingsReminderDelay(int days) {
+    return 'Me rappeler après $days jours sans relevé';
+  }
+
+  @override
+  String get notificationReminderTitle => 'C\'est l\'heure d\'un relevé';
+
+  @override
+  String notificationReminderBody(int days) {
+    return 'Rien d\'enregistré depuis $days jours. Partage tes stats depuis Ingress pour que ton historique continue.';
+  }
+
+  @override
+  String notificationMilestoneTitle(String tier) {
+    return '$tier atteint';
+  }
+
+  @override
+  String notificationMilestoneBody(String counter, String value) {
+    return '$counter est maintenant à $value.';
+  }
+
+  @override
+  String notificationMilestoneMore(String counter, int count) {
+    return '$counter et $count autres médailles atteintes.';
+  }
 }
