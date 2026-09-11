@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/build_info.dart';
 import '../../core/router.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../l10n/app_localizations.dart';
@@ -16,6 +19,9 @@ import '../providers/providers.dart';
 /// sent.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  static final _koFi = Uri.parse('https://ko-fi.com/tarnaud');
+  static final _repository = Uri.parse('https://github.com/Nohzoh/FieldTally');
 
   /// Offered delays, in days. Short enough to build a habit, long enough not
   /// to nag someone who plays once a week.
@@ -36,6 +42,7 @@ class SettingsScreen extends ConsumerWidget {
     final factionColours =
         ref.watch(factionColoursProvider).asData?.value ?? false;
     final faction = ref.watch(currentFactionProvider);
+    final build = ref.watch(buildInfoProvider).asData?.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -133,6 +140,33 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           _SectionHeader(title: l10n.settingsAboutSection),
+          // The first question on any bug report is "which version?", so the
+          // answer is one tap away and lands in the clipboard ready to paste.
+          ListTile(
+            title: Text(
+              build == null
+                  ? l10n.settingsAboutSection
+                  : l10n.settingsVersion(build.version, build.build),
+            ),
+            subtitle: Text(
+              build?.commit ?? l10n.settingsBuildUnknown,
+            ),
+            trailing: const Icon(Icons.copy_all_outlined),
+            onTap: build == null ? null : () => _copyVersion(context, build),
+          ),
+          ListTile(
+            title: Text(l10n.settingsSupport),
+            subtitle: Text(l10n.settingsSupportDetail),
+            isThreeLine: true,
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => _open(context, _koFi),
+          ),
+          ListTile(
+            title: Text(l10n.settingsSourceCode),
+            subtitle: Text(l10n.settingsSourceCodeDetail),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => _open(context, _repository),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             child: Text(
@@ -144,6 +178,29 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _copyVersion(BuildContext context, BuildInfo build) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    await Clipboard.setData(ClipboardData(text: build.summary));
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.settingsVersionCopied)),
+    );
+  }
+
+  /// Says so rather than failing silently: a device with no browser is rare,
+  /// but a tap that does nothing at all looks like a broken app.
+  Future<void> _open(BuildContext context, Uri url) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.settingsLinkFailed)),
+      );
+    }
   }
 
   Future<void> _setThemeMode(WidgetRef ref, ThemeMode? mode) async {

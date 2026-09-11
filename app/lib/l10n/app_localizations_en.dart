@@ -441,6 +441,36 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String settingsVersion(String version, String build) {
+    return 'Version $version ($build)';
+  }
+
+  @override
+  String get settingsBuildUnknown => 'Built from a working copy';
+
+  @override
+  String get settingsCopyVersion => 'Tap to copy, to paste into a bug report';
+
+  @override
+  String get settingsVersionCopied => 'Version copied.';
+
+  @override
+  String get settingsSourceCode => 'Source code';
+
+  @override
+  String get settingsSourceCodeDetail => 'The whole app, under AGPL v3.';
+
+  @override
+  String get settingsSupport => 'Support the project';
+
+  @override
+  String get settingsSupportDetail =>
+      'FieldTally is free, has no ads and collects nothing. Nothing is expected â but a coffee is always welcome.';
+
+  @override
+  String get settingsLinkFailed => 'No app could open that link.';
+
+  @override
   String get settingsAboutSection => 'About';
 
   @override

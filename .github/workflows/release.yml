@@ -96,9 +96,12 @@ jobs:
       # sideloaded, so the file is chosen by a person reading a release page,
       # and a person cannot pick the wrong one if there is only one. The cost
       # is download size, which is the right thing to trade here.
+      # The commit is compiled in so the About screen can name the exact source
+      # of a build someone is reporting a bug about. A build made from a
+      # working copy has none and says so instead.
       - name: Build the signed APK
         working-directory: app
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define=GIT_COMMIT=${GITHUB_SHA::7}
 
       # Proves the artifact carries the real key. Without this the whole
       # workflow could succeed and still publish something debug-signed, since

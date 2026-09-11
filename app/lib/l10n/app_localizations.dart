@@ -787,6 +787,60 @@ abstract class AppLocalizations {
   /// **'Version {date}'**
   String settingsRegistryUpdatedAt(String date);
 
+  /// No description provided for @settingsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} ({build})'**
+  String settingsVersion(String version, String build);
+
+  /// No description provided for @settingsBuildUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Built from a working copy'**
+  String get settingsBuildUnknown;
+
+  /// No description provided for @settingsCopyVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to copy, to paste into a bug report'**
+  String get settingsCopyVersion;
+
+  /// No description provided for @settingsVersionCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Version copied.'**
+  String get settingsVersionCopied;
+
+  /// No description provided for @settingsSourceCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Source code'**
+  String get settingsSourceCode;
+
+  /// No description provided for @settingsSourceCodeDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'The whole app, under AGPL v3.'**
+  String get settingsSourceCodeDetail;
+
+  /// No description provided for @settingsSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support the project'**
+  String get settingsSupport;
+
+  /// No description provided for @settingsSupportDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'FieldTally is free, has no ads and collects nothing. Nothing is expected â but a coffee is always welcome.'**
+  String get settingsSupportDetail;
+
+  /// No description provided for @settingsLinkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'No app could open that link.'**
+  String get settingsLinkFailed;
+
   /// No description provided for @settingsAboutSection.
   ///
   /// In en, this message translates to:

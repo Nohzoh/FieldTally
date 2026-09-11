@@ -61,6 +61,14 @@ one file per language. Adding a language means copying `app_en.arb` and
 translating it — the Ingress community is international, and this contribution
 needs no knowledge of the code.
 
+## Supporting the project
+
+FieldTally is free, has no ads and collects nothing — there is nothing to
+monetise and nothing is expected. If the app is useful to you and you feel like
+buying a coffee: [ko-fi.com/tarnaud](https://ko-fi.com/tarnaud).
+
+Declaring a counter or reporting an import failure helps the project more.
+
 ## Licence
 
 FieldTally is published under the **GNU AGPL v3**. Contributions are accepted

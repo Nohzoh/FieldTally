@@ -353,6 +353,25 @@
       }
     }
   },
+  "settingsVersion": "Version {version} ({build})",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsBuildUnknown": "Built from a working copy",
+  "settingsCopyVersion": "Tap to copy, to paste into a bug report",
+  "settingsVersionCopied": "Version copied.",
+  "settingsSourceCode": "Source code",
+  "settingsSourceCodeDetail": "The whole app, under AGPL v3.",
+  "settingsSupport": "Support the project",
+  "settingsSupportDetail": "FieldTally is free, has no ads and collects nothing. Nothing is expected â but a coffee is always welcome.",
+  "settingsLinkFailed": "No app could open that link.",
   "settingsAboutSection": "About",
   "importCsvTitle": "Import from Agent Stats",
   "importCsvAction": "Import from Agent Stats",
