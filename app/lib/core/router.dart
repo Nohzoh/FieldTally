@@ -8,6 +8,7 @@ import '../presentation/screens/dashboard_screen.dart';
 import '../presentation/screens/edit_snapshot_screen.dart';
 import '../presentation/screens/import_csv_screen.dart';
 import '../presentation/screens/settings_screen.dart';
+import '../presentation/screens/share_card_screen.dart';
 import '../presentation/screens/snapshot_list_screen.dart';
 
 /// Application routes (§5.1: go_router).
@@ -23,6 +24,9 @@ abstract final class Routes {
   static const customisePins = '/pins';
   static const settings = '/settings';
   static const importCsv = '/import';
+
+  /// The shareable stats card (§3.8).
+  static const shareCard = '/share';
 
   /// Correcting a snapshot (§3.2) addresses it by its stored id.
   static String editSnapshot(String id) => '/snapshots/$id';
@@ -76,6 +80,10 @@ GoRouter createRouter() => GoRouter(
             GoRoute(
               path: 'import',
               builder: (context, state) => const ImportCsvScreen(),
+            ),
+            GoRoute(
+              path: 'share',
+              builder: (context, state) => const ShareCardScreen(),
             ),
             GoRoute(
               path: 'counters',

@@ -1200,6 +1200,72 @@ abstract class AppLocalizations {
   /// **'Set a goal from any counter to see it here.'**
   String get goalsEmpty;
 
+  /// No description provided for @shareCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shareable card'**
+  String get shareCardTitle;
+
+  /// No description provided for @shareCardAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my stats'**
+  String get shareCardAction;
+
+  /// No description provided for @shareCardShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share the image'**
+  String get shareCardShare;
+
+  /// No description provided for @shareCardSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress since {date}'**
+  String shareCardSince(String date);
+
+  /// No description provided for @shareCardNoPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Only one snapshot so far â no progress to show yet.'**
+  String get shareCardNoPeriod;
+
+  /// No description provided for @shareCardFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Made with FieldTally'**
+  String get shareCardFooter;
+
+  /// No description provided for @shareCardDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Unofficial · not affiliated with Niantic'**
+  String get shareCardDisclaimer;
+
+  /// No description provided for @shareCardSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'My Ingress stats'**
+  String get shareCardSubject;
+
+  /// No description provided for @shareCardEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to share yet'**
+  String get shareCardEmptyTitle;
+
+  /// No description provided for @shareCardEmptyDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a snapshot and your card will be ready.'**
+  String get shareCardEmptyDetail;
+
+  /// No description provided for @shareCardFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The image could not be produced.'**
+  String get shareCardFailed;
+
   /// No description provided for @settingsNotificationsSection.
   ///
   /// In en, this message translates to:

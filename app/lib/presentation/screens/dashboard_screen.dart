@@ -46,6 +46,14 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
               PopupMenuItem(
+                value: Routes.shareCard,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.ios_share),
+                  title: Text(l10n.shareCardAction),
+                ),
+              ),
+              PopupMenuItem(
                 value: Routes.snapshots,
                 child: ListTile(
                   dense: true,

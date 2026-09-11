@@ -696,6 +696,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goalsEmpty => 'Set a goal from any counter to see it here.';
 
   @override
+  String get shareCardTitle => 'Shareable card';
+
+  @override
+  String get shareCardAction => 'Share my stats';
+
+  @override
+  String get shareCardShare => 'Share the image';
+
+  @override
+  String shareCardSince(String date) {
+    return 'Progress since $date';
+  }
+
+  @override
+  String get shareCardNoPeriod =>
+      'Only one snapshot so far â no progress to show yet.';
+
+  @override
+  String get shareCardFooter => 'Made with FieldTally';
+
+  @override
+  String get shareCardDisclaimer => 'Unofficial · not affiliated with Niantic';
+
+  @override
+  String get shareCardSubject => 'My Ingress stats';
+
+  @override
+  String get shareCardEmptyTitle => 'Nothing to share yet';
+
+  @override
+  String get shareCardEmptyDetail =>
+      'Record a snapshot and your card will be ready.';
+
+  @override
+  String get shareCardFailed => 'The image could not be produced.';
+
+  @override
   String get settingsNotificationsSection => 'Reminders';
 
   @override

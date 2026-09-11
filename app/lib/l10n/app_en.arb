@@ -550,6 +550,24 @@
   "goalNoOpinion": "No estimate at your recent pace.",
   "goalsTitle": "Goals",
   "goalsEmpty": "Set a goal from any counter to see it here.",
+  "shareCardTitle": "Shareable card",
+  "shareCardAction": "Share my stats",
+  "shareCardShare": "Share the image",
+  "shareCardSince": "Progress since {date}",
+  "@shareCardSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCardNoPeriod": "Only one snapshot so far â no progress to show yet.",
+  "shareCardFooter": "Made with FieldTally",
+  "shareCardDisclaimer": "Unofficial · not affiliated with Niantic",
+  "shareCardSubject": "My Ingress stats",
+  "shareCardEmptyTitle": "Nothing to share yet",
+  "shareCardEmptyDetail": "Record a snapshot and your card will be ready.",
+  "shareCardFailed": "The image could not be produced.",
   "settingsNotificationsSection": "Reminders",
   "settingsNotifications": "Local notifications",
   "settingsNotificationsDetail": "Reminds you when no snapshot has been recorded for a while, and tells you when a new badge tier is reached. Everything is scheduled on the device; nothing is sent anywhere.",

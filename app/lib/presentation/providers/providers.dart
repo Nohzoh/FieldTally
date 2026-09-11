@@ -10,6 +10,7 @@ import '../../data/repositories/drift_settings_repository.dart';
 import '../../data/repositories/drift_snapshot_repository.dart';
 import '../../data/sharing/incoming_share.dart';
 import '../../domain/counter_list.dart';
+import '../../domain/counter_series.dart';
 import '../../domain/dashboard.dart';
 import '../../domain/guards/import_guards.dart';
 import '../../domain/models/counter_registry.dart';
@@ -19,6 +20,7 @@ import '../../domain/repositories/goal_repository.dart';
 import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
+import '../../domain/share_card.dart';
 import '../notification_coordinator.dart';
 
 /// Local database. Overridden with an in-memory one in tests.
@@ -200,3 +202,34 @@ final reminderDaysProvider = StreamProvider<int>(
       .watch(SettingKeys.reminderDays)
       .map((value) => int.tryParse(value ?? '') ?? 7),
 );
+
+/// Period the shareable card covers (§3.8). Kept out of the screen so the
+/// choice survives a rebuild, and so a test can set it without tapping.
+class ShareCardRangeNotifier extends Notifier<ChartRange> {
+  @override
+  ChartRange build() => ChartRange.month;
+
+  void set(ChartRange range) => state = range;
+}
+
+final shareCardRangeProvider =
+    NotifierProvider<ShareCardRangeNotifier, ChartRange>(
+  ShareCardRangeNotifier.new,
+);
+
+/// The card itself, rebuilt when the history, the pinned selection or the
+/// chosen period changes. Null inside the data means there is nothing to show.
+final shareCardProvider = Provider<AsyncValue<ShareCardData?>>((ref) {
+  final snapshots = ref.watch(snapshotsProvider);
+  final pinned = ref.watch(pinnedCountersProvider);
+
+  if (snapshots.isLoading || pinned.isLoading) return const AsyncValue.loading();
+
+  return snapshots.whenData(
+    (stored) => const ShareCardBuilder().build(
+      snapshots: [for (final s in stored) s.snapshot],
+      pinned: pinned.asData?.value ?? const [],
+      range: ref.watch(shareCardRangeProvider),
+    ),
+  );
+});
