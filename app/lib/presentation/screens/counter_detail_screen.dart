@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/router.dart';
+import '../../domain/badge_projection.dart';
 import '../../domain/counter_series.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
+import '../widgets/badge_projection_card.dart';
 import '../widgets/counter_chart.dart';
 
 /// Detail view for one counter (§3.4, §3.5).
@@ -28,6 +30,7 @@ class CounterDetailScreen extends ConsumerStatefulWidget {
 
 class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
   ChartRange _range = ChartRange.all;
+  ProjectionWindow _window = ProjectionWindow.month;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +55,18 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
         if (stored.snapshot.counters.containsKey(exportHeader))
           (stored.snapshot.recordedAt, stored.snapshot.counters[exportHeader]!),
     ];
+
+    // Projections read the whole history, not the visible range: the badge is
+    // reached against the total, whatever window the chart happens to show.
+    final full = const CounterSeriesBuilder().series(
+      snapshots: [for (final stored in snapshots) stored.snapshot],
+      exportHeader: exportHeader,
+    );
+    final projection = const BadgeProjector().project(
+      points: full.points,
+      enrichment: enrichment,
+      window: _window,
+    );
 
     final series = const CounterSeriesBuilder().series(
       snapshots: [for (final stored in snapshots) stored.snapshot],
@@ -136,7 +151,14 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
                   ?.copyWith(color: theme.colorScheme.outline),
             ),
           ],
-          if (enrichment == null || enrichment.tiers.isEmpty) ...[
+          if (projection != null) ...[
+            const SizedBox(height: 16),
+            BadgeProjectionCard(
+              projection: projection,
+              measuredFrom: full.points.last.at,
+              onWindowChanged: (window) => setState(() => _window = window),
+            ),
+          ] else ...[
             const SizedBox(height: 12),
             Text(
               l10n.counterNoTiers,

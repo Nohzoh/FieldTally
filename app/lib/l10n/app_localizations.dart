@@ -875,6 +875,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'—'**
   String get unknownValue;
+
+  /// No description provided for @projectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next badge'**
+  String get projectionTitle;
+
+  /// No description provided for @projectionTier_bronze.
+  ///
+  /// In en, this message translates to:
+  /// **'Bronze'**
+  String get projectionTier_bronze;
+
+  /// No description provided for @projectionTier_silver.
+  ///
+  /// In en, this message translates to:
+  /// **'Silver'**
+  String get projectionTier_silver;
+
+  /// No description provided for @projectionTier_gold.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold'**
+  String get projectionTier_gold;
+
+  /// No description provided for @projectionTier_platinum.
+  ///
+  /// In en, this message translates to:
+  /// **'Platinum'**
+  String get projectionTier_platinum;
+
+  /// No description provided for @projectionTier_onyx.
+  ///
+  /// In en, this message translates to:
+  /// **'Onyx'**
+  String get projectionTier_onyx;
+
+  /// No description provided for @projectionRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} to go for {tier}'**
+  String projectionRemaining(String remaining, String tier);
+
+  /// No description provided for @projectionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Around {date} at your recent pace'**
+  String projectionDate(String date);
+
+  /// No description provided for @projectionNoPace.
+  ///
+  /// In en, this message translates to:
+  /// **'No estimate: this counter has not moved lately.'**
+  String get projectionNoPace;
+
+  /// No description provided for @projectionTooFar.
+  ///
+  /// In en, this message translates to:
+  /// **'No estimate: too far off at your recent pace.'**
+  String get projectionTooFar;
+
+  /// No description provided for @projectionComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Onyx reached — nothing left to chase.'**
+  String get projectionComplete;
+
+  /// No description provided for @projectionBelowFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Not started yet'**
+  String get projectionBelowFirst;
+
+  /// No description provided for @projectionPace.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} per day over the last {window}'**
+  String projectionPace(String rate, String window);
+
+  /// No description provided for @projectionWindowWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'week'**
+  String get projectionWindowWeek;
+
+  /// No description provided for @projectionWindowMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'month'**
+  String get projectionWindowMonth;
+
+  /// No description provided for @projectionPaceWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days'**
+  String get projectionPaceWeek;
+
+  /// No description provided for @projectionPaceMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 days'**
+  String get projectionPaceMonth;
 }
 
 class _AppLocalizationsDelegate

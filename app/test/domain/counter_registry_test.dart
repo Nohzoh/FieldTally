@@ -65,10 +65,22 @@ void main() {
       }
     });
 
-    test('carries no badge threshold yet', () {
-      // Appendix A provides none, and inventing them would be worse than their
-      // absence since the projections of §3.6 would rely on them.
-      expect(registry.forExportHeader('Hacks')!.tiers, isEmpty);
+    test('carries badge thresholds for the medals that have them', () {
+      // Supplied by hand rather than invented: a wrong threshold produces a
+      // wrong projection date in silence, which is worse than none at all.
+      final hacks = registry.forExportHeader('Hacks')!.tiers;
+
+      expect(hacks, hasLength(5));
+      expect(hacks.map((t) => t.name),
+          ['bronze', 'silver', 'gold', 'platinum', 'onyx']);
+      expect(hacks.map((t) => t.value),
+          [2000, 10000, 30000, 100000, 200000]);
+    });
+
+    test('leaves counters that are not medals without thresholds', () {
+      // Anomaly counters never had a badge, and never will.
+      expect(registry.forExportHeader('Orion Tokens')!.tiers, isEmpty);
+      expect(registry.forExportHeader('Current AP')!.tiers, isEmpty);
     });
   });
 

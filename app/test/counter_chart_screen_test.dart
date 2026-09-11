@@ -142,6 +142,9 @@ void main() {
         ],
       );
 
+      // The projection card (§3.6) now sits between the summary and the
+      // history, so the heading starts below the fold.
+      await tester.scrollUntilVisible(find.text('History'), 200);
       expect(find.text('History'), findsOneWidget);
       expect(find.text('78,735'), findsWidgets);
     });

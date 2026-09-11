@@ -79,30 +79,54 @@ class CounterChart extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 46,
-                    getTitlesWidget: (value, meta) => Text(
-                      // Compact notation: full numbers would eat the chart on a
-                      // phone, and the exact figures are right below anyway.
-                      numbers.format(value.round()),
-                      style: theme.textTheme.labelSmall,
-                    ),
+                    // An explicit interval: left to itself fl_chart labels the
+                    // padded bounds as well as its own ticks, and the two
+                    // collided at both ends of the axis.
+                    interval: ((max + padding) - (min - padding)) / 4,
+                    getTitlesWidget: (value, meta) {
+                      // fl_chart labels the axis bounds on top of its own
+                      // ticks, and the two overlapped at both ends. Drop a
+                      // label that sits almost on a neighbour.
+                      final step = ((max + padding) - (min - padding)) / 4;
+                      final tooCloseToBottom =
+                          (value - (min - padding)).abs() < step * 0.4;
+                      final tooCloseToTop =
+                          ((max + padding) - value).abs() < step * 0.4;
+                      if (tooCloseToBottom || tooCloseToTop) {
+                        return const SizedBox.shrink();
+                      }
+                      // Compact notation: full numbers would eat the chart on
+                      // a phone, and the exact figures are right below anyway.
+                      return Text(
+                        numbers.format(value.round()),
+                        style: theme.textTheme.labelSmall,
+                      );
+                    },
                   ),
                 ),
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 28,
-                    // Only the ends: intermediate ticks overlap on a narrow
-                    // screen, and the tooltip gives the exact date on tap.
                     interval: (last - first).abs().clamp(1, double.infinity),
-                    getTitlesWidget: (value, meta) => Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        axisDates.format(
-                          DateTime.fromMillisecondsSinceEpoch(value.round()),
+                    // Only the two ends, and checked explicitly rather than
+                    // left to the interval: fl_chart adds a tick of its own
+                    // near the origin, which collided with the first label.
+                    // The tooltip carries the exact date for every point.
+                    getTitlesWidget: (value, meta) {
+                      final isEdge = (value - first).abs() < 1 ||
+                          (value - last).abs() < 1;
+                      if (!isEdge) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          axisDates.format(
+                            DateTime.fromMillisecondsSinceEpoch(value.round()),
+                          ),
+                          style: theme.textTheme.labelSmall,
                         ),
-                        style: theme.textTheme.labelSmall,
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
               ),

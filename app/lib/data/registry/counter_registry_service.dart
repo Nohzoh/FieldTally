@@ -104,9 +104,14 @@ class CounterRegistryService {
       final fetched = loader.parse(body);
       if (fetched.length == 0) return load();
 
-      final currentStamp =
-          await settings.read(SettingKeys.cachedRegistryUpdatedAt);
-      if (currentStamp == fetched.updatedAt) return load();
+      // Adopt only what is strictly newer than what the device already has.
+      //
+      // Comparing against the *effective* registry, not just the cached stamp:
+      // between a release and a registry deploy the bundled copy is the newer
+      // one, and a plain "different, so take it" would quietly downgrade the
+      // app to the older file on Pages.
+      final current = await load();
+      if (!_isNewer(fetched.updatedAt, current.updatedAt)) return current;
 
       await settings.write(SettingKeys.cachedRegistry, body);
       await settings.write(
@@ -120,6 +125,15 @@ class CounterRegistryService {
     } finally {
       if (client == null) httpClient.close();
     }
+  }
+
+  /// Dates are ISO `YYYY-MM-DD`, so a plain string comparison orders them.
+  /// Anything unparseable is treated as not newer: refusing an update is
+  /// recoverable, adopting a bad one is not.
+  static bool _isNewer(String fetched, String current) {
+    if (fetched.isEmpty) return false;
+    if (current.isEmpty) return true;
+    return fetched.compareTo(current) > 0;
   }
 
   Future<bool> _shouldAttempt() async {

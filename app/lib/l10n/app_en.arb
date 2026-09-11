@@ -423,5 +423,49 @@
       }
     }
   },
-  "unknownValue": "—"
+  "unknownValue": "—",
+  "projectionTitle": "Next badge",
+  "projectionTier_bronze": "Bronze",
+  "projectionTier_silver": "Silver",
+  "projectionTier_gold": "Gold",
+  "projectionTier_platinum": "Platinum",
+  "projectionTier_onyx": "Onyx",
+  "projectionRemaining": "{remaining} to go for {tier}",
+  "@projectionRemaining": {
+    "placeholders": {
+      "remaining": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "projectionDate": "Around {date} at your recent pace",
+  "@projectionDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "projectionNoPace": "No estimate: this counter has not moved lately.",
+  "projectionTooFar": "No estimate: too far off at your recent pace.",
+  "projectionComplete": "Onyx reached — nothing left to chase.",
+  "projectionBelowFirst": "Not started yet",
+  "projectionPace": "{rate} per day over the last {window}",
+  "@projectionPace": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "window": {
+        "type": "String"
+      }
+    }
+  },
+  "projectionWindowWeek": "week",
+  "projectionWindowMonth": "month",
+  "projectionPaceWeek": "Last 7 days",
+  "projectionPaceMonth": "Last 30 days"
 }

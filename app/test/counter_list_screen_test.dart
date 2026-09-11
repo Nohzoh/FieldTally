@@ -172,6 +172,9 @@ void main() {
       await tester.tap(find.widgetWithText(ListTile, 'Unique Portals Visited'));
       await tester.pumpAndSettle();
 
+      // The projection card (§3.6) now sits between the summary and the
+      // history, so the heading starts below the fold.
+      await tester.scrollUntilVisible(find.text('History'), 200);
       expect(find.text('History'), findsOneWidget);
       expect(find.text('Current value'), findsOneWidget);
       // The raw export header is surfaced: it is what a contributor needs in
@@ -179,13 +182,13 @@ void main() {
       expect(find.text('Export header'), findsOneWidget);
     });
 
-    testWidgets('says plainly that no badge threshold is known', (tester) async {
-      // Appendix A ships none, so §3.6 cannot project anything yet. Better to
-      // say it than to leave an empty space.
+    testWidgets('says plainly when no badge threshold is known', (tester) async {
+      // Most counters have none — anomaly counters never will — and saying so
+      // beats leaving an empty space.
       await pumpCounterList(tester);
-      await search(tester, 'Hacks');
+      await search(tester, 'Orion Tokens');
 
-      await tester.tap(find.widgetWithText(ListTile, 'Hacks'));
+      await tester.tap(find.widgetWithText(ListTile, 'Orion Tokens'));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('No badge threshold'), findsOneWidget);

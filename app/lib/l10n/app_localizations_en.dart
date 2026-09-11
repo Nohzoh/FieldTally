@@ -506,4 +506,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unknownValue => '—';
+
+  @override
+  String get projectionTitle => 'Next badge';
+
+  @override
+  String get projectionTier_bronze => 'Bronze';
+
+  @override
+  String get projectionTier_silver => 'Silver';
+
+  @override
+  String get projectionTier_gold => 'Gold';
+
+  @override
+  String get projectionTier_platinum => 'Platinum';
+
+  @override
+  String get projectionTier_onyx => 'Onyx';
+
+  @override
+  String projectionRemaining(String remaining, String tier) {
+    return '$remaining to go for $tier';
+  }
+
+  @override
+  String projectionDate(String date) {
+    return 'Around $date at your recent pace';
+  }
+
+  @override
+  String get projectionNoPace =>
+      'No estimate: this counter has not moved lately.';
+
+  @override
+  String get projectionTooFar =>
+      'No estimate: too far off at your recent pace.';
+
+  @override
+  String get projectionComplete => 'Onyx reached — nothing left to chase.';
+
+  @override
+  String get projectionBelowFirst => 'Not started yet';
+
+  @override
+  String projectionPace(String rate, String window) {
+    return '$rate per day over the last $window';
+  }
+
+  @override
+  String get projectionWindowWeek => 'week';
+
+  @override
+  String get projectionWindowMonth => 'month';
+
+  @override
+  String get projectionPaceWeek => 'Last 7 days';
+
+  @override
+  String get projectionPaceMonth => 'Last 30 days';
 }

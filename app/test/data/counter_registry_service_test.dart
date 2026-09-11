@@ -161,6 +161,39 @@ void main() {
       expect(registry.forExportHeader('Hacks')!.label('en'), 'Remote Hacks');
     });
 
+    test('refuses an older version than the one already on the device', () async {
+      // Between a release and a registry deploy, the copy bundled with the app
+      // is the newer one — a plain "different, so take it" would quietly
+      // downgrade the app to the older file on Pages.
+      await settings.write(SettingKeys.cachedRegistry, remoteRegistry());
+      await settings.write(SettingKeys.cachedRegistryUpdatedAt, '2099-06-01');
+
+      final registry = await service(
+        client: responding(
+          remoteRegistry(updatedAt: '2099-01-01', label: 'Older Hacks'),
+        ),
+      ).refresh();
+
+      expect(registry.forExportHeader('Hacks')!.label('en'), 'Remote Hacks');
+      expect(await settings.read(SettingKeys.cachedRegistryUpdatedAt),
+          '2099-06-01');
+    });
+
+    test('refuses a registry older than the bundled copy', () async {
+      // Nothing cached yet, so the comparison is against the seed shipped with
+      // the app — the case a fresh install actually hits.
+      final seedStamp = (await service().load()).updatedAt;
+      expect(seedStamp, isNotEmpty);
+
+      final registry = await service(
+        client: responding(
+          remoteRegistry(updatedAt: '2000-01-01', label: 'Ancient Hacks'),
+        ),
+      ).refresh();
+
+      expect(registry.length, 59, reason: 'the bundled copy is kept');
+    });
+
     test('adopts a newer version', () async {
       await settings.write(SettingKeys.cachedRegistry, remoteRegistry());
       await settings.write(SettingKeys.cachedRegistryUpdatedAt, '2099-01-01');

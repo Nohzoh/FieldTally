@@ -127,5 +127,22 @@
   "importCsvAnomalyTitle": "Lignes incohérentes dans ce fichier",
   "importCsvAnomaly": "{count, plural, one{1 compteur recule} other{{count} compteurs reculent}} à l'intérieur de ce fichier, ce qui n'arrive normalement jamais. L'importer fausserait ton historique à partir de cette date.",
   "importCsvAnomalyLine": "{date} · {counter} : {previous} → {current}",
-  "unknownValue": "—"
+  "unknownValue": "—",
+  "projectionTitle": "Prochaine médaille",
+  "projectionTier_bronze": "Bronze",
+  "projectionTier_silver": "Argent",
+  "projectionTier_gold": "Or",
+  "projectionTier_platinum": "Platine",
+  "projectionTier_onyx": "Onyx",
+  "projectionRemaining": "{remaining} restants pour {tier}",
+  "projectionDate": "Vers le {date} à ton rythme récent",
+  "projectionNoPace": "Pas d'estimation : ce compteur n'a pas bougé récemment.",
+  "projectionTooFar": "Pas d'estimation : trop loin à ton rythme récent.",
+  "projectionComplete": "Onyx atteint — plus rien à viser.",
+  "projectionBelowFirst": "Pas encore commencé",
+  "projectionPace": "{rate} par jour sur {window}",
+  "projectionWindowWeek": "la dernière semaine",
+  "projectionWindowMonth": "le dernier mois",
+  "projectionPaceWeek": "7 derniers jours",
+  "projectionPaceMonth": "30 derniers jours"
 }
