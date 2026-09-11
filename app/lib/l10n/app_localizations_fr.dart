@@ -699,6 +699,43 @@ class AppLocalizationsFr extends AppLocalizations {
       'Définis un objectif depuis un compteur pour le voir ici.';
 
   @override
+  String get shareCardTitle => 'Carte à partager';
+
+  @override
+  String get shareCardAction => 'Partager mes stats';
+
+  @override
+  String get shareCardShare => 'Partager l\'image';
+
+  @override
+  String shareCardSince(String date) {
+    return 'Progression depuis le $date';
+  }
+
+  @override
+  String get shareCardNoPeriod =>
+      'Un seul relevé pour l\'instant — pas encore de progression à montrer.';
+
+  @override
+  String get shareCardFooter => 'Réalisé avec FieldTally';
+
+  @override
+  String get shareCardDisclaimer => 'Non-officiel · sans lien avec Niantic';
+
+  @override
+  String get shareCardSubject => 'Mes stats Ingress';
+
+  @override
+  String get shareCardEmptyTitle => 'Rien à partager pour l\'instant';
+
+  @override
+  String get shareCardEmptyDetail =>
+      'Enregistre un relevé et ta carte sera prête.';
+
+  @override
+  String get shareCardFailed => 'L\'image n\'a pas pu être produite.';
+
+  @override
   String get settingsNotificationsSection => 'Rappels';
 
   @override
