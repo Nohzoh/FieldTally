@@ -33,7 +33,7 @@ void main() {
   late ProviderContainer container;
   late FakeNotificationService notifications;
 
-  Future<void> pumpSettings(WidgetTester tester) async {
+  Future<void> pumpSettings(WidgetTester tester, {double textScale = 1.0}) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3.0;
     addTearDown(tester.view.reset);
@@ -72,6 +72,11 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
+          builder: (context, child) => MediaQuery.withClampedTextScaling(
+            minScaleFactor: textScale,
+            maxScaleFactor: textScale,
+            child: child!,
+          ),
         ),
       ),
     );
@@ -204,6 +209,69 @@ void main() {
       );
       expect(find.textContaining('after 14 days'), findsOneWidget);
     });
+  });
+
+  group('appearance (§3.9)', () {
+    testWidgets('the theme follows the system until changed', (tester) async {
+      await pumpSettings(tester);
+      await scrollTo(tester, find.byType(DropdownButton<ThemeMode>));
+
+      expect(
+        tester.widget<DropdownButton<ThemeMode>>(
+          find.byType(DropdownButton<ThemeMode>),
+        ).value,
+        ThemeMode.system,
+      );
+
+      await tester.tap(find.byType(DropdownButton<ThemeMode>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Dark').last);
+      await tester.pumpAndSettle();
+
+      expect(
+        await container
+            .read(settingsRepositoryProvider)
+            .read(SettingKeys.themeMode),
+        'dark',
+      );
+    });
+
+    testWidgets('faction colours are off, and say there is no faction yet',
+        (tester) async {
+      // Without a snapshot the switch has nothing to follow, and saying so
+      // beats a control that looks broken.
+      await pumpSettings(tester);
+      await scrollTo(tester, find.textContaining('no faction to follow'));
+
+      expect(find.textContaining('no faction to follow'), findsOneWidget);
+    });
+
+    testWidgets('turning faction colours on is persisted', (tester) async {
+      await pumpSettings(tester);
+      await scrollTo(tester, find.text('Faction colours'));
+
+      await tester.tap(find.text('Faction colours'));
+      await tester.pumpAndSettle();
+
+      expect(
+        await container
+            .read(settingsRepositoryProvider)
+            .read(SettingKeys.factionColours),
+        'true',
+      );
+    });
+  });
+
+  group('text size (§3.9)', () {
+    // Three switches, two dropdowns and long explanatory subtitles: this is
+    // the screen most likely to overflow when someone scales their fonts up.
+    for (final scale in [1.0, 1.6, 2.0]) {
+      testWidgets('survives a text scale of $scale', (tester) async {
+        await pumpSettings(tester, textScale: scale);
+
+        expect(tester.takeException(), isNull);
+      });
+    }
   });
 
   group('reaching settings', () {

@@ -1266,6 +1266,54 @@ abstract class AppLocalizations {
   /// **'The image could not be produced.'**
   String get shareCardFailed;
 
+  /// No description provided for @settingsAppearanceSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearanceSection;
+
+  /// No description provided for @settingsTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get settingsTheme;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsFactionColours.
+  ///
+  /// In en, this message translates to:
+  /// **'Faction colours'**
+  String get settingsFactionColours;
+
+  /// No description provided for @settingsFactionColoursDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Tints the app with your faction\'s colour, read from your latest snapshot. Off, the app keeps its own.'**
+  String get settingsFactionColoursDetail;
+
+  /// No description provided for @settingsFactionUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'No snapshot yet, so there is no faction to follow.'**
+  String get settingsFactionUnknown;
+
   /// No description provided for @settingsNotificationsSection.
   ///
   /// In en, this message translates to:

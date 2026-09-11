@@ -8,6 +8,7 @@ import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
+import 'package:fieldtally/presentation/faction.dart';
 import 'package:fieldtally/presentation/widgets/share_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -41,6 +42,7 @@ void main() {
     WidgetTester tester, {
     List<StatSnapshot> history = const [],
     List<String>? pinned,
+    double textScale = 1.0,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3.0;
@@ -78,6 +80,11 @@ void main() {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
+          builder: (context, child) => MediaQuery.withClampedTextScaling(
+            minScaleFactor: textScale,
+            maxScaleFactor: textScale,
+            child: child!,
+          ),
         ),
       ),
     );
@@ -214,17 +221,58 @@ void main() {
     });
   });
 
-  group('faction colours (§3.8)', () {
-    test('each faction gets its own, and an unknown one gets neither', () {
-      final enlightened = ShareCard.factionColour('Enlightened');
-      final resistance = ShareCard.factionColour('Resistance');
+  group('text size (§3.9)', () {
+    // The screen honours the system text size; the card inside it does not,
+    // and both have to hold together.
+    for (final scale in [1.0, 1.6, 2.0]) {
+      testWidgets('survives a text scale of $scale', (tester) async {
+        await pumpShareCard(
+          tester,
+          history: history,
+          pinned: const ['Hacks', 'Lifetime AP'],
+          textScale: scale,
+        );
 
-      expect(enlightened, isNot(resistance));
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('the image itself ignores the system text size',
+        (tester) async {
+      // A PNG other people look at should not carry its author's accessibility
+      // setting: at 200% the labels would be enormous and truncated.
+      await pumpShareCard(
+        tester,
+        history: history,
+        pinned: const ['Hacks'],
+        textScale: 2.0,
+      );
+
+      final scaler = tester
+          .widget<MediaQuery>(
+            find
+                .ancestor(
+                  of: find.text('AgentDemo'),
+                  matching: find.byType(MediaQuery),
+                )
+                .first,
+          )
+          .data
+          .textScaler;
+
+      expect(scaler.scale(20), 20);
+    });
+  });
+
+  group('faction colours (§3.9)', () {
+    test('each faction gets its own, and an unknown one gets none', () {
+      expect(factionColour('Enlightened'), enlightenedColour);
+      expect(factionColour('Resistance'), resistanceColour);
       // Case and padding come from an export, not from a controlled list.
-      expect(ShareCard.factionColour(' resistance '), resistance);
-      // Fan-made tools have invented factions before.
-      expect(ShareCard.factionColour('Machina'), isNot(enlightened));
-      expect(ShareCard.factionColour('Machina'), isNot(resistance));
+      expect(factionColour(' resistance '), resistanceColour);
+      // Null rather than a default, so an invented faction is never quietly
+      // painted as one of the two.
+      expect(factionColour('Machina'), isNull);
     });
   });
 }

@@ -736,6 +736,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareCardFailed => 'L\'image n\'a pas pu être produite.';
 
   @override
+  String get settingsAppearanceSection => 'Apparence';
+
+  @override
+  String get settingsTheme => 'Thème';
+
+  @override
+  String get settingsThemeSystem => 'Système';
+
+  @override
+  String get settingsThemeLight => 'Clair';
+
+  @override
+  String get settingsThemeDark => 'Sombre';
+
+  @override
+  String get settingsFactionColours => 'Couleurs de faction';
+
+  @override
+  String get settingsFactionColoursDetail =>
+      'Teinte l\'app avec la couleur de ta faction, lue sur ton dernier relevé. Désactivé, l\'app garde la sienne.';
+
+  @override
+  String get settingsFactionUnknown =>
+      'Aucun relevé pour l\'instant, donc aucune faction à suivre.';
+
+  @override
   String get settingsNotificationsSection => 'Rappels';
 
   @override

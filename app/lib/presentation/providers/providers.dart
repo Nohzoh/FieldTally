@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/db/database.dart';
@@ -21,6 +22,7 @@ import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 import '../../domain/share_card.dart';
+import '../faction.dart';
 import '../notification_coordinator.dart';
 
 /// Local database. Overridden with an in-memory one in tests.
@@ -232,4 +234,44 @@ final shareCardProvider = Provider<AsyncValue<ShareCardData?>>((ref) {
       range: ref.watch(shareCardRangeProvider),
     ),
   );
+});
+
+/// How the app follows or overrides the system theme (§3.9).
+final themeModeProvider = StreamProvider<ThemeMode>(
+  (ref) => ref.watch(settingsRepositoryProvider).watch(SettingKeys.themeMode).map(
+        (value) => switch (value) {
+          'light' => ThemeMode.light,
+          'dark' => ThemeMode.dark,
+          _ => ThemeMode.system,
+        },
+      ),
+);
+
+/// Whether the app is tinted with the agent's faction colour (§3.9).
+final factionColoursProvider = StreamProvider<bool>(
+  (ref) => ref
+      .watch(settingsRepositoryProvider)
+      .watch(SettingKeys.factionColours)
+      .map((value) => value == 'true'),
+);
+
+/// The faction the newest snapshot reported, or null before any import.
+///
+/// Read from the history rather than stored as a preference: an agent who
+/// changed faction re-imports, and the app should follow rather than keep
+/// painting the old one.
+final currentFactionProvider = Provider<String?>(
+  (ref) => ref.watch(snapshotsProvider).asData?.value.firstOrNull?.snapshot.faction,
+);
+
+/// Colour the whole app is generated from (§3.9).
+///
+/// Teal is the app's own; the faction colour only takes over when the agent
+/// asked for it and a snapshot says which faction they are.
+final themeSeedProvider = Provider<Color>((ref) {
+  final wanted = ref.watch(factionColoursProvider).asData?.value ?? false;
+  if (!wanted) return Colors.teal;
+
+  final faction = ref.watch(currentFactionProvider);
+  return (faction == null ? null : factionColour(faction)) ?? Colors.teal;
 });

@@ -733,6 +733,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareCardFailed => 'The image could not be produced.';
 
   @override
+  String get settingsAppearanceSection => 'Appearance';
+
+  @override
+  String get settingsTheme => 'Theme';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsFactionColours => 'Faction colours';
+
+  @override
+  String get settingsFactionColoursDetail =>
+      'Tints the app with your faction\'s colour, read from your latest snapshot. Off, the app keeps its own.';
+
+  @override
+  String get settingsFactionUnknown =>
+      'No snapshot yet, so there is no faction to follow.';
+
+  @override
   String get settingsNotificationsSection => 'Reminders';
 
   @override
