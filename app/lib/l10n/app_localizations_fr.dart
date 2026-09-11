@@ -622,4 +622,79 @@ class AppLocalizationsFr extends AppLocalizations {
   String exportCsvDone(int count) {
     return '$count relevés exportés.';
   }
+
+  @override
+  String get goalTitle => 'Objectif personnel';
+
+  @override
+  String get goalNone => 'Aucun objectif sur ce compteur.';
+
+  @override
+  String get goalSet => 'Définir un objectif';
+
+  @override
+  String get goalEdit => 'Modifier';
+
+  @override
+  String get goalRemove => 'Retirer';
+
+  @override
+  String get goalTarget => 'Valeur visée';
+
+  @override
+  String get goalDeadline => 'Échéance';
+
+  @override
+  String get goalNoDeadline => 'Sans échéance';
+
+  @override
+  String get goalPickDeadline => 'Choisir une date';
+
+  @override
+  String get goalClearDeadline => 'Retirer';
+
+  @override
+  String get goalSave => 'Enregistrer l\'objectif';
+
+  @override
+  String get goalSaved => 'Objectif enregistré.';
+
+  @override
+  String get goalRemoved => 'Objectif retiré.';
+
+  @override
+  String get goalInvalid => 'Doit dépasser la valeur actuelle';
+
+  @override
+  String goalRemaining(String remaining, String target) {
+    return '$remaining restants, sur $target';
+  }
+
+  @override
+  String get goalReached => 'Atteint.';
+
+  @override
+  String goalOnTrack(String date) {
+    return 'Dans les temps pour le $date';
+  }
+
+  @override
+  String goalBehind(String date) {
+    return 'En retard pour le $date';
+  }
+
+  @override
+  String goalMissed(String date) {
+    return 'Échéance du $date dépassée.';
+  }
+
+  @override
+  String get goalNoOpinion => 'Pas d\'estimation à ton rythme récent.';
+
+  @override
+  String get goalsTitle => 'Objectifs';
+
+  @override
+  String get goalsEmpty =>
+      'Définis un objectif depuis un compteur pour le voir ici.';
 }

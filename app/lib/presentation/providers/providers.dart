@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/db/database.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
 import '../../data/registry/counter_registry_service.dart';
+import '../../data/repositories/drift_goal_repository.dart';
 import '../../data/repositories/drift_pinned_counter_repository.dart';
 import '../../data/repositories/drift_settings_repository.dart';
 import '../../data/repositories/drift_snapshot_repository.dart';
@@ -12,6 +13,8 @@ import '../../domain/dashboard.dart';
 import '../../domain/guards/import_guards.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/models/tracked_counter.dart';
+import '../../domain/goal.dart';
+import '../../domain/repositories/goal_repository.dart';
 import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
@@ -156,3 +159,12 @@ final dashboardProvider = Provider<AsyncValue<List<DashboardCard>>>((ref) {
     ),
   );
 });
+
+final goalRepositoryProvider = Provider<GoalRepository>(
+  (ref) => DriftGoalRepository(ref.watch(databaseProvider)),
+);
+
+/// Personal targets (§3.7), refreshed as they are set and removed.
+final goalsProvider = StreamProvider<List<Goal>>(
+  (ref) => ref.watch(goalRepositoryProvider).watchAll(),
+);

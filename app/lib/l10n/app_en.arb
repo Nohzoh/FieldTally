@@ -496,5 +496,58 @@
         "type": "int"
       }
     }
-  }
+  },
+  "goalTitle": "Personal goal",
+  "goalNone": "No goal on this counter yet.",
+  "goalSet": "Set a goal",
+  "goalEdit": "Change",
+  "goalRemove": "Remove",
+  "goalTarget": "Target value",
+  "goalDeadline": "Deadline",
+  "goalNoDeadline": "No deadline",
+  "goalPickDeadline": "Pick a date",
+  "goalClearDeadline": "Clear",
+  "goalSave": "Save the goal",
+  "goalSaved": "Goal saved.",
+  "goalRemoved": "Goal removed.",
+  "goalInvalid": "Must be above the current value",
+  "goalRemaining": "{remaining} to go, out of {target}",
+  "@goalRemaining": {
+    "placeholders": {
+      "remaining": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "goalReached": "Reached.",
+  "goalOnTrack": "On track for {date}",
+  "@goalOnTrack": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "goalBehind": "Behind for {date}",
+  "@goalBehind": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "goalMissed": "Deadline of {date} passed.",
+  "@goalMissed": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "goalNoOpinion": "No estimate at your recent pace.",
+  "goalsTitle": "Goals",
+  "goalsEmpty": "Set a goal from any counter to see it here."
 }

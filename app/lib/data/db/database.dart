@@ -77,13 +77,39 @@ class AppSettings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
-@DriftDatabase(tables: [Snapshots, CounterValues, PinnedCounters, AppSettings])
+/// A personal target on a counter (§3.7).
+///
+/// One per counter: "reach level 12 before 31 December" is a single intent,
+/// and letting an agent stack several targets on one counter would ask the app
+/// to decide which one it is reminding them about.
+///
+/// The row class is named apart from the domain's `Goal`, which is the model
+/// the rest of the app works with.
+@DataClassName('GoalRow')
+class Goals extends Table {
+  /// Export header, the stable identity of a counter (§3.1.2).
+  TextColumn get exportHeader => text()();
+
+  IntColumn get target => integer()();
+
+  /// Optional: a target with no date is a direction rather than a deadline.
+  DateTimeColumn get deadline => dateTime().nullable()();
+
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {exportHeader};
+}
+
+@DriftDatabase(
+  tables: [Snapshots, CounterValues, PinnedCounters, AppSettings, Goals],
+)
 class FieldTallyDatabase extends _$FieldTallyDatabase {
   FieldTallyDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'fieldtally'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -100,6 +126,9 @@ class FieldTallyDatabase extends _$FieldTallyDatabase {
           if (from < 4) {
             await m.alterTable(TableMigration(snapshots));
           }
+          // v5 adds personal goals (§3.7). An empty table is the right state
+          // for an agent who has not set any.
+          if (from < 5) await m.createTable(goals);
         },
         beforeOpen: (details) async {
           // Without this, SQLite ignores `onDelete: cascade`: deleting a

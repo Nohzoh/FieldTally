@@ -172,14 +172,17 @@ void main() {
       await tester.tap(find.widgetWithText(ListTile, 'Unique Portals Visited'));
       await tester.pumpAndSettle();
 
-      // The projection card (§3.6) now sits between the summary and the
-      // history, so the heading starts below the fold.
-      await tester.scrollUntilVisible(find.text('History'), 200);
-      expect(find.text('History'), findsOneWidget);
+      // Checked before scrolling: the summary sits at the top and is disposed
+      // once the list moves past it.
       expect(find.text('Current value'), findsOneWidget);
       // The raw export header is surfaced: it is what a contributor needs in
       // order to declare the counter in the registry.
       expect(find.text('Export header'), findsOneWidget);
+
+      // The projection and goal cards now sit between the summary and the
+      // history, so the heading starts well below the fold.
+      await tester.scrollUntilVisible(find.text('History'), 200);
+      expect(find.text('History'), findsOneWidget);
     });
 
     testWidgets('says plainly when no badge threshold is known', (tester) async {
