@@ -1,13 +1,17 @@
 # FieldTally GitHub Pages site (spec §7.3, §9).
 #
-# Deliberately minimal for now: the documentation theme suggested in §7.3 and
-# the real pages (Install / FAQ / Privacy / Roadmap) come with the content.
+# Bilingual: French pages at the root for the agents the app is written for,
+# English under /en/ for everyone else. Each page links to its counterpart.
 title: FieldTally
 description: >-
   Ingress stats tracking, mobile-first and fully local.
   An unofficial tool, not affiliated with Niantic.
-lang: en
+lang: fr
 theme: jekyll-theme-minimal
+
+# Directory-style URLs, so the two language trees read as /installer/ and
+# /en/install/ rather than carrying .html around.
+permalink: pretty
 
 # The spec (§3.1.4) requires a stable URL for the counter registry:
 #   https://nohzoh.github.io/FieldTally/registry/counters.json
@@ -19,3 +23,4 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - vendor
+  - release.md
