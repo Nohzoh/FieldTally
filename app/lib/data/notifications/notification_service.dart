@@ -51,7 +51,10 @@ class PluginNotificationService implements NotificationService {
     tz_data.initializeTimeZones();
     await _plugin.initialize(
       settings: const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        // A dedicated silhouette, not the launcher icon: Android redraws the
+        // small icon from its alpha channel alone, so a full-colour icon comes
+        // out as a shapeless white blob in the status bar.
+        android: AndroidInitializationSettings('@drawable/ic_notification'),
       ),
     );
     _ready = true;

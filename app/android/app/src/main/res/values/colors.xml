@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Background layer of the adaptive icon, the same deep teal the app and
+         the shareable card are built on. -->
+    <color name="ic_launcher_background">#0E2624</color>
+</resources>
