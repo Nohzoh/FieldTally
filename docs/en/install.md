@@ -36,16 +36,21 @@ can revoke it afterwards.
 
 ## 3. The Play Protect warning
 
-This is the scary screen, and the one worth understanding:
+This is the scary screen, and the one where people give up:
 
-> Play Protect doesn't recognise this app's developer.
+> **App blocked to protect your device**
+>
+> Play Protect hasn't seen this developer before. The app may not be safe.
 
-**This does not mean anything was detected.** Play Protect says this about any
-app not distributed through the Play Store, purely because it did not come from
-there. A malicious app and a perfectly clean one produce exactly the same
-screen.
+**This does not mean anything was detected.** What Play Protect does not
+recognise is the **signing key**: it groups apps by key, and FieldTally's is
+recent, so it has not been seen on many devices. A malicious app and a perfectly
+clean one produce exactly the same screen. The verdict fades on its own as the
+app gets installed.
 
-Tap **Install anyway** (sometimes behind "More details").
+**The only visible button is OK, and it cancels the install.** To continue, tap
+**"More details"** first: the option to install anyway appears underneath. Its
+exact wording varies between Android versions.
 
 What you can check for yourself, which is worth more than a promise:
 
