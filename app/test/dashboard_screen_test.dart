@@ -162,9 +162,48 @@ void main() {
     });
   });
 
+  /// Fails when a paragraph is painted into a box shorter than the text it
+  /// laid out — the silent vertical clip that no exception reports.
+  void expectNothingClipped(WidgetTester tester, Finder texts) {
+    for (final element in texts.evaluate()) {
+      final paragraph = element.renderObject! as RenderParagraph;
+      final needed = paragraph.getMinIntrinsicHeight(paragraph.size.width);
+      expect(
+        paragraph.size.height,
+        greaterThanOrEqualTo(needed),
+        reason: 'clipped: "${(paragraph.text as TextSpan).toPlainText()}" '
+            'got ${paragraph.size.height}, needs $needed',
+      );
+    }
+  }
+
   group('card layout', () {
     // §3.9 requires honouring the system text size. A rigid card would overflow
     // for anyone who scales their fonts up, and an overflow is a test failure.
+    // Reported from a phone at a larger system font: a two-line label was
+    // sliced in half, losing the bottom of its second line. Nothing throws —
+    // shrinking a Flexible is legal and the clip is silent — so asserting the
+    // absence of an exception proved only that the app does not crash.
+    for (final scale in [1.0, 1.3, 1.6, 2.0]) {
+      testWidgets('no label is clipped at a text scale of $scale',
+          (tester) async {
+        await pumpDashboard(
+          tester,
+          textScale: scale,
+          // Two columns, and a label long enough to wrap.
+          size: const Size(1080, 2400),
+          pixelRatio: 2.625,
+          pinned: const ['Unique Portals Visited', 'Distance Walked'],
+          history: [
+            at(DateTime(2026, 1, 1),
+                const {'Unique Portals Visited': 9000, 'Distance Walked': 4000}),
+          ],
+        );
+
+        expectNothingClipped(tester, find.byType(Text));
+      });
+    }
+
     for (final scale in [1.0, 1.6, 2.0]) {
       testWidgets('survives a text scale of $scale', (tester) async {
         await pumpDashboard(
