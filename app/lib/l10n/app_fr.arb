@@ -2,6 +2,7 @@
   "@@locale": "fr",
   "appTitle": "FieldTally",
   "cancel": "Annuler",
+  "close": "Fermer",
   "delete": "Supprimer",
   "homeEmptyTitle": "Aucun relevé pour l'instant",
   "homeEmptyDetail": "Partage tes stats depuis Ingress, ou colle le texte exporté pour créer ton premier relevé.",
@@ -118,6 +119,9 @@
   "settingsBuildUnknown": "Construit depuis une copie de travail",
   "settingsCopyVersion": "Appuie pour copier, à coller dans un rapport de bug",
   "settingsVersionCopied": "Version copiée.",
+  "settingsWhatsNew": "Nouveautés",
+  "settingsWhatsNewDetail": "Relire ce qui a changé dans cette version.",
+  "settingsWhatsNewNone": "Aucune note fournie pour cette version.",
   "settingsAuthor": "Auteur",
   "settingsAuthorDetail": "Nohzoh, sur GitHub.",
   "settingsSourceCode": "Code source",
@@ -223,5 +227,8 @@
   "notificationReminderBody": "Rien d'enregistré depuis {days} jours. Partage tes stats depuis Ingress pour que ton historique continue.",
   "notificationMilestoneTitle": "{tier} atteint",
   "notificationMilestoneBody": "{counter} est maintenant à {value}.",
-  "notificationMilestoneMore": "{counter} et {count} autres médailles atteintes."
+  "notificationMilestoneMore": "{counter} et {count} autres médailles atteintes.",
+  "changelogDialogTitle": "Nouveautés de la version {version}",
+  "changelogNewHeading": "✨ Nouveautés",
+  "changelogFixedHeading": "🐛 Corrections"
 }

@@ -41,7 +41,19 @@ the reason said out loud. Do not ship a milestone with open issues silently.
 Bump it in its own commit on a branch, through a pull request like anything
 else.
 
-## 3. Check the ground is solid
+## 3. Write the changelog entry
+
+`app/assets/changelog.json`, keyed by the `versionCode` just decided above.
+Written by hand in both languages, from the milestone's issues — but not from
+their titles: those are English and written for contributors, not for the
+person reading the dialog. Two groups, `features` and `fixes`, each a plain
+list of short sentences in the same register as the release notes.
+
+Same commit as the version bump. Bundled at build time, never fetched: the app
+promises to work with no network, and a screen that only appears after an
+update must not depend on being online.
+
+## 4. Check the ground is solid
 
 ```sh
 cd app && flutter analyze && flutter test
@@ -52,7 +64,7 @@ git log --oneline -1          # main, up to date with origin
 A release built on anything but a clean, pushed `main` is a release nobody can
 reproduce.
 
-## 4. Tag
+## 5. Tag
 
 Tags are signed, like commits.
 
@@ -67,13 +79,13 @@ git push origin vX.Y.Z
 Pushing the tag is the irreversible step: it produces a public, signed artefact.
 Confirm with the user before pushing unless they have already said to go ahead.
 
-## 5. Watch the workflow
+## 6. Watch the workflow
 
 Use a Monitor on the run rather than polling. The workflow refuses to continue
 if the secrets are missing or if the APK turns out to be debug-signed — both
 failures are loud by design.
 
-## 6. Verify the published artefact
+## 7. Verify the published artefact
 
 Never report a release as done on the strength of a green workflow. Download
 what the public downloads and check it:
@@ -99,7 +111,7 @@ open Settings → About: it must name the version and the release commit.
 carries a v2/v3 signature and no v1 JAR signature, and keytool reports a
 correctly signed APK as unsigned.
 
-## 7. Afterwards
+## 8. Afterwards
 
 - Rename the milestone to the version, and create a fresh empty **Next
   Release**.

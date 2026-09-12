@@ -15,6 +15,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancel => 'Annuler';
 
   @override
+  String get close => 'Fermer';
+
+  @override
   String get delete => 'Supprimer';
 
   @override
@@ -458,6 +461,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsVersionCopied => 'Version copiée.';
 
   @override
+  String get settingsWhatsNew => 'Nouveautés';
+
+  @override
+  String get settingsWhatsNewDetail =>
+      'Relire ce qui a changé dans cette version.';
+
+  @override
+  String get settingsWhatsNewNone => 'Aucune note fournie pour cette version.';
+
+  @override
   String get settingsAuthor => 'Auteur';
 
   @override
@@ -846,4 +859,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String notificationMilestoneMore(String counter, int count) {
     return '$counter et $count autres médailles atteintes.';
   }
+
+  @override
+  String changelogDialogTitle(String version) {
+    return 'Nouveautés de la version $version';
+  }
+
+  @override
+  String get changelogNewHeading => '✨ Nouveautés';
+
+  @override
+  String get changelogFixedHeading => '🐛 Corrections';
 }

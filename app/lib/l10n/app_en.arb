@@ -2,6 +2,7 @@
   "@@locale": "en",
   "appTitle": "FieldTally",
   "cancel": "Cancel",
+  "close": "Close",
   "delete": "Delete",
   "homeEmptyTitle": "No snapshot yet",
   "homeEmptyDetail": "Share your stats from Ingress, or paste the exported text to create your first snapshot.",
@@ -367,6 +368,9 @@
   "settingsBuildUnknown": "Built from a working copy",
   "settingsCopyVersion": "Tap to copy, to paste into a bug report",
   "settingsVersionCopied": "Version copied.",
+  "settingsWhatsNew": "What's new",
+  "settingsWhatsNewDetail": "Read again what changed in this version.",
+  "settingsWhatsNewNone": "No notes bundled for this build.",
   "settingsAuthor": "Author",
   "settingsAuthorDetail": "Nohzoh, on GitHub.",
   "settingsSourceCode": "Source code",
@@ -649,5 +653,15 @@
         "type": "int"
       }
     }
-  }
+  },
+  "changelogDialogTitle": "What's new in {version}",
+  "@changelogDialogTitle": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "changelogNewHeading": "✨ New",
+  "changelogFixedHeading": "🐛 Fixed"
 }

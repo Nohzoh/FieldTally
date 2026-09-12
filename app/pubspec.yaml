@@ -96,6 +96,9 @@ flutter:
     # Bundled fallback copy of the enrichment registry (§3.1.4).
     # Generated from docs/registry/counters.json — do not edit by hand.
     - assets/counters_registry_seed.json
+    # Release notes shown after an update (§9). Written by hand, one entry per
+    # release, as part of the release skill's step 3 — never generated.
+    - assets/changelog.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

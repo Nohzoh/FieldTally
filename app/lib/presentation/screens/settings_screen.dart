@@ -6,9 +6,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/build_info.dart';
 import '../../core/router.dart';
+import '../../domain/models/changelog_release.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
+import '../widgets/changelog_dialog.dart';
 
 /// Preferences (§3.1.4, §3.7, §3.9).
 ///
@@ -184,6 +186,12 @@ class SettingsScreen extends ConsumerWidget {
             onTap: build == null ? null : () => _copyVersion(context, build),
           ),
           ListTile(
+            title: Text(l10n.settingsWhatsNew),
+            subtitle: Text(l10n.settingsWhatsNewDetail),
+            trailing: const Icon(Icons.new_releases_outlined),
+            onTap: build == null ? null : () => _showChangelog(context, ref, build),
+          ),
+          ListTile(
             title: Text(l10n.settingsAuthor),
             subtitle: Text(l10n.settingsAuthorDetail),
             trailing: const Icon(Icons.open_in_new),
@@ -222,6 +230,38 @@ class SettingsScreen extends ConsumerWidget {
     await Clipboard.setData(ClipboardData(text: build.summary));
     messenger.showSnackBar(
       SnackBar(content: Text(l10n.settingsVersionCopied)),
+    );
+  }
+
+  /// Reachable at any time, unlike the dialog shown right after an update:
+  /// someone who dismisses that one in a hurry should not have lost it for
+  /// good.
+  Future<void> _showChangelog(
+    BuildContext context,
+    WidgetRef ref,
+    BuildInfo build,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final versionCode = int.tryParse(build.build);
+
+    final releases = versionCode == null
+        ? const <ChangelogRelease>[]
+        : await ref
+            .read(changelogServiceProvider)
+            .currentReleaseNotes(versionCode);
+
+    if (!context.mounted) return;
+    if (releases.isEmpty) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsWhatsNewNone)));
+      return;
+    }
+
+    final languageCode = Localizations.localeOf(context).languageCode;
+    await showChangelogDialog(
+      context,
+      releases: releases,
+      languageCode: languageCode,
     );
   }
 
