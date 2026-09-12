@@ -92,7 +92,7 @@ what the public downloads and check it:
 
 ```sh
 curl -sL -o /tmp/published.apk \
-  "https://github.com/Nohzoh/FieldTally/releases/download/vX.Y.Z/<asset>"
+  "https://github.com/Nohzoh/FieldTally/releases/download/vX.Y.Z/fieldtally-X.Y.Z.apk"
 "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs /tmp/published.apk
 ```
 
