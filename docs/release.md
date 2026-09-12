@@ -52,24 +52,34 @@ The workflow fails on its first step, naming the missing ones, if any is absent.
 
 ### 3. Check it before tagging anything
 
-Run the **Release** workflow manually from the Actions tab. A manual run stops
-at an artifact instead of publishing, so it proves the signing works without
-creating a release. The job summary prints the certificate fingerprint.
+Run the **Release** workflow from the Actions tab with **dry run** ticked. It
+stops at an artifact instead of publishing, so it proves the signing works
+without creating a tag or a release. The job summary prints the certificate
+fingerprint.
 
 ## Publishing
 
+Bump `version:` in `app/pubspec.yaml` first, and merge it: it is what becomes
+`versionName` and `versionCode`, Android refuses to install an update whose
+`versionCode` has not increased, and the workflow refuses to release a version
+that disagrees with the file.
+
+Then run the **Release** workflow from the Actions tab, giving the version
+without the leading `v` (`1.1.0`) and leaving dry run unticked.
+
+It builds, refuses to continue if the APK turns out to be debug-signed, and
+only then creates the tag and publishes a release whose notes are generated
+from the pull requests merged since the previous one. Tagging last is
+deliberate: a tag naming a version is a promise that the version shipped.
+
+The tag is annotated but unsigned, created by `github-actions[bot]`. Only the
+Android signing key lives in the workflow, so what proves a release genuine is
+the APK's certificate below — not the tag. Pushing a signed tag by hand still
+triggers the same pipeline, if you would rather sign it yourself:
+
 ```sh
-git tag -s v1.0.0 -m "FieldTally 1.0.0"
-git push origin v1.0.0
+git tag -s v1.1.0 -m "FieldTally 1.1.0" && git push origin v1.1.0
 ```
-
-The tag must be signed, like every commit here. The workflow builds, refuses to
-continue if the APK turns out to be debug-signed, and publishes a release whose
-notes are generated from the pull requests merged since the previous tag.
-
-Bump `version:` in `app/pubspec.yaml` before tagging: it is what becomes
-`versionName` and `versionCode`, and Android refuses to install an update whose
-`versionCode` has not increased.
 
 ## Verifying a downloaded APK
 
