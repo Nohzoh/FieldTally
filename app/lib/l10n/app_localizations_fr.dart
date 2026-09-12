@@ -771,6 +771,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsAppearanceSection => 'Apparence';
 
   @override
+  String get settingsLanguage => 'Langue';
+
+  @override
+  String get settingsLanguageSystem => 'Système';
+
+  @override
   String get settingsTheme => 'Thème';
 
   @override

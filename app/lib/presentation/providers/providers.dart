@@ -249,6 +249,16 @@ final themeModeProvider = StreamProvider<ThemeMode>(
       ),
 );
 
+/// Language the agent chose, or null to follow the system (§3.10).
+///
+/// Null is the default and the interesting case: the app has two translations
+/// and should use whichever the phone asks for, rather than imposing one.
+final localeProvider = StreamProvider<Locale?>(
+  (ref) => ref.watch(settingsRepositoryProvider).watch(SettingKeys.locale).map(
+        (value) => value == null || value.isEmpty ? null : Locale(value),
+      ),
+);
+
 /// Whether the app is tinted with the agent's faction colour (§3.9).
 final factionColoursProvider = StreamProvider<bool>(
   (ref) => ref

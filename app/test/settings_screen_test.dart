@@ -226,6 +226,51 @@ void main() {
     });
   });
 
+  group('language (§3.10)', () {
+    testWidgets('follows the system until a language is picked',
+        (tester) async {
+      await pumpSettings(tester);
+      await scrollTo(tester, find.byType(DropdownButton<String?>));
+
+      expect(
+        tester
+            .widget<DropdownButton<String?>>(find.byType(DropdownButton<String?>))
+            .value,
+        isNull,
+      );
+    });
+
+    testWidgets('lists each language in its own language', (tester) async {
+      // Someone who lands in a language they cannot read has to be able to
+      // recognise their own in the list.
+      await pumpSettings(tester);
+      await scrollTo(tester, find.byType(DropdownButton<String?>));
+
+      await tester.tap(find.byType(DropdownButton<String?>));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Français'), findsWidgets);
+      expect(find.text('English'), findsWidgets);
+    });
+
+    testWidgets('choosing one is persisted', (tester) async {
+      await pumpSettings(tester);
+      await scrollTo(tester, find.byType(DropdownButton<String?>));
+
+      await tester.tap(find.byType(DropdownButton<String?>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Français').last);
+      await tester.pumpAndSettle();
+
+      expect(
+        await container
+            .read(settingsRepositoryProvider)
+            .read(SettingKeys.locale),
+        'fr',
+      );
+    });
+  });
+
   group('appearance (§3.9)', () {
     testWidgets('the theme follows the system until changed', (tester) async {
       await pumpSettings(tester);

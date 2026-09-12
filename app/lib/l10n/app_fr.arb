@@ -203,6 +203,8 @@
   "shareCardEmptyDetail": "Enregistre un relevé et ta carte sera prête.",
   "shareCardFailed": "L'image n'a pas pu être produite.",
   "settingsAppearanceSection": "Apparence",
+  "settingsLanguage": "Langue",
+  "settingsLanguageSystem": "Système",
   "settingsTheme": "Thème",
   "settingsThemeSystem": "Système",
   "settingsThemeLight": "Clair",

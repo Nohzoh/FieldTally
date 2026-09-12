@@ -20,6 +20,9 @@ import '../providers/providers.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
+  /// Written in their own language on purpose — see the dropdown below.
+  static const _languages = {'fr': 'Français', 'en': 'English'};
+
   static final _koFi = Uri.parse('https://ko-fi.com/tarnaud');
   static final _repository = Uri.parse('https://github.com/Nohzoh/FieldTally');
 
@@ -42,6 +45,7 @@ class SettingsScreen extends ConsumerWidget {
     final factionColours =
         ref.watch(factionColoursProvider).asData?.value ?? false;
     final faction = ref.watch(currentFactionProvider);
+    final locale = ref.watch(localeProvider).asData?.value;
     final build = ref.watch(buildInfoProvider).asData?.value;
 
     return Scaffold(
@@ -101,6 +105,30 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           _SectionHeader(title: l10n.settingsAppearanceSection),
+          ListTile(
+            title: Text(l10n.settingsLanguage),
+            trailing: DropdownButton<String?>(
+              value: locale?.languageCode,
+              onChanged: (value) => ref.read(settingsRepositoryProvider).write(
+                    SettingKeys.locale,
+                    value ?? '',
+                  ),
+              items: [
+                DropdownMenuItem(
+                  value: null,
+                  child: Text(l10n.settingsLanguageSystem),
+                ),
+                // Each language in its own language, never translated:
+                // someone who lands in one they cannot read still needs to
+                // recognise their own in the list.
+                for (final entry in _languages.entries)
+                  DropdownMenuItem(
+                    value: entry.key,
+                    child: Text(entry.value),
+                  ),
+              ],
+            ),
+          ),
           ListTile(
             title: Text(l10n.settingsTheme),
             trailing: DropdownButton<ThemeMode>(

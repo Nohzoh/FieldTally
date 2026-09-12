@@ -35,6 +35,9 @@ abstract final class SettingKeys {
   /// system, which is the documented default.
   static const themeMode = 'appearance.theme_mode';
 
+  /// Language override: 'fr', 'en', or absent to follow the system (§3.10).
+  static const locale = 'appearance.locale';
+
   /// Whether the app is tinted with the agent's faction colour (§3.9).
   /// Absent means off: the app's own colour is its identity, and it should not
   /// change the day a first snapshot is imported.
