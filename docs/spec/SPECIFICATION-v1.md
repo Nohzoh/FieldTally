@@ -242,8 +242,8 @@ Le principe directeur : **isoler la logique métier (parsing, calculs de project
 Déclenché sur chaque push et pull request vers `main` :
 1. Setup Flutter (action `subosito/flutter-action`, canal stable, avec cache des packages pub).
 2. `flutter analyze` (lint) — bloque la CI en cas d'erreur.
-3. `flutter test --coverage` — bloque la CI en cas de test cassé ; publie le rapport de couverture comme artifact.
-4. `flutter build apk --debug` (ou release non signé) comme build de validation, uploadé en artifact GitHub Actions téléchargeable depuis chaque run — utile pour tester une PR sans attendre une release.
+3. `flutter test` — bloque la CI en cas de test cassé. La couverture est mesurée et publiée par `pages.yml` (§7.3), pas ici : un artifact que rien ne lit n'est pas une publication.
+4. `flutter build apk --debug` comme build de validation : `flutter test` tourne sur la VM Dart de l'hôte et ne compile aucun Android, donc c'est la seule étape qui exerce la configuration Gradle, le manifeste fusionné et les ressources. L'APK n'est **pas** publié en artifact : il est signé avec la clé de debug éphémère du runner, régénérée à chaque run, donc en installer un par-dessus un autre force une désinstallation — qui détruit la base locale.
 
 ### 7.2 Pipeline de release (`release.yml`)
 
@@ -255,10 +255,11 @@ Déclenché manuellement ou sur un tag `v*` :
 
 ### 7.3 Pipeline GitHub Pages (`pages.yml`)
 
-Déclenché sur push vers `main` touchant le dossier `docs/` :
+Déclenché sur push vers `main` touchant `docs/` ou `app/` :
 1. **Validation du fichier `docs/registry/counters.json`** (voir §3.1.4) avant tout déploiement : schéma JSON valide, clés de compteur bien formées, catégories dans une liste autorisée, pas de doublon, seuils de palier croissants. Le job échoue et bloque le déploiement si ce fichier est malformé — c'est le seul rempart contre une PR qui casserait la catégorisation pour tous les utilisateurs d'un coup.
 2. Build du site (proposition : **Jekyll**, nativement supporté par GitHub Pages, permet d'écrire tout le contenu en Markdown simple — donc facilement modifiable même par quelqu'un de non-dev — avec un thème de documentation prêt à l'emploi type *just-the-docs*). Le fichier `registry/counters.json` est servi tel quel en asset statique à côté du site généré.
-3. Déploiement via les actions officielles `actions/configure-pages`, `actions/upload-pages-artifact`, `actions/deploy-pages`.
+3. **Rapport de couverture** : `flutter test --coverage` puis `genhtml`, publié en `/coverage/`, et `coverage.json` au format *endpoint* shields.io pour le badge du README. Mesuré ici plutôt que repris de `ci.yml` pour que le site décrive toujours le commit déployé, sans plomberie d'artifacts entre workflows ni fichier généré commité. Le rapport est de la décoration : il n'existe **aucun seuil de couverture** en CI — la couverture mesure les lignes exécutées, pas le comportement vérifié.
+4. Déploiement via les actions officielles `actions/configure-pages`, `actions/upload-pages-artifact`, `actions/deploy-pages`.
 
 ### 7.4 Autres automatisations recommandées
 
