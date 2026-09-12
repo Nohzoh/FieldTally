@@ -1,1 +1,25 @@
-{}
+{
+  "2": {
+    "version": "1.1.0",
+    "features": {
+      "en": [
+        "The app now follows your phone's language. Settings lets you pick French or English instead.",
+        "What changed in an update is shown the next time you open the app, and stays available in Settings → About.",
+        "The About screen names the person who makes FieldTally."
+      ],
+      "fr": [
+        "L'app suit maintenant la langue de ton téléphone. Les réglages permettent de choisir le français ou l'anglais à la place.",
+        "Ce qui a changé lors d'une mise à jour s'affiche à l'ouverture suivante, et reste consultable dans Réglages → À propos.",
+        "L'écran À propos nomme la personne qui fait FieldTally."
+      ]
+    },
+    "fixes": {
+      "en": [
+        "Counter names on the dashboard are no longer cut in half when the system font size is turned up."
+      ],
+      "fr": [
+        "Les noms de compteurs du tableau de bord ne sont plus coupés en deux quand la police du système est agrandie."
+      ]
+    }
+  }
+}
