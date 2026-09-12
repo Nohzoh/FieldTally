@@ -3,6 +3,11 @@
 Ingress stats tracking, mobile-first and **fully local**: no account, no
 server, no data leaving your phone.
 
+[![CI](https://github.com/Nohzoh/FieldTally/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Nohzoh/FieldTally/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/Nohzoh/FieldTally?label=release)](https://github.com/Nohzoh/FieldTally/releases/latest)
+[![Licence: AGPL v3](https://img.shields.io/badge/licence-AGPL%20v3-blue)](LICENSE)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fnohzoh.github.io%2FFieldTally%2Fcoverage.json)](https://nohzoh.github.io/FieldTally/coverage/)
+
 **[Install it](https://nohzoh.github.io/FieldTally/en/install) ·
 [Website](https://nohzoh.github.io/FieldTally/en/) ·
 [Site en français](https://nohzoh.github.io/FieldTally/)**
