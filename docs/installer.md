@@ -38,16 +38,24 @@ ensuite.
 
 ## 3. L'avertissement Play Protect
 
-C'est l'écran qui fait peur, et c'est le plus important à comprendre :
+C'est l'écran qui fait peur, et le seul où l'on risque d'abandonner :
 
-> Play Protect ne reconnaît pas le développeur de cette application.
+> **Appli bloquée pour protéger votre appareil**
+>
+> Play Protect n'a jamais vu d'appli de ce développeur auparavant. Elle n'est
+> peut-être pas sûre.
 
-**Ce message ne signifie pas qu'un problème a été détecté.** Play Protect
-affiche cela pour toute application qui n'est pas distribuée par le Play Store,
-simplement parce qu'elle ne vient pas de là. Une application malveillante et une
-application parfaitement saine déclenchent exactement le même écran.
+**Ce message ne signifie pas qu'un problème a été détecté.** Ce que Play Protect
+ne connaît pas, c'est la **clé de signature** : il regroupe les applications par
+clé, et celle de FieldTally est récente, donc jamais vue sur beaucoup
+d'appareils. Une application malveillante et une application parfaitement saine
+déclenchent exactement le même écran. Le verdict s'atténuera de lui-même à
+mesure que l'app sera installée.
 
-Appuie sur **Installer quand même** (parfois derrière « Plus de détails »).
+**Le seul bouton visible est « OK », et il annule l'installation.** Pour
+continuer, appuie d'abord sur **« Plus de détails »** : l'option permettant
+d'installer quand même apparaît en dessous. Son libellé exact varie selon la
+version d'Android.
 
 Ce que tu peux vérifier par toi-même, et qui vaut mieux qu'une promesse :
 
