@@ -58,14 +58,19 @@ jobs:
           flutter pub get
           flutter test --coverage
 
-      # From app/, because the paths in lcov.info are relative to it and
-      # genhtml resolves the sources it annotates.
+      # Written into the site's source, before Jekyll, so Jekyll copies both
+      # verbatim like the registry: neither carries front matter. Not into
+      # _site afterwards — jekyll-build-pages runs as root in a container, so
+      # the directory it leaves behind is not writable by later steps.
+      #
+      # genhtml runs from app/, because the paths in lcov.info are relative to
+      # it and it resolves the sources it annotates.
       - name: Build the browsable report
-        working-directory: app
         run: |
           sudo apt-get update && sudo apt-get install -y lcov
-          genhtml coverage/lcov.info --output-directory ../coverage-report \
+          cd app && genhtml coverage/lcov.info --output-directory ../docs/coverage \
             --title "FieldTally coverage" --legend --show-details
+          cd .. && python3 tool/coverage_badge.py app/coverage/lcov.info docs/coverage.json
 
       - uses: actions/configure-pages@v6
 
@@ -74,13 +79,6 @@ jobs:
         with:
           source: ./docs
           destination: ./_site
-
-      # After Jekyll, which owns everything under _site and would otherwise
-      # clean these away.
-      - name: Add the coverage report to the site
-        run: |
-          cp -r coverage-report _site/coverage
-          python3 tool/coverage_badge.py app/coverage/lcov.info _site/coverage.json
 
       - uses: actions/upload-pages-artifact@v5
 
