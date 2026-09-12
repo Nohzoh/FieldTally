@@ -349,6 +349,14 @@ void main() {
       expect(find.text('Support the project'), findsOneWidget);
       expect(find.text('Source code'), findsOneWidget);
     });
+
+    testWidgets('credits the author', (tester) async {
+      await pumpSettings(tester);
+      await scrollTo(tester, find.text('Author'));
+
+      expect(find.text('Author'), findsOneWidget);
+      expect(find.text('Nohzoh, on GitHub.'), findsOneWidget);
+    });
   });
 
   group('reaching settings', () {
