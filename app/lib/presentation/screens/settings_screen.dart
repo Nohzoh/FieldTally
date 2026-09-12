@@ -25,6 +25,7 @@ class SettingsScreen extends ConsumerWidget {
 
   static final _koFi = Uri.parse('https://ko-fi.com/tarnaud');
   static final _repository = Uri.parse('https://github.com/Nohzoh/FieldTally');
+  static final _author = Uri.parse('https://github.com/Nohzoh');
 
   /// Offered delays, in days. Short enough to build a habit, long enough not
   /// to nag someone who plays once a week.
@@ -181,6 +182,12 @@ class SettingsScreen extends ConsumerWidget {
             ),
             trailing: const Icon(Icons.copy_all_outlined),
             onTap: build == null ? null : () => _copyVersion(context, build),
+          ),
+          ListTile(
+            title: Text(l10n.settingsAuthor),
+            subtitle: Text(l10n.settingsAuthorDetail),
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () => _open(context, _author),
           ),
           ListTile(
             title: Text(l10n.settingsSupport),

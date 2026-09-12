@@ -118,6 +118,8 @@
   "settingsBuildUnknown": "Construit depuis une copie de travail",
   "settingsCopyVersion": "Appuie pour copier, à coller dans un rapport de bug",
   "settingsVersionCopied": "Version copiée.",
+  "settingsAuthor": "Auteur",
+  "settingsAuthorDetail": "Nohzoh, sur GitHub.",
   "settingsSourceCode": "Code source",
   "settingsSourceCodeDetail": "L'app entière, sous licence AGPL v3.",
   "settingsSupport": "Soutenir le projet",

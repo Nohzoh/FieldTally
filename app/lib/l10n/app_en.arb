@@ -367,6 +367,8 @@
   "settingsBuildUnknown": "Built from a working copy",
   "settingsCopyVersion": "Tap to copy, to paste into a bug report",
   "settingsVersionCopied": "Version copied.",
+  "settingsAuthor": "Author",
+  "settingsAuthorDetail": "Nohzoh, on GitHub.",
   "settingsSourceCode": "Source code",
   "settingsSourceCodeDetail": "The whole app, under AGPL v3.",
   "settingsSupport": "Support the project",

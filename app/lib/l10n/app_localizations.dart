@@ -811,6 +811,18 @@ abstract class AppLocalizations {
   /// **'Version copied.'**
   String get settingsVersionCopied;
 
+  /// No description provided for @settingsAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get settingsAuthor;
+
+  /// No description provided for @settingsAuthorDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Nohzoh, on GitHub.'**
+  String get settingsAuthorDetail;
+
   /// No description provided for @settingsSourceCode.
   ///
   /// In en, this message translates to:

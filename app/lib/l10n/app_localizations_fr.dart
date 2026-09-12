@@ -458,6 +458,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsVersionCopied => 'Version copiée.';
 
   @override
+  String get settingsAuthor => 'Auteur';
+
+  @override
+  String get settingsAuthorDetail => 'Nohzoh, sur GitHub.';
+
+  @override
   String get settingsSourceCode => 'Code source';
 
   @override
