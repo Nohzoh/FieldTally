@@ -247,9 +247,13 @@ Déclenché sur chaque push et pull request vers `main` :
 
 ### 7.2 Pipeline de release (`release.yml`)
 
-Déclenché manuellement ou sur un tag `v*` :
-1. Build `flutter build apk --release`, signé avec un keystore stocké en secrets GitHub (`ANDROID_KEYSTORE_BASE64`, `KEY_ALIAS`, `KEY_PASSWORD`, `STORE_PASSWORD`).
-2. Création d'une **GitHub Release** avec l'APK attaché et un changelog généré à partir des commits/PR depuis la release précédente.
+Déclenché manuellement avec la version en paramètre, ou sur un tag `v*` poussé à la main :
+1. Refus immédiat si la version demandée ne correspond pas à `app/pubspec.yaml` — c'est ce qui rattrape un déclenchement lancé avant que le bump ne soit mergé.
+2. Build `flutter build apk --release`, signé avec un keystore stocké en secrets GitHub (`ANDROID_KEYSTORE_BASE64`, `KEY_ALIAS`, `KEY_PASSWORD`, `STORE_PASSWORD`), puis vérification que l'APK ne porte pas la clé de debug.
+3. **Création du tag**, seulement à ce stade : un tag qui nomme une version affirme qu'elle est sortie, donc rien n'est tagué pour une release qui a échoué à se construire. Le tag est annoté mais non signé (`github-actions[bot]`) — seule la clé Android vit dans le workflow, et ce qui prouve l'authenticité d'une release est le certificat de l'APK, pas le tag.
+4. Création d'une **GitHub Release** avec l'APK attaché, nommé `fieldtally-<version>.apk`, et un changelog généré à partir des commits/PR depuis la release précédente.
+
+Un *dry run* s'arrête après la vérification de signature, sur un artifact téléchargeable : ni tag, ni release.
 
 *(Le compte/keystore de signature Android est à créer par toi ; je peux détailler la procédure de génération du keystore et l'ajout des secrets le moment venu.)*
 

@@ -64,20 +64,36 @@ git log --oneline -1          # main, up to date with origin
 A release built on anything but a clean, pushed `main` is a release nobody can
 reproduce.
 
-## 5. Tag
+## 5. Release
 
-Tags are signed, like commits.
+The workflow does the tagging. Dispatch it with the version, without the
+leading `v`:
 
 ```sh
-git tag -s vX.Y.Z -m "FieldTally X.Y.Z
-
-<what changed, in the same register as the release notes>"
-git tag -v vX.Y.Z     # expect: Good "git" signature
-git push origin vX.Y.Z
+./scripts/gh workflow run release.yml -f version=X.Y.Z
 ```
 
-Pushing the tag is the irreversible step: it produces a public, signed artefact.
-Confirm with the user before pushing unless they have already said to go ahead.
+It refuses immediately if that version disagrees with `app/pubspec.yaml` —
+which is what catches a dispatch fired before the bump was merged. It then
+builds, proves the APK carries the real signing key, and only then creates
+the tag and publishes. Nothing is tagged for a release that failed to build.
+
+`-f dry_run=true` stops after the signing check, at a downloadable artifact:
+no tag, no release. Use it when the question is whether signing works.
+
+Dispatching without `dry_run` is the irreversible step: it produces a public
+tag and a public signed APK. Confirm with the user before firing it unless
+they have already said to go ahead.
+
+The tag is annotated but unsigned, created by `github-actions[bot]`. Only the
+Android signing key lives in the workflow, deliberately, so what proves a
+release genuine is the APK's certificate — printed in the job summary and
+published on the install page — rather than the tag. A tag pushed by hand
+still works and can be signed the usual way:
+
+```sh
+git tag -s vX.Y.Z -m "FieldTally X.Y.Z" && git push origin vX.Y.Z
+```
 
 ## 6. Watch the workflow
 

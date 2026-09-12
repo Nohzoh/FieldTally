@@ -5,12 +5,23 @@
 # proposed by anyone else reach it.
 name: Release
 
+# Two ways in, and the dispatch is now the normal one: the tag is created here,
+# once the APK has been built and proved to carry the real signing key. A tag
+# pushed by hand still works, for a release cut from a laptop.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, without the leading v (e.g. 1.1.0). Must match app/pubspec.yaml.'
+        required: true
+      dry_run:
+        description: 'Build and check the signing, then stop at an artifact — no tag, no release.'
+        type: boolean
+        default: false
 
-# Only the release job writes, and only to create the release itself.
+# Writes twice now: the tag, and the release.
 permissions:
   contents: write
 
@@ -31,6 +42,31 @@ jobs:
         with:
           # The generated changelog needs the history back to the previous tag.
           fetch-depth: 0
+
+      # The version is settled once, here, and checked against the file the APK
+      # is actually built from. A tag that disagrees with pubspec.yaml would
+      # publish "v1.1.0" holding an APK whose About screen says 1.0.0 — and
+      # whose versionCode may not have increased, which Android refuses to
+      # install over the previous one.
+      - name: Work out what is being released
+        id: release
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag="v${{ inputs.version }}"
+          fi
+          version="${tag#v}"
+
+          pubspec=$(sed -n 's/^version: *\([^+ ]*\)+.*/\1/p' app/pubspec.yaml)
+          if [ "$version" != "$pubspec" ]; then
+            echo "::error::$tag does not match app/pubspec.yaml ($pubspec) — merge the version bump first."
+            exit 1
+          fi
+
+          echo "Releasing $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       # Fails here rather than producing a debug-signed APK further down. An
       # APK signed with the debug key installs perfectly well and is the worst
@@ -132,15 +168,34 @@ jobs:
         if: always()
         run: rm -f app/android/key.properties "$RUNNER_TEMP/fieldtally-release.jks"
 
-      # A manual run is for checking that signing works, so it stops at an
-      # artifact. Only a tag publishes.
+      # A dry run is for checking that signing works, so it stops here, at an
+      # artifact, having created no tag and published nothing.
       - name: Upload the APK
-        if: github.ref_type != 'tag'
+        if: github.ref_type != 'tag' && inputs.dry_run
         uses: actions/upload-artifact@v7
         with:
           name: fieldtally-release-apk
           path: app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+
+      # Only now, once the APK exists and carries the real key. Tagging first
+      # would leave a tag on a release that never shipped, and a tag naming a
+      # version is a promise that it did.
+      #
+      # The tag is annotated but not signed: the workflow holds the Android
+      # signing key, deliberately, and nothing else. What proves a release
+      # genuine is the APK's certificate, published in the job summary and on
+      # the install page — not the tag.
+      - name: Tag the release
+        if: github.ref_type != 'tag' && !inputs.dry_run
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a "$TAG" -m "FieldTally $VERSION"
+          git push origin "$TAG"
 
       # Named for the person downloading it, not for the build system that
       # produced it. `gh release create` takes the asset name from the file, and
@@ -148,14 +203,16 @@ jobs:
       # version lands as `app-release(1).apk`, in a Downloads folder that is
       # already a pile, with nothing to tell the two apart.
       - name: Publish the release
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || !inputs.dry_run
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag }}
+          VERSION: ${{ steps.release.outputs.version }}
         run: |
-          apk="fieldtally-${GITHUB_REF_NAME#v}.apk"
+          apk="fieldtally-$VERSION.apk"
           mv app/build/app/outputs/flutter-apk/app-release.apk "$apk"
 
-          gh release create "$GITHUB_REF_NAME" "$apk" \
-            --title "$GITHUB_REF_NAME" \
+          gh release create "$TAG" "$apk" \
+            --title "$TAG" \
             --generate-notes \
             --verify-tag
