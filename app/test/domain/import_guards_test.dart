@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:fieldtally/data/parsing/ingress_tsv_parser.dart';
+import 'package:fieldtally/data/registry/counter_registry_loader.dart';
 import 'package:fieldtally/domain/guards/import_guards.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 const allTimePath = 'test/fixtures/sample_export_all_time.tsv';
 const weekPath = 'test/fixtures/sample_export_week.tsv';
+const seedPath = 'assets/counters_registry_seed.json';
 
 StatSnapshot load(String path) =>
     const IngressTsvParser().parseSingle(File(path).readAsStringSync());
@@ -186,6 +188,80 @@ void main() {
       for (final header in StatSnapshot.nonPeriodizedHeaders) {
         expect(week.counters[header], allTime.counters[header], reason: header);
       }
+    });
+
+    test('a recursion is not an import mistake', () {
+      // Recursion resets an agent's level to 1 and their AP to 0, while every
+      // lifetime counter carries on. It is the one moment where a counter
+      // legitimately goes backwards, and the agent importing that evening must
+      // not be told their export looks wrong.
+      //
+      // It is tolerated today because Level and Current AP are non-periodized
+      // and the guard skips them — a reason that has nothing to do with
+      // recursion. This pins the outcome so that reason cannot quietly change.
+      final check = guards.check(
+        snapshotWith(counters: const {
+          'Level': 1,
+          'Current AP': 0,
+          'Recursions': 1,
+          'Hacks': 78735,
+        }),
+        previous: snapshotWith(counters: const {
+          'Level': 16,
+          'Current AP': 40000000,
+          'Recursions': 0,
+          'Hacks': 78735,
+        }),
+      );
+
+      expect(check.hasRegressions, isFalse);
+      expect(check.isBlocked, isFalse);
+    });
+
+    test('the bundled registry is what actually grants that tolerance', () {
+      // In the app the registry decides, not the fallback set — and the
+      // registry is fetched from Pages, so it can change without a release.
+      // Marking `ap` periodized there would block every recursing agent's next
+      // import, remotely. This fails if that ever happens.
+      final registry = const CounterRegistryLoader()
+          .parse(File(seedPath).readAsStringSync());
+
+      expect(registry.isPeriodized('Current AP'), isFalse);
+      expect(registry.isPeriodized('Level'), isFalse);
+
+      final check = guards.check(
+        snapshotWith(counters: const {'Level': 1, 'Current AP': 0}),
+        previous: snapshotWith(
+          counters: const {'Level': 16, 'Current AP': 40000000},
+        ),
+        registry: registry,
+      );
+
+      expect(check.hasRegressions, isFalse);
+    });
+
+    test('but a recursion does not excuse a lifetime counter going backwards',
+        () {
+      // The tolerance covers the two fields recursion resets, and is not an
+      // amnesty for the snapshot carrying them: a WEEK export imported on the
+      // evening of a recursion is still the mistake the guard exists to catch.
+      final check = guards.check(
+        snapshotWith(counters: const {
+          'Level': 1,
+          'Current AP': 0,
+          'Recursions': 1,
+          'Hacks': 12,
+        }),
+        previous: snapshotWith(counters: const {
+          'Level': 16,
+          'Current AP': 40000000,
+          'Recursions': 0,
+          'Hacks': 78735,
+        }),
+      );
+
+      expect(check.regressions.map((r) => r.exportHeader), ['Hacks']);
+      expect(check.isBlocked, isTrue);
     });
 
     test('guard 2 protects the CSV path, which has no Time Span', () {
