@@ -37,32 +37,71 @@ jobs:
       run:
         working-directory: app
     steps:
+      # The full history, so the comparison below can reach the base commit.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # The job itself always runs, so its check always reports. Filtering at
+      # the workflow level with `paths` would skip it instead, and a required
+      # check that never reports leaves a pull request waiting forever.
+      #
+      # Deliberately biased towards building: a wrong "nothing changed" lets a
+      # broken commit through, a wrong "something changed" only costs time.
+      - name: Work out whether this touches the app
+        id: scope
+        run: |
+          base=
+          if [ "${{ github.event_name }}" = 'pull_request' ]; then
+            base='${{ github.event.pull_request.base.sha }}'
+          elif [ '${{ github.event.before }}' != '0000000000000000000000000000000000000000' ]; then
+            base='${{ github.event.before }}'
+          fi
+
+          touched=true
+          if [ -n "$base" ] && git cat-file -e "$base^{commit}" 2>/dev/null; then
+            files=$(git diff --name-only "$base" HEAD)
+            echo "$files"
+            # docs/registry counts: the bundled seed is generated from it, and
+            # the check that they agree lives in this job.
+            if ! printf '%s\n' "$files" \
+                 | grep -qE '^(app/|\.github/workflows/|docs/registry/)'; then
+              touched=false
+            fi
+          fi
+
+          echo "Builds the app: $touched"
+          echo "app=$touched" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-java@v6
+        if: steps.scope.outputs.app == 'true'
         with:
           distribution: temurin
           java-version: '17'
 
       - uses: subosito/flutter-action@v2
+        if: steps.scope.outputs.app == 'true'
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies
+        if: steps.scope.outputs.app == 'true'
         run: flutter pub get
 
       # The bundled seed is generated, never hand-edited (§3.1.4, §7.4). CI only
       # checks that it is current: a mismatch is a contribution mistake, not
       # something to silently fix.
       - name: Check the registry seed is in sync
+        if: steps.scope.outputs.app == 'true'
         run: dart run tool/sync_registry_seed.dart --check
 
       # Drift's generated code is committed so the repo builds without a
       # generation step. The trade-off is that it can drift from its source, so
       # regenerate it and require that nothing moved.
       - name: Check generated code is up to date
+        if: steps.scope.outputs.app == 'true'
         run: |
           dart run build_runner build
           git diff --exit-code
@@ -72,26 +111,31 @@ jobs:
       # rewrites an inconsistent lock instead of failing, the drift would go
       # unnoticed without this explicit check.
       - name: Check pubspec.lock is in sync
+        if: steps.scope.outputs.app == 'true'
         run: git diff --exit-code pubspec.lock
 
       - name: Analyze
+        if: steps.scope.outputs.app == 'true'
         run: flutter analyze
 
       - name: Tests
+        if: steps.scope.outputs.app == 'true'
         run: flutter test --coverage
 
       - name: Upload coverage
         uses: actions/upload-artifact@v7
-        if: always()
+        if: always() && steps.scope.outputs.app == 'true'
         with:
           name: coverage
           path: app/coverage/lcov.info
           if-no-files-found: warn
 
       - name: Build APK (debug)
+        if: steps.scope.outputs.app == 'true'
         run: flutter build apk --debug
 
       - name: Upload APK
+        if: steps.scope.outputs.app == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: fieldtally-debug-apk
