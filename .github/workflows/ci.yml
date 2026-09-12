@@ -120,24 +120,16 @@ jobs:
 
       - name: Tests
         if: steps.scope.outputs.app == 'true'
-        run: flutter test --coverage
+        run: flutter test
 
-      - name: Upload coverage
-        uses: actions/upload-artifact@v7
-        if: always() && steps.scope.outputs.app == 'true'
-        with:
-          name: coverage
-          path: app/coverage/lcov.info
-          if-no-files-found: warn
-
+      # The build is what earns this step: `flutter test` runs on the host Dart
+      # VM and compiles no Android at all, so the Gradle configuration, the
+      # merged manifest and the resources are only ever exercised here.
+      #
+      # The APK itself is not published. It is signed with the runner's
+      # ephemeral debug key, regenerated on every run, so installing one over
+      # another forces an uninstall — which destroys the local database. It
+      # could not serve the purpose it looked like it served.
       - name: Build APK (debug)
         if: steps.scope.outputs.app == 'true'
         run: flutter build apk --debug
-
-      - name: Upload APK
-        if: steps.scope.outputs.app == 'true'
-        uses: actions/upload-artifact@v7
-        with:
-          name: fieldtally-debug-apk
-          path: app/build/app/outputs/flutter-apk/app-debug.apk
-          if-no-files-found: error

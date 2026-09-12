@@ -10,9 +10,15 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - 'app/**'
       - 'tool/validate_registry.py'
+      - 'tool/coverage_badge.py'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
+
+env:
+  FLUTTER_CHANNEL: stable
+  FLUTTER_VERSION: 3.44.9
 
 permissions:
   contents: read
@@ -36,6 +42,31 @@ jobs:
       - name: Validate docs/registry/counters.json
         run: python3 tool/validate_registry.py
 
+      # The coverage report is produced here rather than carried over from CI:
+      # the site then always describes the commit it was built from, with no
+      # artifact plumbing between workflows and nothing generated committed to
+      # the repository. The cost is one extra test run per deployment.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Measure coverage
+        working-directory: app
+        run: |
+          flutter pub get
+          flutter test --coverage
+
+      # From app/, because the paths in lcov.info are relative to it and
+      # genhtml resolves the sources it annotates.
+      - name: Build the browsable report
+        working-directory: app
+        run: |
+          sudo apt-get update && sudo apt-get install -y lcov
+          genhtml coverage/lcov.info --output-directory ../coverage-report \
+            --title "FieldTally coverage" --legend --show-details
+
       - uses: actions/configure-pages@v6
 
       - name: Build Jekyll
@@ -43,6 +74,13 @@ jobs:
         with:
           source: ./docs
           destination: ./_site
+
+      # After Jekyll, which owns everything under _site and would otherwise
+      # clean these away.
+      - name: Add the coverage report to the site
+        run: |
+          cp -r coverage-report _site/coverage
+          python3 tool/coverage_badge.py app/coverage/lcov.info _site/coverage.json
 
       - uses: actions/upload-pages-artifact@v5
 
