@@ -142,13 +142,20 @@ jobs:
           path: app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
 
+      # Named for the person downloading it, not for the build system that
+      # produced it. `gh release create` takes the asset name from the file, and
+      # Flutter's default `app-release.apk` collides with itself: a second
+      # version lands as `app-release(1).apk`, in a Downloads folder that is
+      # already a pile, with nothing to tell the two apart.
       - name: Publish the release
         if: github.ref_type == 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            app/build/app/outputs/flutter-apk/app-release.apk \
+          apk="fieldtally-${GITHUB_REF_NAME#v}.apk"
+          mv app/build/app/outputs/flutter-apk/app-release.apk "$apk"
+
+          gh release create "$GITHUB_REF_NAME" "$apk" \
             --title "$GITHUB_REF_NAME" \
             --generate-notes \
             --verify-tag
