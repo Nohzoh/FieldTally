@@ -15,6 +15,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
+  String get close => 'Close';
+
+  @override
   String get delete => 'Delete';
 
   @override
@@ -455,6 +458,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsVersionCopied => 'Version copied.';
 
   @override
+  String get settingsWhatsNew => 'What\'s new';
+
+  @override
+  String get settingsWhatsNewDetail =>
+      'Read again what changed in this version.';
+
+  @override
+  String get settingsWhatsNewNone => 'No notes bundled for this build.';
+
+  @override
   String get settingsAuthor => 'Author';
 
   @override
@@ -841,4 +854,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String notificationMilestoneMore(String counter, int count) {
     return '$counter and $count other badges reached.';
   }
+
+  @override
+  String changelogDialogTitle(String version) {
+    return 'What\'s new in $version';
+  }
+
+  @override
+  String get changelogNewHeading => '✨ New';
+
+  @override
+  String get changelogFixedHeading => '🐛 Fixed';
 }

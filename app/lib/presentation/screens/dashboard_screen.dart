@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +9,7 @@ import '../../core/router.dart';
 import '../../domain/dashboard.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
+import '../widgets/changelog_dialog.dart';
 import '../widgets/sparkline.dart';
 
 /// Home screen: a handful of pinned counters (§3.3).
@@ -14,11 +17,42 @@ import '../widgets/sparkline.dart';
 /// This exists to fix the problem the audit found in Agent Stats — one
 /// catch-all chart nobody can read. A few cards the agent chose, each with its
 /// own value, its diff and its own sparkline, beats sixty series on one axis.
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // After the first frame, same as the other startup tasks: this is the
+    // home route, so it is always the first screen built, and by then it sits
+    // under the Navigator a dialog needs.
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_showChangelog()));
+  }
+
+  Future<void> _showChangelog() async {
+    try {
+      final releases = await ref.read(changelogCheckProvider.future);
+      if (!mounted || releases.isEmpty) return;
+
+      final languageCode = Localizations.localeOf(context).languageCode;
+      await showChangelogDialog(
+        context,
+        releases: releases,
+        languageCode: languageCode,
+      );
+    } catch (_) {
+      // Silent by design, like the other startup tasks: a changelog that
+      // could not be checked is not worth interrupting anyone over.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final cards = ref.watch(dashboardProvider);
 

@@ -46,4 +46,9 @@ abstract final class SettingKeys {
   /// When a fetch was last attempted — successful or not. Failures count, so a
   /// device with no network does not retry on every single launch.
   static const lastFetchAttempt = 'registry.last_fetch';
+
+  /// The `versionCode` this device last recorded seeing the release notes
+  /// for (§9). Absent means either a fresh install or a build predating this
+  /// setting — both read as "nothing to compare against".
+  static const changelogLastSeenBuild = 'changelog.last_seen_build';
 }

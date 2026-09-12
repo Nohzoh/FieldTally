@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get cancel;
 
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
   /// No description provided for @delete.
   ///
   /// In en, this message translates to:
@@ -811,6 +817,24 @@ abstract class AppLocalizations {
   /// **'Version copied.'**
   String get settingsVersionCopied;
 
+  /// No description provided for @settingsWhatsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new'**
+  String get settingsWhatsNew;
+
+  /// No description provided for @settingsWhatsNewDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Read again what changed in this version.'**
+  String get settingsWhatsNewDetail;
+
+  /// No description provided for @settingsWhatsNewNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No notes bundled for this build.'**
+  String get settingsWhatsNewNone;
+
   /// No description provided for @settingsAuthor.
   ///
   /// In en, this message translates to:
@@ -1451,6 +1475,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{counter} and {count} other badges reached.'**
   String notificationMilestoneMore(String counter, int count);
+
+  /// No description provided for @changelogDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s new in {version}'**
+  String changelogDialogTitle(String version);
+
+  /// No description provided for @changelogNewHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'✨ New'**
+  String get changelogNewHeading;
+
+  /// No description provided for @changelogFixedHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'🐛 Fixed'**
+  String get changelogFixedHeading;
 }
 
 class _AppLocalizationsDelegate

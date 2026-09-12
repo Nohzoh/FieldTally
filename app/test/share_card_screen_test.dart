@@ -53,6 +53,10 @@ void main() {
       databaseProvider.overrideWithValue(db),
       notificationServiceProvider.overrideWithValue(FakeNotificationService()),
       counterRegistryProvider.overrideWith(fixedRegistry),
+      // The dashboard is mounted on the way here and looks for unseen release
+      // notes on its first frame (§9); the real check reads PackageInfo, which
+      // no widget test has.
+      changelogCheckProvider.overrideWith((ref) async => const []),
     ]);
     // Dispose the container before closing the database: Drift hangs on close
     // while a stream query is still subscribed.

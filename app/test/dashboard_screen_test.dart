@@ -1,6 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
+import 'package:fieldtally/domain/models/changelog_release.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/domain/repositories/pinned_counter_repository.dart';
@@ -38,6 +39,7 @@ void main() {
     double textScale = 1.0,
     Size size = const Size(1080, 2400),
     double pixelRatio = 3.0,
+    List<ChangelogRelease> changelog = const [],
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = pixelRatio;
@@ -49,6 +51,9 @@ void main() {
       // No test asks Android to post anything (§3.7).
       notificationServiceProvider.overrideWithValue(FakeNotificationService()),
       counterRegistryProvider.overrideWith(fixedRegistry),
+      // Nothing unseen unless a test says otherwise: the real check reads
+      // PackageInfo, which no widget test has.
+      changelogCheckProvider.overrideWith((ref) async => changelog),
     ]);
     // Dispose the container before closing the database: Drift hangs on close
     // while a stream query is still subscribed.
@@ -85,6 +90,32 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  group('what changed after an update (§9)', () {
+    testWidgets('the notes are shown on the first frame after an update',
+        (tester) async {
+      await pumpDashboard(tester, changelog: [
+        ChangelogRelease(
+          versionCode: 2,
+          version: '1.1.0',
+          featureNotes: const {
+            'en': ['Pick your language'],
+          },
+          fixNotes: const {},
+        ),
+      ]);
+
+      expect(find.text('Pick your language'), findsOneWidget);
+    });
+
+    testWidgets('nothing unseen leaves the dashboard alone', (tester) async {
+      // Which is also the fresh-install case, and the ordinary launch: the
+      // dialog has to be the exception, never the greeting.
+      await pumpDashboard(tester);
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+  });
 
   group('dashboard (§3.3)', () {
     testWidgets('without any snapshot it says there is nothing to show',

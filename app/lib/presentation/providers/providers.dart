@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/build_info.dart';
+import '../../data/changelog/changelog_service.dart';
 import '../../data/db/database.dart';
 import '../../data/notifications/notification_service.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
@@ -16,6 +17,7 @@ import '../../domain/counter_list.dart';
 import '../../domain/counter_series.dart';
 import '../../domain/dashboard.dart';
 import '../../domain/guards/import_guards.dart';
+import '../../domain/models/changelog_release.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/models/tracked_counter.dart';
 import '../../domain/goal.dart';
@@ -296,4 +298,20 @@ final buildInfoProvider = FutureProvider<BuildInfo>((ref) async {
     build: info.buildNumber,
     commit: BuildInfo.commitFromEnvironment,
   );
+});
+
+final changelogServiceProvider = Provider<ChangelogService>(
+  (ref) => ChangelogService(settings: ref.watch(settingsRepositoryProvider)),
+);
+
+/// Release notes introduced since this device last recorded a seen build
+/// (§9). A one-shot check: it also records the running build as seen, so it
+/// must only ever be read once per app session — the dashboard does that, on
+/// its first frame.
+final changelogCheckProvider = FutureProvider<List<ChangelogRelease>>((ref) async {
+  final build = await ref.watch(buildInfoProvider.future);
+  final versionCode = int.tryParse(build.build);
+  if (versionCode == null) return const [];
+
+  return ref.watch(changelogServiceProvider).checkForUpdate(versionCode);
 });

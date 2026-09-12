@@ -402,6 +402,19 @@ void main() {
       expect(find.text('Author'), findsOneWidget);
       expect(find.text('Nohzoh, on GitHub.'), findsOneWidget);
     });
+
+    testWidgets('offers the release notes again (§9)', (tester) async {
+      // The build under test carries no bundled notes, so the tile says so
+      // rather than opening an empty dialog — the same thing a development
+      // build does.
+      await pumpSettings(tester);
+      await scrollTo(tester, find.text("What's new"));
+
+      await tester.tap(find.text("What's new"));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('No notes bundled'), findsOneWidget);
+    });
   });
 
   group('reaching settings', () {
