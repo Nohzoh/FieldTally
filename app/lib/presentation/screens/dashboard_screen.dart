@@ -90,10 +90,7 @@ class DashboardScreen extends ConsumerWidget {
                   // names are long, and a 110pt card clipped both the label
                   // and the caption. One column there, three on a tablet.
                   crossAxisCount: _columnsFor(constraints.maxWidth),
-                  // A fixed height rather than an aspect ratio: the card must
-                  // keep the same room whatever the column count, and §3.9
-                  // requires it to survive the system text size being scaled.
-                  mainAxisExtent: 176,
+                  mainAxisExtent: _cardExtent(context),
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
                   children: [for (final card in list) _Card(card: card)],
@@ -102,6 +99,31 @@ class DashboardScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Room a card needs, derived from the text styles it actually uses.
+///
+/// A fixed height cannot work: the label, the value and the difference all grow
+/// with the system font size (§3.9), and a card pinned at one height simply
+/// clips them. Only the text is scaled here — the trend line keeps its size,
+/// since a sparkline gains nothing from being taller.
+double _cardExtent(BuildContext context) {
+  final text = Theme.of(context).textTheme;
+  final scaler = MediaQuery.textScalerOf(context);
+
+  double lines(TextStyle? style, [int count = 1]) =>
+      scaler.scale(style?.fontSize ?? 14) * (style?.height ?? 1.35) * count;
+
+  const padding = 12.0 * 2;
+  const gap = 6.0;
+  const trend = 30.0;
+
+  return padding +
+      gap +
+      trend +
+      lines(text.labelLarge, 2) +
+      lines(text.headlineSmall) +
+      lines(text.bodySmall);
 }
 
 int _columnsFor(double width) {
@@ -138,13 +160,17 @@ class _Card extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                child: Text(
-                  label,
-                  style: theme.textTheme.labelLarge,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              // Not flexible, and two lines rather than three: the card
+              // reserves exactly this much for the label, so it is ellipsised
+              // when it is too long instead of being sliced mid-line. A
+              // Flexible here competed with the trend area below for the same
+              // free space, and lost half of it even when the trend area held
+              // nothing but a one-line caption.
+              Text(
+                label,
+                style: theme.textTheme.labelLarge,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 6),
               // The number is the point of the card, so it shrinks to fit
@@ -174,9 +200,12 @@ class _Card extends ConsumerWidget {
               ),
               // A sparkline needs two points; with a single snapshot the card
               // says so rather than drawing a flat line that means nothing.
-              // Expanded rather than a fixed height: the trend line is what
-              // gives way when space runs short, never the numbers.
-              Expanded(
+              //
+              // Loose rather than Expanded, so this is what actually gives way
+              // when space runs short — the promise the previous comment made
+              // and the layout did not keep.
+              Flexible(
+                fit: FlexFit.loose,
                 child: card.hasSparkline
                     ? Align(
                         alignment: Alignment.bottomCenter,
