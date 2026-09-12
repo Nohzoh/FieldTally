@@ -43,3 +43,8 @@ docs/_site/
 docs/.jekyll-cache/
 docs/.jekyll-metadata
 docs/Gemfile.lock
+
+# Written into the site's source by pages.yml at deploy time, from the run's
+# own `flutter test --coverage` (§7.3). Generated, never committed.
+docs/coverage/
+docs/coverage.json
