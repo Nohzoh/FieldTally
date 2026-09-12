@@ -588,6 +588,8 @@
   "shareCardEmptyDetail": "Record a snapshot and your card will be ready.",
   "shareCardFailed": "The image could not be produced.",
   "settingsAppearanceSection": "Appearance",
+  "settingsLanguage": "Language",
+  "settingsLanguageSystem": "System",
   "settingsTheme": "Theme",
   "settingsThemeSystem": "System",
   "settingsThemeLight": "Light",

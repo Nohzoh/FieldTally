@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/locale_resolution.dart';
 import 'core/router.dart';
 import 'l10n/app_localizations.dart';
 import 'presentation/incoming_share_listener.dart';
@@ -41,10 +42,12 @@ class FieldTallyApp extends ConsumerWidget {
             colorSchemeSeed: seed,
             brightness: Brightness.dark,
           ),
-          // French is the default for now; the locale follows the device once more
-          // translations land (§3.10).
-          locale: const Locale('fr'),
+          // Null follows the device (§3.10). The app has both translations the
+          // specification asks for, and imposing one on a phone set to the
+          // other served nobody.
+          locale: ref.watch(localeProvider).asData?.value,
           supportedLocales: AppLocalizations.supportedLocales,
+          localeResolutionCallback: resolveLocale,
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
