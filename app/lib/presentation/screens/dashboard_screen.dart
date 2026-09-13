@@ -88,6 +88,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
               PopupMenuItem(
+                value: Routes.compare,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.group_outlined),
+                  title: Text(l10n.compareTitle),
+                ),
+              ),
+              PopupMenuItem(
                 value: Routes.snapshots,
                 child: ListTile(
                   dense: true,

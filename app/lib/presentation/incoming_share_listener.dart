@@ -5,9 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/router.dart';
+import '../domain/comparison_payload.dart';
 import 'providers/providers.dart';
 
-/// Sends text shared from another app straight to the preview screen (§3.1).
+/// Sends text shared from another app straight to the screen that can read it.
 ///
 /// Wraps the app rather than living inside a screen: a share can arrive at any
 /// moment, including while the user is somewhere else entirely, and it has to
@@ -52,7 +53,15 @@ class _IncomingShareListenerState extends ConsumerState<IncomingShareListener> {
 
   void _open(String text) {
     if (!mounted) return;
-    widget.router.go(Routes.addSnapshot, extra: text);
+
+    // Another agent's totals must never reach the import preview: they would
+    // be offered for saving, and saving them would put a stranger's numbers
+    // in this agent's history (#64). The marker line is what tells them
+    // apart; anything without it is an Ingress export as before (§3.1).
+    final route = const ComparisonPayload().looksLikeComparison(text)
+        ? Routes.compare
+        : Routes.addSnapshot;
+    widget.router.go(route, extra: text);
   }
 
   @override

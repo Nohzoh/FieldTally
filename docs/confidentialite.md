@@ -26,9 +26,15 @@ Dans une base de données locale, à l'intérieur de l'espace privé de
 l'application sur ton téléphone. Aucune autre application n'y a accès. La
 désinstallation efface tout.
 
-Tes données ne sortent que quand tu le demandes explicitement : un export CSV ou
-une carte en image que tu partages toi-même, vers la destination que tu choisis.
-FieldTally ne sait pas où tu les envoies et n'en garde pas de copie.
+Tes données ne sortent que quand tu le demandes explicitement, et il n'y a que
+trois façons : un export CSV, une carte en image, ou tes totaux transmis à un
+agent à côté de toi pour comparer vos chiffres. Chaque fois, c'est toi qui
+déclenches l'envoi, tu vois ce qui part avant qu'il parte, et tu choisis la
+destination. FieldTally ne sait pas où tu les envoies et n'en garde pas de copie.
+
+Dans l'autre sens : les chiffres qu'un autre agent t'envoie pour comparaison ne
+sont **jamais** enregistrés. Ils vivent le temps de l'écran et n'entrent pas dans
+ton historique.
 
 ## La seule requête réseau
 

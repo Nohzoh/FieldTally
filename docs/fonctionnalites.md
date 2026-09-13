@@ -66,10 +66,14 @@ Désactivées tant que tu ne les as pas activées.
   choix, prête à publier.
 - Un **export CSV** de tout l'historique, pour le garder ailleurs ou changer de
   téléphone.
+- Une **comparaison avec un agent à côté de toi** : tu lui envoies tes totaux par
+  le partage Android, son application met vos chiffres côte à côte, compteur par
+  compteur. Sans serveur, et ce qu'il t'envoie n'entre jamais dans ton historique.
 
 ## Ce qui n'existe pas encore
 
-Pas de compte, pas de classement entre agents, pas de comparaison avec
-quelqu'un d'autre, pas de version iOS aboutie, pas de lecture automatique d'une
-capture d'écran. Rien de tout cela n'est possible sans serveur, et la v1 n'en a
-pas. Voir la [feuille de route]({{ '/feuille-de-route' | relative_url }}).
+Pas de compte, pas de classement entre agents, pas de comparaison à distance ni
+de courbes superposées, pas de version iOS aboutie, pas de lecture automatique
+d'une capture d'écran. Rien de tout cela n'est possible sans serveur, et la v1
+n'en a pas. La comparaison en présence, elle, existe : deux téléphones dans la
+même pièce n'ont besoin de personne. Voir la [feuille de route]({{ '/feuille-de-route' | relative_url }}).

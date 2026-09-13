@@ -23,10 +23,12 @@ Rien de tout cela n'est promis ni daté. C'est un projet de temps libre, et
 l'ordre dépendra autant de ce qui est utile que de ce qui est amusant à écrire.
 
 **Ce qui demanderait un serveur.** Comptes et synchronisation entre appareils,
-groupes et classements entre agents, comparaison de courbes à deux, récapitulatif
-annuel généré automatiquement, notifications envoyées depuis un serveur. C'est
-le seuil qui change la nature du projet : le jour où il existe un serveur, la
-page Confidentialité doit être réécrite. Ce n'est pas une décision à prendre à
+groupes et classements entre agents, comparaison de courbes à deux *à distance*,
+récapitulatif annuel généré automatiquement, notifications envoyées depuis un
+serveur. (Comparer ses chiffres avec un agent qui se tient à côté de toi, en
+revanche, n'a jamais eu besoin de serveur — et c'est fait.) C'est le seuil qui
+change la nature du projet : le jour où il existe un serveur, la page
+Confidentialité doit être réécrite. Ce n'est pas une décision à prendre à
 la légère, et elle ne sera pas prise en silence.
 
 **Ce qui ne demanderait rien.** Widgets d'écran d'accueil, vue d'exploration
