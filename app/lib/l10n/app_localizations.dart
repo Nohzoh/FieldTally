@@ -697,6 +697,24 @@ abstract class AppLocalizations {
   /// **'Chart from {first} to {last}, {count} points.'**
   String chartSemantics(String first, String last, int count);
 
+  /// No description provided for @chartTargetGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal · {value}'**
+  String chartTargetGoal(String value);
+
+  /// No description provided for @chartTargetBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} · {value}'**
+  String chartTargetBadge(String tier, String value);
+
+  /// No description provided for @chartTargetSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'A dashed line marks {target}.'**
+  String chartTargetSemantics(String target);
+
   /// No description provided for @rangeWeek.
   ///
   /// In en, this message translates to:

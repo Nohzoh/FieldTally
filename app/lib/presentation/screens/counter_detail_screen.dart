@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/router.dart';
 import '../../domain/badge_projection.dart';
+import '../../domain/chart_target.dart';
 import '../../domain/counter_series.dart';
 import '../../domain/goal.dart';
 import '../../l10n/app_localizations.dart';
@@ -82,6 +83,14 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
       range: _range,
     );
 
+    // Against the whole history, like the projection above it: what is left to
+    // reach does not depend on the window the chart happens to show.
+    final target = chartTargetFor(
+      currentValue: points.isEmpty ? null : points.last.$2,
+      goal: goal,
+      projection: projection,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(label),
@@ -146,7 +155,7 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
                           ?.copyWith(color: theme.colorScheme.outline),
                     ),
                   )
-                : CounterChart(series: series),
+                : CounterChart(series: series, target: target),
           ),
           if (series.gain != null) ...[
             const SizedBox(height: 8),

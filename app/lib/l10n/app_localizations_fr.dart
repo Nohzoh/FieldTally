@@ -381,6 +381,21 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String chartTargetGoal(String value) {
+    return 'Objectif · $value';
+  }
+
+  @override
+  String chartTargetBadge(String tier, String value) {
+    return '$tier · $value';
+  }
+
+  @override
+  String chartTargetSemantics(String target) {
+    return 'Une ligne pointillée marque $target.';
+  }
+
+  @override
   String get rangeWeek => 'Semaine';
 
   @override

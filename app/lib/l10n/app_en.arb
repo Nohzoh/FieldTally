@@ -304,6 +304,33 @@
       }
     }
   },
+  "chartTargetGoal": "Goal · {value}",
+  "@chartTargetGoal": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chartTargetBadge": "{tier} · {value}",
+  "@chartTargetBadge": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "chartTargetSemantics": "A dashed line marks {target}.",
+  "@chartTargetSemantics": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
   "rangeWeek": "Week",
   "rangeMonth": "Month",
   "rangeAll": "All",
