@@ -1,7 +1,7 @@
 # FieldTally
 
 Ingress stats tracking, mobile-first and **fully local**: no account, no
-server, no data leaving your phone.
+server, nothing leaving your phone unless you send it yourself.
 
 [![CI](https://github.com/Nohzoh/FieldTally/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Nohzoh/FieldTally/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/Nohzoh/FieldTally?label=release)](https://github.com/Nohzoh/FieldTally/releases/latest)
@@ -31,6 +31,9 @@ of Niantic, Inc. This project uses no protected asset.
 - Customisable dashboard, per-counter charts on their own scale, activity
   calendar, badge projections, personal goals, local reminders.
 - CSV import from Agent Stats, CSV export, shareable stats card as a PNG.
+- Puts your totals next to another agent's, phone to phone, through the
+  share sheet — no server, and what they send you is never written to your
+  history.
 - Light and dark themes, optional faction colouring, French and English.
 
 The full picture is in [`docs/spec/SPECIFICATION-v1.md`](docs/spec/SPECIFICATION-v1.md)

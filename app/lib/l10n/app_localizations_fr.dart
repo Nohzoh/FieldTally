@@ -773,6 +773,92 @@ class AppLocalizationsFr extends AppLocalizations {
       'Définis un objectif depuis un compteur pour le voir ici.';
 
   @override
+  String get compareTitle => 'Comparer avec un agent';
+
+  @override
+  String get compareIntro =>
+      'Envoie tes totaux à un agent à côté de toi et son application mettra vos chiffres côte à côte. Rien ne passe par un serveur : le partage remet le texte directement à son téléphone.';
+
+  @override
+  String get comparePreviewTitle => 'Ce qui sera envoyé';
+
+  @override
+  String comparePreviewCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count compteurs',
+      one: '1 compteur',
+    );
+    return '$_temp0, plus ton nom de code, ta faction, ton niveau et la date de ce relevé.';
+  }
+
+  @override
+  String get compareSend => 'Envoyer mes stats';
+
+  @override
+  String get compareSendBack => 'Envoyer les miennes en retour';
+
+  @override
+  String get compareSubject => 'Mes totaux FieldTally';
+
+  @override
+  String get compareEmptyTitle => 'Rien à envoyer pour l\'instant';
+
+  @override
+  String get compareEmptyDetail =>
+      'Enregistre d\'abord un relevé — il faut bien quelque chose à comparer.';
+
+  @override
+  String compareAgainst(String agent) {
+    return 'Face à $agent';
+  }
+
+  @override
+  String compareAgentLine(String faction, String date) {
+    return '$faction · relevé du $date';
+  }
+
+  @override
+  String compareAgentLineWithLevel(String level, String faction, String date) {
+    return '$level · $faction · relevé du $date';
+  }
+
+  @override
+  String get compareColumnMine => 'Toi';
+
+  @override
+  String get compareColumnTheirs => 'En face';
+
+  @override
+  String get compareColumnDifference => 'Écart';
+
+  @override
+  String get compareNotKept =>
+      'Ses chiffres ne sont pas conservés. Ils disparaissent dès que tu quittes cet écran, et ils ne touchent jamais ton propre historique.';
+
+  @override
+  String get compareNoValue => '—';
+
+  @override
+  String get compareTied => 'Égalité';
+
+  @override
+  String get compareErrorTitle => 'Impossible de lire ce contenu';
+
+  @override
+  String get compareErrorUnsupportedVersion =>
+      'Il a été écrit par une version de FieldTally plus récente que celle-ci. Mettre l\'application à jour devrait suffire.';
+
+  @override
+  String get compareErrorNotCumulative =>
+      'Ces totaux couvrent une période plus courte, ils ne peuvent donc pas être mis en face de totaux « depuis toujours ».';
+
+  @override
+  String get compareErrorMalformed =>
+      'Ça ne ressemble pas à des stats envoyées depuis FieldTally.';
+
+  @override
   String get shareCardTitle => 'Carte à partager';
 
   @override

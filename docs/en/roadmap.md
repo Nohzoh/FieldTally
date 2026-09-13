@@ -24,11 +24,12 @@ None of this is promised or dated. It is a spare-time project, and the order
 will depend as much on what is useful as on what is fun to write.
 
 **What would need a server.** Accounts and sync across devices, groups and
-leaderboards, side-by-side comparison of two agents' curves, an automatic yearly
-recap, notifications pushed from a server. That is the threshold that changes
-what the project is: the day a server exists, the privacy page has to be
-rewritten. It is not a decision to take lightly, and it will not be taken
-quietly.
+leaderboards, side-by-side comparison of two agents' curves *at a distance*, an
+automatic yearly recap, notifications pushed from a server. (Comparing your
+numbers with an agent standing next to you never needed one — and it is done.)
+That is the threshold that changes what the project is: the day a server
+exists, the privacy page has to be rewritten. It is not a decision to take
+lightly, and it will not be taken quietly.
 
 **What would need nothing.** Home screen widgets, an advanced exploration view
 for people who want to dig into their data, reading a screenshot by text

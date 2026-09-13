@@ -22,9 +22,14 @@ day that stops being true.
 In a local database, inside the app's private storage on your phone. No other
 app can read it. Uninstalling erases everything.
 
-Your data leaves only when you ask it to: a CSV export, or a stats card you
-share yourself, to a destination you pick. FieldTally does not know where you
-sent it and keeps no copy.
+Your data leaves only when you ask it to, and there are only three ways: a CSV
+export, a stats card, or your totals handed to an agent next to you so the two
+of you can compare. Each time you start the send, you see what is going before
+it goes, and you pick the destination. FieldTally does not know where you sent
+it and keeps no copy.
+
+The other way round: numbers another agent sends you for comparison are **never**
+stored. They live as long as the screen does and never enter your history.
 
 ## The one network request
 

@@ -62,9 +62,13 @@ Off until you turn them on.
 - A **stats card** as an image, covering the period you choose, ready to post.
 - A **CSV export** of the whole history, to keep elsewhere or move to a new
   phone.
+- A **comparison with an agent next to you**: send them your totals through the
+  Android share sheet and their app puts your numbers side by side, counter by
+  counter. No server, and what they send you never enters your history.
 
 ## What does not exist yet
 
-No account, no leaderboard, no head-to-head comparison, no finished iOS build,
-no reading of a screenshot. None of that is possible without a server, and v1
-has none. See the [roadmap]({{ '/en/roadmap' | relative_url }}).
+No account, no leaderboard, no comparison at a distance and no overlaid curves,
+no finished iOS build, no reading of a screenshot. None of that is possible
+without a server, and v1 has none. Comparing in person does work: two phones in
+the same room need nobody. See the [roadmap]({{ '/en/roadmap' | relative_url }}).

@@ -612,6 +612,67 @@
   "goalNoOpinion": "No estimate at your recent pace.",
   "goalsTitle": "Goals",
   "goalsEmpty": "Set a goal from any counter to see it here.",
+  "compareTitle": "Compare with an agent",
+  "compareIntro": "Send your totals to an agent next to you and their app puts your numbers side by side. Nothing goes through a server: the share sheet hands the text straight to their phone.",
+  "comparePreviewTitle": "What will be sent",
+  "comparePreviewCount": "{count, plural, one{1 counter} other{{count} counters}}, plus your codename, faction, level and the date of this snapshot.",
+  "@comparePreviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "compareSend": "Send my stats",
+  "compareSendBack": "Send mine back",
+  "compareSubject": "My FieldTally totals",
+  "compareEmptyTitle": "Nothing to send yet",
+  "compareEmptyDetail": "Record a snapshot first — there has to be something to compare.",
+  "compareAgainst": "Against {agent}",
+  "@compareAgainst": {
+    "description": "Heading of the side-by-side view, naming the other agent.",
+    "placeholders": {
+      "agent": {
+        "type": "String"
+      }
+    }
+  },
+  "compareAgentLine": "{faction} · snapshot of {date}",
+  "@compareAgentLine": {
+    "placeholders": {
+      "faction": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "compareAgentLineWithLevel": "{level} · {faction} · snapshot of {date}",
+  "@compareAgentLineWithLevel": {
+    "description": "Same, for an agent whose level is known. The level is already spelled out, as 'Level 14'.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "faction": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "compareColumnMine": "You",
+  "compareColumnTheirs": "Them",
+  "compareColumnDifference": "Difference",
+  "compareNotKept": "Their numbers are not saved. They are gone as soon as you leave this screen, and they never touch your own history.",
+  "compareNoValue": "—",
+  "compareTied": "Tied",
+  "compareErrorTitle": "This could not be read",
+  "compareErrorUnsupportedVersion": "It was written by a newer FieldTally than this one. Updating the app should fix it.",
+  "compareErrorNotCumulative": "Those totals cover a shorter period, so they cannot be set against all-time ones.",
+  "compareErrorMalformed": "It does not look like stats sent from FieldTally.",
   "shareCardTitle": "Shareable card",
   "shareCardAction": "Share my stats",
   "shareCardShare": "Share the image",

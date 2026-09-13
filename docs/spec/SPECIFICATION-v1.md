@@ -179,7 +179,7 @@ Français et anglais au minimum dès la v1 (communauté Ingress très internatio
 
 ## 4. Hors périmètre v1 → roadmap v2+
 
-Pour mémoire (détaillé en §13), sont **volontairement exclus de la v1** : comptes & backend, groupes/classements entre agents, comparaison tête-à-tête, recap annuel automatique généré serveur, notifications push, build/distribution iOS aboutie, vue « Explorer mes données » façon Grafana pour power users, ingestion par OCR de capture d'écran, publication sur les stores officiels.
+Pour mémoire (détaillé en §13), sont **volontairement exclus de la v1** : comptes & backend, groupes/classements entre agents, comparaison tête-à-tête *à distance* (la variante en présence, sans serveur, est livrée — voir §11), recap annuel automatique généré serveur, notifications push, build/distribution iOS aboutie, vue « Explorer mes données » façon Grafana pour power users, ingestion par OCR de capture d'écran, publication sur les stores officiels.
 
 ---
 
@@ -315,7 +315,7 @@ Objectif : quelqu'un qui n'a jamais entendu parler de GitHub doit pouvoir compre
 ## 10. Légal, confidentialité, licence
 
 - **Licence proposée : MIT** (permissive, standard pour un projet communautaire hobby) — à confirmer par toi (voir §0.2).
-- **Confidentialité v1** : argument de vente honnête et simple à tenir — aucune collecte, aucune télémétrie, aucun compte, aucune donnée envoyée. Une nuance à mentionner explicitement (transparence totale plutôt qu'omission) : l'app télécharge, au démarrage, un fichier public de catégorisation des compteurs hébergé sur GitHub Pages (§3.1.4) — une lecture seule, sans aucune donnée personnelle transmise, désactivable dans les préférences. Pas de politique de confidentialité complexe nécessaire tant que ça reste vrai ; à réécrire si un backend ou un outil d'analytics/crash-reporting est ajouté en v2.
+- **Confidentialité v1** : argument de vente honnête et simple à tenir — aucune collecte, aucune télémétrie, aucun compte, **aucune donnée qui parte d'elle-même**. La formulation compte : trois choses sortent du téléphone, toujours à la demande explicite de l'agent et vers une destination qu'il choisit — l'export CSV (§3.8), la carte en image (§3.8) et les totaux transmis à un agent en présence (#64). Dire « aucune donnée envoyée » serait pris en défaut par un lecteur attentif. Une nuance à mentionner explicitement (transparence totale plutôt qu'omission) : l'app télécharge, au démarrage, un fichier public de catégorisation des compteurs hébergé sur GitHub Pages (§3.1.4) — une lecture seule, sans aucune donnée personnelle transmise, désactivable dans les préférences. Pas de politique de confidentialité complexe nécessaire tant que ça reste vrai ; à réécrire si un backend ou un outil d'analytics/crash-reporting est ajouté en v2.
 - **Marque Ingress/Niantic** : usage strictement descriptif et non-officiel, jamais le logo, mention de non-affiliation visible sur toutes les surfaces publiques (app, README, site).
 
 ---
@@ -323,6 +323,12 @@ Objectif : quelqu'un qui n'a jamais entendu parler de GitHub doit pouvoir compre
 ## 11. Roadmap v2+ (pour mémoire, non détaillé ici)
 
 Backend léger avec comptes (probable évolution naturelle une fois le local validé), groupes et classements entre agents, comparaison tête-à-tête avec courbes superposées, recap annuel généré automatiquement et partageable, notifications push serveur, build et distribution iOS complète (TestFlight puis éventuellement App Store), vue « Explorer mes données » avancée pour power users (l'option Grafana mise de côté pour la v1 redeviendrait pertinente ici), ingestion par OCR de capture d'écran comme méthode alternative au texte de partage, widgets d'écran d'accueil Android/iOS.
+
+> **Déjà livré, sans backend :** la comparaison tête-à-tête, dans sa variante *en présence* (#64). La proximité
+> supprime la prémisse qui l'avait rangée ici — deux téléphones dans la même pièce n'ont besoin d'aucun serveur
+> pour se montrer un chiffre. Les totaux voyagent en texte par la feuille de partage que l'app écoute déjà
+> (§3.1), et le relevé reçu n'est **jamais** enregistré : il vit le temps de l'écran. Ce qui reste en v2 est la
+> version à distance, avec courbes superposées et historique — celle-là demande bien un backend.
 
 ---
 

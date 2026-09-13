@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../presentation/screens/add_snapshot_screen.dart';
+import '../presentation/screens/compare_screen.dart';
 import '../presentation/screens/counter_detail_screen.dart';
 import '../presentation/screens/counter_list_screen.dart';
 import '../presentation/screens/customise_pins_screen.dart';
@@ -27,6 +28,10 @@ abstract final class Routes {
 
   /// The shareable stats card (§3.8).
   static const shareCard = '/share';
+
+  /// Putting two agents' numbers side by side (#64). Reached with no extra to
+  /// send, or with the text another agent shared to read it.
+  static const compare = '/compare';
 
   /// Correcting a snapshot (§3.2) addresses it by its stored id.
   static String editSnapshot(String id) => '/snapshots/$id';
@@ -84,6 +89,14 @@ GoRouter createRouter() => GoRouter(
             GoRoute(
               path: 'share',
               builder: (context, state) => const ShareCardScreen(),
+            ),
+            GoRoute(
+              path: 'compare',
+              builder: (context, state) => CompareScreen(
+                // Set when a share brought another agent's totals in; null
+                // when the agent opened the screen to send their own.
+                incoming: state.extra as String?,
+              ),
             ),
             GoRoute(
               path: 'counters',

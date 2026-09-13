@@ -1320,6 +1320,138 @@ abstract class AppLocalizations {
   /// **'Set a goal from any counter to see it here.'**
   String get goalsEmpty;
 
+  /// No description provided for @compareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare with an agent'**
+  String get compareTitle;
+
+  /// No description provided for @compareIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Send your totals to an agent next to you and their app puts your numbers side by side. Nothing goes through a server: the share sheet hands the text straight to their phone.'**
+  String get compareIntro;
+
+  /// No description provided for @comparePreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What will be sent'**
+  String get comparePreviewTitle;
+
+  /// No description provided for @comparePreviewCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 counter} other{{count} counters}}, plus your codename, faction, level and the date of this snapshot.'**
+  String comparePreviewCount(int count);
+
+  /// No description provided for @compareSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send my stats'**
+  String get compareSend;
+
+  /// No description provided for @compareSendBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Send mine back'**
+  String get compareSendBack;
+
+  /// No description provided for @compareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'My FieldTally totals'**
+  String get compareSubject;
+
+  /// No description provided for @compareEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to send yet'**
+  String get compareEmptyTitle;
+
+  /// No description provided for @compareEmptyDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a snapshot first — there has to be something to compare.'**
+  String get compareEmptyDetail;
+
+  /// Heading of the side-by-side view, naming the other agent.
+  ///
+  /// In en, this message translates to:
+  /// **'Against {agent}'**
+  String compareAgainst(String agent);
+
+  /// No description provided for @compareAgentLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{faction} · snapshot of {date}'**
+  String compareAgentLine(String faction, String date);
+
+  /// Same, for an agent whose level is known. The level is already spelled out, as 'Level 14'.
+  ///
+  /// In en, this message translates to:
+  /// **'{level} · {faction} · snapshot of {date}'**
+  String compareAgentLineWithLevel(String level, String faction, String date);
+
+  /// No description provided for @compareColumnMine.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get compareColumnMine;
+
+  /// No description provided for @compareColumnTheirs.
+  ///
+  /// In en, this message translates to:
+  /// **'Them'**
+  String get compareColumnTheirs;
+
+  /// No description provided for @compareColumnDifference.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference'**
+  String get compareColumnDifference;
+
+  /// No description provided for @compareNotKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Their numbers are not saved. They are gone as soon as you leave this screen, and they never touch your own history.'**
+  String get compareNotKept;
+
+  /// No description provided for @compareNoValue.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get compareNoValue;
+
+  /// No description provided for @compareTied.
+  ///
+  /// In en, this message translates to:
+  /// **'Tied'**
+  String get compareTied;
+
+  /// No description provided for @compareErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This could not be read'**
+  String get compareErrorTitle;
+
+  /// No description provided for @compareErrorUnsupportedVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'It was written by a newer FieldTally than this one. Updating the app should fix it.'**
+  String get compareErrorUnsupportedVersion;
+
+  /// No description provided for @compareErrorNotCumulative.
+  ///
+  /// In en, this message translates to:
+  /// **'Those totals cover a shorter period, so they cannot be set against all-time ones.'**
+  String get compareErrorNotCumulative;
+
+  /// No description provided for @compareErrorMalformed.
+  ///
+  /// In en, this message translates to:
+  /// **'It does not look like stats sent from FieldTally.'**
+  String get compareErrorMalformed;
+
   /// No description provided for @shareCardTitle.
   ///
   /// In en, this message translates to:
