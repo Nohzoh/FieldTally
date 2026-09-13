@@ -34,12 +34,15 @@ compteur plutôt qu'un graphique unique illisible.
 ## Ce qu'elle t'apporte
 
 - **Un tableau de bord** avec les quelques compteurs que *tu* as choisis.
-- **Un graphique par compteur**, sur sa propre échelle.
+- **Un graphique par compteur**, sur sa propre échelle, avec un trait à ce que
+  tu vises.
 - **Une projection de médaille** : combien il te reste, et à quelle date à ton
   rythme récent — ou rien du tout quand ton rythme ne permet pas d'estimation
-  honnête.
+  honnête. L'emblème de la médaille est affiché à côté du compteur.
 - **Des objectifs personnels** et des **rappels** planifiés sur l'appareil.
 - **Une carte de stats** en image, prête à publier.
+- **Une comparaison avec un agent à côté de toi**, de téléphone à téléphone,
+  sans serveur.
 - **Un export CSV** de tout ton historique, à tout moment.
 
 [Voir toutes les fonctionnalités]({{ '/fonctionnalites' | relative_url }}) ·
