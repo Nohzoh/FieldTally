@@ -579,6 +579,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get projectionTitle => 'Prochaine médaille';
 
   @override
+  String medalTier(String tier) {
+    return 'Médaille $tier';
+  }
+
+  @override
+  String get medalNone => 'Pas encore de médaille';
+
+  @override
   String get projectionTier_bronze => 'Bronze';
 
   @override

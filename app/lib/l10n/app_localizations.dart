@@ -990,6 +990,18 @@ abstract class AppLocalizations {
   /// **'Next badge'**
   String get projectionTitle;
 
+  /// Names the medal a counter has reached, next to its emblem. The tier must be readable as text: colour alone never carries it (§3.9).
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} medal'**
+  String medalTier(String tier);
+
+  /// No description provided for @medalNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No medal yet'**
+  String get medalNone;
+
   /// No description provided for @projectionTier_bronze.
   ///
   /// In en, this message translates to:

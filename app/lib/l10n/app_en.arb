@@ -477,6 +477,16 @@
   },
   "unknownValue": "—",
   "projectionTitle": "Next badge",
+  "medalTier": "{tier} medal",
+  "@medalTier": {
+    "description": "Names the medal a counter has reached, next to its emblem. The tier must be readable as text: colour alone never carries it (§3.9).",
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "medalNone": "No medal yet",
   "projectionTier_bronze": "Bronze",
   "projectionTier_silver": "Silver",
   "projectionTier_gold": "Gold",

@@ -51,6 +51,26 @@ The second command regenerates `app/assets/counters_registry_seed.json`, the
 fallback copy bundled into the app. **Never edit it by hand**: CI checks that it
 matches the file under `docs/`.
 
+### Badge emblems
+
+A counter that carries `tiers` also gets an emblem beside it in the list, drawn
+in [`app/lib/presentation/widgets/medal_icon.dart`](app/lib/presentation/widgets/medal_icon.dart).
+They are the project's own drawings, deliberately not Niantic's artwork, and
+they share a grammar worth keeping: a pin means a place, a bracketed frame
+means a scan, a filled dot means a node. Adding badge thresholds to a counter
+without adding its emblem fails `test/presentation/medal_icon_test.dart`, in
+both directions.
+
+To look at them:
+
+```bash
+cd app && flutter test tool/medal_sheet_test.dart
+```
+
+That writes a contact sheet to `app/build/design/`, light and dark, at list
+size and large. Judge a new emblem at **list size**: that is where two
+silhouettes that looked distinct when large turn out to be the same drawing.
+
 ## Commit messages
 
 The project follows [Conventional Commits](https://www.conventionalcommits.org/):

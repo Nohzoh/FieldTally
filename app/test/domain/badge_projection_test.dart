@@ -75,6 +75,58 @@ void main() {
     });
   });
 
+  group('the tier a value has reached', () {
+    // Same rule as the projection above, reached from a single number: this
+    // is what the medal beside a counter is drawn from (#63).
+
+    test('is null below the first threshold', () {
+      expect(tierReached(enrichment('Unique Portals Visited'), 99), isNull);
+    });
+
+    test('is the threshold itself once it is met exactly', () {
+      expect(tierReached(enrichment('Unique Portals Visited'), 100)!.name,
+          'bronze');
+    });
+
+    test('is the highest one passed, not the first', () {
+      expect(tierReached(enrichment('Unique Portals Visited'), 1999)!.name,
+          'silver');
+    });
+
+    test('stays on onyx once every threshold is behind', () {
+      final onyx = enrichment('Unique Portals Visited').tiers.last;
+      expect(
+        tierReached(enrichment('Unique Portals Visited'),
+            (onyx.value * 10).round())!.name,
+        'onyx',
+      );
+    });
+
+    test('is null for a counter the registry gives no thresholds', () {
+      expect(tierReached(enrichment('Lifetime AP'), 1000000000), isNull);
+    });
+
+    test('is null when the registry knows nothing about the counter', () {
+      expect(tierReached(null, 1000), isNull);
+    });
+
+    test('agrees with the projection it was split out of', () {
+      // The medal and the card read the same history; they must never
+      // disagree about which tier the agent is on.
+      for (final value in [0, 99, 100, 1000, 2000, 6666, 100000]) {
+        final projection = projector.project(
+          points: daily(DateTime(2026, 1, 1), [value, value]),
+          enrichment: enrichment('Unique Portals Visited'),
+        )!;
+        expect(
+          projection.current?.name,
+          tierReached(enrichment('Unique Portals Visited'), value)?.name,
+          reason: 'at $value',
+        );
+      }
+    });
+  });
+
   group('counters without thresholds', () {
     test('yield no projection at all', () {
       // Most counters have none, and Orion Tokens never will.

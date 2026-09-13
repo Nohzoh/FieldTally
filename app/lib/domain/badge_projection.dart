@@ -84,6 +84,25 @@ class BadgeProjection {
 /// Thresholds come from the enrichment registry, which is refreshed from the
 /// project site (§3.1.4) — so correcting a wrong threshold is a pull request,
 /// not a release.
+/// The highest tier [value] has reached, or null below the first threshold.
+///
+/// Split out of [BadgeProjector.project] because the medal shown beside a
+/// counter needs only this: the tier, from one number, with no history and no
+/// pace to measure (#63). Both callers share the definition so a medal and a
+/// projection can never disagree about which tier an agent is on.
+CounterTier? tierReached(CounterEnrichment? enrichment, int value) {
+  if (enrichment == null || enrichment.tiers.isEmpty) return null;
+
+  final tiers = [...enrichment.tiers]..sort((a, b) => a.value.compareTo(b.value));
+
+  CounterTier? reached;
+  for (final tier in tiers) {
+    if (value < tier.value) break;
+    reached = tier;
+  }
+  return reached;
+}
+
 class BadgeProjector {
   const BadgeProjector();
 
@@ -101,12 +120,10 @@ class BadgeProjector {
       ..sort((a, b) => a.value.compareTo(b.value));
     final value = points.last.value;
 
-    CounterTier? current;
+    final current = tierReached(enrichment, value);
     CounterTier? next;
     for (final tier in tiers) {
-      if (value >= tier.value) {
-        current = tier;
-      } else {
+      if (value < tier.value) {
         next = tier;
         break;
       }

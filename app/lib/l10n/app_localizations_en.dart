@@ -575,6 +575,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectionTitle => 'Next badge';
 
   @override
+  String medalTier(String tier) {
+    return '$tier medal';
+  }
+
+  @override
+  String get medalNone => 'No medal yet';
+
+  @override
   String get projectionTier_bronze => 'Bronze';
 
   @override

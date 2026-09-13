@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router.dart';
+import '../../domain/badge_projection.dart';
 import '../../domain/counter_list.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/models/tracked_counter.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../widgets/counter_tile.dart';
+import '../widgets/medal_icon.dart';
 
 /// Detailed stats view (§3.4).
 ///
@@ -104,14 +106,31 @@ class _CounterList extends ConsumerWidget {
           ),
         ),
       for (final counter in section.counters)
-        CounterTile(
-          counter: counter,
-          label: builder.labelFor(counter),
-          onTap: () => context.go(
-            Routes.counterDetail(counter.exportHeader),
-          ),
-        ),
+        _tile(context, counter, registry, builder),
     ];
+  }
+
+  /// The emblem is resolved here rather than in the tile: the tier comes from
+  /// the registry, and the list already holds it (#63).
+  Widget _tile(
+    BuildContext context,
+    TrackedCounter counter,
+    CounterRegistry? registry,
+    CounterListBuilder builder,
+  ) {
+    final enrichment = registry?.forExportHeader(counter.exportHeader);
+    final key = enrichment?.key;
+    return CounterTile(
+      counter: counter,
+      label: builder.labelFor(counter),
+      // A counter with thresholds but no drawing shows no emblem rather than
+      // a bare ring — the registry can name one this release has never seen.
+      medalKey: key != null && MedalIcon.existsFor(key) ? key : null,
+      tierName: tierReached(enrichment, counter.lastValue)?.name,
+      onTap: () => context.go(
+        Routes.counterDetail(counter.exportHeader),
+      ),
+    );
   }
 }
 

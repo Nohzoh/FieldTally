@@ -147,6 +147,8 @@
   "importCsvAnomalyLine": "{date} · {counter} : {previous} → {current}",
   "unknownValue": "—",
   "projectionTitle": "Prochaine médaille",
+  "medalTier": "Médaille {tier}",
+  "medalNone": "Pas encore de médaille",
   "projectionTier_bronze": "Bronze",
   "projectionTier_silver": "Argent",
   "projectionTier_gold": "Or",
