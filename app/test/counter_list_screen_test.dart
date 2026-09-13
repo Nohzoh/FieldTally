@@ -10,6 +10,7 @@ import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/domain/repositories/snapshot_repository.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
+import 'package:fieldtally/presentation/widgets/medal_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,6 +134,59 @@ void main() {
 
       // 9,756 - 9,000 since the earlier snapshot.
       expect(find.textContaining('+756'), findsOneWidget);
+    });
+  });
+
+  group('badge emblems (#63)', () {
+    testWidgets('a counter with a badge shows its emblem and names the tier',
+        (tester) async {
+      await pumpCounterList(tester);
+      await search(tester, 'Unique Portals Visited');
+
+      final tile = find.widgetWithText(ListTile, 'Unique Portals Visited');
+      expect(
+        find.descendant(of: tile, matching: find.byType(MedalIcon)),
+        findsOneWidget,
+      );
+      // 9,756 portals: past gold at 2,000, short of platinum at 10,000. The
+      // metal is a colour, so the tier is spelled out too (§3.9).
+      expect(
+        find.descendant(
+          of: tile,
+          matching: find.textContaining('Gold medal'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a counter with no badge is left exactly as it was',
+        (tester) async {
+      // Most counters have no thresholds; none of them should grow a medal
+      // line, and none should show an emblem.
+      await pumpCounterList(tester);
+      await search(tester, 'Orion Tokens');
+
+      final tile = find.widgetWithText(ListTile, 'Orion Tokens');
+      expect(
+        find.descendant(of: tile, matching: find.byType(MedalIcon)),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: tile, matching: find.textContaining('medal')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('the detail screen shows the emblem of the tier reached',
+        (tester) async {
+      await pumpCounterList(tester);
+      await search(tester, 'Unique Portals Visited');
+
+      await tester.tap(find.widgetWithText(ListTile, 'Unique Portals Visited'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MedalIcon), findsOneWidget);
+      expect(find.textContaining('Gold medal'), findsOneWidget);
     });
   });
 

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../domain/badge_projection.dart';
 import '../../l10n/app_localizations.dart';
 import '../tier_labels.dart';
+import 'medal_icon.dart';
 
 /// Where a counter stands against its badge tiers, and when the next one is
 /// likely to land (§3.6).
@@ -18,9 +19,14 @@ class BadgeProjectionCard extends StatelessWidget {
     required this.projection,
     required this.measuredFrom,
     required this.onWindowChanged,
+    this.counterKey,
   });
 
   final BadgeProjection projection;
+
+  /// Registry key of the counter, so the card can show its emblem (#63). Null
+  /// when the counter has no key, or none this release can draw.
+  final String? counterKey;
 
   /// When the pace was last observed — the latest snapshot, not today.
   final DateTime measuredFrom;
@@ -44,8 +50,43 @@ class BadgeProjectionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.projectionTitle, style: theme.textTheme.titleSmall),
-            const SizedBox(height: 8),
+            Row(
+              children: [
+                if (counterKey != null && MedalIcon.existsFor(counterKey!)) ...[
+                  ExcludeSemantics(
+                    child: MedalIcon(
+                      counterKey: counterKey!,
+                      tierName: projection.current?.name,
+                      size: 36,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.projectionTitle,
+                        style: theme.textTheme.titleSmall,
+                      ),
+                      // The metal in the emblem is a colour; this line is the
+                      // same fact in words (§3.9).
+                      Text(
+                        projection.current == null
+                            ? l10n.medalNone
+                            : l10n.medalTier(
+                                tierLabel(l10n, projection.current!.name),
+                              ),
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: theme.colorScheme.outline),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
             if (next == null)
               Text(l10n.projectionComplete, style: theme.textTheme.bodyMedium)
             else ...[

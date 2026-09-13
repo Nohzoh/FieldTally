@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 
 import '../../domain/models/tracked_counter.dart';
 import '../../l10n/app_localizations.dart';
+import '../tier_labels.dart';
+import 'medal_icon.dart';
 
 /// One row of the counter list (§3.4).
 ///
@@ -10,11 +12,17 @@ import '../../l10n/app_localizations.dart';
 /// for a counter that has stopped appearing in imports — a discreet chip
 /// saying since when. The counter stays in its usual category rather than
 /// being moved to a separate screen (§3.1.2).
+///
+/// Counters that carry a badge get its emblem in the leading slot (#63). The
+/// slot is reserved even when there is no emblem, so the labels of a mixed
+/// category still line up.
 class CounterTile extends StatelessWidget {
   const CounterTile({
     super.key,
     required this.counter,
     required this.label,
+    this.medalKey,
+    this.tierName,
     this.onTap,
   });
 
@@ -23,6 +31,13 @@ class CounterTile extends StatelessWidget {
   /// Already resolved by the caller: the enriched translation, or the raw
   /// export header when the registry does not know this counter.
   final String label;
+
+  /// Registry key of the counter, when it has one and an emblem exists for
+  /// it. Null leaves the slot empty.
+  final String? medalKey;
+
+  /// Highest tier reached, or null when the first threshold is still ahead.
+  final String? tierName;
 
   final VoidCallback? onTap;
 
@@ -35,12 +50,23 @@ class CounterTile extends StatelessWidget {
 
     return ListTile(
       onTap: onTap,
+      // The emblem says nothing a screen reader cannot already read out of
+      // this tile: the counter is the title, the tier is spelled out in the
+      // subtitle right beside it (§3.9).
+      leading: ExcludeSemantics(
+        child: SizedBox.square(
+          dimension: 28,
+          child: medalKey == null
+              ? null
+              : MedalIcon(counterKey: medalKey!, tierName: tierName),
+        ),
+      ),
       title: Text(label),
       subtitle: Row(
         children: [
           Flexible(
             child: Text(
-              _delta(l10n, numbers),
+              _subtitle(l10n, numbers),
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: theme.colorScheme.outline),
               overflow: TextOverflow.ellipsis,
@@ -59,6 +85,18 @@ class CounterTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// The tier in words ahead of the delta, because the metal in the emblem is
+  /// a colour and a colour is never the only carrier (§3.9). Counters with no
+  /// emblem read exactly as they did before.
+  String _subtitle(AppLocalizations l10n, NumberFormat numbers) {
+    final delta = _delta(l10n, numbers);
+    if (medalKey == null) return delta;
+    final tier = tierName == null
+        ? l10n.medalNone
+        : l10n.medalTier(tierLabel(l10n, tierName!));
+    return '$tier · $delta';
   }
 
   String _delta(AppLocalizations l10n, NumberFormat numbers) {

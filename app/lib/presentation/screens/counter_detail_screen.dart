@@ -172,6 +172,7 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
             const SizedBox(height: 16),
             BadgeProjectionCard(
               projection: projection,
+              counterKey: enrichment?.key,
               measuredFrom: full.points.last.at,
               onWindowChanged: (window) => setState(() => _window = window),
             ),
