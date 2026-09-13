@@ -32,11 +32,14 @@ by counter, each on its own scale rather than as one unreadable chart.
 ## What you get
 
 - **A dashboard** of the handful of counters *you* picked.
-- **One chart per counter**, on its own scale.
+- **One chart per counter**, on its own scale, with a line at what you are
+  chasing.
 - **A badge projection**: how much is left, and the date at your recent pace —
-  or nothing at all when your pace cannot support an honest estimate.
+  or nothing at all when your pace cannot support an honest estimate. The
+  medal's emblem is drawn beside the counter.
 - **Personal goals** and **reminders**, scheduled on the device.
 - **A stats card** as an image, ready to post.
+- **A comparison with an agent next to you**, phone to phone, with no server.
 - **A full CSV export** of your history, whenever you want it.
 
 [See all features]({{ '/en/features' | relative_url }}) ·
