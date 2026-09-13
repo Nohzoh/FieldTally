@@ -2,8 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../domain/chart_target.dart';
 import '../../domain/counter_series.dart';
 import '../../l10n/app_localizations.dart';
+import '../tier_labels.dart';
 
 /// One counter, one chart, its own scale (§3.5).
 ///
@@ -11,9 +13,13 @@ import '../../l10n/app_localizations.dart';
 /// axis. Here every counter gets its own chart scaled to its own values, which
 /// is the whole reason this screen exists.
 class CounterChart extends StatelessWidget {
-  const CounterChart({super.key, required this.series});
+  const CounterChart({super.key, required this.series, this.target});
 
   final CounterSeries series;
+
+  /// What the agent is aiming for, drawn as a line across the chart (#61).
+  /// Null when there is nothing ahead — most counters, most of the time.
+  final ChartTarget? target;
 
   @override
   Widget build(BuildContext context) {
@@ -33,21 +39,47 @@ class CounterChart extends StatelessWidget {
     final first = series.points.first.at.millisecondsSinceEpoch.toDouble();
     final last = series.points.last.at.millisecondsSinceEpoch.toDouble();
     final min = series.minValue.toDouble();
-    final max = series.maxValue.toDouble();
+
+    // The axis stretches to hold the target, however far above the curve it
+    // sits — and it squashes the curve when the target is distant. That is the
+    // point: an agent who has set themselves something out of reach learns it
+    // by looking, rather than by reading a projected date underneath (#61).
+    final target = this.target;
+    final max = target == null
+        ? series.maxValue.toDouble()
+        : [series.maxValue.toDouble(), target.value.toDouble()].reduce(
+            (a, b) => a > b ? a : b,
+          );
 
     // A counter that did not move has no vertical range to scale to; pad it so
     // the line sits mid-height instead of dividing by zero.
     final flat = max == min;
     final padding = flat ? 1.0 : (max - min) * 0.12;
 
+    final targetLabel = target == null
+        ? null
+        : switch (target.kind) {
+            ChartTargetKind.goal =>
+              l10n.chartTargetGoal(numbers.format(target.value)),
+            ChartTargetKind.badge => l10n.chartTargetBadge(
+                tierLabel(l10n, target.tierName ?? ''),
+                numbers.format(target.value),
+              ),
+          };
+
     return Semantics(
       // The chart is never the only carrier of information (§3.9): the values
-      // are listed underneath, and this label states the shape in words.
-      label: l10n.chartSemantics(
-        numbers.format(series.points.first.value),
-        numbers.format(series.points.last.value),
-        series.points.length,
-      ),
+      // are listed underneath, and this label states the shape in words. The
+      // target line is stated too — it is the one mark a screen reader would
+      // otherwise miss entirely.
+      label: [
+        l10n.chartSemantics(
+          numbers.format(series.points.first.value),
+          numbers.format(series.points.last.value),
+          series.points.length,
+        ),
+        if (targetLabel != null) l10n.chartTargetSemantics(targetLabel),
+      ].join(' '),
       child: ExcludeSemantics(
         // Room for the edge labels, which fl_chart centres on their data point
         // and would otherwise clip against the chart border.
@@ -129,6 +161,28 @@ class CounterChart extends StatelessWidget {
                     },
                   ),
                 ),
+              ),
+              // Dashed and in a different role colour: §3.9 asks that colour
+              // never be the only thing telling two marks apart, and the data
+              // line is solid.
+              extraLinesData: ExtraLinesData(
+                horizontalLines: [
+                  if (target != null && targetLabel != null)
+                    HorizontalLine(
+                      y: target.value.toDouble(),
+                      color: theme.colorScheme.tertiary,
+                      strokeWidth: 1.5,
+                      dashArray: const [6, 4],
+                      label: HorizontalLineLabel(
+                        show: true,
+                        alignment: Alignment.topLeft,
+                        padding: const EdgeInsets.only(left: 4, bottom: 2),
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(color: theme.colorScheme.tertiary),
+                        labelResolver: (_) => targetLabel,
+                      ),
+                    ),
+                ],
               ),
               lineTouchData: LineTouchData(
                 touchTooltipData: LineTouchTooltipData(
