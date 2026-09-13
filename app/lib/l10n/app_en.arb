@@ -403,7 +403,7 @@
   "settingsSourceCode": "Source code",
   "settingsSourceCodeDetail": "The whole app, under AGPL v3.",
   "settingsSupport": "Support the project",
-  "settingsSupportDetail": "FieldTally is free, has no ads and collects nothing. Nothing is expected â but a coffee is always welcome.",
+  "settingsSupportDetail": "FieldTally is free, has no ads and collects nothing. Nothing is expected — but a coffee is always welcome.",
   "settingsLinkFailed": "No app could open that link.",
   "settingsAboutSection": "About",
   "importCsvTitle": "Import from Agent Stats",
@@ -684,7 +684,7 @@
       }
     }
   },
-  "shareCardNoPeriod": "Only one snapshot so far â no progress to show yet.",
+  "shareCardNoPeriod": "Only one snapshot so far — no progress to show yet.",
   "shareCardFooter": "Made with FieldTally",
   "shareCardDisclaimer": "Unofficial · not affiliated with Niantic",
   "shareCardSubject": "My Ingress stats",
