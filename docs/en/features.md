@@ -34,10 +34,12 @@ make and the most annoying: it overwrites your history with tiny numbers.
 - **Dashboard**: the counters you pin, with their value, their progress since
   the previous snapshot and a trend line.
 - **All counters**: the full list, grouped by category in the game's own order,
-  with search and sorting.
-- **Counter detail**: a chart over the week, the month or the whole history, an
-  activity calendar, and the exact export column name so you can find the
-  counter in the game.
+  with search and sorting. Counters that carry a badge show its emblem, with
+  the tier you have reached named beside it.
+- **Counter detail**: a chart over the week, the month or the whole history,
+  with a line at what you are chasing — your goal if you set one, otherwise the
+  next badge. Plus an activity calendar and the exact export column name so you
+  can find the counter in the game.
 
 ## Projections and goals
 
@@ -46,7 +48,10 @@ over the last seven or thirty days, your choice. When your pace is flat or the
 answer is years out, the app says so instead of inventing a date.
 
 You can set a **personal goal** on any counter, with or without a deadline, and
-see whether your current pace gets you there.
+see whether your current pace gets you there. On the chart, the scale stretches
+to hold the target even when that flattens the curve against the bottom: that
+flattening is the information, telling you at a glance that what you are after
+is a long way off.
 
 ## Reminders
 

@@ -28,8 +28,11 @@ of Niantic, Inc. This project uses no protected asset.
   history.
 - Tracks **every** counter it meets, including ones it has never seen, under
   their original name.
-- Customisable dashboard, per-counter charts on their own scale, activity
-  calendar, badge projections, personal goals, local reminders.
+- Customisable dashboard, activity calendar, personal goals, local reminders.
+- Per-counter charts on their own scale, each with a line at what you are
+  chasing: your goal if you set one, otherwise the next badge tier.
+- Badge projections, with the medal you have reached drawn beside every
+  counter that carries one.
 - CSV import from Agent Stats, CSV export, shareable stats card as a PNG.
 - Puts your totals next to another agent's, phone to phone, through the
   share sheet — no server, and what they send you is never written to your
