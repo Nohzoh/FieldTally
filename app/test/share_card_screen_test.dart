@@ -9,6 +9,7 @@ import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
 import 'package:fieldtally/presentation/faction.dart';
+import 'package:fieldtally/presentation/widgets/medal_icon.dart';
 import 'package:fieldtally/presentation/widgets/share_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -43,6 +44,7 @@ void main() {
     List<StatSnapshot> history = const [],
     List<String>? pinned,
     double textScale = 1.0,
+    Brightness brightness = Brightness.light,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3.0;
@@ -76,6 +78,7 @@ void main() {
         container: container,
         child: MaterialApp.router(
           routerConfig: router,
+          theme: ThemeData(brightness: brightness),
           locale: const Locale('en'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: const [
@@ -265,6 +268,53 @@ void main() {
           .textScaler;
 
       expect(scaler.scale(20), 20);
+    });
+  });
+
+  group('badge emblems on the card (#63)', () {
+    testWidgets('a pinned counter with a badge carries its medal',
+        (tester) async {
+      // 78,735 hacks: past gold at 30,000, short of platinum at 100,000.
+      await pumpShareCard(tester, history: history, pinned: const ['Hacks']);
+
+      final medals = tester.widgetList<MedalIcon>(find.byType(MedalIcon));
+      expect(medals, hasLength(1));
+      expect(medals.single.counterKey, 'hacker');
+      expect(medals.single.tierName, 'gold');
+    });
+
+    testWidgets('a pinned counter without one carries nothing',
+        (tester) async {
+      // Lifetime AP has no thresholds, and an empty ring on a public image
+      // would be a medal nobody could explain.
+      await pumpShareCard(
+        tester,
+        history: history,
+        pinned: const ['Lifetime AP'],
+      );
+
+      expect(find.byType(MedalIcon), findsNothing);
+    });
+
+    testWidgets('the emblems are told their colours, not left to the theme',
+        (tester) async {
+      // The card carries its own palette on purpose: an image posted publicly
+      // must not come out in light-mode ink because its author happened to be
+      // in light mode. The emblem is the one part that could have read the
+      // theme, so it is pinned here.
+      for (final brightness in Brightness.values) {
+        await pumpShareCard(
+          tester,
+          history: history,
+          pinned: const ['Hacks'],
+          brightness: brightness,
+        );
+
+        final medal = tester.widget<MedalIcon>(find.byType(MedalIcon));
+        expect(medal.palette, isNotNull, reason: 'under $brightness');
+        expect(medal.palette!.brightness, Brightness.dark,
+            reason: 'under $brightness');
+      }
     });
   });
 
