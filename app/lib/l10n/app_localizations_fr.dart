@@ -943,7 +943,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String settingsReminderDelay(int days) {
-    return 'Me rappeler après $days jours sans relevé';
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Me rappeler après $days jours sans relevé',
+      one: 'Me rappeler après un jour sans relevé',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -951,7 +957,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String notificationReminderBody(int days) {
-    return 'Rien d\'enregistré depuis $days jours. Partage tes stats depuis Ingress pour que ton historique continue.';
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other:
+          'Rien d\'enregistré depuis $days jours. Partage tes stats depuis Ingress pour que ton historique continue.',
+      one:
+          'Rien d\'enregistré depuis hier. Partage tes stats depuis Ingress pour que ton historique continue.',
+    );
+    return '$_temp0';
   }
 
   @override

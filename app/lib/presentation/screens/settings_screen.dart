@@ -29,9 +29,14 @@ class SettingsScreen extends ConsumerWidget {
   static final _repository = Uri.parse('https://github.com/Nohzoh/FieldTally');
   static final _author = Uri.parse('https://github.com/Nohzoh');
 
-  /// Offered delays, in days. Short enough to build a habit, long enough not
-  /// to nag someone who plays once a week.
-  static const _reminderChoices = [3, 7, 14, 30];
+  /// Offered delays, in days.
+  ///
+  /// One day is in the list because a habit is built daily (#69): an agent
+  /// who plays every evening wants the nudge every evening, and three days
+  /// is already long enough to lose the habit the reminder exists to
+  /// protect. Thirty is the other end, for someone who plays once a month
+  /// and would read anything shorter as nagging.
+  static const _reminderChoices = [1, 3, 7, 14, 30];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1605,7 +1605,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsReminderDelay.
   ///
   /// In en, this message translates to:
-  /// **'Remind me after {days} days without a snapshot'**
+  /// **'{days, plural, one{Remind me after a day without a snapshot} other{Remind me after {days} days without a snapshot}}'**
   String settingsReminderDelay(int days);
 
   /// No description provided for @notificationReminderTitle.
@@ -1617,7 +1617,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationReminderBody.
   ///
   /// In en, this message translates to:
-  /// **'Nothing recorded for {days} days. Share your stats from Ingress to keep your history going.'**
+  /// **'{days, plural, one{Nothing recorded since yesterday. Share your stats from Ingress to keep your history going.} other{Nothing recorded for {days} days. Share your stats from Ingress to keep your history going.}}'**
   String notificationReminderBody(int days);
 
   /// No description provided for @notificationMilestoneTitle.
