@@ -886,7 +886,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSupportDetail.
   ///
   /// In en, this message translates to:
-  /// **'FieldTally is free, has no ads and collects nothing. Nothing is expected â but a coffee is always welcome.'**
+  /// **'FieldTally is free, has no ads and collects nothing. Nothing is expected — but a coffee is always welcome.'**
   String get settingsSupportDetail;
 
   /// No description provided for @settingsLinkFailed.
@@ -1479,7 +1479,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareCardNoPeriod.
   ///
   /// In en, this message translates to:
-  /// **'Only one snapshot so far â no progress to show yet.'**
+  /// **'Only one snapshot so far — no progress to show yet.'**
   String get shareCardNoPeriod;
 
   /// No description provided for @shareCardFooter.

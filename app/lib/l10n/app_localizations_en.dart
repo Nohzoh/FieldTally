@@ -499,7 +499,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSupportDetail =>
-      'FieldTally is free, has no ads and collects nothing. Nothing is expected â but a coffee is always welcome.';
+      'FieldTally is free, has no ads and collects nothing. Nothing is expected — but a coffee is always welcome.';
 
   @override
   String get settingsLinkFailed => 'No app could open that link.';
@@ -869,7 +869,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareCardNoPeriod =>
-      'Only one snapshot so far â no progress to show yet.';
+      'Only one snapshot so far — no progress to show yet.';
 
   @override
   String get shareCardFooter => 'Made with FieldTally';
