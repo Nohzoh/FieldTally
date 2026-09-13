@@ -938,7 +938,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String settingsReminderDelay(int days) {
-    return 'Remind me after $days days without a snapshot';
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Remind me after $days days without a snapshot',
+      one: 'Remind me after a day without a snapshot',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -946,7 +952,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String notificationReminderBody(int days) {
-    return 'Nothing recorded for $days days. Share your stats from Ingress to keep your history going.';
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other:
+          'Nothing recorded for $days days. Share your stats from Ingress to keep your history going.',
+      one:
+          'Nothing recorded since yesterday. Share your stats from Ingress to keep your history going.',
+    );
+    return '$_temp0';
   }
 
   @override

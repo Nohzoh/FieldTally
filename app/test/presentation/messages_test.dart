@@ -129,4 +129,38 @@ void main() {
       expect(TimeSpan.week.label(fr), 'WEEK');
     });
   });
+
+  group('the reminder delay reads as a sentence at every choice (#69)', () {
+    // One day is an offered delay, and both of these interpolate the number,
+    // so without a plural the app says "after 1 days" and the lock screen
+    // says "for 1 days".
+    for (final choice in [1, 3, 7, 14, 30]) {
+      test('the settings line at $choice day(s)', () {
+        for (final l10n in [en, fr]) {
+          final line = l10n.settingsReminderDelay(choice);
+          expect(line, isNot(contains('1 days')));
+          expect(line, isNot(contains('1 jours')));
+          if (choice > 1) expect(line, contains('$choice'));
+        }
+      });
+
+      test('the notification body at $choice day(s)', () {
+        for (final l10n in [en, fr]) {
+          final body = l10n.notificationReminderBody(choice);
+          expect(body, isNot(contains('1 days')));
+          expect(body, isNot(contains('1 jours')));
+          if (choice > 1) expect(body, contains('$choice'));
+        }
+      });
+    }
+
+    test('a single day is worded, not numbered', () {
+      expect(en.settingsReminderDelay(1), 'Remind me after a day without a snapshot');
+      expect(fr.settingsReminderDelay(1), 'Me rappeler après un jour sans relevé');
+      // "since yesterday" rather than "for 1 day": the reminder fires a day
+      // after the last snapshot, and that is how a person would say it.
+      expect(en.notificationReminderBody(1), startsWith('Nothing recorded since yesterday.'));
+      expect(fr.notificationReminderBody(1), startsWith("Rien d'enregistré depuis hier."));
+    });
+  });
 }

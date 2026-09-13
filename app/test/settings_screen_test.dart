@@ -224,6 +224,30 @@ void main() {
       );
       expect(find.textContaining('after 14 days'), findsOneWidget);
     });
+
+    testWidgets('a daily reminder can be chosen (#69)', (tester) async {
+      // The shortest delay, for an agent who plays every evening: three days
+      // is already long enough to lose the habit the reminder protects.
+      await pumpSettings(tester);
+      await tester.tap(_notifications);
+      await tester.pumpAndSettle();
+
+      await scrollTo(tester, find.byType(DropdownButton<int>));
+      await tester.tap(find.byType(DropdownButton<int>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('1').last);
+      await tester.pumpAndSettle();
+
+      expect(
+        await container
+            .read(settingsRepositoryProvider)
+            .read(SettingKeys.reminderDays),
+        '1',
+      );
+      // And it reads as a sentence rather than "after 1 days".
+      expect(find.text('Remind me after a day without a snapshot'),
+          findsOneWidget);
+    });
   });
 
   group('language (§3.10)', () {
