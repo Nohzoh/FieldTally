@@ -35,10 +35,12 @@ chiffres minuscules.
 - **Tableau de bord** : les compteurs que tu épingles, avec leur valeur, leur
   progression depuis le relevé précédent et une courbe de tendance.
 - **Tous les compteurs** : la liste complète, groupée par catégorie et dans
-  l'ordre du jeu, avec recherche et tri.
+  l'ordre du jeu, avec recherche et tri. Les compteurs liés à une médaille
+  portent son emblème, et le palier atteint est écrit à côté.
 - **Détail d'un compteur** : graphique sur la semaine, le mois ou tout
-  l'historique, calendrier d'activité, et le nom exact de la colonne d'export
-  pour retrouver le compteur dans le jeu.
+  l'historique, avec un trait à ce que tu vises — ton objectif si tu en as
+  fixé un, sinon la prochaine médaille. Plus un calendrier d'activité et le
+  nom exact de la colonne d'export pour retrouver le compteur dans le jeu.
 
 ## Projections et objectifs
 
@@ -48,7 +50,10 @@ rythme est nul ou que l'échéance dépasse plusieurs années, l'app le dit au l
 d'inventer une date.
 
 Tu peux fixer un **objectif personnel** sur n'importe quel compteur, avec ou
-sans échéance, et voir si ton rythme actuel t'y mène.
+sans échéance, et voir si ton rythme actuel t'y mène. Sur le graphique,
+l'échelle s'étire pour tenir l'objectif même quand ça écrase la courbe contre
+le bas : cet écrasement est justement l'information, il te dit d'un coup d'œil
+que ce que tu vises est très loin.
 
 ## Rappels
 

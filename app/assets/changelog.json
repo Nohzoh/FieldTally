@@ -21,5 +21,20 @@
         "Les noms de compteurs du tableau de bord ne sont plus coupés en deux quand la police du système est agrandie."
       ]
     }
+  },
+  "3": {
+    "version": "1.2.0",
+    "features": {
+      "en": [
+        "The chart of a counter now shows what you are chasing: your goal if you set one, otherwise the next badge tier. The scale stretches to hold it, even when that flattens the curve — a target a long way off should look like one.",
+        "Counters that carry a badge show its emblem, with the tier you have reached named beside it.",
+        "You can compare your totals with an agent standing next to you: send them yours through the share sheet and their app puts your numbers side by side, counter by counter. What they send you is never saved — it is gone when you leave the screen."
+      ],
+      "fr": [
+        "Le graphique d'un compteur montre maintenant ce que tu vises : ton objectif si tu en as fixé un, sinon la prochaine médaille. L'échelle s'étire pour le tenir, même quand ça écrase la courbe — un objectif très loin doit en avoir l'air.",
+        "Les compteurs qui donnent une médaille portent son emblème, avec le palier atteint écrit à côté.",
+        "Tu peux comparer tes totaux avec un agent à côté de toi : tu lui envoies les tiens par le partage, son application met vos chiffres côte à côte, compteur par compteur. Ce qu'il t'envoie n'est jamais enregistré — ça disparaît quand tu quittes l'écran."
+      ]
+    }
   }
 }
