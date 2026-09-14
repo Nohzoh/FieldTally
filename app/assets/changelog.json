@@ -36,5 +36,30 @@
         "Tu peux comparer tes totaux avec un agent à côté de toi : tu lui envoies les tiens par le partage, son application met vos chiffres côte à côte, compteur par compteur. Ce qu'il t'envoie n'est jamais enregistré — ça disparaît quand tu quittes l'écran."
       ]
     }
+  },
+  "4": {
+    "version": "1.3.0",
+    "features": {
+      "en": [
+        "Your medals now travel on the shareable card, beside the counters that carry one.",
+        "A reminder can be set to one day, for an agent who records every evening.",
+        "The history under a counter, and the chart's own labels, now name the time as well as the day — so two snapshots taken the same day no longer look like the same one twice."
+      ],
+      "fr": [
+        "Tes médailles voyagent maintenant sur la carte de partage, à côté des compteurs qui en portent une.",
+        "Le rappel peut être réglé sur un jour, pour un agent qui enregistre chaque soir.",
+        "L'historique sous un compteur, et les étiquettes du graphique, indiquent l'heure en plus du jour — deux relevés du même jour ne se ressemblent donc plus comme deux fois le même."
+      ]
+    },
+    "fixes": {
+      "en": [
+        "The medal thresholds for Links Created were wrong, and the app was handing out a medal that had not been earned. They are corrected — your tier and what is left to reach will right themselves on their own, with no update to install.",
+        "A dash in the Support the project text, and on the card when there is only one snapshot, showed as an empty box."
+      ],
+      "fr": [
+        "Les paliers de médaille de Liens créés étaient faux, et l'app attribuait une médaille qui n'était pas acquise. Ils sont corrigés — ton palier et ce qu'il te reste à atteindre se remettront d'aplomb tout seuls, sans mise à jour à installer.",
+        "Un tiret du texte Soutenir le projet, et de la carte quand il n'y a qu'un relevé, s'affichait en carré vide."
+      ]
+    }
   }
 }
