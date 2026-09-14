@@ -300,6 +300,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shortDateFormat => 'd MMM y';
 
   @override
+  String get shortDateTimeFormat => 'd MMM y, HH:mm';
+
+  @override
   String get noDelta => 'pas encore de comparaison';
 
   @override

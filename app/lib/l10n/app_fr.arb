@@ -77,6 +77,7 @@
   "showInactive": "Afficher les compteurs inactifs",
   "inactiveSince": "inactif depuis le {date}",
   "shortDateFormat": "d MMM y",
+  "shortDateTimeFormat": "d MMM y, HH:mm",
   "noDelta": "pas encore de comparaison",
   "deltaSince": "{delta} depuis le relevé précédent",
   "counterHistory": "Historique",
