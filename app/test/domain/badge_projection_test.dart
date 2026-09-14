@@ -75,6 +75,58 @@ void main() {
     });
   });
 
+  group("Connector's thresholds (#76)", () {
+    // Pinned by value, which the other sixteen are deliberately not: the
+    // registry is refreshed from the network (§3.1.4) so that a threshold can
+    // be corrected without a release, and freezing every ladder here would
+    // fight that. This one shipped with four of its five thresholds wrong and
+    // onyx ten times too low, and the cost was not a wrong number on a screen
+    // — see below.
+
+    test('every threshold is where the game puts it', () {
+      // Read off the badge screen in game: 50, 1,000, 5,000, 25,000, 100,000.
+      expect(
+        [for (final t in enrichment('Links Created').tiers) t.value],
+        [50, 1000, 5000, 25000, 100000],
+      );
+    });
+
+    test('26,459 links is platinum, with onyx still ahead', () {
+      // The value that exposed it. With onyx at 10,000 the app handed out the
+      // top medal — drawn as a solid disc (#63), and carried onto the
+      // shareable card (#73) — to an agent who had not earned it.
+      final projection = projector.project(
+        points: daily(DateTime(2026, 1, 1), [26237, 26459]),
+        enrichment: enrichment('Links Created'),
+      )!;
+
+      expect(projection.current!.name, 'platinum');
+      expect(projection.next!.name, 'onyx');
+      expect(projection.isComplete, isFalse);
+      expect(projection.remaining, 100000 - 26459);
+    });
+
+    test('900 links is bronze, not silver', () {
+      // Silver was recorded at 100, so anything past a hundred links claimed
+      // it. The real threshold is a thousand.
+      expect(tierReached(enrichment('Links Created'), 900)!.name, 'bronze');
+      expect(tierReached(enrichment('Links Created'), 1000)!.name, 'silver');
+    });
+
+    test('and the card no longer says there is nothing left to chase', () {
+      // The worse half of the bug: with no tier above the value, next is null
+      // and the projection card reads "Onyx reached — nothing left to chase",
+      // which is a false statement about the agent's own game on the screen
+      // whose job is to say what is left.
+      final projection = projector.project(
+        points: daily(DateTime(2026, 1, 1), [26237, 26459]),
+        enrichment: enrichment('Links Created'),
+      )!;
+
+      expect(projection.isComplete, isFalse);
+    });
+  });
+
   group('the tier a value has reached', () {
     // Same rule as the projection above, reached from a single number: this
     // is what the medal beside a counter is drawn from (#63).
