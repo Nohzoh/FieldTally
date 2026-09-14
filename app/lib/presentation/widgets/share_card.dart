@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../domain/badge_projection.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/share_card.dart';
 import '../../l10n/app_localizations.dart';
 import '../faction.dart';
+import 'medal_icon.dart';
 
 /// The image an agent posts (§3.8).
 ///
@@ -36,6 +38,16 @@ class ShareCard extends StatelessWidget {
   static const _accent = Color(0xFF5FD3C4);
   static const _text = Color(0xFFF2F7F6);
   static const _muted = Color(0xFF9BB8B3);
+
+  /// The emblems are told their colours rather than allowed to read the theme
+  /// (#63): everything else on this card is fixed, and a medal that came out
+  /// in light-mode ink on a dark card would be the one thing that moved.
+  static const _medals = MedalPalette(
+    brightness: Brightness.dark,
+    unearned: _panel,
+    ink: _text,
+    onSolid: _background,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -70,16 +82,7 @@ class ShareCard extends StatelessWidget {
                 _header(l10n, dates, faction),
                 const SizedBox(height: 16),
                 for (final line in data.lines) ...[
-                  _Line(
-                    label: registry
-                            ?.forExportHeader(line.exportHeader)
-                            ?.label(language) ??
-                        line.exportHeader,
-                    value: numbers.format(line.value),
-                    gain: line.gain == null
-                        ? null
-                        : '+${numbers.format(line.gain)}',
-                  ),
+                  _line(line, numbers),
                   const SizedBox(height: 10),
                 ],
                 const SizedBox(height: 2),
@@ -89,6 +92,21 @@ class ShareCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _line(ShareCardLine line, NumberFormat numbers) {
+    final enrichment = registry?.forExportHeader(line.exportHeader);
+    final key = enrichment?.key;
+
+    return _Line(
+      label: enrichment?.label(language) ?? line.exportHeader,
+      value: numbers.format(line.value),
+      gain: line.gain == null ? null : '+${numbers.format(line.gain)}',
+      // The tier the total has reached, drawn in its metal. A card is where an
+      // agent shows off, and "onyx on Explorer" is the thing worth showing.
+      medalKey: key != null && MedalIcon.existsFor(key) ? key : null,
+      tierName: tierReached(enrichment, line.value)?.name,
     );
   }
 
@@ -183,13 +201,25 @@ class ShareCard extends StatelessWidget {
 }
 
 class _Line extends StatelessWidget {
-  const _Line({required this.label, required this.value, this.gain});
+  const _Line({
+    required this.label,
+    required this.value,
+    this.gain,
+    this.medalKey,
+    this.tierName,
+  });
 
   final String label;
   final String value;
 
   /// Null when the period holds nothing to compare against.
   final String? gain;
+
+  /// Registry key of the counter, when an emblem exists for it.
+  final String? medalKey;
+
+  /// Highest tier the total has reached, or null below the first threshold.
+  final String? tierName;
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +229,20 @@ class _Line extends StatelessWidget {
       // if the label belonged to the small green number.
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Reserved even for a counter with no medal, so a card mixing the two
+        // still lines its labels up.
+        SizedBox.square(
+          dimension: 22,
+          child: medalKey == null
+              ? null
+              : MedalIcon(
+                  counterKey: medalKey!,
+                  tierName: tierName,
+                  size: 22,
+                  palette: ShareCard._medals,
+                ),
+        ),
+        const SizedBox(width: 10),
         Expanded(
           child: Text(
             label,

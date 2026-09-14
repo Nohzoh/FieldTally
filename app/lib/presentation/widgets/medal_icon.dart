@@ -40,6 +40,35 @@ class MedalMetal {
           : (brightness == Brightness.dark ? _dark : _light)[tierName];
 }
 
+/// The colours a medal is drawn with, for a surface that does not follow the
+/// app theme.
+///
+/// The shareable card (§3.8) carries its own palette on purpose — an image
+/// posted to Reddit should not come out washed out because its author happened
+/// to be in light mode — so it cannot let the emblem read the theme the way
+/// every other caller does.
+class MedalPalette {
+  const MedalPalette({
+    required this.brightness,
+    required this.unearned,
+    required this.ink,
+    required this.onSolid,
+  });
+
+  /// Which set of metals to take: they are tuned separately for a light and a
+  /// dark ground.
+  final Brightness brightness;
+
+  /// The rim of a medal not reached yet.
+  final Color unearned;
+
+  /// The glyph, on a tinted medal.
+  final Color ink;
+
+  /// The glyph, on a solid one — onyx.
+  final Color onSolid;
+}
+
 /// The medal for a counter that has badge thresholds (#63).
 ///
 /// Deliberately drawn rather than shipped as assets: seventeen shapes of
@@ -55,6 +84,7 @@ class MedalIcon extends StatelessWidget {
     required this.counterKey,
     required this.tierName,
     this.size = 28,
+    this.palette,
   });
 
   /// Registry key (`explorer`, `hacker`), not the export header.
@@ -64,6 +94,10 @@ class MedalIcon extends StatelessWidget {
   final String? tierName;
 
   final double size;
+
+  /// Colours to draw with. Null — the usual case — takes them from the theme,
+  /// so the emblem follows the app the way everything else does.
+  final MedalPalette? palette;
 
   /// Whether an emblem exists for this counter. A counter with thresholds but
   /// no drawing must not render a bare ring — better nothing at all.
@@ -79,21 +113,28 @@ class MedalIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final glyph = _glyphs[counterKey];
     if (glyph == null) return SizedBox.square(dimension: size);
 
-    final metal = MedalMetal.of(tierName, theme.brightness);
+    final theme = Theme.of(context);
+    final colours = palette ??
+        MedalPalette(
+          brightness: theme.brightness,
+          // Unearned: the medal exists, the agent is not there yet.
+          unearned: theme.colorScheme.outlineVariant,
+          ink: theme.colorScheme.onSurface,
+          onSolid: theme.colorScheme.surface,
+        );
+
     return SizedBox.square(
       dimension: size,
       child: CustomPaint(
         painter: _MedalPainter(
           glyph: glyph,
-          metal: metal,
-          // Unearned: the medal exists, the agent is not there yet.
-          unearned: theme.colorScheme.outlineVariant,
-          ink: theme.colorScheme.onSurface,
-          onSolid: theme.colorScheme.surface,
+          metal: MedalMetal.of(tierName, colours.brightness),
+          unearned: colours.unearned,
+          ink: colours.ink,
+          onSolid: colours.onSolid,
         ),
       ),
     );
