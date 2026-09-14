@@ -30,7 +30,10 @@ class CounterChart extends StatelessWidget {
     // The axis drops the year: at this width the two edge labels collide with
     // the chart border, and the tooltip carries the full date anyway.
     final axisDates = DateFormat(l10n.chartAxisDateFormat, locale.toString());
-    final dates = DateFormat(l10n.shortDateFormat, locale.toString());
+    // The tooltip carries the time, not just the day: two snapshots recorded
+    // the same day sit side by side on the curve, and without it neither the
+    // label nor the position says which one is being touched (#75).
+    final moments = DateFormat(l10n.shortDateTimeFormat, locale.toString());
 
     if (!series.isPlottable) {
       return _NotEnough(message: l10n.chartNeedsTwoSnapshots);
@@ -189,7 +192,7 @@ class CounterChart extends StatelessWidget {
                   getTooltipItems: (spots) => [
                     for (final spot in spots)
                       LineTooltipItem(
-                        '${dates.format(DateTime.fromMillisecondsSinceEpoch(spot.x.round()))}\n'
+                        '${moments.format(DateTime.fromMillisecondsSinceEpoch(spot.x.round()))}\n'
                         '${NumberFormat.decimalPattern(locale.languageCode).format(spot.y.round())}',
                         theme.textTheme.labelMedium ?? const TextStyle(),
                       ),

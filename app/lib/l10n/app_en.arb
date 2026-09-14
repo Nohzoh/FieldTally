@@ -228,6 +228,10 @@
     }
   },
   "shortDateFormat": "d MMM y",
+  "shortDateTimeFormat": "d MMM y, HH:mm",
+  "@shortDateTimeFormat": {
+    "description": "A snapshot's date AND time, for the two places where two snapshots can sit side by side on the same day: the history list under a counter's chart, and the chart's own tooltip (#75). Deliberately separate from shortDateFormat, which is about a day rather than a moment and is shared by goal deadlines, projected dates and the shareable card."
+  },
   "noDelta": "no comparison yet",
   "deltaSince": "{delta} since the previous snapshot",
   "@deltaSince": {

@@ -565,6 +565,12 @@ abstract class AppLocalizations {
   /// **'d MMM y'**
   String get shortDateFormat;
 
+  /// A snapshot's date AND time, for the two places where two snapshots can sit side by side on the same day: the history list under a counter's chart, and the chart's own tooltip (#75). Deliberately separate from shortDateFormat, which is about a day rather than a moment and is shared by goal deadlines, projected dates and the shareable card.
+  ///
+  /// In en, this message translates to:
+  /// **'d MMM y, HH:mm'**
+  String get shortDateTimeFormat;
+
   /// No description provided for @noDelta.
   ///
   /// In en, this message translates to:

@@ -44,6 +44,12 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
     final theme = Theme.of(context);
     final numbers = NumberFormat.decimalPattern(language);
     final dates = DateFormat(l10n.shortDateFormat, locale);
+    // The history list carries the time as well: an agent who records
+    // twice in a day would otherwise see the same date on two rows with
+    // different values, which reads as a bug rather than as two moments
+    // (#75). The summary rows above keep the plain date — there is only
+    // one first and one last, so the day is enough.
+    final moments = DateFormat(l10n.shortDateTimeFormat, locale);
 
     final registry = ref.watch(counterRegistryProvider).asData?.value;
     final enrichment = registry?.forExportHeader(exportHeader);
@@ -200,7 +206,7 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
           for (var i = points.length - 1; i >= 0; i--)
             ListTile(
               dense: true,
-              title: Text(dates.format(points[i].$1)),
+              title: Text(moments.format(points[i].$1)),
               trailing: Text(
                 numbers.format(points[i].$2),
                 style: theme.textTheme.bodyLarge?.copyWith(
