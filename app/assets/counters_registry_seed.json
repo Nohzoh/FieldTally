@@ -323,11 +323,11 @@
         },
         {
           "name": "silver",
-          "value": 100
+          "value": 1000
         },
         {
           "name": "gold",
-          "value": 800
+          "value": 5000
         },
         {
           "name": "platinum",
