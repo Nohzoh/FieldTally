@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-11",
+  "updated_at": "2026-09-14",
   "_readme": "FieldTally counter enrichment layer (spec §3.1.2, §3.1.4). This is NOT the list of supported counters: the app's registry is derived from actual imports. A counter missing from here is still tracked normally, shown under its raw label in the 'other' category. Adding a counter means one pull request on this single file, with no Dart change.",
   "categories": [
     {
@@ -331,11 +331,11 @@
         },
         {
           "name": "platinum",
-          "value": 5000
+          "value": 25000
         },
         {
           "name": "onyx",
-          "value": 10000
+          "value": 100000
         }
       ]
     },

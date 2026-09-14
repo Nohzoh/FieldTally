@@ -75,6 +75,49 @@ void main() {
     });
   });
 
+  group("Connector's thresholds (#76)", () {
+    // Pinned by value, which the other sixteen are deliberately not: the
+    // registry is refreshed from the network (§3.1.4) so that a threshold can
+    // be corrected without a release, and freezing every ladder here would
+    // fight that. This one shipped with onyx ten times too low, and the cost
+    // was not a wrong number on a screen — see below.
+
+    test('platinum and onyx are where the game puts them', () {
+      expect(
+        [for (final t in enrichment('Links Created').tiers) t.value],
+        [50, 100, 800, 25000, 100000],
+      );
+    });
+
+    test('26,237 links is platinum, with onyx still ahead', () {
+      // The value that exposed it. With onyx at 10,000 the app handed out the
+      // top medal — drawn as a solid disc (#63), and carried onto the
+      // shareable card (#73) — to an agent who had not earned it.
+      final projection = projector.project(
+        points: daily(DateTime(2026, 1, 1), [26152, 26237]),
+        enrichment: enrichment('Links Created'),
+      )!;
+
+      expect(projection.current!.name, 'platinum');
+      expect(projection.next!.name, 'onyx');
+      expect(projection.isComplete, isFalse);
+      expect(projection.remaining, 100000 - 26237);
+    });
+
+    test('and the card no longer says there is nothing left to chase', () {
+      // The worse half of the bug: with no tier above the value, next is null
+      // and the projection card reads "Onyx reached — nothing left to chase",
+      // which is a false statement about the agent's own game on the screen
+      // whose job is to say what is left.
+      final projection = projector.project(
+        points: daily(DateTime(2026, 1, 1), [26152, 26237]),
+        enrichment: enrichment('Links Created'),
+      )!;
+
+      expect(projection.isComplete, isFalse);
+    });
+  });
+
   group('the tier a value has reached', () {
     // Same rule as the projection above, reached from a single number: this
     // is what the medal beside a counter is drawn from (#63).
