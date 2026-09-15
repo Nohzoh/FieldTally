@@ -34,6 +34,19 @@ class CounterChart extends StatelessWidget {
     // the same day sit side by side on the curve, and without it neither the
     // label nor the position says which one is being touched (#75).
     final moments = DateFormat(l10n.shortDateTimeFormat, locale.toString());
+    final decimals = NumberFormat.decimalPattern(locale.languageCode);
+
+    // Spelled out rather than left to inherit: the tooltip paints on its own
+    // background, so both lines state their colour against it (§3.9).
+    final onTooltip = theme.colorScheme.onInverseSurface;
+    final timestampStyle = (theme.textTheme.labelMedium ?? const TextStyle())
+        .copyWith(color: onTooltip);
+    final valueStyle = (theme.textTheme.titleSmall ?? const TextStyle())
+        .copyWith(
+      color: onTooltip,
+      fontWeight: FontWeight.w600,
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
 
     if (!series.isPlottable) {
       return _NotEnough(message: l10n.chartNeedsTwoSnapshots);
@@ -189,12 +202,38 @@ class CounterChart extends StatelessWidget {
               ),
               lineTouchData: LineTouchData(
                 touchTooltipData: LineTouchTooltipData(
+                  // Wide enough that the timestamp holds one line. Coupled to
+                  // shortDateTimeFormat: the default cap of 120 fitted the
+                  // date alone, and adding the time (#75) pushed it past, so
+                  // fl_chart broke the line after the comma and the date read
+                  // as if it had been cut off (#82). Only a cap — the box
+                  // still shrinks to its text — so being generous costs
+                  // nothing and leaves room for a longer locale.
+                  maxContentWidth: 260,
+                  // The app's own tooltip colour rather than the package's
+                  // blueGrey: that one is dark in both themes, while the text
+                  // style carried onSurface, which is near-black in a light
+                  // theme. Dark on dark (§3.9).
+                  getTooltipColor: (_) => theme.colorScheme.inverseSurface,
                   getTooltipItems: (spots) => [
                     for (final spot in spots)
                       LineTooltipItem(
-                        '${moments.format(DateTime.fromMillisecondsSinceEpoch(spot.x.round()))}\n'
-                        '${NumberFormat.decimalPattern(locale.languageCode).format(spot.y.round())}',
-                        theme.textTheme.labelMedium ?? const TextStyle(),
+                        moments.format(
+                          DateTime.fromMillisecondsSinceEpoch(spot.x.round()),
+                        ),
+                        timestampStyle,
+                        children: [
+                          // The value carries the weight, so it cannot be read
+                          // as the tail of the timestamp above it. It was:
+                          // "29,897" under "21:20" reads as seconds and
+                          // milliseconds, and the thousands separator cannot
+                          // carry the distinction — it is a comma in English
+                          // and a space in French (#82).
+                          TextSpan(
+                            text: '\n${decimals.format(spot.y.round())}',
+                            style: valueStyle,
+                          ),
+                        ],
                       ),
                   ],
                 ),
