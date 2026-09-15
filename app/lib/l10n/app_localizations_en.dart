@@ -78,7 +78,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previewNotSavedYet => 'Nothing is saved until you confirm.';
 
   @override
-  String get previewDetailedDateFormat => 'd MMMM y \'at\' HH:mm:ss';
+  String get previewDetailedDateFormat => 'd MMMM y \'at\' HH:mm';
 
   @override
   String get fieldAgent => 'Agent';
