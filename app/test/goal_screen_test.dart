@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 
 import 'support/fixed_registry.dart';
 import 'support/fake_notification_service.dart';
@@ -169,6 +170,98 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(await container.read(goalRepositoryProvider).all(), isEmpty);
+    });
+  });
+
+  group('the deadline picker (#80)', () {
+    /// Opens the goal sheet and taps through to the calendar.
+    Future<void> openPicker(WidgetTester tester, {required bool editing}) async {
+      await scrollToGoal(tester);
+      await tester.tap(find.text(editing ? 'Change' : 'Set a goal'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Pick a date'));
+      await tester.pumpAndSettle();
+    }
+
+    /// The month the calendar is showing, as its own header spells it.
+    String monthShown() => DateFormat('MMMM yyyy')
+        .format(DateTime.now())
+        .toUpperCase();
+
+    testWidgets('opens on the current month, with nothing chosen',
+        (tester) async {
+      // It suggested a date thirty days out, which nothing motivated: the app
+      // has no basis for an opinion about the agent's own ambition, and the
+      // specification only ever gave an absolute date as its example.
+      await pumpDetail(tester);
+      await openPicker(tester, editing: false);
+
+      final picker = tester.widget<DatePickerDialog>(
+        find.byType(DatePickerDialog),
+      );
+      expect(picker.initialDate, isNull);
+
+      // Today is on screen, in its own month, rather than a month ahead.
+      expect(
+        find.textContaining(RegExp(monthShown(), caseSensitive: false)),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('confirming without choosing sets no deadline', (tester) async {
+      // The other half of opening on nothing: the picker returns null, and
+      // the agent has not been handed a date they never picked.
+      await pumpDetail(tester);
+      await openPicker(tester, editing: false);
+
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No deadline'), findsOneWidget);
+    });
+
+    testWidgets('an existing deadline still opens on itself', (tester) async {
+      final deadline = DateTime.now().add(const Duration(days: 120));
+      await pumpDetail(
+        tester,
+        goal: Goal(
+          exportHeader: 'Unique Portals Visited',
+          target: 2000,
+          deadline: deadline,
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      );
+      await openPicker(tester, editing: true);
+
+      final picker = tester.widget<DatePickerDialog>(
+        find.byType(DatePickerDialog),
+      );
+      expect(picker.initialDate, DateUtils.dateOnly(deadline));
+    });
+
+    testWidgets('a deadline already missed does not take the picker down',
+        (tester) async {
+      // showDatePicker asserts initialDate is not before firstDate. Re-dating
+      // a goal whose deadline has passed handed it exactly that: a debug-mode
+      // crash, and in release a selection outside the picker's own range.
+      await pumpDetail(
+        tester,
+        goal: Goal(
+          exportHeader: 'Unique Portals Visited',
+          target: 2000,
+          deadline: DateTime.now().subtract(const Duration(days: 3)),
+          createdAt: DateTime(2026, 1, 1),
+        ),
+      );
+      await openPicker(tester, editing: true);
+
+      expect(tester.takeException(), isNull);
+      final picker = tester.widget<DatePickerDialog>(
+        find.byType(DatePickerDialog),
+      );
+      // Nothing to offer: a past date cannot be chosen anyway, so the agent
+      // lands on the current month like anyone re-dating from scratch.
+      expect(picker.initialDate, isNull);
     });
   });
 

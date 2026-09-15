@@ -272,11 +272,28 @@ class _GoalSheetState extends State<_GoalSheet> {
 
   Future<void> _pickDeadline() async {
     final now = DateTime.now();
+    final today = DateUtils.dateOnly(now);
+
+    // No initialDate means the calendar opens on the current month with
+    // nothing selected, which is what an agent who has not decided yet should
+    // see: today in its own context, and the months ahead a swipe away. The
+    // app suggests no date of its own, because it has no basis for one (#80).
+    // Confirming without choosing returns null, which the guard below already
+    // absorbs.
+    //
+    // An existing deadline still opens on itself — unless it has passed, in
+    // which case it cannot be offered: showDatePicker asserts that
+    // initialDate is not before firstDate, and a missed goal being re-dated
+    // would have tripped it. That one is a debug-mode crash; in release the
+    // asserts are stripped and the picker is handed a selection outside its
+    // own range instead.
+    final existing = _deadline == null ? null : DateUtils.dateOnly(_deadline!);
     final picked = await showDatePicker(
       context: context,
-      initialDate: _deadline ?? now.add(const Duration(days: 30)),
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365 * 5)),
+      initialDate:
+          existing != null && !existing.isBefore(today) ? existing : null,
+      firstDate: today,
+      lastDate: DateTime(today.year + 5, today.month, today.day),
     );
     if (picked != null) setState(() => _deadline = picked);
   }
