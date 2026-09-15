@@ -61,17 +61,23 @@ void main() {
       expect(projection.next!.name, 'gold');
     });
 
-    test('past onyx there is nothing left to chase', () {
+    test('past onyx every tier is behind, but the chase continues', () {
+      // Explorer: onyx at 30,000. What used to be a dead end — no next, no
+      // remaining, no date — is now the next whole multiple (#87).
       final projection = projector.project(
         points: daily(DateTime(2026, 1, 1), [40000, 41000]),
         enrichment: enrichment('Unique Portals Visited'),
       )!;
 
       expect(projection.current!.name, 'onyx');
-      expect(projection.isComplete, isTrue);
-      expect(projection.next, isNull);
-      expect(projection.remaining, isNull);
-      expect(projection.projectedDate(DateTime(2026, 1, 2)), isNull);
+      expect(projection.isComplete, isTrue, reason: 'every named tier');
+      expect(projection.next, isNull, reason: 'there is no sixth tier');
+
+      expect(projection.topMultiple, 1);
+      expect(projection.target, 60000);
+      expect(projection.remaining, 19000);
+      expect(projection.projectedDate(DateTime(2026, 1, 2)), isNotNull,
+          reason: 'a pace of 1,000 a day reaches 60,000 in nineteen days');
     });
   });
 
@@ -311,4 +317,106 @@ void main() {
       expect(projection.perDay, closeTo(10, 0.001));
     });
   });
+
+  group('the multiplier past the top tier (#87)', () {
+    // The rule, confirmed by an agent reading the game's own achievement
+    // sheet: the number beside a completed badge is how many whole times the
+    // top threshold has been reached.
+
+    test('reproduces the reported sheet exactly', () {
+      // 351,056,060 XM against Recharger's onyx of 25,000,000 shows "x 14" in
+      // game. Nothing else in that sheet produces 14, which is what settled
+      // the reading.
+      final projection = projector.project(
+        points: daily(DateTime(2026, 1, 1), [350000000, 351056060]),
+        enrichment: enrichment('XM Recharged'),
+      )!;
+
+      expect(projection.topMultiple, 14);
+      expect(projection.target, 375000000);
+      expect(projection.remaining, 23943940);
+    });
+
+    test('rounds down, never up', () {
+      // 14.04 is x 14. Rounding up would hand out a multiple the agent has
+      // not reached — the same error as a threshold set too low (#76).
+      final onyx = enrichment('XM Recharged').tiers.last.value;
+      expect(onyx, 25000000);
+
+      for (final value in [
+        (onyx * 14).round(),
+        (onyx * 14).round() + 1,
+        (onyx * 15).round() - 1,
+      ]) {
+        expect(topTierMultiple(enrichment('XM Recharged'), value), 14,
+            reason: '\$value');
+      }
+      expect(
+        topTierMultiple(enrichment('XM Recharged'), (onyx * 15).round()),
+        15,
+      );
+    });
+
+    test('exactly on the top threshold is x 1, not x 0', () {
+      final onyx = enrichment('Unique Portals Visited').tiers.last.value;
+      final projection = projector.project(
+        points: daily(DateTime(2026, 1, 1), [1, onyx.round()]),
+        enrichment: enrichment('Unique Portals Visited'),
+      )!;
+
+      expect(projection.topMultiple, 1);
+      expect(projection.target, onyx * 2);
+      expect(projection.progress, 0, reason: 'the stretch has just started');
+    });
+
+    test('there is no multiplier while a tier is still ahead', () {
+      final projection = projector.project(
+        points: daily(DateTime(2026, 1, 1), [1400, 1500]),
+        enrichment: enrichment('Unique Portals Visited'),
+      )!;
+
+      expect(projection.next!.name, 'gold');
+      expect(projection.topMultiple, isNull);
+      expect(
+        topTierMultiple(enrichment('Unique Portals Visited'), 1500),
+        isNull,
+      );
+    });
+
+    test('progress measures the current stretch, not the whole climb', () {
+      // Halfway from x 1 to x 2 is 0.5 — measuring from zero would pin the
+      // bar at 1 forever.
+      final onyx = enrichment('Unique Portals Visited').tiers.last.value;
+      final projection = projector.project(
+        points: daily(DateTime(2026, 1, 1), [1, (onyx * 1.5).round()]),
+        enrichment: enrichment('Unique Portals Visited'),
+      )!;
+
+      expect(projection.topMultiple, 1);
+      expect(projection.progress, closeTo(0.5, 0.001));
+    });
+
+    test('the standalone reading agrees with the projection', () {
+      // Same rule as #63 for the tier: a tile showing a multiplier and a card
+      // computing one must never disagree.
+      final counter = enrichment('Links Created');
+      for (final value in [49, 50, 99999, 100000, 250000, 1000000]) {
+        final projection = projector.project(
+          points: daily(DateTime(2026, 1, 1), [0, value]),
+          enrichment: counter,
+        )!;
+        expect(topTierMultiple(counter, value), projection.topMultiple,
+            reason: '\$value links');
+      }
+    });
+
+    test('a counter with no thresholds has no multiplier', () {
+      expect(topTierMultiple(null, 1000), isNull);
+      expect(
+        topTierMultiple(registry.forExportHeader('Orion Tokens'), 1000000),
+        isNull,
+      );
+    });
+  });
+
 }

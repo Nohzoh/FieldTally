@@ -177,6 +177,43 @@ void main() {
       );
     });
 
+    testWidgets('past onyx the tile carries the multiplier too (#87)',
+        (tester) async {
+      // The wiring, not the wording: the screen must hand the tile a
+      // multiple, or the rule would live in the domain and never reach a row.
+      final repository = await pumpCounterList(tester);
+
+      // Narrowed before the new snapshot lands, so exactly one tile is laid
+      // out. Pumping fifty rows of Ahem text into a 360-pixel window overflows
+      // on subtitles this change does not touch: the test font makes every
+      // glyph a full em square, which is not what a phone draws.
+      await search(tester, 'Unique Portals Visited');
+
+      // Carries every counter of the fixture, at its existing value, so only
+      // Explorer has moved: a snapshot holding one counter would mark all the
+      // others absent and the list would be answering a different question.
+      final base = const IngressTsvParser().parseSingle(fixture(allTimePath));
+      await repository.save(StatSnapshot(
+        timeSpan: TimeSpan.allTime,
+        agentName: 'AgentDemo',
+        faction: 'Enlightened',
+        recordedAt: DateTime(2026, 6, 1),
+        // Explorer onyx is 30,000; 210,000 is seven whole times over.
+        counters: {...base.counters, 'Unique Portals Visited': 210000},
+        level: 9,
+      ));
+      await tester.pumpAndSettle();
+
+      final tile = find.widgetWithText(ListTile, 'Unique Portals Visited');
+      expect(
+        find.descendant(
+          of: tile,
+          matching: find.textContaining('Onyx medal \u00d77'),
+        ),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('the detail screen shows the emblem of the tier reached',
         (tester) async {
       await pumpCounterList(tester);

@@ -1,6 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
+import 'package:fieldtally/domain/badge_projection.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
@@ -114,13 +115,68 @@ void main() {
       expect(find.textContaining('at your recent pace'), findsNothing);
     });
 
-    testWidgets('onyx reached leaves nothing to chase', (tester) async {
+    testWidgets('past onyx the card keeps working instead of collapsing',
+        (tester) async {
+      // It used to print one sentence — "Onyx reached, nothing left to chase"
+      // — and drop the bar, the estimate, the pace and the window selector
+      // along with it. On a counter like XM Recharged that was the card for
+      // years (#87).
       await pumpDetail(tester, 'Unique Portals Visited', history: [
-        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 40000}),
-        at(DateTime(2026, 1, 2), const {'Unique Portals Visited': 40100}),
+        // Explorer onyx is 30,000; twice that is 60,000.
+        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 44000}),
+        at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 45000}),
       ]);
 
-      expect(find.textContaining('Onyx reached'), findsOneWidget);
+      expect(find.textContaining('nothing left to chase'), findsNothing);
+      expect(find.textContaining('15,000 to go for \u00d72'), findsOneWidget);
+      expect(find.byType(LinearProgressIndicator), findsOneWidget);
+      expect(find.textContaining('per day'), findsOneWidget);
+      expect(find.byType(SegmentedButton<ProjectionWindow>), findsOneWidget);
+    });
+
+    testWidgets('the multiplier is held back at one', (tester) async {
+      // A bare "x 1" would only repeat what "Onyx medal" already says.
+      await pumpDetail(tester, 'Unique Portals Visited', history: [
+        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 44000}),
+        at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 45000}),
+      ]);
+
+      expect(find.text('Onyx medal'), findsOneWidget);
+      expect(find.textContaining('Onyx medal \u00d7'), findsNothing);
+    });
+
+    testWidgets('and named beside the medal once it is worth saying',
+        (tester) async {
+      await pumpDetail(tester, 'Unique Portals Visited', history: [
+        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 200000}),
+        at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 210000}),
+      ]);
+
+      // 210,000 against an onyx of 30,000 is exactly seven times over.
+      expect(find.text('Onyx medal \u00d77'), findsOneWidget);
+      expect(find.textContaining('to go for \u00d78'), findsOneWidget);
+    });
+
+    testWidgets('the multiplier is spoken in words, not as a symbol',
+        (tester) async {
+      // \u00d7 is read out inconsistently by screen readers, or skipped
+      // entirely, so the multiplier cannot be carried by the glyph alone
+      // (\u00a73.9).
+      final handle = tester.ensureSemantics();
+      await pumpDetail(tester, 'Unique Portals Visited', history: [
+        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 200000}),
+        at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 210000}),
+      ]);
+
+      expect(
+        find.bySemanticsLabel('Onyx medal, reached 7 times over'),
+        findsOneWidget,
+      );
+      expect(
+        find.bySemanticsLabel(RegExp('to go to reach Onyx 8 times over')),
+        findsOneWidget,
+      );
+      handle.dispose();
     });
 
     testWidgets('a counter without thresholds shows no card', (tester) async {

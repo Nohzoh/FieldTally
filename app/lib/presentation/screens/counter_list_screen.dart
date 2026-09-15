@@ -127,6 +127,7 @@ class _CounterList extends ConsumerWidget {
       // a bare ring — the registry can name one this release has never seen.
       medalKey: key != null && MedalIcon.existsFor(key) ? key : null,
       tierName: tierReached(enrichment, counter.lastValue)?.name,
+      tierMultiple: topTierMultiple(enrichment, counter.lastValue),
       onTap: () => context.go(
         Routes.counterDetail(counter.exportHeader),
       ),

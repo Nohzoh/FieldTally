@@ -1008,6 +1008,18 @@ abstract class AppLocalizations {
   /// **'No medal yet'**
   String get medalNone;
 
+  /// Names the medal once every tier is behind, with the multiplier the game shows: how many whole times the top threshold has been reached (#87). Shown from 2 upwards — a 1 would only repeat what the medal already says.
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} medal ×{count}'**
+  String medalTierMultiple(String tier, int count);
+
+  /// Spoken form of medalTierMultiple. The × sign is read out inconsistently by screen readers, or skipped entirely, so the multiplier is spelt out in words here (§3.9).
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} medal, reached {count} times over'**
+  String medalTierMultipleSemantics(String tier, int count);
+
   /// No description provided for @projectionTier_bronze.
   ///
   /// In en, this message translates to:
@@ -1044,6 +1056,22 @@ abstract class AppLocalizations {
   /// **'{remaining} to go for {tier}'**
   String projectionRemaining(String remaining, String tier);
 
+  /// Replaces projectionRemaining once every tier is behind: the target is the next whole multiple of the top threshold rather than a tier (#87).
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} to go for ×{count}'**
+  String projectionRemainingMultiple(String remaining, int count);
+
+  /// Spoken form of projectionRemainingMultiple, for the same reason as medalTierMultipleSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} to go to reach {tier} {count} times over'**
+  String projectionRemainingMultipleSemantics(
+    String remaining,
+    String tier,
+    int count,
+  );
+
   /// No description provided for @projectionDate.
   ///
   /// In en, this message translates to:
@@ -1061,12 +1089,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No estimate: too far off at your recent pace.'**
   String get projectionTooFar;
-
-  /// No description provided for @projectionComplete.
-  ///
-  /// In en, this message translates to:
-  /// **'Onyx reached — nothing left to chase.'**
-  String get projectionComplete;
 
   /// No description provided for @projectionBelowFirst.
   ///
