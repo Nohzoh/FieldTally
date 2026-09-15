@@ -38,7 +38,11 @@ compteur plutôt qu'un graphique unique illisible.
   tu vises.
 - **Une projection de médaille** : combien il te reste, et à quelle date à ton
   rythme récent — ou rien du tout quand ton rythme ne permet pas d'estimation
-  honnête. L'emblème de la médaille est affiché à côté du compteur.
+  honnête. L'emblème de la médaille est affiché à côté du compteur, et une fois
+  l'onyx passé elle continue de compter : combien de fois, et ce qu'il reste
+  jusqu'à la suivante.
+- **Une liste que tu peux réduire** : seulement les compteurs qui donnent une
+  médaille, triés par celle dont tu es le plus proche.
 - **Des objectifs personnels** et des **rappels** planifiés sur l'appareil.
 - **Une carte de stats** en image, prête à publier.
 - **Une comparaison avec un agent à côté de toi**, de téléphone à téléphone,

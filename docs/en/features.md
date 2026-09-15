@@ -34,8 +34,11 @@ make and the most annoying: it overwrites your history with tiny numbers.
 - **Dashboard**: the counters you pin, with their value, their progress since
   the previous snapshot and a trend line.
 - **All counters**: the full list, grouped by category in the game's own order,
-  with search and sorting. Counters that carry a badge show its emblem, with
-  the tier you have reached named beside it.
+  with search, sorting and filters. Counters that carry a badge show its
+  emblem, with the tier you have reached named beside it — and the list can be
+  narrowed to those counters alone, or ordered by the badge you are closest to.
+  Recent progress is measured as a pace per day over a window you pick, so
+  counters you record at different rhythms can be compared.
 - **Counter detail**: a chart over the week, the month or the whole history,
   with a line at what you are chasing — your goal if you set one, otherwise the
   next badge. Plus an activity calendar and the exact export column name so you
@@ -46,6 +49,10 @@ make and the most annoying: it overwrites your history with tiny numbers.
 **Next badge** shows what is left and an estimated date at your recent pace —
 over the last seven or thirty days, your choice. When your pace is flat or the
 answer is years out, the app says so instead of inventing a date.
+
+Onyx is not the end of it. Past the top threshold the app counts in multiples
+of it, the way the game does: how many whole times over you are, and what is
+left to the next one.
 
 You can set a **personal goal** on any counter, with or without a deadline, and
 see whether your current pace gets you there. On the chart, the scale stretches

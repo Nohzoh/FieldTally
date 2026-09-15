@@ -76,5 +76,20 @@
         "L'aperçu d'import et l'écran de correction n'affichent plus les secondes, que tu n'avais de toute façon aucun moyen de régler."
       ]
     }
+  },
+  "6": {
+    "version": "1.4.0",
+    "features": {
+      "en": [
+        "Once a counter is at onyx the app keeps counting with you: it shows how many whole times over the top threshold you are, and how much is left to the next one, instead of announcing there is nothing left to chase.",
+        "The counter list can be narrowed to the counters that carry a medal — seventeen of the fifty-nine — and ordered by which medal you are closest to reaching.",
+        "Recent progress is now measured over a window you pick: since your last snapshot, over seven days, or over thirty. It counts as a pace per day, so a counter you record twice a week and one you record twice a day can finally be compared."
+      ],
+      "fr": [
+        "Une fois un compteur à l'onyx, l'app continue de compter avec toi : elle indique combien de fois entières tu as dépassé le dernier palier, et ce qu'il te reste jusqu'au suivant, au lieu d'annoncer qu'il n'y a plus rien à viser.",
+        "La liste des compteurs peut être réduite à ceux qui donnent une médaille — dix-sept sur cinquante-neuf — et triée par la médaille dont tu es le plus proche.",
+        "La progression récente se mesure maintenant sur une durée que tu choisis : depuis ton dernier relevé, sur sept jours ou sur trente. Elle compte en rythme par jour, si bien qu'un compteur relevé deux fois par semaine et un relevé deux fois par jour deviennent enfin comparables."
+      ]
+    }
   }
 }
