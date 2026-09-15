@@ -154,6 +154,48 @@ int? topTierMultiple(CounterEnrichment? enrichment, int value) {
   return multipleOf(top, value);
 }
 
+/// The stretch [value] is currently crossing: where it starts, and what it
+/// aims at.
+///
+/// Below the first threshold the stretch starts at zero; past the top one it
+/// runs from the multiple reached to the next (#87). Null for a counter the
+/// registry knows no thresholds for.
+({num from, num target})? tierStretch(
+  CounterEnrichment? enrichment,
+  int value,
+) {
+  if (enrichment == null || enrichment.tiers.isEmpty) return null;
+
+  final tiers = [...enrichment.tiers]
+    ..sort((a, b) => a.value.compareTo(b.value));
+
+  for (final tier in tiers) {
+    if (value < tier.value) {
+      final below = tiers.takeWhile((t) => t.value <= value);
+      return (from: below.isEmpty ? 0 : below.last.value, target: tier.value);
+    }
+  }
+
+  final top = tiers.last;
+  final multiple = multipleOf(top, value);
+  return (from: multiple * top.value, target: (multiple + 1) * top.value);
+}
+
+/// How far across its current stretch [value] has come, between 0 and 1 (#90).
+///
+/// One number from one value, with no history and no pace — the counterpart of
+/// [tierReached] and [topTierMultiple] for "how close is the next one". Null
+/// for a counter with no thresholds, which is not the same as zero: the list
+/// sorts those apart rather than calling them "not started".
+double? tierProgress(CounterEnrichment? enrichment, int value) {
+  final stretch = tierStretch(enrichment, value);
+  if (stretch == null) return null;
+
+  final span = stretch.target - stretch.from;
+  if (span <= 0) return null;
+  return ((value - stretch.from) / span).clamp(0.0, 1.0);
+}
+
 class BadgeProjector {
   const BadgeProjector();
 

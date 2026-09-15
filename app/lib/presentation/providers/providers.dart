@@ -14,6 +14,7 @@ import '../../data/repositories/drift_settings_repository.dart';
 import '../../data/repositories/drift_snapshot_repository.dart';
 import '../../data/sharing/incoming_share.dart';
 import '../../domain/counter_list.dart';
+import '../../domain/counter_pace.dart';
 import '../../domain/counter_series.dart';
 import '../../domain/dashboard.dart';
 import '../../domain/guards/import_guards.dart';
@@ -135,12 +136,29 @@ class CounterQueryNotifier extends Notifier<CounterQuery> {
 
   void showInactive(bool value) =>
       state = state.copyWith(includeInactive: value);
+
+  void showMedalsOnly(bool value) => state = state.copyWith(medalsOnly: value);
+
+  void measureOver(ProgressWindow window) =>
+      state = state.copyWith(window: window);
 }
 
 final counterQueryProvider =
     NotifierProvider<CounterQueryNotifier, CounterQuery>(
   CounterQueryNotifier.new,
 );
+
+/// Each counter's pace over the window the list is currently measuring (#89).
+///
+/// Derived from the whole history rather than from the tracked counters: a
+/// window needs the value at a date, which a counter's last two values cannot
+/// give.
+final counterPaceProvider = Provider<Map<String, CounterPace>>((ref) {
+  final window = ref.watch(counterQueryProvider).window;
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+
+  return paceByCounter([for (final s in snapshots) s.snapshot], window);
+});
 
 final pinnedCounterRepositoryProvider = Provider<PinnedCounterRepository>(
   (ref) => DriftPinnedCounterRepository(ref.watch(databaseProvider)),

@@ -35,6 +35,7 @@ void main() {
     WidgetTester tester, {
     bool withHistory = false,
     Locale locale = const Locale('en'),
+    CounterRegistryNotifier Function() registry = fixedRegistry,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3.0;
@@ -45,7 +46,7 @@ void main() {
       databaseProvider.overrideWithValue(db),
       // No test asks Android to post anything (§3.7).
       notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
+      counterRegistryProvider.overrideWith(registry),
     ]);
     // Order matters: tearDowns run last-registered-first, so the container is
     // disposed before the database is closed. Closing Drift while a stream
@@ -301,4 +302,89 @@ void main() {
       expect(find.text('Portails uniques visités'), findsOneWidget);
     });
   });
+
+  group('filtering and the controls row (#88, #89, #90)', () {
+    testWidgets('the medal chip narrows the list to counters with a badge',
+        (tester) async {
+      // Two neighbours in the Discovery category, one with thresholds and one
+      // without, so both are on screen before and the difference is the
+      // filter rather than the scroll position.
+      await pumpCounterList(tester);
+
+      expect(find.text('Unique Portals Visited'), findsOneWidget);
+      expect(find.text('Unique Portals Drone Visited'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Medals'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Unique Portals Visited'), findsOneWidget);
+      expect(find.text('Unique Portals Drone Visited'), findsNothing,
+          reason: 'the registry gives it no thresholds');
+    });
+
+    testWidgets('the inactive filter is a named chip now, not a bare eye',
+        (tester) async {
+      // It was an IconButton with an eye and no word beside it. A second
+      // unlabelled toggle next to it would have left the row unreadable.
+      await pumpCounterList(tester);
+
+      expect(find.widgetWithText(FilterChip, 'Inactive'), findsOneWidget);
+      expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
+    });
+
+    testWidgets('the window appears only for the ordering that uses it',
+        (tester) async {
+      await pumpCounterList(tester);
+
+      expect(find.text('Measured over'), findsNothing);
+
+      await tester.tap(find.byType(DropdownButtonFormField<CounterSort>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Recent progress').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Measured over'), findsOneWidget);
+      expect(find.widgetWithText(ChoiceChip, '7 days'), findsOneWidget);
+      expect(find.widgetWithText(ChoiceChip, '30 days'), findsOneWidget);
+    });
+
+    testWidgets('ordering by proximity to the next tier is offered',
+        (tester) async {
+      await pumpCounterList(tester);
+
+      await tester.tap(find.byType(DropdownButtonFormField<CounterSort>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Closest to next tier').last);
+      await tester.pumpAndSettle();
+
+      // No window for this one: it measures a position, not a rate.
+      expect(find.text('Measured over'), findsNothing);
+    });
+
+    testWidgets('the filters compose with the search', (tester) async {
+      await pumpCounterList(tester);
+      await search(tester, 'Drone Visited');
+      expect(find.text('Unique Portals Drone Visited'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(FilterChip, 'Medals'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('No counter matches'), findsOneWidget);
+    });
+  });
+
+  group('the medal filter needs a registry (#88)', () {
+    testWidgets('the chip is disabled until one has loaded', (tester) async {
+      // Without thresholds nothing qualifies, so offering the filter would
+      // empty the list and blame the agent's game for it.
+      await pumpCounterList(tester, registry: pendingRegistry);
+
+      final chip = tester.widget<FilterChip>(
+        find.widgetWithText(FilterChip, 'Medals'),
+      );
+      expect(chip.onSelected, isNull);
+      expect(chip.isEnabled, isFalse);
+    });
+  });
+
 }

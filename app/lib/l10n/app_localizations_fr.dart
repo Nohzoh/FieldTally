@@ -289,7 +289,44 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sortByRecentProgress => 'Progression récente';
 
   @override
-  String get showInactive => 'Afficher les compteurs inactifs';
+  String get sortByNextTier => 'Proximité du palier';
+
+  @override
+  String get filtersLabel => 'Afficher';
+
+  @override
+  String get filterMedals => 'Médailles';
+
+  @override
+  String get filterMedalsTooltip =>
+      'Seulement les compteurs qui donnent une médaille';
+
+  @override
+  String get filterInactive => 'Inactifs';
+
+  @override
+  String get filterInactiveTooltip =>
+      'Inclure les compteurs qui n\'apparaissent plus dans les imports';
+
+  @override
+  String get progressWindowLabel => 'Mesuré sur';
+
+  @override
+  String get progressWindowSinceLast => 'Dernier relevé';
+
+  @override
+  String get progressWindowWeek => '7 jours';
+
+  @override
+  String get progressWindowMonth => '30 jours';
+
+  @override
+  String get countersFilteredEmpty =>
+      'Aucun compteur ne correspond aux filtres.';
+
+  @override
+  String get countersMedalsUnknown =>
+      'Les paliers de médaille ne sont pas encore chargés, aucun compteur ne peut être retenu.';
 
   @override
   String inactiveSince(String date) {

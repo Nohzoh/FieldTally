@@ -221,7 +221,27 @@
   "sortByCategory": "In-game order",
   "sortByName": "Name",
   "sortByRecentProgress": "Recent progress",
-  "showInactive": "Show inactive counters",
+  "sortByNextTier": "Closest to next tier",
+  "@sortByNextTier": {
+    "description": "Orders the counter list by how far across its current stretch each counter has come — the share of the way from the tier behind to the one ahead, or to the next multiple past onyx (#90). A share rather than what is left in absolute terms: the counters span five orders of magnitude and only a fraction compares between them."
+  },
+  "filtersLabel": "Show",
+  "filterMedals": "Medals",
+  "@filterMedals": {
+    "description": "Filter chip narrowing the list to counters that carry a badge (#88). Seventeen counters of fifty-nine, so roughly seven rows in ten disappear."
+  },
+  "filterMedalsTooltip": "Only counters that carry a badge",
+  "filterInactive": "Inactive",
+  "filterInactiveTooltip": "Include counters that no longer appear in imports",
+  "progressWindowLabel": "Measured over",
+  "@progressWindowLabel": {
+    "description": "Labels the window the recent-progress ordering measures across. Shown only while that ordering is selected, so the control is never dead (#89)."
+  },
+  "progressWindowSinceLast": "Since last",
+  "progressWindowWeek": "7 days",
+  "progressWindowMonth": "30 days",
+  "countersFilteredEmpty": "No counter matches the filters.",
+  "countersMedalsUnknown": "Badge thresholds have not loaded yet, so no counter can be matched.",
   "inactiveSince": "inactive since {date}",
   "@inactiveSince": {
     "placeholders": {
