@@ -18,6 +18,7 @@ class BadgeProjection {
     required this.value,
     required this.current,
     required this.next,
+    required this.top,
     required this.perDay,
     required this.window,
   });
@@ -30,26 +31,54 @@ class BadgeProjection {
   /// Tier being worked towards, or null once onyx is done.
   final CounterTier? next;
 
+  /// The highest tier the registry knows for this counter — onyx, for every
+  /// badge in the game today.
+  ///
+  /// Kept even once it is behind, because past it the target stops being a
+  /// tier and becomes a multiple of this value (#87).
+  final CounterTier top;
+
   /// Recent pace, in counter units per day. Null when it cannot be measured,
   /// zero or negative when the agent has stalled.
   final double? perDay;
 
   final ProjectionWindow window;
 
-  /// Every tier reached.
+  /// Every named tier reached.
+  ///
+  /// No longer the same thing as having nothing left to chase: past the top
+  /// tier the game counts in multiples of it, and so does [target] (#87).
   bool get isComplete => next == null;
 
-  /// How much is left to reach [next].
-  int? get remaining =>
-      next == null ? null : (next!.value - value).round().clamp(0, 1 << 62);
+  /// How many whole times [top] has been reached, once every tier is behind —
+  /// the multiplier the game prints beside the badge. Null while a tier is
+  /// still ahead.
+  ///
+  /// The true multiple, including 1. Whether a bare 1 is worth showing is a
+  /// question for the surface drawing it: the medal already says onyx.
+  int? get topMultiple => next == null ? multipleOf(top, value) : null;
 
-  /// Share of the way from [current] to [next], between 0 and 1.
+  /// What the agent is working towards: the next tier, or the next whole
+  /// multiple of [top] once every tier is behind.
+  ///
+  /// Never null for a counter that has tiers at all, which is what keeps the
+  /// pace, the estimate and the progress bar working past onyx instead of the
+  /// card collapsing to a single sentence.
+  num get target => next?.value ?? (topMultiple! + 1) * top.value;
+
+  /// Where the current stretch starts: the tier below, or the multiple of
+  /// [top] already reached.
+  num get _from =>
+      next != null ? (current?.value ?? 0) : topMultiple! * top.value;
+
+  /// How much is left to reach [target].
+  int get remaining => (target - value).round().clamp(0, 1 << 62);
+
+  /// Share of the way across the current stretch, between 0 and 1.
   double? get progress {
-    if (next == null) return null;
-    final from = current?.value ?? 0;
-    final span = next!.value - from;
+    final span = target - _from;
     if (span <= 0) return null;
-    return ((value - from) / span).clamp(0.0, 1.0);
+    return ((value - _from) / span).clamp(0.0, 1.0);
   }
 
   /// Days until [next] at the recent pace, or null when no honest estimate
@@ -60,9 +89,8 @@ class BadgeProjection {
   /// date is worse than none.
   double? get daysToNext {
     final rate = perDay;
-    final left = remaining;
-    if (rate == null || left == null || rate <= 0) return null;
-    return left / rate;
+    if (rate == null || rate <= 0) return null;
+    return remaining / rate;
   }
 
   /// Projected date, measured from [from] — normally the latest snapshot,
@@ -103,6 +131,29 @@ CounterTier? tierReached(CounterEnrichment? enrichment, int value) {
   return reached;
 }
 
+/// How many whole times [tier] has been reached by [value].
+///
+/// Rounded **down**, always: 351,056,060 XM against an onyx of 25,000,000 is
+/// x 14, not x 15. Claiming a multiple that has not been reached is the same
+/// error as a threshold set too low (#76) — the app handing an agent something
+/// they have not earned.
+int multipleOf(CounterTier tier, int value) =>
+    tier.value <= 0 ? 0 : value ~/ tier.value;
+
+/// How many whole times the top tier has been reached, or null while a tier is
+/// still ahead (#87).
+///
+/// The counterpart of [tierReached] for the multiplier: one number, no history
+/// and no pace, so a tile can show it without building a projection. Both read
+/// the same ladder, so a tile and a card can never disagree.
+int? topTierMultiple(CounterEnrichment? enrichment, int value) {
+  if (enrichment == null || enrichment.tiers.isEmpty) return null;
+
+  final top = enrichment.tiers.reduce((a, b) => b.value > a.value ? b : a);
+  if (value < top.value) return null;
+  return multipleOf(top, value);
+}
+
 class BadgeProjector {
   const BadgeProjector();
 
@@ -133,6 +184,7 @@ class BadgeProjector {
       value: value,
       current: current,
       next: next,
+      top: tiers.last,
       perDay: _paceFor(points, window),
       window: window,
     );

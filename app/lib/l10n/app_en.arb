@@ -494,6 +494,30 @@
     }
   },
   "medalNone": "No medal yet",
+  "medalTierMultiple": "{tier} medal \u00d7{count}",
+  "@medalTierMultiple": {
+    "description": "Names the medal once every tier is behind, with the multiplier the game shows: how many whole times the top threshold has been reached (#87). Shown from 2 upwards \u2014 a 1 would only repeat what the medal already says.",
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "medalTierMultipleSemantics": "{tier} medal, reached {count} times over",
+  "@medalTierMultipleSemantics": {
+    "description": "Spoken form of medalTierMultiple. The \u00d7 sign is read out inconsistently by screen readers, or skipped entirely, so the multiplier is spelt out in words here (\u00a73.9).",
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "projectionTier_bronze": "Bronze",
   "projectionTier_silver": "Silver",
   "projectionTier_gold": "Gold",
@@ -510,6 +534,33 @@
       }
     }
   },
+  "projectionRemainingMultiple": "{remaining} to go for \u00d7{count}",
+  "@projectionRemainingMultiple": {
+    "description": "Replaces projectionRemaining once every tier is behind: the target is the next whole multiple of the top threshold rather than a tier (#87).",
+    "placeholders": {
+      "remaining": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "projectionRemainingMultipleSemantics": "{remaining} to go to reach {tier} {count} times over",
+  "@projectionRemainingMultipleSemantics": {
+    "description": "Spoken form of projectionRemainingMultiple, for the same reason as medalTierMultipleSemantics.",
+    "placeholders": {
+      "remaining": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "projectionDate": "Around {date} at your recent pace",
   "@projectionDate": {
     "placeholders": {
@@ -520,7 +571,6 @@
   },
   "projectionNoPace": "No estimate: this counter has not moved lately.",
   "projectionTooFar": "No estimate: too far off at your recent pace.",
-  "projectionComplete": "Onyx reached — nothing left to chase.",
   "projectionBelowFirst": "Not started yet",
   "projectionPace": "{rate} per day over the last {window}",
   "@projectionPace": {

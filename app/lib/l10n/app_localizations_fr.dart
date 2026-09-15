@@ -590,6 +590,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get medalNone => 'Pas encore de médaille';
 
   @override
+  String medalTierMultiple(String tier, int count) {
+    return 'Médaille $tier ×$count';
+  }
+
+  @override
+  String medalTierMultipleSemantics(String tier, int count) {
+    return 'Médaille $tier, atteinte $count fois';
+  }
+
+  @override
   String get projectionTier_bronze => 'Bronze';
 
   @override
@@ -610,6 +620,20 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String projectionRemainingMultiple(String remaining, int count) {
+    return '$remaining restants pour ×$count';
+  }
+
+  @override
+  String projectionRemainingMultipleSemantics(
+    String remaining,
+    String tier,
+    int count,
+  ) {
+    return '$remaining restants pour atteindre $count fois $tier';
+  }
+
+  @override
   String projectionDate(String date) {
     return 'Vers le $date à ton rythme récent';
   }
@@ -621,9 +645,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get projectionTooFar =>
       'Pas d\'estimation : trop loin à ton rythme récent.';
-
-  @override
-  String get projectionComplete => 'Onyx atteint — plus rien à viser.';
 
   @override
   String get projectionBelowFirst => 'Pas encore commencé';

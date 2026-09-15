@@ -10,11 +10,16 @@ Goal goalOf(int target) => Goal(
       createdAt: DateTime(2026, 1, 1),
     );
 
-BadgeProjection projectionOf({required int value, CounterTier? next}) =>
+BadgeProjection projectionOf({
+  required int value,
+  CounterTier? next,
+  CounterTier top = const CounterTier(name: 'onyx', value: 30000),
+}) =>
     BadgeProjection(
       value: value,
       current: null,
       next: next,
+      top: top,
       perDay: 1,
       window: ProjectionWindow.month,
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/badge_projection.dart';
+import '../../domain/models/counter_registry.dart';
 import '../../l10n/app_localizations.dart';
 import '../tier_labels.dart';
 import 'medal_icon.dart';
@@ -42,6 +43,7 @@ class BadgeProjectionCard extends StatelessWidget {
     final dates = DateFormat(l10n.shortDateFormat, locale.toString());
 
     final next = projection.next;
+    final multiple = projection.topMultiple;
     final date = projection.projectedDate(measuredFrom);
 
     return Card(
@@ -72,77 +74,126 @@ class BadgeProjectionCard extends StatelessWidget {
                       ),
                       // The metal in the emblem is a colour; this line is the
                       // same fact in words (§3.9).
-                      Text(
-                        projection.current == null
-                            ? l10n.medalNone
-                            : l10n.medalTier(
-                                tierLabel(l10n, projection.current!.name),
-                              ),
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(color: theme.colorScheme.outline),
-                      ),
+                      _medalLine(l10n, theme),
                     ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            if (next == null)
-              Text(l10n.projectionComplete, style: theme.textTheme.bodyMedium)
-            else ...[
+            // There is always something ahead: a tier, or the next whole
+            // multiple of the top one (#87). So the bar, the estimate, the
+            // pace and the window selector stay put, instead of the card
+            // collapsing to a single sentence the day onyx lands.
+            _remainingLine(l10n, theme, numbers, next, multiple),
+            const SizedBox(height: 8),
+            // §3.9: the bar is never the only carrier — the figures above
+            // and below say the same thing in words.
+            LinearProgressIndicator(
+              value: projection.progress ?? 0,
+              minHeight: 6,
+              borderRadius: BorderRadius.circular(3),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _estimate(l10n, dates, date),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.outline),
+            ),
+            if (projection.perDay != null && projection.perDay! > 0)
               Text(
-                l10n.projectionRemaining(
-                  numbers.format(projection.remaining),
-                  tierLabel(l10n, next.name),
+                l10n.projectionPace(
+                  numbers.format(projection.perDay!.round()),
+                  _windowLabel(l10n, projection.window),
                 ),
-                style: theme.textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 8),
-              // §3.9: the bar is never the only carrier — the figures above
-              // and below say the same thing in words.
-              LinearProgressIndicator(
-                value: projection.progress ?? 0,
-                minHeight: 6,
-                borderRadius: BorderRadius.circular(3),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _estimate(l10n, dates, date),
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: theme.colorScheme.outline),
               ),
-              if (projection.perDay != null && projection.perDay! > 0)
-                Text(
-                  l10n.projectionPace(
-                    numbers.format(projection.perDay!.round()),
-                    _windowLabel(l10n, projection.window),
-                  ),
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: theme.colorScheme.outline),
+            const SizedBox(height: 12),
+            // Labelled differently from the chart's range selector on the
+            // same screen: one picks what is plotted, the other how far back
+            // the pace is measured, and sharing "Week / Month" between them
+            // read as the same control twice.
+            SegmentedButton<ProjectionWindow>(
+              segments: [
+                ButtonSegment(
+                  value: ProjectionWindow.week,
+                  label: Text(l10n.projectionPaceWeek),
                 ),
-              const SizedBox(height: 12),
-              // Labelled differently from the chart's range selector on the
-              // same screen: one picks what is plotted, the other how far back
-              // the pace is measured, and sharing "Week / Month" between them
-              // read as the same control twice.
-              SegmentedButton<ProjectionWindow>(
-                segments: [
-                  ButtonSegment(
-                    value: ProjectionWindow.week,
-                    label: Text(l10n.projectionPaceWeek),
-                  ),
-                  ButtonSegment(
-                    value: ProjectionWindow.month,
-                    label: Text(l10n.projectionPaceMonth),
-                  ),
-                ],
-                selected: {projection.window},
-                showSelectedIcon: false,
-                onSelectionChanged: (selection) =>
-                    onWindowChanged(selection.first),
-              ),
-            ],
+                ButtonSegment(
+                  value: ProjectionWindow.month,
+                  label: Text(l10n.projectionPaceMonth),
+                ),
+              ],
+              selected: {projection.window},
+              showSelectedIcon: false,
+              onSelectionChanged: (selection) =>
+                  onWindowChanged(selection.first),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// The tier in words, carrying the multiplier once every tier is behind.
+  ///
+  /// From two upwards: a bare "x 1" would only repeat what "Onyx medal"
+  /// already says, and reads like a countdown that has not started.
+  Widget _medalLine(AppLocalizations l10n, ThemeData theme) {
+    final style =
+        theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline);
+    final current = projection.current;
+    if (current == null) return Text(l10n.medalNone, style: style);
+
+    final tier = tierLabel(l10n, current.name);
+    final multiple = projection.topMultiple;
+    if (multiple == null || multiple < 2) {
+      return Text(l10n.medalTier(tier), style: style);
+    }
+
+    return Semantics(
+      container: true,
+      label: l10n.medalTierMultipleSemantics(tier, multiple),
+      child: ExcludeSemantics(
+        child: Text(l10n.medalTierMultiple(tier, multiple), style: style),
+      ),
+    );
+  }
+
+  /// What is left, and what it is left for: the next tier, or the next whole
+  /// multiple of the top one.
+  Widget _remainingLine(
+    AppLocalizations l10n,
+    ThemeData theme,
+    NumberFormat numbers,
+    CounterTier? next,
+    int? multiple,
+  ) {
+    final remaining = numbers.format(projection.remaining);
+    final style = theme.textTheme.bodyLarge;
+
+    if (next != null) {
+      return Text(
+        l10n.projectionRemaining(remaining, tierLabel(l10n, next.name)),
+        style: style,
+      );
+    }
+
+    // The multiplier is only ever null while a tier is ahead, which the branch
+    // above has already taken.
+    final target = multiple! + 1;
+    return Semantics(
+      container: true,
+      label: l10n.projectionRemainingMultipleSemantics(
+        remaining,
+        tierLabel(l10n, projection.top.name),
+        target,
+      ),
+      child: ExcludeSemantics(
+        child: Text(
+          l10n.projectionRemainingMultiple(remaining, target),
+          style: style,
         ),
       ),
     );

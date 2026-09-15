@@ -23,6 +23,7 @@ class CounterTile extends StatelessWidget {
     required this.label,
     this.medalKey,
     this.tierName,
+    this.tierMultiple,
     this.onTap,
   });
 
@@ -38,6 +39,10 @@ class CounterTile extends StatelessWidget {
 
   /// Highest tier reached, or null when the first threshold is still ahead.
   final String? tierName;
+
+  /// How many whole times the top tier has been reached, once every tier is
+  /// behind (#87). Null while a tier is still ahead.
+  final int? tierMultiple;
 
   final VoidCallback? onTap;
 
@@ -93,10 +98,17 @@ class CounterTile extends StatelessWidget {
   String _subtitle(AppLocalizations l10n, NumberFormat numbers) {
     final delta = _delta(l10n, numbers);
     if (medalKey == null) return delta;
-    final tier = tierName == null
-        ? l10n.medalNone
-        : l10n.medalTier(tierLabel(l10n, tierName!));
-    return '$tier · $delta';
+    return '${_tier(l10n)} · $delta';
+  }
+
+  /// From two upwards, for the reason the projection card gives: a bare "x 1"
+  /// says nothing the medal beside it does not.
+  String _tier(AppLocalizations l10n) {
+    if (tierName == null) return l10n.medalNone;
+    final tier = tierLabel(l10n, tierName!);
+    final multiple = tierMultiple;
+    if (multiple == null || multiple < 2) return l10n.medalTier(tier);
+    return l10n.medalTierMultiple(tier, multiple);
   }
 
   String _delta(AppLocalizations l10n, NumberFormat numbers) {
