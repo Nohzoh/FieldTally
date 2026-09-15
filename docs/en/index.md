@@ -36,7 +36,10 @@ by counter, each on its own scale rather than as one unreadable chart.
   chasing.
 - **A badge projection**: how much is left, and the date at your recent pace —
   or nothing at all when your pace cannot support an honest estimate. The
-  medal's emblem is drawn beside the counter.
+  medal's emblem is drawn beside the counter, and once you are past onyx it
+  keeps counting: how many times over, and how far to the next.
+- **A list you can narrow**: only the counters that carry a medal, ordered by
+  the one you are closest to reaching.
 - **Personal goals** and **reminders**, scheduled on the device.
 - **A stats card** as an image, ready to post.
 - **A comparison with an agent next to you**, phone to phone, with no server.

@@ -35,8 +35,12 @@ chiffres minuscules.
 - **Tableau de bord** : les compteurs que tu épingles, avec leur valeur, leur
   progression depuis le relevé précédent et une courbe de tendance.
 - **Tous les compteurs** : la liste complète, groupée par catégorie et dans
-  l'ordre du jeu, avec recherche et tri. Les compteurs liés à une médaille
-  portent son emblème, et le palier atteint est écrit à côté.
+  l'ordre du jeu, avec recherche, tri et filtres. Les compteurs liés à une
+  médaille portent son emblème, et le palier atteint est écrit à côté — et la
+  liste peut être réduite à ces seuls compteurs, ou triée par la médaille dont
+  tu es le plus proche. La progression récente se mesure en rythme par jour
+  sur une durée que tu choisis, si bien que des compteurs relevés à des
+  rythmes différents deviennent comparables.
 - **Détail d'un compteur** : graphique sur la semaine, le mois ou tout
   l'historique, avec un trait à ce que tu vises — ton objectif si tu en as
   fixé un, sinon la prochaine médaille. Plus un calendrier d'activité et le
@@ -48,6 +52,10 @@ La **prochaine médaille** affiche ce qu'il te reste et une date estimée à ton
 rythme récent — au choix sur les sept ou les trente derniers jours. Quand ton
 rythme est nul ou que l'échéance dépasse plusieurs années, l'app le dit au lieu
 d'inventer une date.
+
+L'onyx n'est pas la fin. Passé le dernier palier, l'app compte en multiples de
+celui-ci, comme le jeu : combien de fois entières tu l'as dépassé, et ce qu'il
+reste jusqu'à la suivante.
 
 Tu peux fixer un **objectif personnel** sur n'importe quel compteur, avec ou
 sans échéance, et voir si ton rythme actuel t'y mène. Sur le graphique,
