@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router.dart';
 import '../../domain/badge_projection.dart';
 import '../../domain/counter_list.dart';
+import '../../domain/counter_pace.dart';
 import '../../domain/models/counter_registry.dart';
 import '../../domain/models/tracked_counter.dart';
 import '../../l10n/app_localizations.dart';
@@ -46,6 +47,23 @@ class CounterListScreen extends ConsumerWidget {
   }
 }
 
+/// Why the list came back empty — the three reasons read differently.
+///
+/// "No counter matches the filters" after narrowing is not the same statement
+/// as "the thresholds have not loaded", which is not the app's opinion about
+/// the agent's game at all.
+String _emptyMessage(
+  AppLocalizations l10n,
+  CounterQuery query,
+  CounterRegistry? registry,
+) {
+  if (query.medalsOnly && registry == null) return l10n.countersMedalsUnknown;
+  if (query.search.trim().isNotEmpty) {
+    return l10n.counterSearchEmpty(query.search);
+  }
+  return l10n.countersFilteredEmpty;
+}
+
 class _CounterList extends ConsumerWidget {
   const _CounterList({required this.counters});
 
@@ -58,8 +76,11 @@ class _CounterList extends ConsumerWidget {
     final query = ref.watch(counterQueryProvider);
     final registry = ref.watch(counterRegistryProvider).asData?.value;
 
-    final builder =
-        CounterListBuilder(registry: registry, language: language);
+    final builder = CounterListBuilder(
+      registry: registry,
+      language: language,
+      pace: ref.watch(counterPaceProvider),
+    );
     final sections = builder.build(counters, query);
     final isEmpty = sections.every((s) => s.counters.isEmpty);
 
@@ -67,9 +88,7 @@ class _CounterList extends ConsumerWidget {
       children: [
         const _Controls(),
         if (isEmpty)
-          Expanded(
-            child: _Empty(message: l10n.counterSearchEmpty(query.search)),
-          )
+          Expanded(child: _Empty(message: _emptyMessage(l10n, query, registry)))
         else
           Expanded(
             child: ListView(
@@ -135,7 +154,12 @@ class _CounterList extends ConsumerWidget {
   }
 }
 
-/// Search field, ordering and the inactive toggle.
+/// Search field, ordering, the filters, and the window the ordering measures.
+///
+/// The filters are named chips rather than bare icon buttons. There was one
+/// filter before this — inactive counters — carried by an unlabelled eye,
+/// and adding a second would have left the row with two cryptic toggles and
+/// no vocabulary for what they do (#88).
 class _Controls extends ConsumerWidget {
   const _Controls();
 
@@ -144,10 +168,15 @@ class _Controls extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final query = ref.watch(counterQueryProvider);
     final notifier = ref.read(counterQueryProvider.notifier);
+    // The medal filter reads the registry. Until it has loaded there is
+    // nothing to filter on, so the chip is disabled rather than silently
+    // emptying the list (§3.1.4).
+    final registry = ref.watch(counterRegistryProvider).asData?.value;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
             decoration: InputDecoration(
@@ -159,56 +188,97 @@ class _Controls extends ConsumerWidget {
             onChanged: notifier.search,
           ),
           const SizedBox(height: 8),
-          Row(
+          DropdownButtonFormField<CounterSort>(
+            initialValue: query.sort,
+            isDense: true,
+            // Without this the dropdown sizes to its longest label and
+            // overflows on a narrow screen.
+            isExpanded: true,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              isDense: true,
+              labelText: l10n.sortLabel,
+            ),
+            items: [
+              DropdownMenuItem(
+                value: CounterSort.category,
+                child: Text(l10n.sortByCategory),
+              ),
+              DropdownMenuItem(
+                value: CounterSort.name,
+                child: Text(l10n.sortByName),
+              ),
+              DropdownMenuItem(
+                value: CounterSort.recentProgress,
+                child: Text(l10n.sortByRecentProgress),
+              ),
+              DropdownMenuItem(
+                value: CounterSort.nextTier,
+                child: Text(l10n.sortByNextTier),
+              ),
+            ],
+            onChanged: (sort) {
+              if (sort != null) notifier.sortBy(sort);
+            },
+          ),
+          const SizedBox(height: 8),
+          // Wrapped rather than in a Row: the labels are translated, and a
+          // French chip is not the width of an English one.
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Expanded(
-                child: DropdownButtonFormField<CounterSort>(
-                  initialValue: query.sort,
-                  isDense: true,
-                  // Without this the dropdown sizes to its longest label and
-                  // overflows next to the toggle on a narrow screen.
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    isDense: true,
-                    labelText: l10n.sortLabel,
-                  ),
-                  items: [
-                    DropdownMenuItem(
-                      value: CounterSort.category,
-                      child: Text(l10n.sortByCategory),
-                    ),
-                    DropdownMenuItem(
-                      value: CounterSort.name,
-                      child: Text(l10n.sortByName),
-                    ),
-                    DropdownMenuItem(
-                      value: CounterSort.recentProgress,
-                      child: Text(l10n.sortByRecentProgress),
-                    ),
-                  ],
-                  onChanged: (sort) {
-                    if (sort != null) notifier.sortBy(sort);
-                  },
+              Tooltip(
+                message: l10n.filterMedalsTooltip,
+                child: FilterChip(
+                  label: Text(l10n.filterMedals),
+                  selected: query.medalsOnly,
+                  onSelected: registry == null ? null : notifier.showMedalsOnly,
                 ),
               ),
-              const SizedBox(width: 8),
-              // Inactive counters stay in place, with a discreet chip, rather
-              // than moving to a separate screen (§3.1.2) — but hiding them is
-              // one tap away.
-              IconButton(
-                tooltip: l10n.showInactive,
-                isSelected: query.includeInactive,
-                icon: const Icon(Icons.visibility_off_outlined),
-                selectedIcon: const Icon(Icons.visibility),
-                onPressed: () => notifier.showInactive(!query.includeInactive),
+              Tooltip(
+                message: l10n.filterInactiveTooltip,
+                child: FilterChip(
+                  label: Text(l10n.filterInactive),
+                  selected: query.includeInactive,
+                  onSelected: notifier.showInactive,
+                ),
               ),
             ],
           ),
+          // Only while something measures across it, so the control is never
+          // dead: the other three orderings have no window (#89).
+          if (query.sort == CounterSort.recentProgress) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.progressWindowLabel,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            const SizedBox(height: 4),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final window in ProgressWindow.values)
+                  ChoiceChip(
+                    label: Text(_windowLabel(l10n, window)),
+                    selected: query.window == window,
+                    onSelected: (_) => notifier.measureOver(window),
+                  ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
+
+  String _windowLabel(AppLocalizations l10n, ProgressWindow window) =>
+      switch (window) {
+        ProgressWindow.sinceLastSnapshot => l10n.progressWindowSinceLast,
+        ProgressWindow.week => l10n.progressWindowWeek,
+        ProgressWindow.month => l10n.progressWindowMonth,
+      };
 }
 
 class _Empty extends StatelessWidget {

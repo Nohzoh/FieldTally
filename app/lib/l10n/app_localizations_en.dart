@@ -287,7 +287,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortByRecentProgress => 'Recent progress';
 
   @override
-  String get showInactive => 'Show inactive counters';
+  String get sortByNextTier => 'Closest to next tier';
+
+  @override
+  String get filtersLabel => 'Show';
+
+  @override
+  String get filterMedals => 'Medals';
+
+  @override
+  String get filterMedalsTooltip => 'Only counters that carry a badge';
+
+  @override
+  String get filterInactive => 'Inactive';
+
+  @override
+  String get filterInactiveTooltip =>
+      'Include counters that no longer appear in imports';
+
+  @override
+  String get progressWindowLabel => 'Measured over';
+
+  @override
+  String get progressWindowSinceLast => 'Since last';
+
+  @override
+  String get progressWindowWeek => '7 days';
+
+  @override
+  String get progressWindowMonth => '30 days';
+
+  @override
+  String get countersFilteredEmpty => 'No counter matches the filters.';
+
+  @override
+  String get countersMedalsUnknown =>
+      'Badge thresholds have not loaded yet, so no counter can be matched.';
 
   @override
   String inactiveSince(String date) {

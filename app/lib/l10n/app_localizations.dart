@@ -547,11 +547,77 @@ abstract class AppLocalizations {
   /// **'Recent progress'**
   String get sortByRecentProgress;
 
-  /// No description provided for @showInactive.
+  /// Orders the counter list by how far across its current stretch each counter has come — the share of the way from the tier behind to the one ahead, or to the next multiple past onyx (#90). A share rather than what is left in absolute terms: the counters span five orders of magnitude and only a fraction compares between them.
   ///
   /// In en, this message translates to:
-  /// **'Show inactive counters'**
-  String get showInactive;
+  /// **'Closest to next tier'**
+  String get sortByNextTier;
+
+  /// No description provided for @filtersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get filtersLabel;
+
+  /// Filter chip narrowing the list to counters that carry a badge (#88). Seventeen counters of fifty-nine, so roughly seven rows in ten disappear.
+  ///
+  /// In en, this message translates to:
+  /// **'Medals'**
+  String get filterMedals;
+
+  /// No description provided for @filterMedalsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Only counters that carry a badge'**
+  String get filterMedalsTooltip;
+
+  /// No description provided for @filterInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get filterInactive;
+
+  /// No description provided for @filterInactiveTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Include counters that no longer appear in imports'**
+  String get filterInactiveTooltip;
+
+  /// Labels the window the recent-progress ordering measures across. Shown only while that ordering is selected, so the control is never dead (#89).
+  ///
+  /// In en, this message translates to:
+  /// **'Measured over'**
+  String get progressWindowLabel;
+
+  /// No description provided for @progressWindowSinceLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Since last'**
+  String get progressWindowSinceLast;
+
+  /// No description provided for @progressWindowWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get progressWindowWeek;
+
+  /// No description provided for @progressWindowMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
+  String get progressWindowMonth;
+
+  /// No description provided for @countersFilteredEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No counter matches the filters.'**
+  String get countersFilteredEmpty;
+
+  /// No description provided for @countersMedalsUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Badge thresholds have not loaded yet, so no counter can be matched.'**
+  String get countersMedalsUnknown;
 
   /// No description provided for @inactiveSince.
   ///
