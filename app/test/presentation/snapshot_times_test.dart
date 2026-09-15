@@ -189,6 +189,29 @@ void main() {
     });
   });
 
+  group('no surface carries seconds (#81)', () {
+    test('every date-and-time format stops at the minute', () async {
+      // previewDetailedDateFormat was the one exception, on the import
+      // preview and the correction screen. It was precision the agent could
+      // not set: the time picker offers hours and minutes, and _pickTime
+      // rebuilds the date without the seconds, so a correction zeroed them
+      // silently. Minutes are now the single rule.
+      for (final locale in [const Locale('en'), const Locale('fr')]) {
+        final l10n = await AppLocalizations.delegate.load(locale);
+
+        for (final format in [
+          l10n.previewDetailedDateFormat,
+          l10n.snapshotDateFormat,
+          l10n.shortDateTimeFormat,
+        ]) {
+          expect(format, contains('HH:mm'), reason: format);
+          expect(format, isNot(contains('ss')), reason: format);
+          expect(format, isNot(contains('S')), reason: format);
+        }
+      }
+    });
+  });
+
   group('the dates that are about a day, not a moment', () {
     test('keep the format that carries no time', () async {
       // shortDateFormat is shared by goal deadlines, projected badge dates,

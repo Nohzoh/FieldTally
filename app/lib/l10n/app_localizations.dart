@@ -224,10 +224,10 @@ abstract class AppLocalizations {
   /// **'Nothing is saved until you confirm.'**
   String get previewNotSavedYet;
 
-  /// No description provided for @previewDetailedDateFormat.
+  /// A snapshot's moment in full, for the import preview and the correction screen. Minutes, like every other date-and-time surface: it carried seconds until #81, which was precision the agent could not set — the time picker offers hours and minutes, and a correction silently zeroes the rest.
   ///
   /// In en, this message translates to:
-  /// **'d MMMM y \'at\' HH:mm:ss'**
+  /// **'d MMMM y \'at\' HH:mm'**
   String get previewDetailedDateFormat;
 
   /// No description provided for @fieldAgent.

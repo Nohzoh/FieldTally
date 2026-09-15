@@ -79,7 +79,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Rien n\'est enregistré tant que tu n\'as pas confirmé.';
 
   @override
-  String get previewDetailedDateFormat => 'd MMMM y \'à\' HH:mm:ss';
+  String get previewDetailedDateFormat => 'd MMMM y \'à\' HH:mm';
 
   @override
   String get fieldAgent => 'Agent';

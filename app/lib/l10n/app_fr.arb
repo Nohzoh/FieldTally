@@ -21,7 +21,7 @@
   "analyze": "Analyser",
   "previewTitle": "Aperçu",
   "previewNotSavedYet": "Rien n'est enregistré tant que tu n'as pas confirmé.",
-  "previewDetailedDateFormat": "d MMMM y 'à' HH:mm:ss",
+  "previewDetailedDateFormat": "d MMMM y 'à' HH:mm",
   "fieldAgent": "Agent",
   "fieldFaction": "Faction",
   "fieldPeriod": "Période",
