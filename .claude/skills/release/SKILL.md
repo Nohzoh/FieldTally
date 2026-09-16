@@ -49,8 +49,15 @@ else.
 `app/assets/changelog.json`, keyed by the `versionCode` just decided above.
 Written by hand in both languages, from the milestone's issues — but not from
 their titles: those are English and written for contributors, not for the
-person reading the dialog. Two groups, `features` and `fixes`, each a plain
-list of short sentences in the same register as the release notes.
+person reading the dialog.
+
+Three parts. A `title`, one line summing the release up — that is the whole of
+what the dialog after an update shows (#112), so it is the sentence that gets
+read. Then `features` and `fixes`, each a plain list of short sentences in the
+same register as the release notes; those are for Settings → About, and for
+anyone with no network.
+
+A release that forgets its headline fails `changelog_test`, in both languages.
 
 Same commit as the version bump. Bundled at build time, never fetched: the app
 promises to work with no network, and a screen that only appears after an

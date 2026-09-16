@@ -1075,4 +1075,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changelogFixedHeading => '🐛 Fixed';
+
+  @override
+  String changelogHeadline(String version, String title) {
+    return '$version — $title';
+  }
+
+  @override
+  String get changelogFullNotes => 'Read the full notes';
 }

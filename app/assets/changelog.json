@@ -1,6 +1,10 @@
 {
   "2": {
     "version": "1.1.0",
+    "title": {
+      "en": "Your language, and what changed",
+      "fr": "Ta langue, et ce qui a changé"
+    },
     "features": {
       "en": [
         "The app now follows your phone's language. Settings lets you pick French or English instead.",
@@ -24,6 +28,10 @@
   },
   "3": {
     "version": "1.2.0",
+    "title": {
+      "en": "Medals, goals on the chart, and comparing with an agent",
+      "fr": "Médailles, objectifs sur le graphique, et comparaison entre agents"
+    },
     "features": {
       "en": [
         "The chart of a counter now shows what you are chasing: your goal if you set one, otherwise the next badge tier. The scale stretches to hold it, even when that flattens the curve — a target a long way off should look like one.",
@@ -39,6 +47,10 @@
   },
   "4": {
     "version": "1.3.0",
+    "title": {
+      "en": "Medals on the shareable card, and truer thresholds",
+      "fr": "Les médailles sur la carte à partager, et des seuils plus justes"
+    },
     "features": {
       "en": [
         "Your medals now travel on the shareable card, beside the counters that carry one.",
@@ -64,6 +76,10 @@
   },
   "5": {
     "version": "1.3.1",
+    "title": {
+      "en": "Dates and times that read properly",
+      "fr": "Des dates et des heures qui se lisent correctement"
+    },
     "fixes": {
       "en": [
         "Tapping a point on a counter's chart shows a date that holds on one line again, with the value set apart from the time instead of reading like the end of it — and both legible on the dark label they are drawn on.",
@@ -79,6 +95,10 @@
   },
   "6": {
     "version": "1.4.0",
+    "title": {
+      "en": "Counting past onyx, filtering, and progress over a window you pick",
+      "fr": "Compter au-delà de l’onyx, filtrer, et la progression sur la période de ton choix"
+    },
     "features": {
       "en": [
         "Once a counter is at onyx the app keeps counting with you: it shows how many whole times over the top threshold you are, and how much is left to the next one, instead of announcing there is nothing left to chase.",
@@ -94,6 +114,10 @@
   },
   "7": {
     "version": "1.5.0",
+    "title": {
+      "en": "Levels, further onyx multiples, and seasonal medals",
+      "fr": "Les niveaux, les multiples d’onyx suivants, et les médailles saisonnières"
+    },
     "features": {
       "en": [
         "Reaching a new level is announced. It was the one milestone the app stayed quiet about — and if you recurse and climb back, it is announced again, because you did it again.",

@@ -1791,6 +1791,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'🐛 Fixed'**
   String get changelogFixedHeading;
+
+  /// No description provided for @changelogHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'{version} — {title}'**
+  String changelogHeadline(String version, String title);
+
+  /// No description provided for @changelogFullNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the full notes'**
+  String get changelogFullNotes;
 }
 
 class _AppLocalizationsDelegate

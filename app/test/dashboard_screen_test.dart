@@ -96,15 +96,19 @@ void main() {
   }
 
   group('what changed after an update (§9)', () {
-    testWidgets('the notes are shown on the first frame after an update', (
+    testWidgets('the headline is shown on the first frame after an update', (
       tester,
     ) async {
+      // Headline and link, not the notes (#112). This dialog interrupts an
+      // agent who opened the app to use it; the notes stay bundled and stay
+      // in Settings, so nothing is lost and nothing needs the network.
       await pumpDashboard(
         tester,
         changelog: [
           ChangelogRelease(
             versionCode: 2,
             version: '1.1.0',
+            titles: const {'en': 'Your language, and what changed'},
             featureNotes: const {
               'en': ['Pick your language'],
             },
@@ -113,7 +117,16 @@ void main() {
         ],
       );
 
-      expect(find.text('Pick your language'), findsOneWidget);
+      expect(
+        find.text('1.1.0 — Your language, and what changed'),
+        findsOneWidget,
+      );
+      expect(find.text('Read the full notes'), findsOneWidget);
+      expect(
+        find.text('Pick your language'),
+        findsNothing,
+        reason: 'the notes belong to Settings, which was asked for',
+      );
     });
 
     testWidgets('nothing unseen leaves the dashboard alone', (tester) async {
