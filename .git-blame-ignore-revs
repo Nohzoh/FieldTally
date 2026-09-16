@@ -1,0 +1,25 @@
+# Revisions to skip when assigning blame.
+#
+# Only commits that changed no behaviour whatsoever belong here — a formatting
+# pass, a mass rename. A commit listed by mistake hides real authorship, so the
+# bar is that its diff can be shown to be layout and nothing else.
+#
+# Turn it on locally, once per clone:
+#
+#     git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# GitHub reads this file by name and needs no configuration.
+
+# style: format the whole repository with dart format (#96)
+#
+# 102 of 127 Dart files, moved to the Dart 3.7 "tall style" the package's own
+# language version asks for. Verified before merging: with whitespace and
+# trailing commas removed, every file was identical to its previous contents,
+# character for character.
+#
+# Measured afterwards: blame attributes 17,531 of app/lib's 17,573 lines past
+# this commit whether or not this file is in use, because git's own diff
+# matches a re-indented line to the one it came from. The 42 that remain are
+# lines the formatter created by splitting one in two, and no ignore rule can
+# reassign them — there is nothing to reassign them to.
+e1bc959eddc88ceacaa2e98d98bdce19f4316c7e
