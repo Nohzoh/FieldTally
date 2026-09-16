@@ -143,8 +143,7 @@ void main() {
 
     test('an export ending each line with a tab is read normally', () {
       final expected = parser.parseSingle(fixture(allTimePath));
-      final actual =
-          parser.parseSingle(withTrailingTabs(fixture(allTimePath)));
+      final actual = parser.parseSingle(withTrailingTabs(fixture(allTimePath)));
 
       expect(actual.agentName, expected.agentName);
       expect(actual.level, expected.level);
@@ -202,7 +201,10 @@ void main() {
 
   group('clean failures (§3.1)', () {
     test('empty text', () {
-      expect(() => parser.parse(''), throwsParseError(ParseErrorKind.emptyText));
+      expect(
+        () => parser.parse(''),
+        throwsParseError(ParseErrorKind.emptyText),
+      );
     });
 
     test('headers without a value row', () {

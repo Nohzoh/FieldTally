@@ -97,7 +97,9 @@ Future<void> _exportHistory(BuildContext context, WidgetRef ref) async {
   // share_plus names a data-backed file after a UUID, so the export landed in
   // the agent's Drive as "de7-11f1-….csv".
   final directory = await getTemporaryDirectory();
-  final file = File('${directory.path}/${exporter.fileNameFor(DateTime.now())}');
+  final file = File(
+    '${directory.path}/${exporter.fileNameFor(DateTime.now())}',
+  );
   await file.writeAsString(csv);
 
   await SharePlus.instance.share(
@@ -127,8 +129,9 @@ class _SnapshotList extends ConsumerWidget {
     // this is the screen that already answers "when did I record what".
     final dates = [for (final stored in snapshots) stored.snapshot.recordedAt]
       ..sort();
-    final activity = const CounterSeriesBuilder()
-        .activityByDay([for (final stored in snapshots) stored.snapshot]);
+    final activity = const CounterSeriesBuilder().activityByDay([
+      for (final stored in snapshots) stored.snapshot,
+    ]);
 
     return ListView.separated(
       padding: const EdgeInsets.only(bottom: 88),
@@ -157,9 +160,7 @@ class _SnapshotList extends ConsumerWidget {
           // no such column (Appendix B), so the avatar says so rather than
           // printing the absence.
           leading: CircleAvatar(
-            child: Text(
-              snapshot.level?.toString() ?? l10n.unknownValue,
-            ),
+            child: Text(snapshot.level?.toString() ?? l10n.unknownValue),
           ),
           title: Text(format.format(snapshot.recordedAt)),
           subtitle: Text(
@@ -246,8 +247,9 @@ class _Message extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               detail,
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: theme.colorScheme.outline),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
               textAlign: TextAlign.center,
             ),
           ],

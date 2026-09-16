@@ -62,13 +62,17 @@ void main() {
 
     db = FieldTallyDatabase(NativeDatabase.memory());
     share = FakeShareSource(initial: initialShare);
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android to post anything (§3.7).
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-      incomingShareProvider.overrideWithValue(share),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android to post anything (§3.7).
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+        incomingShareProvider.overrideWithValue(share),
+      ],
+    );
     // Order matters: tearDowns run last-registered-first, so the container is
     // disposed before the database is closed. Closing Drift while a stream
     // query is still subscribed hangs.
@@ -102,8 +106,9 @@ void main() {
   }
 
   group('incoming share (§3.1)', () {
-    testWidgets('a share received while running lands on the preview',
-        (tester) async {
+    testWidgets('a share received while running lands on the preview', (
+      tester,
+    ) async {
       await pumpApp(tester);
       expect(find.text('Nothing to show yet'), findsOneWidget);
 
@@ -135,20 +140,27 @@ void main() {
     testWidgets('nothing is saved without confirmation', (tester) async {
       // A share is an intent to import, not an import. The preview and its
       // guards still stand between the text and the history.
-      final repository = await pumpApp(tester, initialShare: fixture(allTimePath));
+      final repository = await pumpApp(
+        tester,
+        initialShare: fixture(allTimePath),
+      );
 
       expect(await repository.all(), isEmpty);
       expect(find.text('Save this snapshot'), findsOneWidget);
     });
 
-    testWidgets('the guards apply to a shared snapshot as well', (tester) async {
+    testWidgets('the guards apply to a shared snapshot as well', (
+      tester,
+    ) async {
       await pumpApp(tester, initialShare: fixture(weekPath));
 
       expect(find.text('Partial period detected'), findsOneWidget);
       expect(find.widgetWithText(FilledButton, 'Do not save'), findsOneWidget);
     });
 
-    testWidgets('unreadable shared text shows the parser error', (tester) async {
+    testWidgets('unreadable shared text shows the parser error', (
+      tester,
+    ) async {
       await pumpApp(tester, initialShare: 'shared from the wrong app');
 
       expect(find.text('Could not read this text'), findsOneWidget);
@@ -168,8 +180,9 @@ void main() {
       expect(find.text('59'), findsOneWidget);
     });
 
-    testWidgets('opening the app normally does not jump anywhere',
-        (tester) async {
+    testWidgets('opening the app normally does not jump anywhere', (
+      tester,
+    ) async {
       await pumpApp(tester);
 
       expect(find.text('Nothing to show yet'), findsOneWidget);

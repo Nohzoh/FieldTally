@@ -71,9 +71,9 @@ class CounterRegistryService {
       await settings.read(SettingKeys.onlineRegistryUpdates) != 'false';
 
   Future<void> setOnlineUpdatesEnabled(bool enabled) => settings.write(
-        SettingKeys.onlineRegistryUpdates,
-        enabled ? 'true' : 'false',
-      );
+    SettingKeys.onlineRegistryUpdates,
+    enabled ? 'true' : 'false',
+  );
 
   /// Attempts a refresh, honouring the preference and the interval.
   ///
@@ -86,7 +86,10 @@ class CounterRegistryService {
 
     // Recorded before the request: an attempt that hangs or fails must still
     // count, otherwise a device with no network retries on every launch.
-    await settings.write(SettingKeys.lastFetchAttempt, _now().toIso8601String());
+    await settings.write(
+      SettingKeys.lastFetchAttempt,
+      _now().toIso8601String(),
+    );
 
     final http.Client httpClient = client ?? http.Client();
     try {

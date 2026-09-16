@@ -18,12 +18,12 @@ import '../support/fake_notification_service.dart';
 const seedPath = 'assets/counters_registry_seed.json';
 
 StatSnapshot snap(Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: DateTime(2026, 1, 1),
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: DateTime(2026, 1, 1),
+  counters: counters,
+);
 
 void main() {
   late FieldTallyDatabase db;
@@ -38,10 +38,10 @@ void main() {
     db = FieldTallyDatabase(NativeDatabase.memory());
     settings = DriftSettingsRepository(db);
     service = FakeNotificationService();
-    coordinator =
-        NotificationCoordinator(service: service, settings: settings);
-    registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
+    coordinator = NotificationCoordinator(service: service, settings: settings);
+    registry = const CounterRegistryLoader().parse(
+      File(seedPath).readAsStringSync(),
+    );
   });
 
   tearDown(() => db.close());
@@ -102,13 +102,15 @@ void main() {
       expect(service.scheduled.single.body, contains('3 days'));
     });
 
-    test('cancels instead of scheduling when nothing was ever recorded',
-        () async {
-      await coordinator.rescheduleReminder(latestSnapshot: null, l10n: l10n);
+    test(
+      'cancels instead of scheduling when nothing was ever recorded',
+      () async {
+        await coordinator.rescheduleReminder(latestSnapshot: null, l10n: l10n);
 
-      expect(service.scheduled, isEmpty);
-      expect(service.cancels, 1);
-    });
+        expect(service.scheduled, isEmpty);
+        expect(service.cancels, 1);
+      },
+    );
 
     test('cancels instead of scheduling when notifications are off', () async {
       await coordinator.setEnabled(false);
@@ -126,10 +128,7 @@ void main() {
   group('milestone announcements (§3.7)', () {
     setUp(() => coordinator.setEnabled(true));
 
-    Future<void> announce(
-      Map<String, int> before,
-      Map<String, int> after,
-    ) =>
+    Future<void> announce(Map<String, int> before, Map<String, int> after) =>
         coordinator.announceMilestones(
           current: snap(after),
           previous: snap(before),

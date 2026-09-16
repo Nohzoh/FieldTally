@@ -64,9 +64,9 @@ LineTooltipItem _itemFor(LineChartData data, DateTime at) {
   final spot = bar.spots.firstWhere(
     (s) => s.x == at.millisecondsSinceEpoch.toDouble(),
   );
-  return data.lineTouchData.touchTooltipData
-      .getTooltipItems([LineBarSpot(bar, 0, spot)])
-      .first!;
+  return data.lineTouchData.touchTooltipData.getTooltipItems([
+    LineBarSpot(bar, 0, spot),
+  ]).first!;
 }
 
 /// WCAG relative luminance.
@@ -80,8 +80,9 @@ double _contrast(Color a, Color b) {
 
 void main() {
   group('the timestamp holds one line', () {
-    testWidgets('the box is wide enough for the longest form it can show',
-        (tester) async {
+    testWidgets('the box is wide enough for the longest form it can show', (
+      tester,
+    ) async {
       // Measured against the very style the widget paints with, rather than
       // trusting a number. fl_chart lays the text out with maxContentWidth as
       // its maxWidth, so anything wider wraps — which is precisely what broke
@@ -97,13 +98,15 @@ void main() {
       expect(
         data.lineTouchData.touchTooltipData.maxContentWidth,
         greaterThanOrEqualTo(painter.width),
-        reason: 'the timestamp "${item.text}" needs ${painter.width} and the '
+        reason:
+            'the timestamp "${item.text}" needs ${painter.width} and the '
             'tooltip caps at ${data.lineTouchData.touchTooltipData.maxContentWidth}',
       );
     });
 
-    testWidgets('and in French, where the month abbreviations differ',
-        (tester) async {
+    testWidgets('and in French, where the month abbreviations differ', (
+      tester,
+    ) async {
       final data = await pumpChart(tester, languageCode: 'fr');
       final item = _itemFor(data, _points[1]);
 
@@ -120,8 +123,9 @@ void main() {
   });
 
   group('the value is not the tail of the timestamp', () {
-    testWidgets('it is carried by its own span, weighted apart',
-        (tester) async {
+    testWidgets('it is carried by its own span, weighted apart', (
+      tester,
+    ) async {
       // "29,897" under "21:20", in the same style, reads as seconds and
       // milliseconds — and the thousands separator cannot carry the
       // distinction, being a comma in English and a space in French.
@@ -141,14 +145,14 @@ void main() {
       expect(value.style!.fontSize, greaterThan(item.textStyle.fontSize!));
     });
 
-    testWidgets('and reads with the separator of its own language',
-        (tester) async {
+    testWidgets('and reads with the separator of its own language', (
+      tester,
+    ) async {
       final data = await pumpChart(tester, languageCode: 'fr');
       final value = _itemFor(data, _points[1]).children!.single;
 
       expect(value.text, isNot(contains('29,897')));
-      expect(value.text!.replaceAll(RegExp(r'[\s  ]'), ''),
-          contains('29897'));
+      expect(value.text!.replaceAll(RegExp(r'[\s  ]'), ''), contains('29897'));
     });
   });
 

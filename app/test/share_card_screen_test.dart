@@ -25,15 +25,14 @@ StatSnapshot at(
   Map<String, int> counters, {
   int? level = 9,
   String faction = 'Enlightened',
-}) =>
-    StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: faction,
-      recordedAt: date,
-      level: level,
-      counters: counters,
-    );
+}) => StatSnapshot(
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: faction,
+  recordedAt: date,
+  level: level,
+  counters: counters,
+);
 
 void main() {
   late FieldTallyDatabase db;
@@ -51,15 +50,19 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-      // The dashboard is mounted on the way here and looks for unseen release
-      // notes on its first frame (§9); the real check reads PackageInfo, which
-      // no widget test has.
-      changelogCheckProvider.overrideWith((ref) async => const []),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+        // The dashboard is mounted on the way here and looks for unseen release
+        // notes on its first frame (§9); the real check reads PackageInfo, which
+        // no widget test has.
+        changelogCheckProvider.overrideWith((ref) async => const []),
+      ],
+    );
     // Dispose the container before closing the database: Drift hangs on close
     // while a stream query is still subscribed.
     addTearDown(db.close);
@@ -107,8 +110,7 @@ void main() {
   ];
 
   group('share card (§3.8)', () {
-    testWidgets('shows the agent, the values and the progress',
-        (tester) async {
+    testWidgets('shows the agent, the values and the progress', (tester) async {
       await pumpShareCard(
         tester,
         history: history,
@@ -122,8 +124,9 @@ void main() {
       expect(find.text('+8,735'), findsOneWidget);
     });
 
-    testWidgets('carries the non-affiliation notice into the image',
-        (tester) async {
+    testWidgets('carries the non-affiliation notice into the image', (
+      tester,
+    ) async {
       // The card is the part that leaves the app, so it is the part that has
       // to carry the notice.
       await pumpShareCard(tester, history: history, pinned: const ['Hacks']);
@@ -156,8 +159,9 @@ void main() {
       expect(find.text('+8,735'), findsNothing);
     });
 
-    testWidgets('a single snapshot says there is no progress yet',
-        (tester) async {
+    testWidgets('a single snapshot says there is no progress yet', (
+      tester,
+    ) async {
       await pumpShareCard(
         tester,
         history: [history.first],
@@ -168,16 +172,18 @@ void main() {
       expect(find.textContaining('Progress since'), findsNothing);
     });
 
-    testWidgets('without any snapshot there is nothing to share',
-        (tester) async {
+    testWidgets('without any snapshot there is nothing to share', (
+      tester,
+    ) async {
       await pumpShareCard(tester);
 
       expect(find.text('Nothing to share yet'), findsOneWidget);
       expect(find.byType(ShareCard), findsNothing);
     });
 
-    testWidgets('a level no import carried leaves no empty badge',
-        (tester) async {
+    testWidgets('a level no import carried leaves no empty badge', (
+      tester,
+    ) async {
       // Appendix B has no level column; an empty badge would look like a bug
       // on a public image.
       await pumpShareCard(
@@ -192,8 +198,9 @@ void main() {
       expect(find.textContaining('Level'), findsNothing);
     });
 
-    testWidgets('the card renders to a PNG at the expected size',
-        (tester) async {
+    testWidgets('the card renders to a PNG at the expected size', (
+      tester,
+    ) async {
       // The capture is the whole point of the screen, and it is the part that
       // silently produces nothing if the boundary is ever laid out at zero.
       await pumpShareCard(tester, history: history, pinned: const ['Hacks']);
@@ -211,7 +218,9 @@ void main() {
       // runAsync, because toImage waits on the real engine: inside the fake
       // clock of a widget test the future never completes and the suite hangs
       // with no output at all.
-      final image = await tester.runAsync(() => boundary.toImage(pixelRatio: 3));
+      final image = await tester.runAsync(
+        () => boundary.toImage(pixelRatio: 3),
+      );
       addTearDown(image!.dispose);
 
       // 360pt wide whatever the phone is: the card keeps its own layout and
@@ -244,8 +253,9 @@ void main() {
       });
     }
 
-    testWidgets('the image itself ignores the system text size',
-        (tester) async {
+    testWidgets('the image itself ignores the system text size', (
+      tester,
+    ) async {
       // A PNG other people look at should not carry its author's accessibility
       // setting: at 200% the labels would be enormous and truncated.
       await pumpShareCard(
@@ -272,8 +282,9 @@ void main() {
   });
 
   group('badge emblems on the card (#63)', () {
-    testWidgets('a pinned counter with a badge carries its medal',
-        (tester) async {
+    testWidgets('a pinned counter with a badge carries its medal', (
+      tester,
+    ) async {
       // 78,735 hacks: past gold at 30,000, short of platinum at 100,000.
       await pumpShareCard(tester, history: history, pinned: const ['Hacks']);
 
@@ -283,8 +294,7 @@ void main() {
       expect(medals.single.tierName, 'gold');
     });
 
-    testWidgets('a pinned counter without one carries nothing',
-        (tester) async {
+    testWidgets('a pinned counter without one carries nothing', (tester) async {
       // Lifetime AP has no thresholds, and an empty ring on a public image
       // would be a medal nobody could explain.
       await pumpShareCard(
@@ -296,8 +306,9 @@ void main() {
       expect(find.byType(MedalIcon), findsNothing);
     });
 
-    testWidgets('the emblems are told their colours, not left to the theme',
-        (tester) async {
+    testWidgets('the emblems are told their colours, not left to the theme', (
+      tester,
+    ) async {
       // The card carries its own palette on purpose: an image posted publicly
       // must not come out in light-mode ink because its author happened to be
       // in light mode. The emblem is the one part that could have read the
@@ -312,8 +323,11 @@ void main() {
 
         final medal = tester.widget<MedalIcon>(find.byType(MedalIcon));
         expect(medal.palette, isNotNull, reason: 'under $brightness');
-        expect(medal.palette!.brightness, Brightness.dark,
-            reason: 'under $brightness');
+        expect(
+          medal.palette!.brightness,
+          Brightness.dark,
+          reason: 'under $brightness',
+        );
       }
     });
   });

@@ -8,10 +8,10 @@ enum ChartRange {
 
   /// How far back the range reaches, or null for the whole history.
   Duration? get span => switch (this) {
-        ChartRange.week => const Duration(days: 7),
-        ChartRange.month => const Duration(days: 31),
-        ChartRange.all => null,
-      };
+    ChartRange.week => const Duration(days: 7),
+    ChartRange.month => const Duration(days: 31),
+    ChartRange.all => null,
+  };
 }
 
 /// One measured value at one moment.
@@ -32,8 +32,10 @@ class CounterSeries {
   /// A line needs two points.
   bool get isPlottable => points.length > 1;
 
-  int get minValue => points.map((p) => p.value).reduce((a, b) => a < b ? a : b);
-  int get maxValue => points.map((p) => p.value).reduce((a, b) => a > b ? a : b);
+  int get minValue =>
+      points.map((p) => p.value).reduce((a, b) => a < b ? a : b);
+  int get maxValue =>
+      points.map((p) => p.value).reduce((a, b) => a > b ? a : b);
 
   /// Progress across the shown range, or null when there is nothing to span.
   int? get gain => isPlottable ? points.last.value - points.first.value : null;
@@ -97,7 +99,8 @@ class CounterSeriesBuilder {
 
     final byDay = <DateTime, int>{};
     for (var i = 1; i < withAp.length; i++) {
-      final gain = withAp[i].counters[apHeader]! - withAp[i - 1].counters[apHeader]!;
+      final gain =
+          withAp[i].counters[apHeader]! - withAp[i - 1].counters[apHeader]!;
       if (gain <= 0) continue;
 
       final date = withAp[i].recordedAt;

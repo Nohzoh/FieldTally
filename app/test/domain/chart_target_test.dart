@@ -5,24 +5,23 @@ import 'package:fieldtally/domain/models/counter_registry.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Goal goalOf(int target) => Goal(
-      exportHeader: 'Hacks',
-      target: target,
-      createdAt: DateTime(2026, 1, 1),
-    );
+  exportHeader: 'Hacks',
+  target: target,
+  createdAt: DateTime(2026, 1, 1),
+);
 
 BadgeProjection projectionOf({
   required int value,
   CounterTier? next,
   CounterTier top = const CounterTier(name: 'onyx', value: 30000),
-}) =>
-    BadgeProjection(
-      value: value,
-      current: null,
-      next: next,
-      top: top,
-      perDay: 1,
-      window: ProjectionWindow.month,
-    );
+}) => BadgeProjection(
+  value: value,
+  current: null,
+  next: next,
+  top: top,
+  perDay: 1,
+  window: ProjectionWindow.month,
+);
 
 void main() {
   group('what the chart aims at (§3.5)', () {
@@ -75,10 +74,7 @@ void main() {
     });
 
     test('a goal met exactly counts as met', () {
-      final target = chartTargetFor(
-        currentValue: 1000,
-        goal: goalOf(1000),
-      );
+      final target = chartTargetFor(currentValue: 1000, goal: goalOf(1000));
 
       expect(target, isNull);
     });
@@ -97,10 +93,7 @@ void main() {
     });
 
     test('no value yet means nothing to compare against', () {
-      expect(
-        chartTargetFor(currentValue: null, goal: goalOf(1000)),
-        isNull,
-      );
+      expect(chartTargetFor(currentValue: null, goal: goalOf(1000)), isNull);
     });
 
     test('a fractional threshold is rounded to the counter\'s own units', () {

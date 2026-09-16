@@ -57,24 +57,26 @@ void main() {
     db.close();
   }
 
-  test('a v1 database opens, gains the pins table and keeps its data',
-      () async {
-    createV1Database();
+  test(
+    'a v1 database opens, gains the pins table and keeps its data',
+    () async {
+      createV1Database();
 
-    final db = FieldTallyDatabase(NativeDatabase(file));
+      final db = FieldTallyDatabase(NativeDatabase(file));
 
-    // Reading proves the upgrade ran: the table did not exist a moment ago.
-    expect(await db.select(db.pinnedCounters).get(), isEmpty);
+      // Reading proves the upgrade ran: the table did not exist a moment ago.
+      expect(await db.select(db.pinnedCounters).get(), isEmpty);
 
-    final snapshots = await db.select(db.snapshots).get();
-    expect(snapshots, hasLength(1));
-    expect(snapshots.single.agentName, 'AgentDemo');
+      final snapshots = await db.select(db.snapshots).get();
+      expect(snapshots, hasLength(1));
+      expect(snapshots.single.agentName, 'AgentDemo');
 
-    final values = await db.select(db.counterValues).get();
-    expect(values.single.value, 78735);
+      final values = await db.select(db.counterValues).get();
+      expect(values.single.value, 78735);
 
-    await db.close();
-  });
+      await db.close();
+    },
+  );
 
   /// A v3 file: pins and settings exist, level is still NOT NULL.
   void createV3Database() {
@@ -111,8 +113,10 @@ void main() {
     expect(snapshots.single.level, 9, reason: 'an existing level survives');
 
     expect((await db.select(db.counterValues).get()).single.value, 78735);
-    expect((await db.select(db.pinnedCounters).get()).single.exportHeader,
-        'Hacks');
+    expect(
+      (await db.select(db.pinnedCounters).get()).single.exportHeader,
+      'Hacks',
+    );
 
     await db.close();
   });
@@ -121,7 +125,9 @@ void main() {
     createV3Database();
     final db = FieldTallyDatabase(NativeDatabase(file));
 
-    await db.into(db.snapshots).insert(
+    await db
+        .into(db.snapshots)
+        .insert(
           SnapshotsCompanion.insert(
             id: 'migrated',
             agentName: '',
@@ -132,9 +138,9 @@ void main() {
           ),
         );
 
-    final stored = await (db.select(db.snapshots)
-          ..where((s) => s.id.equals('migrated')))
-        .getSingle();
+    final stored = await (db.select(
+      db.snapshots,
+    )..where((s) => s.id.equals('migrated'))).getSingle();
     expect(stored.level, isNull);
 
     await db.close();
@@ -144,12 +150,16 @@ void main() {
     createV1Database();
     final db = FieldTallyDatabase(NativeDatabase(file));
 
-    await db.into(db.pinnedCounters).insert(
+    await db
+        .into(db.pinnedCounters)
+        .insert(
           PinnedCountersCompanion.insert(exportHeader: 'Hacks', position: 0),
         );
 
-    expect((await db.select(db.pinnedCounters).get()).single.exportHeader,
-        'Hacks');
+    expect(
+      (await db.select(db.pinnedCounters).get()).single.exportHeader,
+      'Hacks',
+    );
     await db.close();
   });
 }

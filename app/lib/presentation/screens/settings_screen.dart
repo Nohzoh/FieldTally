@@ -43,7 +43,8 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
-    final enabled = ref.watch(onlineRegistryUpdatesProvider).asData?.value ?? true;
+    final enabled =
+        ref.watch(onlineRegistryUpdatesProvider).asData?.value ?? true;
     final registry = ref.watch(counterRegistryProvider).asData?.value;
     final notifications =
         ref.watch(notificationsEnabledProvider).asData?.value ?? false;
@@ -100,8 +101,9 @@ class SettingsScreen extends ConsumerWidget {
             enabled: notifications,
             title: Text(l10n.settingsReminderDelay(reminderDays)),
             trailing: DropdownButton<int>(
-              value:
-                  _reminderChoices.contains(reminderDays) ? reminderDays : null,
+              value: _reminderChoices.contains(reminderDays)
+                  ? reminderDays
+                  : null,
               onChanged: notifications
                   ? (value) => _setReminderDays(context, ref, value)
                   : null,
@@ -117,10 +119,9 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l10n.settingsLanguage),
             trailing: DropdownButton<String?>(
               value: locale?.languageCode,
-              onChanged: (value) => ref.read(settingsRepositoryProvider).write(
-                    SettingKeys.locale,
-                    value ?? '',
-                  ),
+              onChanged: (value) => ref
+                  .read(settingsRepositoryProvider)
+                  .write(SettingKeys.locale, value ?? ''),
               items: [
                 DropdownMenuItem(
                   value: null,
@@ -130,10 +131,7 @@ class SettingsScreen extends ConsumerWidget {
                 // someone who lands in one they cannot read still needs to
                 // recognise their own in the list.
                 for (final entry in _languages.entries)
-                  DropdownMenuItem(
-                    value: entry.key,
-                    child: Text(entry.value),
-                  ),
+                  DropdownMenuItem(value: entry.key, child: Text(entry.value)),
               ],
             ),
           ),
@@ -169,10 +167,9 @@ class SettingsScreen extends ConsumerWidget {
                   : l10n.settingsFactionColoursDetail,
             ),
             isThreeLine: faction != null,
-            onChanged: (value) => ref.read(settingsRepositoryProvider).write(
-                  SettingKeys.factionColours,
-                  value ? 'true' : 'false',
-                ),
+            onChanged: (value) => ref
+                .read(settingsRepositoryProvider)
+                .write(SettingKeys.factionColours, value ? 'true' : 'false'),
           ),
           const Divider(),
           _SectionHeader(title: l10n.settingsAboutSection),
@@ -184,9 +181,7 @@ class SettingsScreen extends ConsumerWidget {
                   ? l10n.settingsAboutSection
                   : l10n.settingsVersion(build.version, build.build),
             ),
-            subtitle: Text(
-              build?.commit ?? l10n.settingsBuildUnknown,
-            ),
+            subtitle: Text(build?.commit ?? l10n.settingsBuildUnknown),
             trailing: const Icon(Icons.copy_all_outlined),
             onTap: build == null ? null : () => _copyVersion(context, build),
           ),
@@ -194,7 +189,9 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l10n.settingsWhatsNew),
             subtitle: Text(l10n.settingsWhatsNewDetail),
             trailing: const Icon(Icons.new_releases_outlined),
-            onTap: build == null ? null : () => _showChangelog(context, ref, build),
+            onTap: build == null
+                ? null
+                : () => _showChangelog(context, ref, build),
           ),
           ListTile(
             title: Text(l10n.settingsAuthor),
@@ -219,8 +216,9 @@ class SettingsScreen extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             child: Text(
               l10n.disclaimer,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.outline),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
             ),
           ),
         ],
@@ -233,9 +231,7 @@ class SettingsScreen extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
 
     await Clipboard.setData(ClipboardData(text: build.summary));
-    messenger.showSnackBar(
-      SnackBar(content: Text(l10n.settingsVersionCopied)),
-    );
+    messenger.showSnackBar(SnackBar(content: Text(l10n.settingsVersionCopied)));
   }
 
   /// Reachable at any time, unlike the dialog shown right after an update:
@@ -253,12 +249,14 @@ class SettingsScreen extends ConsumerWidget {
     final releases = versionCode == null
         ? const <ChangelogRelease>[]
         : await ref
-            .read(changelogServiceProvider)
-            .currentReleaseNotes(versionCode);
+              .read(changelogServiceProvider)
+              .currentReleaseNotes(versionCode);
 
     if (!context.mounted) return;
     if (releases.isEmpty) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsWhatsNewNone)));
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.settingsWhatsNewNone)),
+      );
       return;
     }
 
@@ -277,18 +275,15 @@ class SettingsScreen extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
 
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.settingsLinkFailed)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l10n.settingsLinkFailed)));
     }
   }
 
   Future<void> _setThemeMode(WidgetRef ref, ThemeMode? mode) async {
     if (mode == null) return;
-    await ref.read(settingsRepositoryProvider).write(
-          SettingKeys.themeMode,
-          mode.name,
-        );
+    await ref
+        .read(settingsRepositoryProvider)
+        .write(SettingKeys.themeMode, mode.name);
   }
 
   /// Switching reminders on asks Android for the permission first: storing
@@ -329,7 +324,9 @@ class SettingsScreen extends ConsumerWidget {
   /// once rather than waiting for the next snapshot or the next launch.
   Future<void> _reschedule(WidgetRef ref, AppLocalizations l10n) async {
     final latest = await ref.read(snapshotRepositoryProvider).latest();
-    await ref.read(notificationCoordinatorProvider).rescheduleReminder(
+    await ref
+        .read(notificationCoordinatorProvider)
+        .rescheduleReminder(
           latestSnapshot: latest?.snapshot.recordedAt,
           l10n: l10n,
         );
@@ -348,8 +345,9 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Text(
         title,
-        style: theme.textTheme.titleSmall
-            ?.copyWith(color: theme.colorScheme.primary),
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.primary,
+        ),
       ),
     );
   }

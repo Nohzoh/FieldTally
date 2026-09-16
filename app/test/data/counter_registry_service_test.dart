@@ -16,26 +16,25 @@ const seedPath = 'assets/counters_registry_seed.json';
 String remoteRegistry({
   String updatedAt = '2099-01-01',
   String label = 'Remote Hacks',
-}) =>
-    jsonEncode({
-      'schema_version': 1,
-      'updated_at': updatedAt,
-      'categories': [
-        {
-          'key': 'resource_gathering',
-          'order': 1,
-          'label': {'en': 'Resource Gathering', 'fr': 'Collecte'},
-        },
-      ],
-      'counters': {
-        'hacker': {
-          'export_header': 'Hacks',
-          'category': 'resource_gathering',
-          'order': 0,
-          'label': {'en': label, 'fr': label},
-        },
-      },
-    });
+}) => jsonEncode({
+  'schema_version': 1,
+  'updated_at': updatedAt,
+  'categories': [
+    {
+      'key': 'resource_gathering',
+      'order': 1,
+      'label': {'en': 'Resource Gathering', 'fr': 'Collecte'},
+    },
+  ],
+  'counters': {
+    'hacker': {
+      'export_header': 'Hacks',
+      'category': 'resource_gathering',
+      'order': 0,
+      'label': {'en': label, 'fr': label},
+    },
+  },
+});
 
 void main() {
   late FieldTallyDatabase db;
@@ -53,25 +52,25 @@ void main() {
     http.Client? client,
     DateTime Function()? now,
     Duration interval = const Duration(hours: 24),
-  }) =>
-      CounterRegistryService(
-        settings: settings,
-        client: client,
-        now: now,
-        minimumInterval: interval,
-      );
+  }) => CounterRegistryService(
+    settings: settings,
+    client: client,
+    now: now,
+    minimumInterval: interval,
+  );
 
   MockClient responding(
     String body, {
     int status = 200,
     void Function()? onCall,
-  }) =>
-      MockClient((request) async {
-        onCall?.call();
-        return http.Response(body, status, headers: {
-          'content-type': 'application/json; charset=utf-8',
-        });
-      });
+  }) => MockClient((request) async {
+    onCall?.call();
+    return http.Response(
+      body,
+      status,
+      headers: {'content-type': 'application/json; charset=utf-8'},
+    );
+  });
 
   group('loading', () {
     test('falls back to the bundled copy when nothing is cached', () async {
@@ -101,12 +100,15 @@ void main() {
 
   group('refreshing (§3.1.4)', () {
     test('fetches on first run and adopts the result', () async {
-      final registry =
-          await service(client: responding(remoteRegistry())).refresh();
+      final registry = await service(
+        client: responding(remoteRegistry()),
+      ).refresh();
 
       expect(registry.forExportHeader('Hacks')!.label('en'), 'Remote Hacks');
-      expect(await settings.read(SettingKeys.cachedRegistryUpdatedAt),
-          '2099-01-01');
+      expect(
+        await settings.read(SettingKeys.cachedRegistryUpdatedAt),
+        '2099-01-01',
+      );
     });
 
     test('does not fetch again before the interval has passed', () async {
@@ -115,8 +117,10 @@ void main() {
       final now = DateTime(2026, 1, 1, 12);
 
       await service(client: client, now: () => now).refresh();
-      await service(client: client, now: () => now.add(const Duration(hours: 3)))
-          .refresh();
+      await service(
+        client: client,
+        now: () => now.add(const Duration(hours: 3)),
+      ).refresh();
 
       expect(calls, 1);
     });
@@ -127,8 +131,10 @@ void main() {
       final now = DateTime(2026, 1, 1, 12);
 
       await service(client: client, now: () => now).refresh();
-      await service(client: client, now: () => now.add(const Duration(hours: 25)))
-          .refresh();
+      await service(
+        client: client,
+        now: () => now.add(const Duration(hours: 25)),
+      ).refresh();
 
       expect(calls, 2);
     });
@@ -143,8 +149,10 @@ void main() {
       final now = DateTime(2026, 1, 1, 12);
 
       await service(client: client, now: () => now).refresh();
-      await service(client: client, now: () => now.add(const Duration(hours: 2)))
-          .refresh();
+      await service(
+        client: client,
+        now: () => now.add(const Duration(hours: 2)),
+      ).refresh();
 
       expect(calls, 1);
     });
@@ -161,23 +169,28 @@ void main() {
       expect(registry.forExportHeader('Hacks')!.label('en'), 'Remote Hacks');
     });
 
-    test('refuses an older version than the one already on the device', () async {
-      // Between a release and a registry deploy, the copy bundled with the app
-      // is the newer one — a plain "different, so take it" would quietly
-      // downgrade the app to the older file on Pages.
-      await settings.write(SettingKeys.cachedRegistry, remoteRegistry());
-      await settings.write(SettingKeys.cachedRegistryUpdatedAt, '2099-06-01');
+    test(
+      'refuses an older version than the one already on the device',
+      () async {
+        // Between a release and a registry deploy, the copy bundled with the app
+        // is the newer one — a plain "different, so take it" would quietly
+        // downgrade the app to the older file on Pages.
+        await settings.write(SettingKeys.cachedRegistry, remoteRegistry());
+        await settings.write(SettingKeys.cachedRegistryUpdatedAt, '2099-06-01');
 
-      final registry = await service(
-        client: responding(
-          remoteRegistry(updatedAt: '2099-01-01', label: 'Older Hacks'),
-        ),
-      ).refresh();
+        final registry = await service(
+          client: responding(
+            remoteRegistry(updatedAt: '2099-01-01', label: 'Older Hacks'),
+          ),
+        ).refresh();
 
-      expect(registry.forExportHeader('Hacks')!.label('en'), 'Remote Hacks');
-      expect(await settings.read(SettingKeys.cachedRegistryUpdatedAt),
-          '2099-06-01');
-    });
+        expect(registry.forExportHeader('Hacks')!.label('en'), 'Remote Hacks');
+        expect(
+          await settings.read(SettingKeys.cachedRegistryUpdatedAt),
+          '2099-06-01',
+        );
+      },
+    );
 
     test('refuses a registry older than the bundled copy', () async {
       // Nothing cached yet, so the comparison is against the seed shipped with
@@ -216,8 +229,7 @@ void main() {
       final registry = await service(client: client).refresh();
 
       expect(registry.forExportHeader('Hacks')!.label('en'), 'Remote Hacks');
-      expect(await settings.read(SettingKeys.cachedRegistry),
-          remoteRegistry());
+      expect(await settings.read(SettingKeys.cachedRegistry), remoteRegistry());
     }
 
     test('no network', () async {
@@ -242,23 +254,29 @@ void main() {
 
     test('an empty registry', () async {
       await expectCacheSurvives(
-        responding(jsonEncode({
-          'schema_version': 1,
-          'updated_at': '2099-09-09',
-          'categories': [],
-          'counters': <String, dynamic>{},
-        })),
+        responding(
+          jsonEncode({
+            'schema_version': 1,
+            'updated_at': '2099-09-09',
+            'categories': [],
+            'counters': <String, dynamic>{},
+          }),
+        ),
       );
     });
 
-    test('without any cache, a failure still yields the bundled copy',
-        () async {
-      final registry = await service(
-        client: MockClient((_) async => throw const SocketException('offline')),
-      ).refresh();
+    test(
+      'without any cache, a failure still yields the bundled copy',
+      () async {
+        final registry = await service(
+          client: MockClient(
+            (_) async => throw const SocketException('offline'),
+          ),
+        ).refresh();
 
-      expect(registry.length, 59);
-    });
+        expect(registry.length, 59);
+      },
+    );
   });
 
   group('the preference (§3.1.4)', () {

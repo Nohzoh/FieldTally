@@ -9,17 +9,18 @@ import 'package:flutter_test/flutter_test.dart';
 const seedPath = 'assets/counters_registry_seed.json';
 
 List<SeriesPoint> daily(DateTime from, List<int> values) => [
-      for (var i = 0; i < values.length; i++)
-        (at: from.add(Duration(days: i)), value: values[i]),
-    ];
+  for (var i = 0; i < values.length; i++)
+    (at: from.add(Duration(days: i)), value: values[i]),
+];
 
 void main() {
   const projector = BadgeProjector();
   late CounterRegistry registry;
 
   setUp(() {
-    registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
+    registry = const CounterRegistryLoader().parse(
+      File(seedPath).readAsStringSync(),
+    );
   });
 
   CounterEnrichment enrichment(String header) =>
@@ -76,8 +77,11 @@ void main() {
       expect(projection.topMultiple, 1);
       expect(projection.target, 60000);
       expect(projection.remaining, 19000);
-      expect(projection.projectedDate(DateTime(2026, 1, 2)), isNotNull,
-          reason: 'a pace of 1,000 a day reaches 60,000 in nineteen days');
+      expect(
+        projection.projectedDate(DateTime(2026, 1, 2)),
+        isNotNull,
+        reason: 'a pace of 1,000 a day reaches 60,000 in nineteen days',
+      );
     });
   });
 
@@ -142,20 +146,26 @@ void main() {
     });
 
     test('is the threshold itself once it is met exactly', () {
-      expect(tierReached(enrichment('Unique Portals Visited'), 100)!.name,
-          'bronze');
+      expect(
+        tierReached(enrichment('Unique Portals Visited'), 100)!.name,
+        'bronze',
+      );
     });
 
     test('is the highest one passed, not the first', () {
-      expect(tierReached(enrichment('Unique Portals Visited'), 1999)!.name,
-          'silver');
+      expect(
+        tierReached(enrichment('Unique Portals Visited'), 1999)!.name,
+        'silver',
+      );
     });
 
     test('stays on onyx once every threshold is behind', () {
       final onyx = enrichment('Unique Portals Visited').tiers.last;
       expect(
-        tierReached(enrichment('Unique Portals Visited'),
-            (onyx.value * 10).round())!.name,
+        tierReached(
+          enrichment('Unique Portals Visited'),
+          (onyx.value * 10).round(),
+        )!.name,
         'onyx',
       );
     });
@@ -212,7 +222,14 @@ void main() {
     test('follows the recent pace', () {
       // Ten a day, 500 to go: fifty days.
       final projection = projector.project(
-        points: daily(DateTime(2026, 1, 1), [1400, 1410, 1420, 1430, 1440, 1450]),
+        points: daily(DateTime(2026, 1, 1), [
+          1400,
+          1410,
+          1420,
+          1430,
+          1440,
+          1450,
+        ]),
         enrichment: enrichment('Unique Portals Visited'),
       )!;
 
@@ -348,8 +365,11 @@ void main() {
         (onyx * 14).round() + 1,
         (onyx * 15).round() - 1,
       ]) {
-        expect(topTierMultiple(enrichment('XM Recharged'), value), 14,
-            reason: '\$value');
+        expect(
+          topTierMultiple(enrichment('XM Recharged'), value),
+          14,
+          reason: '\$value',
+        );
       }
       expect(
         topTierMultiple(enrichment('XM Recharged'), (onyx * 15).round()),
@@ -405,8 +425,11 @@ void main() {
           points: daily(DateTime(2026, 1, 1), [0, value]),
           enrichment: counter,
         )!;
-        expect(topTierMultiple(counter, value), projection.topMultiple,
-            reason: '\$value links');
+        expect(
+          topTierMultiple(counter, value),
+          projection.topMultiple,
+          reason: '\$value links',
+        );
       }
     });
 
@@ -418,5 +441,4 @@ void main() {
       );
     });
   });
-
 }

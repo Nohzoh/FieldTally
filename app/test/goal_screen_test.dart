@@ -16,21 +16,22 @@ import 'support/fixed_registry.dart';
 import 'support/fake_notification_service.dart';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: date,
-      level: 9,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: date,
+  level: 9,
+  counters: counters,
+);
 
 /// Ten days ending today, ten portals a day.
 List<StatSnapshot> recentHistory() {
   final today = DateTime.now();
   return [
     for (var day = 9; day >= 0; day--)
-      at(today.subtract(Duration(days: day)),
-          {'Unique Portals Visited': 1400 + (9 - day) * 10}),
+      at(today.subtract(Duration(days: day)), {
+        'Unique Portals Visited': 1400 + (9 - day) * 10,
+      }),
   ];
 }
 
@@ -48,12 +49,16 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android to post anything (§3.7).
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android to post anything (§3.7).
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+      ],
+    );
     // Dispose the container before closing the database: closing Drift while a
     // stream query is still subscribed hangs.
     addTearDown(db.close);
@@ -103,8 +108,7 @@ void main() {
       expect(find.text('Set a goal'), findsOneWidget);
     });
 
-    testWidgets('setting one stores it and shows what is left',
-        (tester) async {
+    testWidgets('setting one stores it and shows what is left', (tester) async {
       await pumpDetail(tester);
       await scrollToGoal(tester);
 
@@ -124,8 +128,9 @@ void main() {
       expect(find.textContaining('510 to go'), findsOneWidget);
     });
 
-    testWidgets('a target at or below the current value is refused',
-        (tester) async {
+    testWidgets('a target at or below the current value is refused', (
+      tester,
+    ) async {
       // That is not a goal, it is a statement of the present.
       await pumpDetail(tester);
       await scrollToGoal(tester);
@@ -136,8 +141,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Must be above the current value'), findsOneWidget);
-      final save = tester
-          .widget<FilledButton>(find.widgetWithText(FilledButton, 'Save the goal'));
+      final save = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Save the goal'),
+      );
       expect(save.onPressed, isNull);
     });
 
@@ -175,7 +181,10 @@ void main() {
 
   group('the deadline picker (#80)', () {
     /// Opens the goal sheet and taps through to the calendar.
-    Future<void> openPicker(WidgetTester tester, {required bool editing}) async {
+    Future<void> openPicker(
+      WidgetTester tester, {
+      required bool editing,
+    }) async {
       await scrollToGoal(tester);
       await tester.tap(find.text(editing ? 'Change' : 'Set a goal'));
       await tester.pumpAndSettle();
@@ -184,12 +193,12 @@ void main() {
     }
 
     /// The month the calendar is showing, as its own header spells it.
-    String monthShown() => DateFormat('MMMM yyyy')
-        .format(DateTime.now())
-        .toUpperCase();
+    String monthShown() =>
+        DateFormat('MMMM yyyy').format(DateTime.now()).toUpperCase();
 
-    testWidgets('opens on the current month, with nothing chosen',
-        (tester) async {
+    testWidgets('opens on the current month, with nothing chosen', (
+      tester,
+    ) async {
       // It suggested a date thirty days out, which nothing motivated: the app
       // has no basis for an opinion about the agent's own ambition, and the
       // specification only ever gave an absolute date as its example.
@@ -239,8 +248,9 @@ void main() {
       expect(picker.initialDate, DateUtils.dateOnly(deadline));
     });
 
-    testWidgets('a deadline already missed does not take the picker down',
-        (tester) async {
+    testWidgets('a deadline already missed does not take the picker down', (
+      tester,
+    ) async {
       // showDatePicker asserts initialDate is not before firstDate. Re-dating
       // a goal whose deadline has passed handed it exactly that: a debug-mode
       // crash, and in release a selection outside the picker's own range.
@@ -299,14 +309,16 @@ void main() {
       expect(find.textContaining('Behind'), findsOneWidget);
     });
 
-    testWidgets('a stalled counter gets no opinion rather than "behind"',
-        (tester) async {
+    testWidgets('a stalled counter gets no opinion rather than "behind"', (
+      tester,
+    ) async {
       await pumpDetail(
         tester,
         history: [
           for (var day = 4; day >= 0; day--)
-            at(DateTime.now().subtract(Duration(days: day)),
-                const {'Unique Portals Visited': 1400}),
+            at(DateTime.now().subtract(Duration(days: day)), const {
+              'Unique Portals Visited': 1400,
+            }),
         ],
         goal: Goal(
           exportHeader: 'Unique Portals Visited',

@@ -13,13 +13,15 @@ import 'support/fixed_registry.dart';
 import 'support/fake_notification_service.dart';
 
 /// Three years of history, the way an agent migrating would have it.
-const goodCsv = 'Date ap lifetime_ap explorer hacker\n'
+const goodCsv =
+    'Date ap lifetime_ap explorer hacker\n'
     '2024-01-01 1000 500000 1200 9000\n'
     '2025-01-01 2000 900000 4500 40000\n'
     '2026-01-01 3281218 101542335 9756 78735';
 
 /// The same file with one row that goes backwards, in the middle.
-const badCsv = 'Date ap lifetime_ap explorer hacker\n'
+const badCsv =
+    'Date ap lifetime_ap explorer hacker\n'
     '2024-01-01 1000 500000 1200 9000\n'
     '2025-01-01 2000 900000 400 40000\n'
     '2026-01-01 3281218 101542335 9756 78735';
@@ -34,12 +36,16 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android to post anything (§3.7).
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android to post anything (§3.7).
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+      ],
+    );
     // Dispose the container before closing the database: closing Drift while a
     // stream query is still subscribed hangs.
     addTearDown(db.close);
@@ -107,8 +113,9 @@ void main() {
       expect(all.first.snapshot.counters['Unique Portals Visited'], 9756);
     });
 
-    testWidgets('says out loud that this format has no period column',
-        (tester) async {
+    testWidgets('says out loud that this format has no period column', (
+      tester,
+    ) async {
       // On this path the declarative guard simply does not exist, which is
       // worth stating rather than leaving implicit.
       await pumpImport(tester);
@@ -133,12 +140,15 @@ void main() {
       await analyze(tester, badCsv);
 
       // 1200 in 2024, 400 in 2025: the bad row is the middle one.
-      expect(find.textContaining('Unique Portals Visited: 1200 → 400'),
-          findsOneWidget);
+      expect(
+        find.textContaining('Unique Portals Visited: 1200 → 400'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('overriding takes a separate action and a confirmation',
-        (tester) async {
+    testWidgets('overriding takes a separate action and a confirmation', (
+      tester,
+    ) async {
       final repository = await pumpImport(tester);
       await analyze(tester, badCsv);
 
@@ -152,8 +162,9 @@ void main() {
     });
   });
 
-  testWidgets('an imported snapshot shows no level rather than "null"',
-      (tester) async {
+  testWidgets('an imported snapshot shows no level rather than "null"', (
+    tester,
+  ) async {
     // The Agent Stats format has no level column, so the field is genuinely
     // absent — printing the absence would be worse than saying so.
     await pumpImport(tester);

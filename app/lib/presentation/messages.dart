@@ -11,12 +11,12 @@ import '../l10n/app_localizations.dart';
 /// every user visible string sit in the `.arb` files (§3.10).
 extension TimeSpanMessages on TimeSpan {
   String label(AppLocalizations l10n) => switch (this) {
-        TimeSpan.allTime => l10n.timeSpanAllTime,
-        TimeSpan.week => l10n.timeSpanWeek,
-        TimeSpan.month => l10n.timeSpanMonth,
-        TimeSpan.now => l10n.timeSpanNow,
-        TimeSpan.unknown => l10n.timeSpanUnknown,
-      };
+    TimeSpan.allTime => l10n.timeSpanAllTime,
+    TimeSpan.week => l10n.timeSpanWeek,
+    TimeSpan.month => l10n.timeSpanMonth,
+    TimeSpan.now => l10n.timeSpanNow,
+    TimeSpan.unknown => l10n.timeSpanUnknown,
+  };
 }
 
 extension ImportCheckMessages on ImportCheck {
@@ -40,29 +40,29 @@ extension ImportCheckMessages on ImportCheck {
 
 extension ParseExceptionMessages on ExportParseException {
   String message(AppLocalizations l10n) => switch (kind) {
-        ParseErrorKind.emptyText => l10n.parseErrorEmptyText,
-        ParseErrorKind.headerOnly => l10n.parseErrorHeaderOnly,
-        ParseErrorKind.notTabSeparated => l10n.parseErrorNotTabSeparated,
-        ParseErrorKind.blankHeader =>
-          l10n.parseErrorBlankHeader(position ?? 0),
-        ParseErrorKind.duplicateHeader =>
-          l10n.parseErrorDuplicateHeader(column ?? ''),
-        ParseErrorKind.columnCountMismatch => l10n.parseErrorColumnCountMismatch(
-            position ?? 0,
-            actual ?? 0,
-            expected ?? 0,
-          ),
-        ParseErrorKind.missingColumn =>
-          l10n.parseErrorMissingColumn(column ?? ''),
-        ParseErrorKind.emptyValue => l10n.parseErrorEmptyValue(column ?? ''),
-        ParseErrorKind.notAnInteger => l10n.parseErrorNotAnInteger(column ?? ''),
-        ParseErrorKind.outOfRange => l10n.parseErrorOutOfRange(column ?? ''),
-        ParseErrorKind.invalidDate => l10n.parseErrorInvalidDate(rawValue ?? ''),
-        ParseErrorKind.invalidTime => l10n.parseErrorInvalidTime(rawValue ?? ''),
-        ParseErrorKind.nonExistentDate =>
-          l10n.parseErrorNonExistentDate(rawValue ?? ''),
-        ParseErrorKind.tooManyRows => l10n.parseErrorTooManyRows(actual ?? 0),
-      };
+    ParseErrorKind.emptyText => l10n.parseErrorEmptyText,
+    ParseErrorKind.headerOnly => l10n.parseErrorHeaderOnly,
+    ParseErrorKind.notTabSeparated => l10n.parseErrorNotTabSeparated,
+    ParseErrorKind.blankHeader => l10n.parseErrorBlankHeader(position ?? 0),
+    ParseErrorKind.duplicateHeader => l10n.parseErrorDuplicateHeader(
+      column ?? '',
+    ),
+    ParseErrorKind.columnCountMismatch => l10n.parseErrorColumnCountMismatch(
+      position ?? 0,
+      actual ?? 0,
+      expected ?? 0,
+    ),
+    ParseErrorKind.missingColumn => l10n.parseErrorMissingColumn(column ?? ''),
+    ParseErrorKind.emptyValue => l10n.parseErrorEmptyValue(column ?? ''),
+    ParseErrorKind.notAnInteger => l10n.parseErrorNotAnInteger(column ?? ''),
+    ParseErrorKind.outOfRange => l10n.parseErrorOutOfRange(column ?? ''),
+    ParseErrorKind.invalidDate => l10n.parseErrorInvalidDate(rawValue ?? ''),
+    ParseErrorKind.invalidTime => l10n.parseErrorInvalidTime(rawValue ?? ''),
+    ParseErrorKind.nonExistentDate => l10n.parseErrorNonExistentDate(
+      rawValue ?? '',
+    ),
+    ParseErrorKind.tooManyRows => l10n.parseErrorTooManyRows(actual ?? 0),
+  };
 
   /// The offending raw value, when there is one worth showing alongside the
   /// message so the user can spot what to fix.
@@ -72,8 +72,7 @@ extension ParseExceptionMessages on ExportParseException {
     return switch (kind) {
       ParseErrorKind.emptyValue ||
       ParseErrorKind.notAnInteger ||
-      ParseErrorKind.outOfRange =>
-        l10n.parseErrorRawValue(value),
+      ParseErrorKind.outOfRange => l10n.parseErrorRawValue(value),
       _ => null,
     };
   }

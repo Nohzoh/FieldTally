@@ -43,8 +43,10 @@ class GoalCard extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child:
-                      Text(l10n.goalTitle, style: theme.textTheme.titleSmall),
+                  child: Text(
+                    l10n.goalTitle,
+                    style: theme.textTheme.titleSmall,
+                  ),
                 ),
                 if (progress != null)
                   TextButton(
@@ -290,8 +292,9 @@ class _GoalSheetState extends State<_GoalSheet> {
     final existing = _deadline == null ? null : DateUtils.dateOnly(_deadline!);
     final picked = await showDatePicker(
       context: context,
-      initialDate:
-          existing != null && !existing.isBefore(today) ? existing : null,
+      initialDate: existing != null && !existing.isBefore(today)
+          ? existing
+          : null,
       firstDate: today,
       lastDate: DateTime(today.year + 5, today.month, today.day),
     );

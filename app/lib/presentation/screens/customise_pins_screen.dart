@@ -32,13 +32,13 @@ class _CustomisePinsScreenState extends ConsumerState<CustomisePinsScreen> {
     final l10n = AppLocalizations.of(context);
     final language = Localizations.localeOf(context).languageCode;
 
-    final counters = ref.watch(trackedCountersProvider).asData?.value ?? const [];
+    final counters =
+        ref.watch(trackedCountersProvider).asData?.value ?? const [];
     final registry = ref.watch(counterRegistryProvider).asData?.value;
     final pinned = ref.watch(pinnedCountersProvider).asData?.value ?? const [];
 
     final selection = _selection ??= [...pinned];
-    final builder =
-        CounterListBuilder(registry: registry, language: language);
+    final builder = CounterListBuilder(registry: registry, language: language);
 
     final sections = builder.build(
       counters,
@@ -93,10 +93,10 @@ class _CustomisePinsScreenState extends ConsumerState<CustomisePinsScreen> {
                           PinnedCounterRepository.maxPinned,
                         ),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: tooFew
-                            ? Theme.of(context).colorScheme.error
-                            : Theme.of(context).colorScheme.outline,
-                      ),
+                    color: tooFew
+                        ? Theme.of(context).colorScheme.error
+                        : Theme.of(context).colorScheme.outline,
+                  ),
                 ),
               ],
             ),
@@ -111,17 +111,18 @@ class _CustomisePinsScreenState extends ConsumerState<CustomisePinsScreen> {
                       title: Text(builder.labelFor(counter)),
                       // Past the maximum, the remaining boxes go flat rather
                       // than silently dropping an earlier choice.
-                      onChanged: selection.length >=
+                      onChanged:
+                          selection.length >=
                                   PinnedCounterRepository.maxPinned &&
                               !selection.contains(counter.exportHeader)
                           ? null
                           : (checked) => setState(() {
-                                if (checked ?? false) {
-                                  selection.add(counter.exportHeader);
-                                } else {
-                                  selection.remove(counter.exportHeader);
-                                }
-                              }),
+                              if (checked ?? false) {
+                                selection.add(counter.exportHeader);
+                              } else {
+                                selection.remove(counter.exportHeader);
+                              }
+                            }),
                     ),
                 const SizedBox(height: 24),
               ],

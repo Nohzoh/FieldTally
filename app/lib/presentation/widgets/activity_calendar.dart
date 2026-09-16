@@ -47,7 +47,9 @@ class ActivityCalendar extends StatelessWidget {
     final start = _startOfWeek(from);
     final weeks = (to.difference(start).inDays / 7).floor() + 1;
 
-    final weekdayLabels = DateFormat.E(locale).dateSymbols.STANDALONESHORTWEEKDAYS;
+    final weekdayLabels = DateFormat.E(
+      locale,
+    ).dateSymbols.STANDALONESHORTWEEKDAYS;
     final months = DateFormat.MMM(locale);
 
     return Column(
@@ -100,9 +102,11 @@ class ActivityCalendar extends StatelessWidget {
     );
   }
 
-  static DateTime _startOfWeek(DateTime day) =>
-      DateTime(day.year, day.month, day.day)
-          .subtract(Duration(days: day.weekday % 7));
+  static DateTime _startOfWeek(DateTime day) => DateTime(
+    day.year,
+    day.month,
+    day.day,
+  ).subtract(Duration(days: day.weekday % 7));
 }
 
 class _WeekdayLabels extends StatelessWidget {
@@ -197,7 +201,7 @@ class _Square extends StatelessWidget {
         message: value == null
             ? DateFormat.yMMMd(locale).format(day)
             : '${DateFormat.yMMMd(locale).format(day)} · '
-                '${NumberFormat.decimalPattern(locale).format(value)} AP',
+                  '${NumberFormat.decimalPattern(locale).format(value)} AP',
         child: Container(
           width: size,
           height: size,
@@ -205,8 +209,9 @@ class _Square extends StatelessWidget {
             borderRadius: BorderRadius.circular(2),
             color: value == null
                 ? theme.colorScheme.surfaceContainerHighest
-                : theme.colorScheme.primary
-                    .withValues(alpha: 0.25 + 0.75 * intensity),
+                : theme.colorScheme.primary.withValues(
+                    alpha: 0.25 + 0.75 * intensity,
+                  ),
           ),
         ),
       ),

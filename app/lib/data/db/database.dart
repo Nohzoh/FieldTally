@@ -19,6 +19,7 @@ class Snapshots extends Table {
   TextColumn get timeSpan => text()();
 
   DateTimeColumn get recordedAt => dateTime()();
+
   /// Null when the source did not carry it — the migration CSV of Appendix B
   /// has no level column.
   IntColumn get level => integer().nullable()();
@@ -106,34 +107,34 @@ class Goals extends Table {
 )
 class FieldTallyDatabase extends _$FieldTallyDatabase {
   FieldTallyDatabase([QueryExecutor? executor])
-      : super(executor ?? driftDatabase(name: 'fieldtally'));
+    : super(executor ?? driftDatabase(name: 'fieldtally'));
 
   @override
   int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onUpgrade: (m, from, to) async {
-          // v2 adds the dashboard pins. Nothing to backfill: an empty table
-          // simply means the dashboard falls back to its defaults.
-          if (from < 2) await m.createTable(pinnedCounters);
-          // v3 adds preferences and the cached registry (§3.1.4). Empty means
-          // "never fetched", which is exactly the state a fresh install is in.
-          if (from < 3) await m.createTable(appSettings);
-          // v4 makes `level` nullable: the migration CSV has no such column,
-          // and storing 0 would read as "level 0" rather than "not known".
-          // SQLite cannot drop a NOT NULL in place, so the table is recreated.
-          if (from < 4) {
-            await m.alterTable(TableMigration(snapshots));
-          }
-          // v5 adds personal goals (§3.7). An empty table is the right state
-          // for an agent who has not set any.
-          if (from < 5) await m.createTable(goals);
-        },
-        beforeOpen: (details) async {
-          // Without this, SQLite ignores `onDelete: cascade`: deleting a
-          // snapshot would leave its counter values orphaned.
-          await customStatement('PRAGMA foreign_keys = ON');
-        },
-      );
+    onUpgrade: (m, from, to) async {
+      // v2 adds the dashboard pins. Nothing to backfill: an empty table
+      // simply means the dashboard falls back to its defaults.
+      if (from < 2) await m.createTable(pinnedCounters);
+      // v3 adds preferences and the cached registry (§3.1.4). Empty means
+      // "never fetched", which is exactly the state a fresh install is in.
+      if (from < 3) await m.createTable(appSettings);
+      // v4 makes `level` nullable: the migration CSV has no such column,
+      // and storing 0 would read as "level 0" rather than "not known".
+      // SQLite cannot drop a NOT NULL in place, so the table is recreated.
+      if (from < 4) {
+        await m.alterTable(TableMigration(snapshots));
+      }
+      // v5 adds personal goals (§3.7). An empty table is the right state
+      // for an agent who has not set any.
+      if (from < 5) await m.createTable(goals);
+    },
+    beforeOpen: (details) async {
+      // Without this, SQLite ignores `onDelete: cascade`: deleting a
+      // snapshot would leave its counter values orphaned.
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 }

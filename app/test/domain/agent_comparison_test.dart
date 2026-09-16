@@ -10,24 +10,26 @@ import 'package:flutter_test/flutter_test.dart';
 const seedPath = 'assets/counters_registry_seed.json';
 
 StatSnapshot snapshot(String agent, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: agent,
-      faction: 'Enlightened',
-      recordedAt: DateTime(2026, 9, 13),
-      level: 14,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: agent,
+  faction: 'Enlightened',
+  recordedAt: DateTime(2026, 9, 13),
+  level: 14,
+  counters: counters,
+);
 
 void main() {
   late CounterRegistry registry;
 
   setUp(() {
-    registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
+    registry = const CounterRegistryLoader().parse(
+      File(seedPath).readAsStringSync(),
+    );
   });
 
-  List<ComparisonRow> flat(List<ComparisonSection> sections) =>
-      [for (final section in sections) ...section.rows];
+  List<ComparisonRow> flat(List<ComparisonSection> sections) => [
+    for (final section in sections) ...section.rows,
+  ];
 
   ComparisonRow rowFor(List<ComparisonSection> sections, String header) =>
       flat(sections).firstWhere((r) => r.exportHeader == header);

@@ -36,8 +36,8 @@ class MedalMetal {
   /// medal then draws in the unearned style rather than guessing a colour.
   static MedalMetal? of(String? tierName, Brightness brightness) =>
       tierName == null
-          ? null
-          : (brightness == Brightness.dark ? _dark : _light)[tierName];
+      ? null
+      : (brightness == Brightness.dark ? _dark : _light)[tierName];
 }
 
 /// The colours a medal is drawn with, for a surface that does not follow the
@@ -101,8 +101,7 @@ class MedalIcon extends StatelessWidget {
 
   /// Whether an emblem exists for this counter. A counter with thresholds but
   /// no drawing must not render a bare ring — better nothing at all.
-  static bool existsFor(String counterKey) =>
-      _glyphs.containsKey(counterKey);
+  static bool existsFor(String counterKey) => _glyphs.containsKey(counterKey);
 
   /// Every counter an emblem is drawn for.
   ///
@@ -117,7 +116,8 @@ class MedalIcon extends StatelessWidget {
     if (glyph == null) return SizedBox.square(dimension: size);
 
     final theme = Theme.of(context);
-    final colours = palette ??
+    final colours =
+        palette ??
         MedalPalette(
           brightness: theme.brightness,
           // Unearned: the medal exists, the agent is not there yet.
@@ -190,8 +190,8 @@ class _MedalPainter extends CustomPainter {
     final colour = metal == null
         ? unearned
         : metal!.solid
-            ? onSolid
-            : ink;
+        ? onSolid
+        : ink;
     final fill = Paint()
       ..color = colour
       ..style = PaintingStyle.fill
@@ -242,8 +242,15 @@ void _roundRect(Canvas c, Paint p, Rect rect, double radius) =>
     c.drawRRect(RRect.fromRectXY(rect, radius, radius), p);
 
 /// Dashes a straight run, since Flutter has no dash support on Paint.
-void _dashed(Canvas c, Paint p, double x, double y1, double y2,
-    {double dash = 1.5, double gap = 2.0}) {
+void _dashed(
+  Canvas c,
+  Paint p,
+  double x,
+  double y1,
+  double y2, {
+  double dash = 1.5,
+  double gap = 2.0,
+}) {
   var y = y1;
   while (y < y2) {
     final end = (y + dash).clamp(y1, y2);
@@ -256,10 +263,22 @@ void _dashed(Canvas c, Paint p, double x, double y1, double y2,
 /// medals: what differs between them is what the frame holds.
 void _scanFrame(Canvas c, Paint stroke) {
   for (final path in [
-    Path()..moveTo(5, 9.4)..lineTo(5, 5)..lineTo(9.4, 5),
-    Path()..moveTo(14.6, 5)..lineTo(19, 5)..lineTo(19, 9.4),
-    Path()..moveTo(19, 14.6)..lineTo(19, 19)..lineTo(14.6, 19),
-    Path()..moveTo(9.4, 19)..lineTo(5, 19)..lineTo(5, 14.6),
+    Path()
+      ..moveTo(5, 9.4)
+      ..lineTo(5, 5)
+      ..lineTo(9.4, 5),
+    Path()
+      ..moveTo(14.6, 5)
+      ..lineTo(19, 5)
+      ..lineTo(19, 9.4),
+    Path()
+      ..moveTo(19, 14.6)
+      ..lineTo(19, 19)
+      ..lineTo(14.6, 19),
+    Path()
+      ..moveTo(9.4, 19)
+      ..lineTo(5, 19)
+      ..lineTo(5, 14.6),
   ]) {
     c.drawPath(path, stroke);
   }
@@ -269,14 +288,38 @@ void _scanFrame(Canvas c, Paint stroke) {
 void _pin(Canvas c, Paint p, {required bool filled}) {
   final path = Path()
     ..moveTo(12, filled ? 7.6 : 3.8)
-    ..cubicTo(filled ? 10.1 : 8.1, filled ? 7.6 : 3.8, filled ? 8.6 : 5,
-        filled ? 9.1 : 6.9, filled ? 8.6 : 5, filled ? 11 : 10.8)
-    ..cubicTo(filled ? 8.6 : 5, filled ? 13.4 : 15.6, 12, filled ? 16.6 : 20.6,
-        12, filled ? 16.6 : 20.6)
-    ..cubicTo(12, filled ? 16.6 : 20.6, filled ? 15.4 : 19,
-        filled ? 13.4 : 15.6, filled ? 15.4 : 19, filled ? 11 : 10.8)
-    ..cubicTo(filled ? 15.4 : 19, filled ? 9.1 : 6.9, filled ? 13.9 : 15.9,
-        filled ? 7.6 : 3.8, 12, filled ? 7.6 : 3.8)
+    ..cubicTo(
+      filled ? 10.1 : 8.1,
+      filled ? 7.6 : 3.8,
+      filled ? 8.6 : 5,
+      filled ? 9.1 : 6.9,
+      filled ? 8.6 : 5,
+      filled ? 11 : 10.8,
+    )
+    ..cubicTo(
+      filled ? 8.6 : 5,
+      filled ? 13.4 : 15.6,
+      12,
+      filled ? 16.6 : 20.6,
+      12,
+      filled ? 16.6 : 20.6,
+    )
+    ..cubicTo(
+      12,
+      filled ? 16.6 : 20.6,
+      filled ? 15.4 : 19,
+      filled ? 13.4 : 15.6,
+      filled ? 15.4 : 19,
+      filled ? 11 : 10.8,
+    )
+    ..cubicTo(
+      filled ? 15.4 : 19,
+      filled ? 9.1 : 6.9,
+      filled ? 13.9 : 15.9,
+      filled ? 7.6 : 3.8,
+      12,
+      filled ? 7.6 : 3.8,
+    )
     ..close();
   c.drawPath(path, p);
 }
@@ -285,12 +328,12 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
   // Distance covered: a winding road. No end dots — those belong to the link,
   // and at list size a line between two dots was the same drawing.
   'trekker': (c, fill, stroke) => c.drawPath(
-        Path()
-          ..moveTo(5.4, 19.6)
-          ..cubicTo(12, 19.6, 6, 13.4, 12, 12)
-          ..cubicTo(18, 10.6, 12, 4.4, 18.6, 4.4),
-        stroke..strokeWidth = 2.4,
-      ),
+    Path()
+      ..moveTo(5.4, 19.6)
+      ..cubicTo(12, 19.6, 6, 13.4, 12, 12)
+      ..cubicTo(18, 10.6, 12, 4.4, 18.6, 4.4),
+    stroke..strokeWidth = 2.4,
+  ),
 
   // A hack: something taken out of a portal.
   'hacker': (c, fill, stroke) {
@@ -418,8 +461,12 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
 
   // Resonators destroyed: a deployed piece struck out.
   'purifier': (c, fill, stroke) {
-    _roundRect(c, stroke..strokeWidth = 2.2,
-        const Rect.fromLTWH(5.4, 5.4, 13.2, 13.2), 2.4);
+    _roundRect(
+      c,
+      stroke..strokeWidth = 2.2,
+      const Rect.fromLTWH(5.4, 5.4, 13.2, 13.2),
+      2.4,
+    );
     _line(c, stroke..strokeWidth = 2.4, 8.8, 8.8, 15.2, 15.2);
     _line(c, stroke, 15.2, 8.8, 8.8, 15.2);
   },
@@ -453,8 +500,12 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
 
   // An operation carried out: a task struck off.
   'specops': (c, fill, stroke) {
-    _roundRect(c, stroke..strokeWidth = 2.2,
-        const Rect.fromLTWH(4.4, 4.4, 15.2, 15.2), 2.8);
+    _roundRect(
+      c,
+      stroke..strokeWidth = 2.2,
+      const Rect.fromLTWH(4.4, 4.4, 15.2, 15.2),
+      2.8,
+    );
     c.drawPath(
       Path()
         ..moveTo(8, 12.2)

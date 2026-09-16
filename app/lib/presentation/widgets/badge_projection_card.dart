@@ -97,8 +97,9 @@ class BadgeProjectionCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               _estimate(l10n, dates, date),
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.outline),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
             ),
             if (projection.perDay != null && projection.perDay! > 0)
               Text(
@@ -106,8 +107,9 @@ class BadgeProjectionCard extends StatelessWidget {
                   numbers.format(projection.perDay!.round()),
                   _windowLabel(l10n, projection.window),
                 ),
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.outline),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
               ),
             const SizedBox(height: 12),
             // Labelled differently from the chart's range selector on the
@@ -141,8 +143,9 @@ class BadgeProjectionCard extends StatelessWidget {
   /// From two upwards: a bare "x 1" would only repeat what "Onyx medal"
   /// already says, and reads like a countdown that has not started.
   Widget _medalLine(AppLocalizations l10n, ThemeData theme) {
-    final style =
-        theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline);
+    final style = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.outline,
+    );
     final current = projection.current;
     if (current == null) return Text(l10n.medalNone, style: style);
 
@@ -199,11 +202,7 @@ class BadgeProjectionCard extends StatelessWidget {
     );
   }
 
-  String _estimate(
-    AppLocalizations l10n,
-    DateFormat dates,
-    DateTime? date,
-  ) {
+  String _estimate(AppLocalizations l10n, DateFormat dates, DateTime? date) {
     if (date != null) return l10n.projectionDate(dates.format(date));
     final pace = projection.perDay;
     // Two different silences, worth telling apart: nothing is happening, or

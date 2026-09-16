@@ -53,9 +53,9 @@ bool _isMojibakeHead(int rune, int? next) =>
 /// Prints a run of text with anything unprintable escaped, so the failure
 /// message survives a terminal that would otherwise swallow it.
 String readable(String text) => text.replaceAllMapped(
-      RegExp(r'[\u0000-\u001f\u007f-\u009f]'),
-      (m) => '\\u${m[0]!.runes.first.toRadixString(16).padLeft(4, '0')}',
-    );
+  RegExp(r'[\u0000-\u001f\u007f-\u009f]'),
+  (m) => '\\u${m[0]!.runes.first.toRadixString(16).padLeft(4, '0')}',
+);
 
 List<Sighting> _scan(File file) {
   final found = <Sighting>[];
@@ -69,11 +69,13 @@ List<Sighting> _scan(File file) {
 
       final from = (r - 30).clamp(0, runes.length);
       final to = (r + 20).clamp(0, runes.length);
-      found.add(Sighting(
-        file: file.path,
-        line: i + 1,
-        text: readable(String.fromCharCodes(runes.sublist(from, to))),
-      ));
+      found.add(
+        Sighting(
+          file: file.path,
+          line: i + 1,
+          text: readable(String.fromCharCodes(runes.sublist(from, to))),
+        ),
+      );
       break; // One sighting per line is enough to point at it.
     }
   }
@@ -81,12 +83,13 @@ List<Sighting> _scan(File file) {
 }
 
 void main() {
-  final files = Directory(_l10nDirectory)
-      .listSync()
-      .whereType<File>()
-      .where((f) => f.path.endsWith('.arb') || f.path.endsWith('.dart'))
-      .toList()
-    ..sort((a, b) => a.path.compareTo(b.path));
+  final files =
+      Directory(_l10nDirectory)
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.arb') || f.path.endsWith('.dart'))
+          .toList()
+        ..sort((a, b) => a.path.compareTo(b.path));
 
   group('the localisation resources are cleanly encoded (#70)', () {
     test('there is something to scan', () {
@@ -108,7 +111,8 @@ void main() {
       expect(
         sightings,
         isEmpty,
-        reason: 'mojibake, most likely text pasted through a Latin-1 step:\n'
+        reason:
+            'mojibake, most likely text pasted through a Latin-1 step:\n'
             '${sightings.join('\n')}',
       );
     });

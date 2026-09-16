@@ -12,13 +12,13 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/fake_notification_service.dart';
 
 StatSnapshot snap(String faction, DateTime at) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: faction,
-      recordedAt: at,
-      level: 9,
-      counters: const {'Hacks': 1},
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: faction,
+  recordedAt: at,
+  level: 9,
+  counters: const {'Hacks': 1},
+);
 
 void main() {
   late FieldTallyDatabase db;
@@ -26,10 +26,14 @@ void main() {
 
   setUp(() {
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+      ],
+    );
     // Dispose the container before closing the database: Drift hangs on close
     // while a stream query is still subscribed.
     addTearDown(db.close);
@@ -78,9 +82,9 @@ void main() {
     }
 
     test('the app keeps its own colour until asked otherwise', () async {
-      await container.read(snapshotRepositoryProvider).save(
-            snap('Enlightened', DateTime(2026, 1, 1)),
-          );
+      await container
+          .read(snapshotRepositoryProvider)
+          .save(snap('Enlightened', DateTime(2026, 1, 1)));
       await warm();
 
       expect(container.read(themeSeedProvider), Colors.teal);
@@ -101,9 +105,9 @@ void main() {
     });
 
     test('an unknown faction leaves the app its own colour', () async {
-      await container.read(snapshotRepositoryProvider).save(
-            snap('Machina', DateTime(2026, 1, 1)),
-          );
+      await container
+          .read(snapshotRepositoryProvider)
+          .save(snap('Machina', DateTime(2026, 1, 1)));
       await container
           .read(settingsRepositoryProvider)
           .write(SettingKeys.factionColours, 'true');

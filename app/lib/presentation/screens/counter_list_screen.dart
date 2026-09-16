@@ -120,8 +120,9 @@ class _CounterList extends ConsumerWidget {
           child: Text(
             registry?.categories[section.categoryKey]?.label(language) ??
                 l10n.fallbackCategory,
-            style: theme.textTheme.titleSmall
-                ?.copyWith(color: theme.colorScheme.primary),
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
           ),
         ),
       for (final counter in section.counters)
@@ -147,9 +148,7 @@ class _CounterList extends ConsumerWidget {
       medalKey: key != null && MedalIcon.existsFor(key) ? key : null,
       tierName: tierReached(enrichment, counter.lastValue)?.name,
       tierMultiple: topTierMultiple(enrichment, counter.lastValue),
-      onTap: () => context.go(
-        Routes.counterDetail(counter.exportHeader),
-      ),
+      onTap: () => context.go(Routes.counterDetail(counter.exportHeader)),
     );
   }
 }
@@ -295,8 +294,9 @@ class _Empty extends StatelessWidget {
         child: Text(
           message,
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.colorScheme.outline),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.outline,
+          ),
         ),
       ),
     );

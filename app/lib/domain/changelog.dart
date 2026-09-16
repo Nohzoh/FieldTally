@@ -18,11 +18,13 @@ List<ChangelogRelease> unseenReleases({
 }) {
   if (lastSeenVersionCode == null) return const [];
 
-  final unseen = all.where(
-    (release) =>
-        release.versionCode > lastSeenVersionCode &&
-        release.versionCode <= installedVersionCode,
-  ).toList();
+  final unseen = all
+      .where(
+        (release) =>
+            release.versionCode > lastSeenVersionCode &&
+            release.versionCode <= installedVersionCode,
+      )
+      .toList();
   unseen.sort((a, b) => a.versionCode.compareTo(b.versionCode));
   return unseen;
 }

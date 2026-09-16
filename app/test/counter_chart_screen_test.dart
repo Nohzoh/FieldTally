@@ -18,13 +18,13 @@ import 'support/fake_notification_service.dart';
 const seedPath = 'assets/counters_registry_seed.json';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: date,
-      level: 9,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: date,
+  level: 9,
+  counters: counters,
+);
 
 void main() {
   late FieldTallyDatabase db;
@@ -40,12 +40,16 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android to post anything (§3.7).
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android to post anything (§3.7).
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+      ],
+    );
     // Dispose the container before closing the database: closing Drift while a
     // stream query is still subscribed hangs.
     addTearDown(db.close);
@@ -94,12 +98,15 @@ void main() {
       expect(find.text('All'), findsOneWidget);
     });
 
-    testWidgets('a single snapshot says a chart cannot be drawn',
-        (tester) async {
+    testWidgets('a single snapshot says a chart cannot be drawn', (
+      tester,
+    ) async {
       await pumpAt(
         tester,
         Routes.counterDetail('Hacks'),
-        history: [at(DateTime(2026, 1, 1), const {'Hacks': 10})],
+        history: [
+          at(DateTime(2026, 1, 1), const {'Hacks': 10}),
+        ],
       );
 
       expect(find.textContaining('At least two snapshots'), findsOneWidget);
@@ -127,8 +134,9 @@ void main() {
       expect(week, greaterThan(1), reason: 'a range must stay plottable');
     });
 
-    testWidgets('the progress over the range is stated in words too',
-        (tester) async {
+    testWidgets('the progress over the range is stated in words too', (
+      tester,
+    ) async {
       // §3.9: the chart is never the only carrier of information.
       await pumpAt(tester, Routes.counterDetail('Hacks'), history: twoMonths);
 
@@ -166,17 +174,22 @@ void main() {
       // activity — worth saying rather than letting the calendar imply it.
       await pumpAt(tester, Routes.snapshots, history: twoMonths);
 
-      expect(find.textContaining('on the day each snapshot was taken'),
-          findsOneWidget);
+      expect(
+        find.textContaining('on the day each snapshot was taken'),
+        findsOneWidget,
+      );
       expect(find.textContaining('days with progress'), findsOneWidget);
     });
 
-    testWidgets('a single snapshot says why there is nothing to show',
-        (tester) async {
+    testWidgets('a single snapshot says why there is nothing to show', (
+      tester,
+    ) async {
       await pumpAt(
         tester,
         Routes.snapshots,
-        history: [at(DateTime(2026, 1, 1), const {'Lifetime AP': 100})],
+        history: [
+          at(DateTime(2026, 1, 1), const {'Lifetime AP': 100}),
+        ],
       );
 
       expect(find.textContaining('Two snapshots are needed'), findsOneWidget);

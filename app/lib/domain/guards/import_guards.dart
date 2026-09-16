@@ -95,7 +95,8 @@ class ImportGuards {
         // Level, Lifetime AP and Current AP are never scoped to the selected
         // period, so watching them would say nothing: a WEEK import leaves
         // them identical. The signal is elsewhere.
-        final periodized = registry?.isPeriodized(header) ??
+        final periodized =
+            registry?.isPeriodized(header) ??
             !StatSnapshot.nonPeriodizedHeaders.contains(header);
         if (!periodized) continue;
 

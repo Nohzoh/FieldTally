@@ -20,20 +20,27 @@ void main() {
     test('loads with its 59 counters and its categories', () {
       expect(registry.length, 59);
       expect(registry.categories, contains('discovery'));
-      expect(registry.categories, contains(CounterRegistry.fallbackCategoryKey));
+      expect(
+        registry.categories,
+        contains(CounterRegistry.fallbackCategoryKey),
+      );
       expect(registry.schemaVersion, greaterThan(0));
     });
 
     test('covers exactly the counters of the real fixture', () {
-      final snapshot = const IngressTsvParser()
-          .parseSingle(File(allTimePath).readAsStringSync());
+      final snapshot = const IngressTsvParser().parseSingle(
+        File(allTimePath).readAsStringSync(),
+      );
 
       final unknown = snapshot.counters.keys
           .where((h) => registry.forExportHeader(h) == null)
           .toList();
 
-      expect(unknown, isEmpty,
-          reason: 'these columns have no enrichment entry');
+      expect(
+        unknown,
+        isEmpty,
+        reason: 'these columns have no enrichment entry',
+      );
     });
 
     test('maps to the right category and carries both labels', () {
@@ -54,8 +61,11 @@ void main() {
         'Apollo Tokens',
         'Mission Day(s) Attended',
       ]) {
-        expect(registry.forExportHeader(header)!.categoryKey, 'events',
-            reason: header);
+        expect(
+          registry.forExportHeader(header)!.categoryKey,
+          'events',
+          reason: header,
+        );
       }
     });
 
@@ -71,10 +81,14 @@ void main() {
       final hacks = registry.forExportHeader('Hacks')!.tiers;
 
       expect(hacks, hasLength(5));
-      expect(hacks.map((t) => t.name),
-          ['bronze', 'silver', 'gold', 'platinum', 'onyx']);
-      expect(hacks.map((t) => t.value),
-          [2000, 10000, 30000, 100000, 200000]);
+      expect(hacks.map((t) => t.name), [
+        'bronze',
+        'silver',
+        'gold',
+        'platinum',
+        'onyx',
+      ]);
+      expect(hacks.map((t) => t.value), [2000, 10000, 30000, 100000, 200000]);
     });
 
     test('leaves counters that are not medals without thresholds', () {
@@ -135,7 +149,10 @@ void main() {
 
       expect(empty.length, 0);
       expect(empty.forExportHeader('Hacks'), isNull);
-      expect(empty.categoryKeyFor('Hacks'), CounterRegistry.fallbackCategoryKey);
+      expect(
+        empty.categoryKeyFor('Hacks'),
+        CounterRegistry.fallbackCategoryKey,
+      );
       expect(empty.isPeriodized('Hacks'), isTrue);
       expect(empty.sortHeaders(['B', 'A']), ['A', 'B']);
     });

@@ -17,10 +17,14 @@ void main() {
 
   setUp(() {
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+      ],
+    );
     // Dispose the container before closing the database: Drift hangs on close
     // while a stream query is still subscribed.
     addTearDown(db.close);
@@ -49,10 +53,7 @@ void main() {
           .write(SettingKeys.locale, 'en');
       await warm();
 
-      expect(
-        container.read(localeProvider).requireValue,
-        const Locale('en'),
-      );
+      expect(container.read(localeProvider).requireValue, const Locale('en'));
     });
 
     test('going back to the system clears the override', () async {

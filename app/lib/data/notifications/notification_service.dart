@@ -33,7 +33,7 @@ abstract interface class NotificationService {
 /// Implementation backed by `flutter_local_notifications`.
 class PluginNotificationService implements NotificationService {
   PluginNotificationService({FlutterLocalNotificationsPlugin? plugin})
-      : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+    : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   final FlutterLocalNotificationsPlugin _plugin;
   bool _ready = false;
@@ -64,8 +64,10 @@ class PluginNotificationService implements NotificationService {
   Future<bool> ensurePermission() async {
     await _initialise();
 
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android == null) return false;
 
     // Android 13 and later ask; earlier versions grant it at install time and
@@ -74,13 +76,13 @@ class PluginNotificationService implements NotificationService {
   }
 
   NotificationDetails get _details => const NotificationDetails(
-        android: AndroidNotificationDetails(
-          _channelId,
-          'FieldTally',
-          importance: Importance.defaultImportance,
-          priority: Priority.defaultPriority,
-        ),
-      );
+    android: AndroidNotificationDetails(
+      _channelId,
+      'FieldTally',
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+    ),
+  );
 
   @override
   Future<void> show({

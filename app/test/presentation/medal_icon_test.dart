@@ -15,8 +15,8 @@ const tiers = ['bronze', 'silver', 'gold', 'platinum', 'onyx'];
 void main() {
   // Read from the seed rather than through the loader: what has to be covered
   // is the file a contributor edits, key by key.
-  final seed = jsonDecode(File(seedPath).readAsStringSync())
-      as Map<String, dynamic>;
+  final seed =
+      jsonDecode(File(seedPath).readAsStringSync()) as Map<String, dynamic>;
   final tiered = [
     for (final entry in (seed['counters'] as Map<String, dynamic>).entries)
       if ((entry.value as Map<String, dynamic>)['tiers'] != null) entry.key,
@@ -37,8 +37,11 @@ void main() {
         for (final key in tiered)
           if (!MedalIcon.existsFor(key)) key,
       ];
-      expect(missing, isEmpty,
-          reason: 'no emblem drawn for: ${missing.join(', ')}');
+      expect(
+        missing,
+        isEmpty,
+        reason: 'no emblem drawn for: ${missing.join(', ')}',
+      );
     });
 
     test('no emblem is drawn for a counter that has no thresholds', () {
@@ -48,8 +51,11 @@ void main() {
         for (final key in MedalIcon.emblemKeys)
           if (!tiered.contains(key)) key,
       ];
-      expect(orphans, isEmpty,
-          reason: 'emblem drawn for untiered counters: ${orphans.join(', ')}');
+      expect(
+        orphans,
+        isEmpty,
+        reason: 'emblem drawn for untiered counters: ${orphans.join(', ')}',
+      );
     });
   });
 
@@ -59,8 +65,11 @@ void main() {
         final rims = [
           for (final tier in tiers) MedalMetal.of(tier, brightness)!.rim,
         ];
-        expect(rims.toSet(), hasLength(tiers.length),
-            reason: 'two tiers share a colour on $brightness');
+        expect(
+          rims.toSet(),
+          hasLength(tiers.length),
+          reason: 'two tiers share a colour on $brightness',
+        );
       }
     });
 
@@ -75,8 +84,11 @@ void main() {
     test('fill onyx solid, and only onyx', () {
       for (final brightness in Brightness.values) {
         for (final tier in tiers) {
-          expect(MedalMetal.of(tier, brightness)!.solid, tier == 'onyx',
-              reason: '$tier on $brightness');
+          expect(
+            MedalMetal.of(tier, brightness)!.solid,
+            tier == 'onyx',
+            reason: '$tier on $brightness',
+          );
         }
       }
     });
@@ -93,7 +105,7 @@ void main() {
           MaterialApp(
             home: Center(
               child: Wrap(
-              children: [
+                children: [
                   for (final tier in [null, ...tiers])
                     MedalIcon(counterKey: key, tierName: tier),
                 ],
@@ -174,8 +186,9 @@ void main() {
       expect(find.byType(MedalIcon), findsOneWidget);
     });
 
-    testWidgets('does not swallow the progress since the last import',
-        (tester) async {
+    testWidgets('does not swallow the progress since the last import', (
+      tester,
+    ) async {
       await pumpTile(tester, tierName: 'gold');
       expect(find.textContaining('no comparison yet'), findsOneWidget);
     });

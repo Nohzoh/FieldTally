@@ -49,8 +49,10 @@ Future<void> _sheet(WidgetTester tester, Brightness brightness) async {
                       children: [
                         SizedBox(
                           width: 150,
-                          child: Text(key,
-                              style: const TextStyle(fontSize: 12)),
+                          child: Text(
+                            key,
+                            style: const TextStyle(fontSize: 12),
+                          ),
                         ),
                         for (final tier in _tiers) ...[
                           MedalIcon(counterKey: key, tierName: tier),

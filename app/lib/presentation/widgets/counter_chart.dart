@@ -43,10 +43,10 @@ class CounterChart extends StatelessWidget {
         .copyWith(color: onTooltip);
     final valueStyle = (theme.textTheme.titleSmall ?? const TextStyle())
         .copyWith(
-      color: onTooltip,
-      fontWeight: FontWeight.w600,
-      fontFeatures: const [FontFeature.tabularFigures()],
-    );
+          color: onTooltip,
+          fontWeight: FontWeight.w600,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        );
 
     if (!series.isPlottable) {
       return _NotEnough(message: l10n.chartNeedsTwoSnapshots);
@@ -63,9 +63,10 @@ class CounterChart extends StatelessWidget {
     final target = this.target;
     final max = target == null
         ? series.maxValue.toDouble()
-        : [series.maxValue.toDouble(), target.value.toDouble()].reduce(
-            (a, b) => a > b ? a : b,
-          );
+        : [
+            series.maxValue.toDouble(),
+            target.value.toDouble(),
+          ].reduce((a, b) => a > b ? a : b);
 
     // A counter that did not move has no vertical range to scale to; pad it so
     // the line sits mid-height instead of dividing by zero.
@@ -75,12 +76,13 @@ class CounterChart extends StatelessWidget {
     final targetLabel = target == null
         ? null
         : switch (target.kind) {
-            ChartTargetKind.goal =>
-              l10n.chartTargetGoal(numbers.format(target.value)),
+            ChartTargetKind.goal => l10n.chartTargetGoal(
+              numbers.format(target.value),
+            ),
             ChartTargetKind.badge => l10n.chartTargetBadge(
-                tierLabel(l10n, target.tierName ?? ''),
-                numbers.format(target.value),
-              ),
+              tierLabel(l10n, target.tierName ?? ''),
+              numbers.format(target.value),
+            ),
           };
 
     return Semantics(
@@ -162,8 +164,8 @@ class CounterChart extends StatelessWidget {
                     // near the origin, which collided with the first label.
                     // The tooltip carries the exact date for every point.
                     getTitlesWidget: (value, meta) {
-                      final isEdge = (value - first).abs() < 1 ||
-                          (value - last).abs() < 1;
+                      final isEdge =
+                          (value - first).abs() < 1 || (value - last).abs() < 1;
                       if (!isEdge) return const SizedBox.shrink();
                       return Padding(
                         padding: const EdgeInsets.only(top: 6),
@@ -193,8 +195,9 @@ class CounterChart extends StatelessWidget {
                         show: true,
                         alignment: Alignment.topLeft,
                         padding: const EdgeInsets.only(left: 4, bottom: 2),
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(color: theme.colorScheme.tertiary),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.tertiary,
+                        ),
                         labelResolver: (_) => targetLabel,
                       ),
                     ),

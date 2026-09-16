@@ -30,16 +30,18 @@ class ChangelogRelease {
   List<String> fixes(String languageCode) =>
       fixNotes[languageCode] ?? fixNotes['en'] ?? const [];
 
-  factory ChangelogRelease.fromJson(String versionCode, Map<String, dynamic> json) =>
-      ChangelogRelease(
-        versionCode: int.parse(versionCode),
-        version: json['version'] as String,
-        featureNotes: _stringListMap(json['features']),
-        fixNotes: _stringListMap(json['fixes']),
-      );
+  factory ChangelogRelease.fromJson(
+    String versionCode,
+    Map<String, dynamic> json,
+  ) => ChangelogRelease(
+    versionCode: int.parse(versionCode),
+    version: json['version'] as String,
+    featureNotes: _stringListMap(json['features']),
+    fixNotes: _stringListMap(json['fixes']),
+  );
 
   static Map<String, List<String>> _stringListMap(Object? json) => {
-        for (final entry in (json as Map? ?? const {}).entries)
-          entry.key as String: List<String>.from(entry.value as List),
-      };
+    for (final entry in (json as Map? ?? const {}).entries)
+      entry.key as String: List<String>.from(entry.value as List),
+  };
 }

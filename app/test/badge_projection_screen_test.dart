@@ -16,13 +16,13 @@ import 'support/fixed_registry.dart';
 import 'support/fake_notification_service.dart';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: date,
-      level: 9,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: date,
+  level: 9,
+  counters: counters,
+);
 
 void main() {
   late FieldTallyDatabase db;
@@ -38,12 +38,16 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android to post anything (§3.7).
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android to post anything (§3.7).
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+      ],
+    );
     // Dispose the container before closing the database: closing Drift while a
     // stream query is still subscribed hangs.
     addTearDown(db.close);
@@ -78,54 +82,73 @@ void main() {
 
   /// Ten portals a day for a fortnight, sitting between silver and gold.
   List<StatSnapshot> steadyExplorer() => [
-        for (var day = 0; day < 14; day++)
-          at(DateTime(2026, 1, 1).add(Duration(days: day)),
-              {'Unique Portals Visited': 1400 + day * 10}),
-      ];
+    for (var day = 0; day < 14; day++)
+      at(DateTime(2026, 1, 1).add(Duration(days: day)), {
+        'Unique Portals Visited': 1400 + day * 10,
+      }),
+  ];
 
   group('badge projection (§3.6)', () {
     testWidgets('shows the next tier and what is left', (tester) async {
-      await pumpDetail(tester, 'Unique Portals Visited',
-          history: steadyExplorer());
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: steadyExplorer(),
+      );
 
       expect(find.byType(BadgeProjectionCard), findsOneWidget);
       expect(find.text('Next badge'), findsOneWidget);
       expect(find.textContaining('to go for Gold'), findsOneWidget);
     });
 
-    testWidgets('states the projected date and the pace in words',
-        (tester) async {
+    testWidgets('states the projected date and the pace in words', (
+      tester,
+    ) async {
       // §3.9: the progress bar is never the only carrier of information.
-      await pumpDetail(tester, 'Unique Portals Visited',
-          history: steadyExplorer());
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: steadyExplorer(),
+      );
 
       expect(find.textContaining('at your recent pace'), findsOneWidget);
       expect(find.textContaining('per day'), findsOneWidget);
     });
 
-    testWidgets('a stalled counter gets no date rather than a wrong one',
-        (tester) async {
-      await pumpDetail(tester, 'Unique Portals Visited', history: [
-        for (var day = 0; day < 5; day++)
-          at(DateTime(2026, 1, 1).add(Duration(days: day)),
-              const {'Unique Portals Visited': 1400}),
-      ]);
+    testWidgets('a stalled counter gets no date rather than a wrong one', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: [
+          for (var day = 0; day < 5; day++)
+            at(DateTime(2026, 1, 1).add(Duration(days: day)), const {
+              'Unique Portals Visited': 1400,
+            }),
+        ],
+      );
 
       expect(find.textContaining('has not moved lately'), findsOneWidget);
       expect(find.textContaining('at your recent pace'), findsNothing);
     });
 
-    testWidgets('past onyx the card keeps working instead of collapsing',
-        (tester) async {
+    testWidgets('past onyx the card keeps working instead of collapsing', (
+      tester,
+    ) async {
       // It used to print one sentence — "Onyx reached, nothing left to chase"
       // — and drop the bar, the estimate, the pace and the window selector
       // along with it. On a counter like XM Recharged that was the card for
       // years (#87).
-      await pumpDetail(tester, 'Unique Portals Visited', history: [
-        // Explorer onyx is 30,000; twice that is 60,000.
-        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 44000}),
-        at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 45000}),
-      ]);
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: [
+          // Explorer onyx is 30,000; twice that is 60,000.
+          at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 44000}),
+          at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 45000}),
+        ],
+      );
 
       expect(find.textContaining('nothing left to chase'), findsNothing);
       expect(find.textContaining('15,000 to go for \u00d72'), findsOneWidget);
@@ -136,37 +159,51 @@ void main() {
 
     testWidgets('the multiplier is held back at one', (tester) async {
       // A bare "x 1" would only repeat what "Onyx medal" already says.
-      await pumpDetail(tester, 'Unique Portals Visited', history: [
-        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 44000}),
-        at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 45000}),
-      ]);
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: [
+          at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 44000}),
+          at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 45000}),
+        ],
+      );
 
       expect(find.text('Onyx medal'), findsOneWidget);
       expect(find.textContaining('Onyx medal \u00d7'), findsNothing);
     });
 
-    testWidgets('and named beside the medal once it is worth saying',
-        (tester) async {
-      await pumpDetail(tester, 'Unique Portals Visited', history: [
-        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 200000}),
-        at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 210000}),
-      ]);
+    testWidgets('and named beside the medal once it is worth saying', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: [
+          at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 200000}),
+          at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 210000}),
+        ],
+      );
 
       // 210,000 against an onyx of 30,000 is exactly seven times over.
       expect(find.text('Onyx medal \u00d77'), findsOneWidget);
       expect(find.textContaining('to go for \u00d78'), findsOneWidget);
     });
 
-    testWidgets('the multiplier is spoken in words, not as a symbol',
-        (tester) async {
+    testWidgets('the multiplier is spoken in words, not as a symbol', (
+      tester,
+    ) async {
       // \u00d7 is read out inconsistently by screen readers, or skipped
       // entirely, so the multiplier cannot be carried by the glyph alone
       // (\u00a73.9).
       final handle = tester.ensureSemantics();
-      await pumpDetail(tester, 'Unique Portals Visited', history: [
-        at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 200000}),
-        at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 210000}),
-      ]);
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: [
+          at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 200000}),
+          at(DateTime(2026, 1, 11), const {'Unique Portals Visited': 210000}),
+        ],
+      );
 
       expect(
         find.bySemanticsLabel('Onyx medal, reached 7 times over'),
@@ -180,21 +217,29 @@ void main() {
     });
 
     testWidgets('a counter without thresholds shows no card', (tester) async {
-      await pumpDetail(tester, 'Orion Tokens', history: [
-        at(DateTime(2026, 1, 1), const {'Orion Tokens': 100}),
-        at(DateTime(2026, 1, 2), const {'Orion Tokens': 200}),
-      ]);
+      await pumpDetail(
+        tester,
+        'Orion Tokens',
+        history: [
+          at(DateTime(2026, 1, 1), const {'Orion Tokens': 100}),
+          at(DateTime(2026, 1, 2), const {'Orion Tokens': 200}),
+        ],
+      );
 
       expect(find.byType(BadgeProjectionCard), findsNothing);
       expect(find.textContaining('No badge threshold'), findsOneWidget);
     });
 
-    testWidgets('the pace window is labelled apart from the chart range',
-        (tester) async {
+    testWidgets('the pace window is labelled apart from the chart range', (
+      tester,
+    ) async {
       // Two segmented controls sit on this screen; sharing "Week / Month"
       // between them read as the same control twice.
-      await pumpDetail(tester, 'Unique Portals Visited',
-          history: steadyExplorer());
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: steadyExplorer(),
+      );
 
       expect(find.text('Last 7 days'), findsOneWidget);
       expect(find.text('Week'), findsOneWidget, reason: 'the chart range');
@@ -202,19 +247,23 @@ void main() {
 
     testWidgets('switching the window changes the pace used', (tester) async {
       // Slow for a month, then a burst: the two windows must disagree.
-      await pumpDetail(tester, 'Unique Portals Visited', history: [
-        for (var day = 0; day < 28; day++)
-          at(DateTime(2026, 1, 1).add(Duration(days: day)),
-              {'Unique Portals Visited': 1400 + day}),
-        for (var day = 0; day < 3; day++)
-          at(DateTime(2026, 1, 29).add(Duration(days: day)),
-              {'Unique Portals Visited': 1500 + day * 100}),
-      ]);
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: [
+          for (var day = 0; day < 28; day++)
+            at(DateTime(2026, 1, 1).add(Duration(days: day)), {
+              'Unique Portals Visited': 1400 + day,
+            }),
+          for (var day = 0; day < 3; day++)
+            at(DateTime(2026, 1, 29).add(Duration(days: day)), {
+              'Unique Portals Visited': 1500 + day * 100,
+            }),
+        ],
+      );
 
-      String paceLine() => tester
-          .widgetList<Text>(find.textContaining('per day'))
-          .first
-          .data!;
+      String paceLine() =>
+          tester.widgetList<Text>(find.textContaining('per day')).first.data!;
 
       final monthly = paceLine();
       // The card sits below the chart, so the segment has to be brought into

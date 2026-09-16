@@ -42,12 +42,16 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android to post anything (§3.7).
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(registry),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android to post anything (§3.7).
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(registry),
+      ],
+    );
     // Order matters: tearDowns run last-registered-first, so the container is
     // disposed before the database is closed. Closing Drift while a stream
     // query is still subscribed hangs, and the dashboard adds a second one on
@@ -66,14 +70,16 @@ void main() {
     // minutes *later*, so using it as history would build a timeline the
     // import guards exist to prevent.
     if (withHistory) {
-      await repository.save(StatSnapshot(
-        timeSpan: TimeSpan.allTime,
-        agentName: 'AgentDemo',
-        faction: 'Enlightened',
-        recordedAt: DateTime(2026, 1, 1),
-        level: 9,
-        counters: const {'Unique Portals Visited': 9000, 'Hacks': 78000},
-      ));
+      await repository.save(
+        StatSnapshot(
+          timeSpan: TimeSpan.allTime,
+          agentName: 'AgentDemo',
+          faction: 'Enlightened',
+          recordedAt: DateTime(2026, 1, 1),
+          level: 9,
+          counters: const {'Unique Portals Visited': 9000, 'Hacks': 78000},
+        ),
+      );
     }
     await repository.save(parser.parseSingle(fixture(allTimePath)));
 
@@ -108,8 +114,9 @@ void main() {
   }
 
   group('counter list (§3.4)', () {
-    testWidgets('lists counters grouped by the in-game categories',
-        (tester) async {
+    testWidgets('lists counters grouped by the in-game categories', (
+      tester,
+    ) async {
       await pumpCounterList(tester);
 
       expect(find.text('Discovery'), findsOneWidget);
@@ -139,8 +146,9 @@ void main() {
   });
 
   group('badge emblems (#63)', () {
-    testWidgets('a counter with a badge shows its emblem and names the tier',
-        (tester) async {
+    testWidgets('a counter with a badge shows its emblem and names the tier', (
+      tester,
+    ) async {
       await pumpCounterList(tester);
       await search(tester, 'Unique Portals Visited');
 
@@ -152,16 +160,14 @@ void main() {
       // 9,756 portals: past gold at 2,000, short of platinum at 10,000. The
       // metal is a colour, so the tier is spelled out too (§3.9).
       expect(
-        find.descendant(
-          of: tile,
-          matching: find.textContaining('Gold medal'),
-        ),
+        find.descendant(of: tile, matching: find.textContaining('Gold medal')),
         findsOneWidget,
       );
     });
 
-    testWidgets('a counter with no badge is left exactly as it was',
-        (tester) async {
+    testWidgets('a counter with no badge is left exactly as it was', (
+      tester,
+    ) async {
       // Most counters have no thresholds; none of them should grow a medal
       // line, and none should show an emblem.
       await pumpCounterList(tester);
@@ -178,8 +184,9 @@ void main() {
       );
     });
 
-    testWidgets('past onyx the tile carries the multiplier too (#87)',
-        (tester) async {
+    testWidgets('past onyx the tile carries the multiplier too (#87)', (
+      tester,
+    ) async {
       // The wiring, not the wording: the screen must hand the tile a
       // multiple, or the rule would live in the domain and never reach a row.
       final repository = await pumpCounterList(tester);
@@ -194,15 +201,17 @@ void main() {
       // Explorer has moved: a snapshot holding one counter would mark all the
       // others absent and the list would be answering a different question.
       final base = const IngressTsvParser().parseSingle(fixture(allTimePath));
-      await repository.save(StatSnapshot(
-        timeSpan: TimeSpan.allTime,
-        agentName: 'AgentDemo',
-        faction: 'Enlightened',
-        recordedAt: DateTime(2026, 6, 1),
-        // Explorer onyx is 30,000; 210,000 is seven whole times over.
-        counters: {...base.counters, 'Unique Portals Visited': 210000},
-        level: 9,
-      ));
+      await repository.save(
+        StatSnapshot(
+          timeSpan: TimeSpan.allTime,
+          agentName: 'AgentDemo',
+          faction: 'Enlightened',
+          recordedAt: DateTime(2026, 6, 1),
+          // Explorer onyx is 30,000; 210,000 is seven whole times over.
+          counters: {...base.counters, 'Unique Portals Visited': 210000},
+          level: 9,
+        ),
+      );
       await tester.pumpAndSettle();
 
       final tile = find.widgetWithText(ListTile, 'Unique Portals Visited');
@@ -215,8 +224,9 @@ void main() {
       );
     });
 
-    testWidgets('the detail screen shows the emblem of the tier reached',
-        (tester) async {
+    testWidgets('the detail screen shows the emblem of the tier reached', (
+      tester,
+    ) async {
       await pumpCounterList(tester);
       await search(tester, 'Unique Portals Visited');
 
@@ -237,8 +247,9 @@ void main() {
       expect(find.text('Hacks'), findsNothing);
     });
 
-    testWidgets('a search with no match says so instead of showing nothing',
-        (tester) async {
+    testWidgets('a search with no match says so instead of showing nothing', (
+      tester,
+    ) async {
       await pumpCounterList(tester);
       await search(tester, 'zzzz');
 
@@ -280,7 +291,9 @@ void main() {
       expect(find.text('History'), findsOneWidget);
     });
 
-    testWidgets('says plainly when no badge threshold is known', (tester) async {
+    testWidgets('says plainly when no badge threshold is known', (
+      tester,
+    ) async {
       // Most counters have none — anomaly counters never will — and saying so
       // beats leaving an empty space.
       await pumpCounterList(tester);
@@ -294,8 +307,9 @@ void main() {
   });
 
   group('localisation', () {
-    testWidgets('the French locale uses the registry translations',
-        (tester) async {
+    testWidgets('the French locale uses the registry translations', (
+      tester,
+    ) async {
       await pumpCounterList(tester, locale: const Locale('fr'));
 
       expect(find.text('Découverte'), findsOneWidget);
@@ -304,8 +318,9 @@ void main() {
   });
 
   group('filtering and the controls row (#88, #89, #90)', () {
-    testWidgets('the medal chip narrows the list to counters with a badge',
-        (tester) async {
+    testWidgets('the medal chip narrows the list to counters with a badge', (
+      tester,
+    ) async {
       // Two neighbours in the Discovery category, one with thresholds and one
       // without, so both are on screen before and the difference is the
       // filter rather than the scroll position.
@@ -318,12 +333,16 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Unique Portals Visited'), findsOneWidget);
-      expect(find.text('Unique Portals Drone Visited'), findsNothing,
-          reason: 'the registry gives it no thresholds');
+      expect(
+        find.text('Unique Portals Drone Visited'),
+        findsNothing,
+        reason: 'the registry gives it no thresholds',
+      );
     });
 
-    testWidgets('the inactive filter is a named chip now, not a bare eye',
-        (tester) async {
+    testWidgets('the inactive filter is a named chip now, not a bare eye', (
+      tester,
+    ) async {
       // It was an IconButton with an eye and no word beside it. A second
       // unlabelled toggle next to it would have left the row unreadable.
       await pumpCounterList(tester);
@@ -332,8 +351,9 @@ void main() {
       expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
     });
 
-    testWidgets('the window appears only for the ordering that uses it',
-        (tester) async {
+    testWidgets('the window appears only for the ordering that uses it', (
+      tester,
+    ) async {
       await pumpCounterList(tester);
 
       expect(find.text('Measured over'), findsNothing);
@@ -348,8 +368,9 @@ void main() {
       expect(find.widgetWithText(ChoiceChip, '30 days'), findsOneWidget);
     });
 
-    testWidgets('ordering by proximity to the next tier is offered',
-        (tester) async {
+    testWidgets('ordering by proximity to the next tier is offered', (
+      tester,
+    ) async {
       await pumpCounterList(tester);
 
       await tester.tap(find.byType(DropdownButtonFormField<CounterSort>));
@@ -386,5 +407,4 @@ void main() {
       expect(chip.isEnabled, isFalse);
     });
   });
-
 }

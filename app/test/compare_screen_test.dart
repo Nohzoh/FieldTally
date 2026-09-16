@@ -54,17 +54,16 @@ String payloadFrom({
     'Unique Portals Visited': 7412,
     'Hacks': 40000,
   },
-}) =>
-    const ComparisonPayload().encode(
-      StatSnapshot(
-        timeSpan: span,
-        agentName: agent,
-        faction: faction,
-        recordedAt: DateTime(2026, 9, 1, 8),
-        level: level,
-        counters: counters,
-      ),
-    );
+}) => const ComparisonPayload().encode(
+  StatSnapshot(
+    timeSpan: span,
+    agentName: agent,
+    faction: faction,
+    recordedAt: DateTime(2026, 9, 1, 8),
+    level: level,
+    counters: counters,
+  ),
+);
 
 void main() {
   late FieldTallyDatabase db;
@@ -83,12 +82,16 @@ void main() {
 
     db = FieldTallyDatabase(NativeDatabase.memory());
     share = FakeShareSource();
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-      incomingShareProvider.overrideWithValue(share),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+        incomingShareProvider.overrideWithValue(share),
+      ],
+    );
     addTearDown(db.close);
     addTearDown(container.dispose);
     addTearDown(share.dispose);
@@ -126,8 +129,9 @@ void main() {
   }
 
   group('sending my own totals (#64)', () {
-    testWidgets('the screen shows what will leave before it leaves',
-        (tester) async {
+    testWidgets('the screen shows what will leave before it leaves', (
+      tester,
+    ) async {
       await pumpApp(tester);
       router.go(Routes.compare);
       await tester.pumpAndSettle();
@@ -135,8 +139,13 @@ void main() {
       expect(find.text('What will be sent'), findsOneWidget);
       // Every value, not a summary: reading it beforehand only means
       // something if all of it is on screen.
-      expect(find.text('59 counters, plus your codename, faction, level and '
-          'the date of this snapshot.'), findsOneWidget);
+      expect(
+        find.text(
+          '59 counters, plus your codename, faction, level and '
+          'the date of this snapshot.',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('9,756'), findsOneWidget);
       // My own codename, not announced as an opponent: this screen is not
       // where I am my own rival.
@@ -144,8 +153,9 @@ void main() {
       expect(find.text('Against AgentDemo'), findsNothing);
     });
 
-    testWidgets('says so plainly when there is nothing to send',
-        (tester) async {
+    testWidgets('says so plainly when there is nothing to send', (
+      tester,
+    ) async {
       await pumpApp(tester, withSnapshot: false);
       router.go(Routes.compare);
       await tester.pumpAndSettle();
@@ -156,8 +166,9 @@ void main() {
   });
 
   group("receiving another agent's totals", () {
-    testWidgets('a shared comparison opens the side by side, not the import',
-        (tester) async {
+    testWidgets('a shared comparison opens the side by side, not the import', (
+      tester,
+    ) async {
       await pumpApp(tester);
 
       share.share(payloadFrom());
@@ -170,8 +181,9 @@ void main() {
       expect(find.text('Save this snapshot'), findsNothing);
     });
 
-    testWidgets('their numbers sit next to mine, with the gap spelled out',
-        (tester) async {
+    testWidgets('their numbers sit next to mine, with the gap spelled out', (
+      tester,
+    ) async {
       await pumpApp(tester);
 
       share.share(payloadFrom());
@@ -205,8 +217,9 @@ void main() {
       expect(find.textContaining('not saved'), findsOneWidget);
     });
 
-    testWidgets('a counter only one of them has shows, with no gap',
-        (tester) async {
+    testWidgets('a counter only one of them has shows, with no gap', (
+      tester,
+    ) async {
       await pumpApp(tester);
 
       share.share(payloadFrom(counters: const {'Vesuvius Tokens': 5}));
@@ -257,8 +270,9 @@ void main() {
       expect(find.textContaining('newer FieldTally'), findsOneWidget);
     });
 
-    testWidgets('a broken payload, without losing the way to send mine',
-        (tester) async {
+    testWidgets('a broken payload, without losing the way to send mine', (
+      tester,
+    ) async {
       // A dead end would be worse than the error: the agent came here to
       // exchange stats, and sending theirs still works.
       await pumpApp(tester);

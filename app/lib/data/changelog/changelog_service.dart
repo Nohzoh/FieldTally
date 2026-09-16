@@ -19,7 +19,9 @@ class ChangelogService {
   ///
   /// A fresh install — nothing stored yet — records the current build and
   /// returns nothing: there is no "before" to compare against.
-  Future<List<ChangelogRelease>> checkForUpdate(int installedVersionCode) async {
+  Future<List<ChangelogRelease>> checkForUpdate(
+    int installedVersionCode,
+  ) async {
     final stored = await settings.read(SettingKeys.changelogLastSeenBuild);
     final lastSeen = stored == null ? null : int.tryParse(stored);
 

@@ -14,44 +14,43 @@ TrackedCounter counter(
   int last = 10,
   int? previous,
   CounterStatus status = CounterStatus.active,
-}) =>
-    TrackedCounter(
-      exportHeader: header,
-      firstSeen: DateTime(2026, 1, 1),
-      lastSeen: DateTime(2026, 1, 20),
-      lastValue: last,
-      previousValue: previous,
-      status: status,
-    );
+}) => TrackedCounter(
+  exportHeader: header,
+  firstSeen: DateTime(2026, 1, 1),
+  lastSeen: DateTime(2026, 1, 20),
+  lastValue: last,
+  previousValue: previous,
+  status: status,
+);
 
-List<String> headersOf(List<CounterSection> sections) =>
-    [for (final s in sections) ...s.counters.map((c) => c.exportHeader)];
+List<String> headersOf(List<CounterSection> sections) => [
+  for (final s in sections) ...s.counters.map((c) => c.exportHeader),
+];
 
 /// A pace map of the shape [paceByCounter] returns, from plain rates.
 Map<String, CounterPace> paces(Map<String, double> perDay) => {
-      for (final entry in perDay.entries)
-        entry.key: (
-          gain: (entry.value * 7).round(),
-          days: 7,
-          perDay: entry.value,
-        ),
-    };
+  for (final entry in perDay.entries)
+    entry.key: (gain: (entry.value * 7).round(), days: 7, perDay: entry.value),
+};
 
 void main() {
   late CounterRegistry registry;
   late CounterListBuilder builder;
 
   setUp(() {
-    registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
+    registry = const CounterRegistryLoader().parse(
+      File(seedPath).readAsStringSync(),
+    );
     builder = CounterListBuilder(registry: registry, language: 'en');
   });
 
   group('labels', () {
     test('uses the enriched translation when there is one', () {
       expect(
-        CounterListBuilder(registry: registry, language: 'fr')
-            .labelFor(counter('Unique Portals Visited')),
+        CounterListBuilder(
+          registry: registry,
+          language: 'fr',
+        ).labelFor(counter('Unique Portals Visited')),
         'Portails uniques visités',
       );
     });
@@ -88,18 +87,20 @@ void main() {
   });
 
   group('ordering by name', () {
-    test('produces one flat section, alphabetically on the displayed label',
-        () {
-      final sections = builder.build([
-        counter('Recursions'),
-        counter('Hacks'),
-        counter('Drone Hacks'),
-      ], const CounterQuery(sort: CounterSort.name));
+    test(
+      'produces one flat section, alphabetically on the displayed label',
+      () {
+        final sections = builder.build([
+          counter('Recursions'),
+          counter('Hacks'),
+          counter('Drone Hacks'),
+        ], const CounterQuery(sort: CounterSort.name));
 
-      expect(sections, hasLength(1));
-      expect(sections.single.categoryKey, isNull);
-      expect(headersOf(sections), ['Drone Hacks', 'Hacks', 'Recursions']);
-    });
+        expect(sections, hasLength(1));
+        expect(sections.single.categoryKey, isNull);
+        expect(headersOf(sections), ['Drone Hacks', 'Hacks', 'Recursions']);
+      },
+    );
   });
 
   group('ordering by recent progress', () {
@@ -111,15 +112,16 @@ void main() {
         );
 
     test('fastest first', () {
-      final sections = builderWith({
-        'Hacks': 10,
-        'Links Created': 57,
-        'Recursions': 0,
-      }).build([
-        counter('Hacks', last: 110, previous: 100),
-        counter('Links Created', last: 500, previous: 100),
-        counter('Recursions', last: 2, previous: 2),
-      ], const CounterQuery(sort: CounterSort.recentProgress));
+      final sections =
+          builderWith({
+            'Hacks': 10,
+            'Links Created': 57,
+            'Recursions': 0,
+          }).build([
+            counter('Hacks', last: 110, previous: 100),
+            counter('Links Created', last: 500, previous: 100),
+            counter('Recursions', last: 2, previous: 2),
+          ], const CounterQuery(sort: CounterSort.recentProgress));
 
       expect(headersOf(sections), ['Links Created', 'Hacks', 'Recursions']);
     });
@@ -163,28 +165,26 @@ void main() {
       // A French-speaking agent may well type the English name they saw in the
       // game.
       final french = CounterListBuilder(registry: registry, language: 'fr');
-      final sections = french.build(
-        [counter('Unique Portals Visited'), counter('Hacks')],
-        const CounterQuery(search: 'Unique Portals'),
-      );
+      final sections = french.build([
+        counter('Unique Portals Visited'),
+        counter('Hacks'),
+      ], const CounterQuery(search: 'Unique Portals'));
 
       expect(headersOf(sections), ['Unique Portals Visited']);
     });
 
     test('surrounding whitespace is ignored', () {
-      final sections = builder.build(
-        [counter('Hacks')],
-        const CounterQuery(search: '  hacks  '),
-      );
+      final sections = builder.build([
+        counter('Hacks'),
+      ], const CounterQuery(search: '  hacks  '));
 
       expect(headersOf(sections), ['Hacks']);
     });
 
     test('no match yields empty sections rather than everything', () {
-      final sections = builder.build(
-        [counter('Hacks')],
-        const CounterQuery(search: 'zzz'),
-      );
+      final sections = builder.build([
+        counter('Hacks'),
+      ], const CounterQuery(search: 'zzz'));
 
       expect(headersOf(sections), isEmpty);
     });
@@ -211,15 +211,22 @@ void main() {
   });
 
   group('without a registry', () {
-    test('still lists everything, alphabetically, under the fallback category',
-        () {
-      const bare = CounterListBuilder(registry: null, language: 'en');
-      final sections =
-          bare.build([counter('Hacks'), counter('Alpha')], const CounterQuery());
+    test(
+      'still lists everything, alphabetically, under the fallback category',
+      () {
+        const bare = CounterListBuilder(registry: null, language: 'en');
+        final sections = bare.build([
+          counter('Hacks'),
+          counter('Alpha'),
+        ], const CounterQuery());
 
-      expect(headersOf(sections), ['Alpha', 'Hacks']);
-      expect(sections.single.categoryKey, CounterRegistry.fallbackCategoryKey);
-    });
+        expect(headersOf(sections), ['Alpha', 'Hacks']);
+        expect(
+          sections.single.categoryKey,
+          CounterRegistry.fallbackCategoryKey,
+        );
+      },
+    );
   });
 
   group('the medal filter (#88)', () {
@@ -254,12 +261,11 @@ void main() {
       expect(headersOf(sections), ['Hacks']);
     });
 
-    test('off by default, so the list is unchanged for anyone ignoring it',
-        () {
-      final sections = builder.build(
-        [counter('Hacks'), counter('Recursions')],
-        const CounterQuery(),
-      );
+    test('off by default, so the list is unchanged for anyone ignoring it', () {
+      final sections = builder.build([
+        counter('Hacks'),
+        counter('Recursions'),
+      ], const CounterQuery());
 
       expect(headersOf(sections)..sort(), ['Hacks', 'Recursions']);
     });
@@ -268,10 +274,10 @@ void main() {
       // The screen disables the chip in this state rather than emptying the
       // list silently; the builder still answers honestly.
       final bare = CounterListBuilder(registry: null, language: 'en');
-      final sections = bare.build(
-        [counter('Hacks'), counter('Links Created')],
-        const CounterQuery(medalsOnly: true),
-      );
+      final sections = bare.build([
+        counter('Hacks'),
+        counter('Links Created'),
+      ], const CounterQuery(medalsOnly: true));
 
       expect(headersOf(sections), isEmpty);
     });
@@ -300,8 +306,11 @@ void main() {
         counter('Aegis Tokens', last: 5),
       ], const CounterQuery(sort: CounterSort.nextTier));
 
-      expect(headersOf(sections),
-          ['Unique Portals Visited', 'Aegis Tokens', 'Zeta Tokens']);
+      expect(headersOf(sections), [
+        'Unique Portals Visited',
+        'Aegis Tokens',
+        'Zeta Tokens',
+      ]);
     });
 
     test('a counter past onyx is ranked, not discarded', () {
@@ -314,8 +323,11 @@ void main() {
         counter('Zeta Tokens', last: 10),
       ], const CounterQuery(sort: CounterSort.nextTier));
 
-      expect(headersOf(sections),
-          ['Unique Portals Visited', 'Hacks', 'Zeta Tokens']);
+      expect(headersOf(sections), [
+        'Unique Portals Visited',
+        'Hacks',
+        'Zeta Tokens',
+      ]);
     });
 
     test('below the first threshold counts from zero', () {
@@ -327,5 +339,4 @@ void main() {
       expect(headersOf(sections), ['Unique Portals Visited', 'Hacks']);
     });
   });
-
 }

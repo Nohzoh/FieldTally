@@ -29,8 +29,9 @@ Future<void> pumpCalendar(
 
 void main() {
   group('activity calendar', () {
-    testWidgets('spans the whole history, not only the active days',
-        (tester) async {
+    testWidgets('spans the whole history, not only the active days', (
+      tester,
+    ) async {
       // The quiet stretches are exactly what this view is for; a calendar
       // covering only the days with progress would hide them.
       await pumpCalendar(
@@ -44,8 +45,9 @@ void main() {
       expect(find.byType(Container).evaluate().length, greaterThan(7 * 8));
     });
 
-    testWidgets('labels weekdays and months in the interface language',
-        (tester) async {
+    testWidgets('labels weekdays and months in the interface language', (
+      tester,
+    ) async {
       // The reason this widget exists rather than the package suggested in
       // §5.1, which hard-codes English weekday labels.
       await pumpCalendar(

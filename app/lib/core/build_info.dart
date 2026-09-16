@@ -23,8 +23,7 @@ class BuildInfo {
   /// Passed as `--dart-define=GIT_COMMIT=<sha>`.
   static const _commit = String.fromEnvironment('GIT_COMMIT');
 
-  static String? get commitFromEnvironment =>
-      _commit.isEmpty ? null : _commit;
+  static String? get commitFromEnvironment => _commit.isEmpty ? null : _commit;
 
   /// One line to paste into an issue.
   String get summary =>

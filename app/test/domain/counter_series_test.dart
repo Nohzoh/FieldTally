@@ -4,13 +4,13 @@ import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: date,
-      level: 9,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: date,
+  level: 9,
+  counters: counters,
+);
 
 void main() {
   const builder = CounterSeriesBuilder();
@@ -18,7 +18,9 @@ void main() {
   group('series', () {
     test('an unknown counter yields nothing', () {
       final series = builder.series(
-        snapshots: [at(DateTime(2026, 1, 1), const {'Hacks': 10})],
+        snapshots: [
+          at(DateTime(2026, 1, 1), const {'Hacks': 10}),
+        ],
         exportHeader: 'Orion Tokens',
       );
 
@@ -61,12 +63,13 @@ void main() {
   group('ranges', () {
     final history = [
       for (var day = 1; day <= 40; day++)
-        at(DateTime(2026, 2, 1).add(Duration(days: day - 1)), {'Hacks': day * 10}),
+        at(DateTime(2026, 2, 1).add(Duration(days: day - 1)), {
+          'Hacks': day * 10,
+        }),
     ];
 
     test('the whole history is the default', () {
-      final series =
-          builder.series(snapshots: history, exportHeader: 'Hacks');
+      final series = builder.series(snapshots: history, exportHeader: 'Hacks');
 
       expect(series.points, hasLength(40));
     });

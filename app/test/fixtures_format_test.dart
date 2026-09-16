@@ -19,10 +19,9 @@ class TsvExport {
   final List<List<String>> rows;
 
   static TsvExport read(String path) {
-    final lines = File(path)
-        .readAsLinesSync()
-        .where((line) => line.trim().isNotEmpty)
-        .toList();
+    final lines = File(
+      path,
+    ).readAsLinesSync().where((line) => line.trim().isNotEmpty).toList();
     final headers = lines.first.split('\t');
     final rows = lines.skip(1).map((line) => line.split('\t')).toList();
     return TsvExport(headers, rows);
@@ -47,10 +46,7 @@ const weekPath = '$fixturesDir/sample_export_week.tsv';
 
 void main() {
   group('Ingress export fixtures', () {
-    for (final entry in {
-      'ALL TIME': allTimePath,
-      'WEEK': weekPath,
-    }.entries) {
+    for (final entry in {'ALL TIME': allTimePath, 'WEEK': weekPath}.entries) {
       final expectedTimeSpan = entry.key;
       final path = entry.value;
 
@@ -66,10 +62,16 @@ void main() {
 
         test('headers are non empty and free of duplicates', () {
           expect(export.headers, isNotEmpty);
-          expect(export.headers.any((h) => h.trim().isEmpty), isFalse,
-              reason: 'an empty header would break name based mapping');
-          expect(export.headers.toSet(), hasLength(export.headers.length),
-              reason: 'duplicate headers would make mapping ambiguous');
+          expect(
+            export.headers.any((h) => h.trim().isEmpty),
+            isFalse,
+            reason: 'an empty header would break name based mapping',
+          );
+          expect(
+            export.headers.toSet(),
+            hasLength(export.headers.length),
+            reason: 'duplicate headers would make mapping ambiguous',
+          );
         });
 
         test('every row has as many fields as there are headers', () {
@@ -92,10 +94,14 @@ void main() {
         });
 
         test('date and time use the expected formats', () {
-          expect(export.value(0, 'Date (yyyy-mm-dd)'),
-              matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
-          expect(export.value(0, 'Time (hh:mm:ss)'),
-              matches(RegExp(r'^\d{2}:\d{2}:\d{2}$')));
+          expect(
+            export.value(0, 'Date (yyyy-mm-dd)'),
+            matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')),
+          );
+          expect(
+            export.value(0, 'Time (hh:mm:ss)'),
+            matches(RegExp(r'^\d{2}:\d{2}:\d{2}$')),
+          );
         });
 
         test('every counter column holds an integer', () {
@@ -106,36 +112,49 @@ void main() {
 
           for (final header in counterHeaders) {
             final raw = export.value(0, header);
-            expect(int.tryParse(raw), isNotNull,
-                reason: 'column "$header": non integer value ("$raw")');
+            expect(
+              int.tryParse(raw),
+              isNotNull,
+              reason: 'column "$header": non integer value ("$raw")',
+            );
           }
         });
 
         test('the fixture is anonymised (§3.1.3)', () {
-          expect(export.value(0, 'Agent Name'), 'AgentDemo',
-              reason: 'no real Ingress codename may be committed');
+          expect(
+            export.value(0, 'Agent Name'),
+            'AgentDemo',
+            reason: 'no real Ingress codename may be committed',
+          );
         });
       });
     }
 
     test('both fixtures share exactly the same headers', () {
-      expect(TsvExport.read(weekPath).headers,
-          equals(TsvExport.read(allTimePath).headers));
+      expect(
+        TsvExport.read(weekPath).headers,
+        equals(TsvExport.read(allTimePath).headers),
+      );
     });
 
-    test('Level, Lifetime AP and Current AP match between ALL TIME and WEEK',
-        () {
-      // Finding of §3.1.3: Ingress never scopes these three fields to a
-      // period. The behavioural guard therefore cannot rely on them — hence
-      // this test, which pins the observation down.
-      final allTime = TsvExport.read(allTimePath);
-      final week = TsvExport.read(weekPath);
+    test(
+      'Level, Lifetime AP and Current AP match between ALL TIME and WEEK',
+      () {
+        // Finding of §3.1.3: Ingress never scopes these three fields to a
+        // period. The behavioural guard therefore cannot rely on them — hence
+        // this test, which pins the observation down.
+        final allTime = TsvExport.read(allTimePath);
+        final week = TsvExport.read(weekPath);
 
-      for (final header in ['Level', 'Lifetime AP', 'Current AP']) {
-        expect(week.value(0, header), allTime.value(0, header),
-            reason: '"$header" should not vary with the period');
-      }
-    });
+        for (final header in ['Level', 'Lifetime AP', 'Current AP']) {
+          expect(
+            week.value(0, header),
+            allTime.value(0, header),
+            reason: '"$header" should not vary with the period',
+          );
+        }
+      },
+    );
 
     test('periodized counters are indeed reduced in the WEEK export', () {
       final allTime = TsvExport.read(allTimePath);
@@ -149,13 +168,19 @@ void main() {
             !['Level', 'Lifetime AP', 'Current AP'].contains(h),
       );
 
-      final reduced = periodized.where((h) =>
-          int.parse(week.value(0, h)) < int.parse(allTime.value(0, h)));
+      final reduced = periodized.where(
+        (h) => int.parse(week.value(0, h)) < int.parse(allTime.value(0, h)),
+      );
 
-      expect(reduced, isNotEmpty,
-          reason: 'the WEEK fixture must cover a partial period');
-      expect(int.parse(week.value(0, 'Unique Portals Visited')),
-          lessThan(int.parse(allTime.value(0, 'Unique Portals Visited'))));
+      expect(
+        reduced,
+        isNotEmpty,
+        reason: 'the WEEK fixture must cover a partial period',
+      );
+      expect(
+        int.parse(week.value(0, 'Unique Portals Visited')),
+        lessThan(int.parse(allTime.value(0, 'Unique Portals Visited'))),
+      );
     });
   });
 }

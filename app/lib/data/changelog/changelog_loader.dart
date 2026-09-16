@@ -35,7 +35,10 @@ class ChangelogLoader {
     final json = jsonDecode(rawJson) as Map<String, dynamic>;
     return [
       for (final entry in json.entries)
-        ChangelogRelease.fromJson(entry.key, entry.value as Map<String, dynamic>),
+        ChangelogRelease.fromJson(
+          entry.key,
+          entry.value as Map<String, dynamic>,
+        ),
     ];
   }
 }

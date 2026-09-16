@@ -15,19 +15,18 @@ StoredSnapshot stored(
   Map<String, int> counters, {
   int? level = 9,
   TimeSpan timeSpan = TimeSpan.allTime,
-}) =>
-    StoredSnapshot(
-      id: date.toIso8601String(),
-      importedAt: DateTime(2026, 9, 11),
-      snapshot: StatSnapshot(
-        timeSpan: timeSpan,
-        agentName: 'AgentDemo',
-        faction: 'Enlightened',
-        recordedAt: date,
-        level: level,
-        counters: counters,
-      ),
-    );
+}) => StoredSnapshot(
+  id: date.toIso8601String(),
+  importedAt: DateTime(2026, 9, 11),
+  snapshot: StatSnapshot(
+    timeSpan: timeSpan,
+    agentName: 'AgentDemo',
+    faction: 'Enlightened',
+    recordedAt: date,
+    level: level,
+    counters: counters,
+  ),
+);
 
 List<String> rowsOf(String csv) =>
     csv.trim().split('\n').where((l) => l.isNotEmpty).toList();
@@ -36,8 +35,9 @@ void main() {
   late CounterRegistry registry;
 
   setUp(() {
-    registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
+    registry = const CounterRegistryLoader().parse(
+      File(seedPath).readAsStringSync(),
+    );
   });
 
   test('an empty history exports nothing at all', () {
@@ -60,15 +60,15 @@ void main() {
 
   test('columns follow the in-game order when the registry is available', () {
     final csv = HistoryCsvExporter(registry: registry).build([
-      stored(DateTime(2026, 1, 1),
-          const {'Recursions': 1, 'Hacks': 10, 'Unique Portals Visited': 5}),
+      stored(DateTime(2026, 1, 1), const {
+        'Recursions': 1,
+        'Hacks': 10,
+        'Unique Portals Visited': 5,
+      }),
     ]);
 
     final header = rowsOf(csv).first;
-    expect(
-      header,
-      endsWith('Unique Portals Visited,Hacks,Recursions'),
-    );
+    expect(header, endsWith('Unique Portals Visited,Hacks,Recursions'));
   });
 
   test('a counter missing from one snapshot leaves a blank, not a zero', () {
@@ -86,8 +86,9 @@ void main() {
   });
 
   test('an unknown level is blank rather than zero', () {
-    final csv = const HistoryCsvExporter()
-        .build([stored(DateTime(2026, 1, 1), const {'Hacks': 10}, level: null)]);
+    final csv = const HistoryCsvExporter().build([
+      stored(DateTime(2026, 1, 1), const {'Hacks': 10}, level: null),
+    ]);
 
     expect(rowsOf(csv)[1], contains('allTime,,10'));
   });
@@ -95,16 +96,18 @@ void main() {
   test('the declared period travels with the snapshot', () {
     // A snapshot saved past a guard stays identifiable in the export.
     final csv = const HistoryCsvExporter().build([
-      stored(DateTime(2026, 1, 1), const {'Hacks': 10},
-          timeSpan: TimeSpan.week),
+      stored(DateTime(2026, 1, 1), const {
+        'Hacks': 10,
+      }, timeSpan: TimeSpan.week),
     ]);
 
     expect(rowsOf(csv)[1], contains(',week,'));
   });
 
   test('counter names carrying a comma are quoted', () {
-    final csv = const HistoryCsvExporter()
-        .build([stored(DateTime(2026, 1, 1), const {'Odd, name': 3})]);
+    final csv = const HistoryCsvExporter().build([
+      stored(DateTime(2026, 1, 1), const {'Odd, name': 3}),
+    ]);
 
     expect(rowsOf(csv).first, contains('"Odd, name"'));
   });

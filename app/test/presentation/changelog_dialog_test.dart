@@ -10,13 +10,12 @@ ChangelogRelease release({
   required String version,
   Map<String, List<String>> features = const {},
   Map<String, List<String>> fixes = const {},
-}) =>
-    ChangelogRelease(
-      versionCode: versionCode,
-      version: version,
-      featureNotes: features,
-      fixNotes: fixes,
-    );
+}) => ChangelogRelease(
+  versionCode: versionCode,
+  version: version,
+  featureNotes: features,
+  fixNotes: fixes,
+);
 
 Future<void> pumpDialog(
   WidgetTester tester,
@@ -74,28 +73,45 @@ void main() {
 
     testWidgets('names the newest version it is showing', (tester) async {
       await pumpDialog(tester, [
-        release(versionCode: 2, version: '1.1.0', features: {
-          'en': ['Older'],
-        }),
-        release(versionCode: 3, version: '1.2.0', features: {
-          'en': ['Newer'],
-        }),
+        release(
+          versionCode: 2,
+          version: '1.1.0',
+          features: {
+            'en': ['Older'],
+          },
+        ),
+        release(
+          versionCode: 3,
+          version: '1.2.0',
+          features: {
+            'en': ['Newer'],
+          },
+        ),
       ]);
 
       expect(find.textContaining('1.2.0'), findsOneWidget);
     });
 
-    testWidgets('skipped versions read as one list, not one block each',
-        (tester) async {
+    testWidgets('skipped versions read as one list, not one block each', (
+      tester,
+    ) async {
       // Someone who jumped two releases wants what changed, not a lesson in
       // release history.
       await pumpDialog(tester, [
-        release(versionCode: 2, version: '1.1.0', features: {
-          'en': ['Older feature'],
-        }),
-        release(versionCode: 3, version: '1.2.0', features: {
-          'en': ['Newer feature'],
-        }),
+        release(
+          versionCode: 2,
+          version: '1.1.0',
+          features: {
+            'en': ['Older feature'],
+          },
+        ),
+        release(
+          versionCode: 3,
+          version: '1.2.0',
+          features: {
+            'en': ['Newer feature'],
+          },
+        ),
       ]);
 
       expect(find.text('Older feature'), findsOneWidget);
@@ -104,32 +120,33 @@ void main() {
       expect(find.text('✨ New'), findsOneWidget);
     });
 
-    testWidgets('a release with no fixes shows no fixes heading',
-        (tester) async {
+    testWidgets('a release with no fixes shows no fixes heading', (
+      tester,
+    ) async {
       await pumpDialog(tester, [
-        release(versionCode: 2, version: '1.1.0', features: {
-          'en': ['Only a feature'],
-        }),
+        release(
+          versionCode: 2,
+          version: '1.1.0',
+          features: {
+            'en': ['Only a feature'],
+          },
+        ),
       ]);
 
       expect(find.text('🐛 Fixed'), findsNothing);
     });
 
     testWidgets('follows the locale', (tester) async {
-      await pumpDialog(
-        tester,
-        [
-          release(
-            versionCode: 2,
-            version: '1.1.0',
-            features: {
-              'en': ['Pick your language'],
-              'fr': ['Choisis ta langue'],
-            },
-          ),
-        ],
-        languageCode: 'fr',
-      );
+      await pumpDialog(tester, [
+        release(
+          versionCode: 2,
+          version: '1.1.0',
+          features: {
+            'en': ['Pick your language'],
+            'fr': ['Choisis ta langue'],
+          },
+        ),
+      ], languageCode: 'fr');
 
       expect(find.text('Choisis ta langue'), findsOneWidget);
       expect(find.text('Pick your language'), findsNothing);
@@ -138,9 +155,13 @@ void main() {
 
     testWidgets('is dismissible', (tester) async {
       await pumpDialog(tester, [
-        release(versionCode: 2, version: '1.1.0', features: {
-          'en': ['Only a feature'],
-        }),
+        release(
+          versionCode: 2,
+          version: '1.1.0',
+          features: {
+            'en': ['Only a feature'],
+          },
+        ),
       ]);
 
       await tester.tap(find.text('Close'));
@@ -149,8 +170,9 @@ void main() {
       expect(find.text('Only a feature'), findsNothing);
     });
 
-    testWidgets('a release carrying nothing shows no dialog at all',
-        (tester) async {
+    testWidgets('a release carrying nothing shows no dialog at all', (
+      tester,
+    ) async {
       await pumpDialog(tester, [release(versionCode: 2, version: '1.1.0')]);
 
       expect(find.byType(AlertDialog), findsNothing);

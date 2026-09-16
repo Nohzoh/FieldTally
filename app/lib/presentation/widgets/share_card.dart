@@ -110,94 +110,93 @@ class ShareCard extends StatelessWidget {
     );
   }
 
-  Widget _header(AppLocalizations l10n, DateFormat dates, Color faction) =>
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _header(AppLocalizations l10n, DateFormat dates, Color faction) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              data.agentName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: _text,
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
               children: [
-                Text(
-                  data.agentName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: _text,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    height: 1.1,
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: faction,
+                    shape: BoxShape.circle,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: faction,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        '${data.faction} · ${dates.format(data.recordedAt)}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: _muted, fontSize: 13),
-                      ),
-                    ),
-                  ],
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    '${data.faction} · ${dates.format(data.recordedAt)}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: _muted, fontSize: 13),
+                  ),
                 ),
               ],
             ),
-          ),
-          // No level chip at all rather than one reading "—": the Agent Stats
-          // migration CSV has no level column (Appendix B), and an empty badge
-          // looks like a bug on a public image.
-          if (data.level != null) ...[
-            const SizedBox(width: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: _panel,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                '${l10n.fieldLevel} ${data.level}',
-                style: const TextStyle(
-                  color: _accent,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
           ],
-        ],
-      );
+        ),
+      ),
+      // No level chip at all rather than one reading "—": the Agent Stats
+      // migration CSV has no level column (Appendix B), and an empty badge
+      // looks like a bug on a public image.
+      if (data.level != null) ...[
+        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: _panel,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Text(
+            '${l10n.fieldLevel} ${data.level}',
+            style: const TextStyle(
+              color: _accent,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    ],
+  );
 
   Widget _footer(AppLocalizations l10n, DateFormat dates) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(height: 1, color: _panel),
-          const SizedBox(height: 12),
-          Text(
-            data.since == null
-                ? l10n.shareCardNoPeriod
-                : l10n.shareCardSince(dates.format(data.since!)),
-            style: const TextStyle(color: _muted, fontSize: 12),
-          ),
-          const SizedBox(height: 6),
-          // The notice travels with the image: the card is the part that
-          // leaves the app, so it is the part that has to carry it.
-          Text(
-            '${l10n.shareCardFooter} · ${l10n.shareCardDisclaimer}',
-            style: const TextStyle(color: _muted, fontSize: 11),
-          ),
-        ],
-      );
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Container(height: 1, color: _panel),
+      const SizedBox(height: 12),
+      Text(
+        data.since == null
+            ? l10n.shareCardNoPeriod
+            : l10n.shareCardSince(dates.format(data.since!)),
+        style: const TextStyle(color: _muted, fontSize: 12),
+      ),
+      const SizedBox(height: 6),
+      // The notice travels with the image: the card is the part that
+      // leaves the app, so it is the part that has to carry it.
+      Text(
+        '${l10n.shareCardFooter} · ${l10n.shareCardDisclaimer}',
+        style: const TextStyle(color: _muted, fontSize: 11),
+      ),
+    ],
+  );
 }
 
 class _Line extends StatelessWidget {

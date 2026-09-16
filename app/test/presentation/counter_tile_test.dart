@@ -8,13 +8,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 TrackedCounter counterOf({required int value, int? previous}) => TrackedCounter(
-      exportHeader: 'Unique Portals Visited',
-      firstSeen: DateTime(2026, 1, 1),
-      lastSeen: DateTime(2026, 6, 1),
-      lastValue: value,
-      previousValue: previous,
-      status: CounterStatus.active,
-    );
+  exportHeader: 'Unique Portals Visited',
+  firstSeen: DateTime(2026, 1, 1),
+  lastSeen: DateTime(2026, 6, 1),
+  lastValue: value,
+  previousValue: previous,
+  status: CounterStatus.active,
+);
 
 Future<void> pumpTile(
   WidgetTester tester, {
@@ -52,8 +52,9 @@ Future<void> pumpTile(
 
 void main() {
   group('the subtitle names the tier', () {
-    testWidgets('with no multiplier while a tier is still ahead',
-        (tester) async {
+    testWidgets('with no multiplier while a tier is still ahead', (
+      tester,
+    ) async {
       await pumpTile(
         tester,
         counter: counterOf(value: 9756, previous: 9000),
@@ -63,8 +64,9 @@ void main() {
       expect(find.textContaining('Gold medal ·'), findsOneWidget);
     });
 
-    testWidgets('and carries the multiplier past the top tier (#87)',
-        (tester) async {
+    testWidgets('and carries the multiplier past the top tier (#87)', (
+      tester,
+    ) async {
       await pumpTile(
         tester,
         counter: counterOf(value: 210000, previous: 209000),
@@ -75,8 +77,9 @@ void main() {
       expect(find.textContaining('Onyx medal ×7 ·'), findsOneWidget);
     });
 
-    testWidgets('but not a bare ×1, which says nothing the medal does not',
-        (tester) async {
+    testWidgets('but not a bare ×1, which says nothing the medal does not', (
+      tester,
+    ) async {
       await pumpTile(
         tester,
         counter: counterOf(value: 41000, previous: 40000),

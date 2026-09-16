@@ -68,20 +68,20 @@ class HistoryCsvExporter {
     ].map(_escape).join(',');
   }
 
-  String _date(DateTime d) => '${d.year.toString().padLeft(4, '0')}-'
+  String _date(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-'
       '${d.month.toString().padLeft(2, '0')}-'
       '${d.day.toString().padLeft(2, '0')}';
 
-  String _time(DateTime d) => '${d.hour.toString().padLeft(2, '0')}:'
+  String _time(DateTime d) =>
+      '${d.hour.toString().padLeft(2, '0')}:'
       '${d.minute.toString().padLeft(2, '0')}:'
       '${d.second.toString().padLeft(2, '0')}';
 
   /// Counter names carry commas and parentheses — `Mission Day(s) Attended`,
   /// for one — so every field is quoted when it needs to be.
   String _escape(String value) {
-    if (!value.contains(',') &&
-        !value.contains('"') &&
-        !value.contains('\n')) {
+    if (!value.contains(',') && !value.contains('"') && !value.contains('\n')) {
       return value;
     }
     return '"${value.replaceAll('"', '""')}"';

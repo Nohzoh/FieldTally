@@ -25,8 +25,10 @@ enum TimeSpan {
   /// tolerated too: those variants do not change the meaning, and being overly
   /// strict would turn a valid export into a false positive.
   factory TimeSpan.parse(String raw) {
-    final normalized =
-        raw.trim().toUpperCase().replaceAll(RegExp(r'[\s_-]+'), '');
+    final normalized = raw.trim().toUpperCase().replaceAll(
+      RegExp(r'[\s_-]+'),
+      '',
+    );
     return switch (normalized) {
       'ALLTIME' => TimeSpan.allTime,
       'WEEK' || 'THISWEEK' => TimeSpan.week,

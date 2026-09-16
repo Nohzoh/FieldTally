@@ -52,8 +52,7 @@ class TrackedCounter {
   /// Progress since the previous snapshot, or null when there is nothing to
   /// compare against. Null and zero mean different things: "not known yet"
   /// versus "no progress".
-  int? get delta =>
-      previousValue == null ? null : lastValue - previousValue!;
+  int? get delta => previousValue == null ? null : lastValue - previousValue!;
 
   @override
   String toString() =>
