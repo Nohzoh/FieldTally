@@ -409,18 +409,26 @@ void main() {
   });
 
   group('a ladder with no emblem to draw (#98)', () {
-    // Apollo's Global Op medal is measured on a counter the registry already
-    // knows. Its thresholds can reach an installed app through the registry
-    // (§3.1.4); its emblem could only arrive in a release. The list has to
-    // work in between, which is most of the time.
+    // A Global Op's thresholds can reach an installed app through the registry
+    // (§3.1.4); its emblem could only arrive in a release. The list has to work
+    // in between, which is most of the time.
 
     testWidgets('the row names its tier like any other medal', (tester) async {
-      await pumpCounterList(tester, registry: eventLadderRegistry);
-      await search(tester, 'Apollo Mod Battle Points');
-
-      final tile = find.widgetWithText(ListTile, 'Apollo Mod Battle Points');
       expect(
-        find.descendant(of: tile, matching: find.textContaining('Gold medal')),
+        MedalIcon.existsFor('anomaly_unique_hacks'),
+        isFalse,
+        reason: 'the premise of this group',
+      );
+
+      await pumpCounterList(tester, registry: undrawnLadderRegistry);
+      await search(tester, 'Anomaly Unique Hacks');
+
+      final tile = find.widgetWithText(ListTile, 'Anomaly Unique Hacks');
+      expect(
+        find.descendant(
+          of: tile,
+          matching: find.textContaining('Bronze medal'),
+        ),
         findsOneWidget,
       );
     });
@@ -431,12 +439,12 @@ void main() {
       // The defect this closes: the Medals filter kept the counter, the
       // next-tier ordering ranked it, the detail screen named its tier — and
       // the row itself said nothing at all.
-      await pumpCounterList(tester, registry: eventLadderRegistry);
+      await pumpCounterList(tester, registry: undrawnLadderRegistry);
       await tester.tap(find.widgetWithText(FilterChip, 'Medals'));
       await tester.pumpAndSettle();
-      await search(tester, 'Apollo Mod Battle Points');
+      await search(tester, 'Anomaly Unique Hacks');
 
-      final tile = find.widgetWithText(ListTile, 'Apollo Mod Battle Points');
+      final tile = find.widgetWithText(ListTile, 'Anomaly Unique Hacks');
       expect(tile, findsOneWidget, reason: 'the filter keeps it');
       expect(
         find.descendant(of: tile, matching: find.textContaining('medal')),
@@ -446,12 +454,12 @@ void main() {
     });
 
     testWidgets('a counter with no ladder still says nothing', (tester) async {
-      // Anomaly Unique Hacks sits in the same category and carries no
+      // Mission Day(s) Attended sits in the same category and carries no
       // thresholds, so nothing about it should change.
-      await pumpCounterList(tester, registry: eventLadderRegistry);
-      await search(tester, 'Anomaly Unique Hacks');
+      await pumpCounterList(tester, registry: undrawnLadderRegistry);
+      await search(tester, 'Mission Day(s) Attended');
 
-      final tile = find.widgetWithText(ListTile, 'Anomaly Unique Hacks');
+      final tile = find.widgetWithText(ListTile, 'Mission Day(s) Attended');
       expect(
         find.descendant(of: tile, matching: find.textContaining('medal')),
         findsNothing,
