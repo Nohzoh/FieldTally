@@ -14,9 +14,10 @@ TrackedCounter counter(
   int last = 10,
   int? previous,
   CounterStatus status = CounterStatus.active,
+  DateTime? firstSeen,
 }) => TrackedCounter(
   exportHeader: header,
-  firstSeen: DateTime(2026, 1, 1),
+  firstSeen: firstSeen ?? DateTime(2026, 1, 1),
   lastSeen: DateTime(2026, 1, 20),
   lastValue: last,
   previousValue: previous,
@@ -337,6 +338,37 @@ void main() {
       ], const CounterQuery(sort: CounterSort.nextTier));
 
       expect(headersOf(sections), ['Unique Portals Visited', 'Hacks']);
+    });
+  });
+
+  group('how far back the app can see (#100)', () {
+    test('is the oldest counter, since the first import carried them all', () {
+      expect(
+        watchingSince([
+          counter('Hacks', firstSeen: DateTime(2026, 3, 4)),
+          counter('Unique Portals Visited', firstSeen: DateTime(2026, 1, 9)),
+          counter('Apollo Tokens', firstSeen: DateTime(2026, 7, 1)),
+        ]),
+        DateTime(2026, 1, 9),
+      );
+    });
+
+    test('a counter that arrived later does not move it', () {
+      // The point of the whole thing: Apollo showing up in July says nothing
+      // about when the app started looking, and must not be allowed to.
+      final counters = [
+        counter('Hacks', firstSeen: DateTime(2026, 1, 9)),
+        counter('Apollo Tokens', firstSeen: DateTime(2026, 7, 1)),
+      ];
+
+      expect(watchingSince(counters), DateTime(2026, 1, 9));
+      expect(watchingSince(counters.reversed), DateTime(2026, 1, 9));
+    });
+
+    test('nothing imported yet is null, not today', () {
+      // Null rather than a fallback date: the screen says nothing at all
+      // rather than claiming to have been watching since this morning.
+      expect(watchingSince(const []), isNull);
     });
   });
 }

@@ -277,6 +277,14 @@
       }
     }
   },
+  "countersWatchedSince": "Watched since {date}. An event whose column had already left the export by then cannot be shown at all.",
+  "@countersWatchedSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "counterExportHeader": "Export header",
   "dashboardTitle": "FieldTally",
   "dashboardEmptyTitle": "Nothing to show yet",

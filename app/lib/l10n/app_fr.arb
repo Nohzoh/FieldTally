@@ -97,6 +97,7 @@
   "counterCurrentValue": "Valeur actuelle",
   "counterNoTiers": "Aucun seuil de palier n'est connu pour ce compteur, donc aucune projection n'est calculée.",
   "counterSearchEmpty": "Aucun compteur ne correspond à « {search} ».",
+  "countersWatchedSince": "Suivi depuis le {date}. Un événement dont la colonne avait déjà quitté l'export à cette date ne peut pas être affiché du tout.",
   "counterExportHeader": "Nom de colonne à l'export",
   "dashboardTitle": "FieldTally",
   "dashboardEmptyTitle": "Rien à afficher pour l'instant",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../core/router.dart';
 import '../../domain/badge_projection.dart';
@@ -83,6 +84,10 @@ class _CounterList extends ConsumerWidget {
     final sections = builder.build(counters, query);
     final isEmpty = sections.every((s) => s.counters.isEmpty);
 
+    // From the unfiltered list on purpose: how far back the app can see does
+    // not change because a search is active.
+    final since = watchingSince(counters);
+
     return Column(
       children: [
         const _Controls(),
@@ -93,7 +98,14 @@ class _CounterList extends ConsumerWidget {
             child: ListView(
               children: [
                 for (final section in sections)
-                  ..._section(context, section, registry, builder, language),
+                  ..._section(
+                    context,
+                    section,
+                    registry,
+                    builder,
+                    language,
+                    since,
+                  ),
                 const SizedBox(height: 24),
               ],
             ),
@@ -108,9 +120,11 @@ class _CounterList extends ConsumerWidget {
     CounterRegistry? registry,
     CounterListBuilder builder,
     String language,
+    DateTime? since,
   ) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).toString();
 
     return [
       if (section.categoryKey != null)
@@ -121,6 +135,22 @@ class _CounterList extends ConsumerWidget {
                 l10n.fallbackCategory,
             style: theme.textTheme.titleSmall?.copyWith(
               color: theme.colorScheme.primary,
+            ),
+          ),
+        ),
+      // Said here and nowhere else (#100). Every counter the agent can open
+      // arrives complete, so a detail screen has no incompleteness to report;
+      // what is missing is a counter that is not on the screen at all, and the
+      // place that gets noticed is the block where its medal would have been.
+      if (section.categoryKey == eventsCategoryKey && since != null)
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Text(
+            l10n.countersWatchedSince(
+              DateFormat(l10n.shortDateFormat, locale).format(since),
+            ),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.outline,
             ),
           ),
         ),

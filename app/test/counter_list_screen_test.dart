@@ -394,6 +394,43 @@ void main() {
     });
   });
 
+  group('how far back the app can see (#100)', () {
+    // The counters on screen are all complete — the export is all-time — so
+    // there is nothing to warn about on any of them. What is missing is an
+    // event that closed before the first import, which has no row at all. The
+    // note therefore goes where its medal would have been, and nowhere else.
+
+    testWidgets('the Events block says since when', (tester) async {
+      await pumpCounterList(tester);
+      // Searching rather than scrolling: the list builds lazily and Events
+      // sits well below the fold.
+      await search(tester, 'Apollo');
+
+      final note = find.textContaining('Watched since');
+      expect(note, findsOneWidget);
+      expect(
+        find.textContaining('cannot be shown at all'),
+        findsOneWidget,
+        reason: 'the date alone does not say what it rules out',
+      );
+
+      // Under the header rather than merely somewhere on screen: where it
+      // sits is the whole argument for this wording.
+      expect(
+        tester.getTopLeft(note).dy,
+        greaterThan(tester.getTopLeft(find.text('Events')).dy),
+      );
+    });
+
+    testWidgets('and no other block does', (tester) async {
+      await pumpCounterList(tester);
+      await search(tester, 'Unique Portals Visited');
+
+      expect(find.text('Discovery'), findsOneWidget);
+      expect(find.textContaining('Watched since'), findsNothing);
+    });
+  });
+
   group('the medal filter needs a registry (#88)', () {
     testWidgets('the chip is disabled until one has loaded', (tester) async {
       // Without thresholds nothing qualifies, so offering the filter would

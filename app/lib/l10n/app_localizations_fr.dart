@@ -369,6 +369,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String countersWatchedSince(String date) {
+    return 'Suivi depuis le $date. Un événement dont la colonne avait déjà quitté l\'export à cette date ne peut pas être affiché du tout.';
+  }
+
+  @override
   String get counterExportHeader => 'Nom de colonne à l\'export';
 
   @override

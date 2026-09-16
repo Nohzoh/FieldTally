@@ -236,3 +236,28 @@ class CounterListBuilder {
     return [for (final header in sortedHeaders) byHeader[header]!];
   }
 }
+
+/// The registry category whose counters can disappear from the export (#100).
+///
+/// Named here rather than typed into a widget: it is a registry key, part of
+/// the contract `CONTRIBUTING.md` describes, and the one place the app treats a
+/// category as meaning something.
+const eventsCategoryKey = 'events';
+
+/// When this app first had anything to go on, or null before any import.
+///
+/// The earliest `firstSeen` across every counter is the date of the first
+/// snapshot, since every counter that import carried was seen then. It bounds
+/// what the app can ever say: the Ingress export is all-time, so a counter
+/// still in it arrives complete — but an event whose column had already been
+/// dropped before this date never appears at all, and no screen can show what
+/// was never in the input.
+DateTime? watchingSince(Iterable<TrackedCounter> counters) {
+  DateTime? earliest;
+  for (final counter in counters) {
+    if (earliest == null || counter.firstSeen.isBefore(earliest)) {
+      earliest = counter.firstSeen;
+    }
+  }
+  return earliest;
+}
