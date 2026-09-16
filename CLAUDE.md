@@ -128,10 +128,15 @@ memory may no longer match the file — the assert is what tells you.
 - Commits are signed, and pull requests are the only way into `main`.
 - **Every change on `main` answers to an issue** (#125). The pull request names
   it: `Closes #N` when it finishes the issue, `Refs #N` when it is one step of
-  it. No exception for release chores, documentation or tooling repairs — the
-  rule is worth little with a category of exceptions wide enough to hold a
-  release. Open the issue first; when work has already landed without one, open
-  it after the fact rather than leaving the gap.
+  it. Documentation, tooling repairs and emblems are included. Open the issue
+  first; when work has already landed without one, open it after the fact
+  rather than leaving the gap.
+- **The release bump is the one exception** (#127): the commit that sets the
+  version and writes that release's changelog entry, with any site page the
+  release made stale. The rule exists because notes written from the milestone
+  miss work that has no issue — which cannot happen to the commit that *is* the
+  changelog entry. It also has no *why* to preserve; the reasoning lives in the
+  issues the milestone already collects.
 - Do not create a pull request, merge, or dispatch a release unless asked.
 
 ## Releases
@@ -167,7 +172,7 @@ Release notes are written from the milestone, which is the practical reason for
 the issue rule above: work with no issue is invisible to them. It has already
 cost one — an emblem reached `main` untracked and would have gone unmentioned.
 Read the merged pull requests since the last tag as well, and if one has no
-issue, that is the defect, not the changelog's.
+issue, that is the defect, not the changelog's — the bump itself excepted.
 
 `app/assets/changelog.json` is keyed by `versionCode`. `settings_screen_test`
 fakes a build number, and when that fake collides with a real changelog key the
