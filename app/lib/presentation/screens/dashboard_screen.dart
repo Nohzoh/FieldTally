@@ -42,10 +42,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       if (!mounted || releases.isEmpty) return;
 
       final languageCode = Localizations.localeOf(context).languageCode;
+      // Headlines only: this one interrupts an agent who opened the app to
+      // use it. Settings → About keeps the full text, and it is bundled
+      // either way, so nothing here depends on being online (#112).
       await showChangelogDialog(
         context,
         releases: releases,
         languageCode: languageCode,
+        detail: ChangelogDetail.headlines,
       );
     } catch (_) {
       // Silent by design, like the other startup tasks: a changelog that

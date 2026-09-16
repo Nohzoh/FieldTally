@@ -279,5 +279,7 @@
   "notificationMilestoneMore": "{counter} et {count} autres médailles atteintes.",
   "changelogDialogTitle": "Nouveautés de la version {version}",
   "changelogNewHeading": "✨ Nouveautés",
-  "changelogFixedHeading": "🐛 Corrections"
+  "changelogFixedHeading": "🐛 Corrections",
+  "changelogHeadline": "{version} — {title}",
+  "changelogFullNotes": "Lire les notes complètes"
 }

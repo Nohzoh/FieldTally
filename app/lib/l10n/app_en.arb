@@ -887,5 +887,17 @@
     }
   },
   "changelogNewHeading": "✨ New",
-  "changelogFixedHeading": "🐛 Fixed"
+  "changelogFixedHeading": "🐛 Fixed",
+  "changelogHeadline": "{version} — {title}",
+  "@changelogHeadline": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "changelogFullNotes": "Read the full notes"
 }
