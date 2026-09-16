@@ -32,6 +32,7 @@ void main() {
     WidgetTester tester,
     String header, {
     required List<StatSnapshot> history,
+    CounterRegistryNotifier Function() registry = fixedRegistry,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3.0;
@@ -45,7 +46,7 @@ void main() {
         notificationServiceProvider.overrideWithValue(
           FakeNotificationService(),
         ),
-        counterRegistryProvider.overrideWith(fixedRegistry),
+        counterRegistryProvider.overrideWith(registry),
       ],
     );
     // Dispose the container before closing the database: closing Drift while a
@@ -274,6 +275,79 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(paceLine(), isNot(monthly));
+    });
+  });
+
+  group('a ladder whose window has shut (#99)', () {
+    // Apollo's Global Op ladder — 50 / 500 / 1,000 on Apollo Mod Battle
+    // Points — with a deadline already behind. A ladder still open is covered
+    // in the domain instead: the projector reads the real clock, so a future
+    // deadline would make a widget test pass until that hour and fail after.
+
+    testWidgets('says the window is shut, not that the agent failed', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        'Apollo Mod Battle Points',
+        registry: closedLadderRegistry,
+        history: [
+          at(DateTime(2026, 5, 1), const {'Apollo Mod Battle Points': 300}),
+          at(DateTime(2026, 5, 5), const {'Apollo Mod Battle Points': 400}),
+        ],
+      );
+
+      expect(find.textContaining('can no longer be earned'), findsOneWidget);
+      expect(
+        find.textContaining('to go for'),
+        findsNothing,
+        reason: 'a target nobody can act on is not a target',
+      );
+      expect(find.textContaining('at your recent pace'), findsNothing);
+      expect(
+        find.byType(SegmentedButton<ProjectionWindow>),
+        findsNothing,
+        reason: 'the window selector answers "when", and there is no when',
+      );
+    });
+
+    testWidgets('keeps the medal and the ground covered', (tester) async {
+      await pumpDetail(
+        tester,
+        'Apollo Mod Battle Points',
+        registry: closedLadderRegistry,
+        history: [
+          at(DateTime(2026, 5, 1), const {'Apollo Mod Battle Points': 300}),
+          at(DateTime(2026, 5, 5), const {'Apollo Mod Battle Points': 400}),
+        ],
+      );
+
+      // Earned is earned: 400 points is past silver at 50 — sorry, bronze at
+      // 50 and short of silver at 500.
+      expect(find.textContaining('Bronze medal'), findsOneWidget);
+      expect(
+        find.byType(LinearProgressIndicator),
+        findsOneWidget,
+        reason: 'how far they got is still worth showing',
+      );
+    });
+
+    testWidgets('climbed to the top, it says every tier is reached', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        'Apollo Mod Battle Points',
+        registry: closedLadderRegistry,
+        history: [
+          at(DateTime(2026, 5, 1), const {'Apollo Mod Battle Points': 1200}),
+          at(DateTime(2026, 5, 5), const {'Apollo Mod Battle Points': 1500}),
+        ],
+      );
+
+      expect(find.textContaining('Every tier reached'), findsOneWidget);
+      // The multiplier belongs to onyx, which keeps counting. This does not.
+      expect(find.textContaining('\u00d7'), findsNothing);
     });
   });
 }

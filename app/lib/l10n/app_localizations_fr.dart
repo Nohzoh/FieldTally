@@ -684,6 +684,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pas d\'estimation : trop loin à ton rythme récent.';
 
   @override
+  String get projectionEnded => 'Celle-ci ne peut plus être obtenue.';
+
+  @override
+  String get projectionAllTiers => 'Tous les paliers atteints.';
+
+  @override
+  String get projectionAfterDeadline =>
+      'Pas d\'estimation : pas à ce rythme avant la fermeture.';
+
+  @override
   String get projectionBelowFirst => 'Pas encore commencé';
 
   @override

@@ -11,6 +11,7 @@ no duplicates (key or export header), strictly increasing badge thresholds.
     python3 tool/validate_registry.py [path]
 """
 
+from datetime import datetime
 import json
 import re
 import sys
@@ -115,6 +116,37 @@ def validate(path: Path) -> list[str]:
 
         if "periodized" in entry and not isinstance(entry["periodized"], bool):
             errors.append(f"{where}: 'periodized' must be a boolean")
+
+        # When a ladder stops being earnable (#99): the date the medal can
+        # last be claimed, not the day the column leaves the export.
+        #
+        # Required in UTC and spelled out, because a bare date is ambiguous by
+        # up to a day and these windows close on the hour.
+        ends_at = entry.get("ends_at")
+        if ends_at is not None:
+            if not isinstance(ends_at, str):
+                errors.append(f"{where}: 'ends_at' must be a string")
+            else:
+                try:
+                    parsed = datetime.fromisoformat(ends_at.replace("Z", "+00:00"))
+                except ValueError:
+                    errors.append(
+                        f"{where}: 'ends_at' ({ends_at!r}) is not an ISO 8601 "
+                        f"timestamp, e.g. '2026-09-16T18:00:00Z'"
+                    )
+                else:
+                    if parsed.tzinfo is None:
+                        errors.append(
+                            f"{where}: 'ends_at' ({ends_at!r}) carries no time "
+                            f"zone — end it with 'Z' for UTC"
+                        )
+            # An end date on a counter with no thresholds changes nothing the
+            # app does, so it is a contribution mistake rather than a choice.
+            if not entry.get("tiers"):
+                errors.append(
+                    f"{where}: 'ends_at' without 'tiers' does nothing — only a "
+                    f"badge ladder has an end to respect"
+                )
 
         # Badge thresholds (§3.6): optional, but strictly increasing.
         tiers = entry.get("tiers")

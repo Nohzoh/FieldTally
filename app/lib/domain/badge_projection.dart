@@ -21,6 +21,8 @@ class BadgeProjection {
     required this.top,
     required this.perDay,
     required this.window,
+    this.endsAt,
+    this.isOver = false,
   });
 
   final int value;
@@ -44,6 +46,16 @@ class BadgeProjection {
 
   final ProjectionWindow window;
 
+  /// When this ladder stops being earnable, or null for a permanent badge.
+  final DateTime? endsAt;
+
+  /// True once [endsAt] is behind.
+  ///
+  /// Earned is earned: the tier reached stays, and so does the progress across
+  /// the stretch. What ends is the chase — no estimate, and no target the
+  /// agent could still act on (#99).
+  final bool isOver;
+
   /// Every named tier reached.
   ///
   /// No longer the same thing as having nothing left to chase: past the top
@@ -56,15 +68,31 @@ class BadgeProjection {
   ///
   /// The true multiple, including 1. Whether a bare 1 is worth showing is a
   /// question for the surface drawing it: the medal already says onyx.
-  int? get topMultiple => next == null ? multipleOf(top, value) : null;
+  ///
+  /// Null for a ladder that ends, whatever its length. Onyx is a summit — the
+  /// game counts past it and prints the multiplier itself — while the top of a
+  /// seasonal ladder is a terminus, past which the game stops caring. Keyed on
+  /// [endsAt] rather than on how many tiers there are, because that varies:
+  /// Orion's season medal has four where every other has three.
+  int? get topMultiple =>
+      next == null && endsAt == null ? multipleOf(top, value) : null;
+
+  /// True when a ladder that ends has been climbed to its top.
+  ///
+  /// The state onyx never reaches, because past onyx there is always another
+  /// multiple. Here there is nothing: the game itself stops counting, so the
+  /// card says so rather than inventing a target or an empty bar.
+  bool get isFinished => next == null && endsAt != null;
 
   /// What the agent is working towards: the next tier, or the next whole
-  /// multiple of [top] once every tier is behind.
+  /// multiple of [top] once every tier is behind — which, for a ladder that
+  /// ends, is the top tier itself once reached.
   ///
   /// Never null for a counter that has tiers at all, which is what keeps the
   /// pace, the estimate and the progress bar working past onyx instead of the
   /// card collapsing to a single sentence.
-  num get target => next?.value ?? (topMultiple! + 1) * top.value;
+  num get target =>
+      next?.value ?? (isFinished ? top.value : (topMultiple! + 1) * top.value);
 
   /// Where the current stretch starts: the tier below, or the multiple of
   /// [top] already reached.
@@ -76,6 +104,8 @@ class BadgeProjection {
 
   /// Share of the way across the current stretch, between 0 and 1.
   double? get progress {
+    if (isFinished) return 1;
+
     final span = target - _from;
     if (span <= 0) return null;
     return ((value - _from) / span).clamp(0.0, 1.0);
@@ -88,6 +118,8 @@ class BadgeProjection {
   /// centuries away: "not at this pace" is the truthful answer, and a made-up
   /// date is worse than none.
   double? get daysToNext {
+    if (isFinished) return null;
+
     final rate = perDay;
     if (rate == null || rate <= 0) return null;
     return remaining / rate;
@@ -96,6 +128,27 @@ class BadgeProjection {
   /// Projected date, measured from [from] — normally the latest snapshot,
   /// since that is when the pace was last observed.
   DateTime? projectedDate(DateTime from) {
+    final date = _paceDate(from);
+    if (date == null) return null;
+
+    // A date past the ladder's own deadline is not a forecast, it is a
+    // contradiction: by then the medal cannot be claimed at all.
+    if (endsAt != null && date.isAfter(endsAt!)) return null;
+
+    return date;
+  }
+
+  /// True when the pace does reach the target, but only after the ladder has
+  /// closed — which reads differently from "no estimate" and has to.
+  bool missesDeadline(DateTime from) {
+    final date = _paceDate(from);
+    return date != null && endsAt != null && date.isAfter(endsAt!);
+  }
+
+  /// The date the recent pace points at, before the deadline is applied.
+  DateTime? _paceDate(DateTime from) {
+    if (isOver) return null;
+
     final days = daysToNext;
     if (days == null) return null;
 
@@ -206,6 +259,7 @@ class BadgeProjector {
     required List<SeriesPoint> points,
     required CounterEnrichment? enrichment,
     ProjectionWindow window = ProjectionWindow.month,
+    DateTime? now,
   }) {
     if (enrichment == null || enrichment.tiers.isEmpty) return null;
     if (points.isEmpty) return null;
@@ -230,6 +284,11 @@ class BadgeProjector {
       top: tiers.last,
       perDay: _paceFor(points, window),
       window: window,
+      endsAt: enrichment.endsAt,
+      // Against the calendar, not against the last snapshot. Whether an event
+      // is over is a fact about the world; the pace, measured from the last
+      // snapshot (§3.5), is a fact about the agent.
+      isOver: enrichment.endedBy(now ?? DateTime.now()),
     );
   }
 

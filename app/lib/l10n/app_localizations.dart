@@ -1156,6 +1156,24 @@ abstract class AppLocalizations {
   /// **'No estimate: too far off at your recent pace.'**
   String get projectionTooFar;
 
+  /// Replaces the remaining line once a seasonal ladder has closed (#99). The medal already earned stays; what ends is the chase, so this says the window is shut rather than that the agent failed.
+  ///
+  /// In en, this message translates to:
+  /// **'This one can no longer be earned.'**
+  String get projectionEnded;
+
+  /// A ladder that ends, climbed to its top. Unlike onyx there is no further multiple to chase, because the game itself stops counting there.
+  ///
+  /// In en, this message translates to:
+  /// **'Every tier reached.'**
+  String get projectionAllTiers;
+
+  /// The pace does reach the target, but only after the ladder's own deadline. Distinct from projectionTooFar, which is about a pace too slow to matter rather than a window about to shut.
+  ///
+  /// In en, this message translates to:
+  /// **'No estimate: not at this pace before it closes.'**
+  String get projectionAfterDeadline;
+
   /// No description provided for @projectionBelowFirst.
   ///
   /// In en, this message translates to:

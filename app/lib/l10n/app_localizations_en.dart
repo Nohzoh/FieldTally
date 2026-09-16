@@ -678,6 +678,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'No estimate: too far off at your recent pace.';
 
   @override
+  String get projectionEnded => 'This one can no longer be earned.';
+
+  @override
+  String get projectionAllTiers => 'Every tier reached.';
+
+  @override
+  String get projectionAfterDeadline =>
+      'No estimate: not at this pace before it closes.';
+
+  @override
   String get projectionBelowFirst => 'Not started yet';
 
   @override
