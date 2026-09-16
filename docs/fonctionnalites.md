@@ -46,6 +46,12 @@ chiffres minuscules.
   fixé un, sinon la prochaine médaille. Plus un calendrier d'activité et le
   nom exact de la colonne d'export pour retrouver le compteur dans le jeu.
 
+Sous la catégorie **Événements**, l'app dit depuis quand elle regarde. L'export
+Ingress est cumulatif, donc tout compteur qu'il porte arrive complet — mais la
+colonne d'un événement finit par en disparaître. Un événement clos avant ton
+premier relevé n'est donc nulle part, et l'app le dit plutôt que de laisser son
+silence passer pour une médaille que tu n'aurais pas gagnée.
+
 ## Projections et objectifs
 
 La **prochaine médaille** affiche ce qu'il te reste et une date estimée à ton
@@ -56,6 +62,13 @@ d'inventer une date.
 L'onyx n'est pas la fin. Passé le dernier palier, l'app compte en multiples de
 celui-ci, comme le jeu : combien de fois entières tu l'as dépassé, et ce qu'il
 reste jusqu'à la suivante.
+
+Les **médailles d'anomalie** — la Global Op et la médaille de saison d'une
+campagne — se reconnaissent à leur jante brisée au lieu d'être pleine : elles
+cessent d'être gagnables à une date, et l'app le sait. Celle de la Global Op
+porte en plus un plot en haut. Leurs seuils arrivent par le registre plutôt que
+par une mise à jour de l'app, si bien qu'une campagne qui démarre est prise en
+compte sans rien installer.
 
 Tu peux fixer un **objectif personnel** sur n'importe quel compteur, avec ou
 sans échéance, et voir si ton rythme actuel t'y mène. Sur le graphique,

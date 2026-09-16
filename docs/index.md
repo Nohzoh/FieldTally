@@ -43,6 +43,8 @@ compteur plutôt qu'un graphique unique illisible.
   jusqu'à la suivante.
 - **Une liste que tu peux réduire** : seulement les compteurs qui donnent une
   médaille, triés par celle dont tu es le plus proche.
+- **Les médailles d'anomalie comprises**, jante brisée pour dire qu'elles
+  cessent d'être gagnables, et leurs seuils qui arrivent sans mise à jour.
 - **Des objectifs personnels** et des **rappels** planifiés sur l'appareil.
 - **Une carte de stats** en image, prête à publier.
 - **Une comparaison avec un agent à côté de toi**, de téléphone à téléphone,
