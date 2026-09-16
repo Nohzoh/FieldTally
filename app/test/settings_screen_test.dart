@@ -40,9 +40,14 @@ void main() {
 
   /// Stands in for the platform: PackageInfo reads a channel no widget test
   /// has, so the provider is overridden rather than the plugin mocked.
+  ///
+  /// The build number is deliberately one the changelog will never carry.
+  /// It used to be 7, which held only until the seventh release shipped an
+  /// entry keyed 7 — and then "this build has no notes bundled" quietly
+  /// became false and the test failed on a release commit.
   const runningBuild = BuildInfo(
     version: '1.2.3',
-    build: '7',
+    build: '9999',
     commit: 'abc1234',
   );
 
@@ -408,7 +413,7 @@ void main() {
       await tester.tap(find.textContaining('Version'));
       await tester.pumpAndSettle();
 
-      expect(copied.single, 'FieldTally 1.2.3 (7) · abc1234');
+      expect(copied.single, 'FieldTally 1.2.3 (9999) · abc1234');
       expect(find.text('Version copied.'), findsOneWidget);
     });
 
@@ -418,17 +423,17 @@ void main() {
       // A working copy must not claim a commit that may not hold what runs.
       await pumpSettings(
         tester,
-        build: const BuildInfo(version: '1.2.3', build: '7', commit: null),
+        build: const BuildInfo(version: '1.2.3', build: '9999', commit: null),
       );
       await scrollTo(tester, find.textContaining('working copy'));
 
       expect(find.textContaining('working copy'), findsOneWidget);
-      expect(find.text('Version 1.2.3 (7)'), findsOneWidget);
+      expect(find.text('Version 1.2.3 (9999)'), findsOneWidget);
     });
 
     testWidgets('shows the commit when the build carries one', (tester) async {
       await pumpSettings(tester);
-      await scrollTo(tester, find.text('Version 1.2.3 (7)'));
+      await scrollTo(tester, find.text('Version 1.2.3 (9999)'));
 
       expect(find.text('abc1234'), findsOneWidget);
     });

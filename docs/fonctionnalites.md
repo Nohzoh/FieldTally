@@ -69,7 +69,8 @@ Deux notifications, planifiées sur l'appareil et rien d'autre :
 
 - un rappel quand tu n'as rien enregistré depuis un certain temps (délai
   réglable) ;
-- une annonce quand un relevé te fait franchir un palier de médaille.
+- une annonce quand un relevé te fait franchir un palier de médaille, dépasser
+  le dernier une fois de plus, ou monter d'un niveau.
 
 Désactivées tant que tu ne les as pas activées.
 

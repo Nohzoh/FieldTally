@@ -91,5 +91,22 @@
         "La progression récente se mesure maintenant sur une durée que tu choisis : depuis ton dernier relevé, sur sept jours ou sur trente. Elle compte en rythme par jour, si bien qu'un compteur relevé deux fois par semaine et un relevé deux fois par jour deviennent enfin comparables."
       ]
     }
+  },
+  "7": {
+    "version": "1.5.0",
+    "features": {
+      "en": [
+        "Reaching a new level is announced. It was the one milestone the app stayed quiet about — and if you recurse and climb back, it is announced again, because you did it again.",
+        "Passing the top threshold of a badge another whole time is announced too. Onyx was never the end of the counting, and now it is not the end of the telling either.",
+        "A milestone notification names the medal in its title. It used to read \"Onyx reached\", which on a locked screen said nothing about what had been reached.",
+        "Seasonal medals are understood: the Global Op and Season medals of an anomaly season. Their thresholds reach the app on their own, with no update to install, and the app knows when a window closes — so it will not offer you a date past the day the medal stops being earnable."
+      ],
+      "fr": [
+        "Atteindre un nouveau niveau est annoncé. C'était le seul jalon sur lequel l'app restait muette — et si tu récurses puis regrimpes, c'est annoncé à nouveau, parce que tu l'as fait à nouveau.",
+        "Dépasser le dernier palier d'une médaille une fois de plus est annoncé aussi. L'onyx n'a jamais été la fin du décompte, il n'est plus la fin de ce qui t'est dit.",
+        "Une notification de jalon nomme la médaille dans son titre. Elle affichait « Onyx atteint », ce qui sur un écran verrouillé ne disait rien de ce qui avait été atteint.",
+        "Les médailles saisonnières sont comprises : celles de Global Op et de saison d'une saison d'anomalies. Leurs paliers arrivent tout seuls, sans mise à jour à installer, et l'app sait quand une fenêtre se ferme — elle ne te proposera donc pas une date au-delà du jour où la médaille cesse d'être gagnable."
+      ]
+    }
   }
 }

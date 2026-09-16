@@ -65,7 +65,8 @@ is a long way off.
 Two notifications, scheduled on the device and nowhere else:
 
 - a reminder when you have not recorded anything for a while (configurable);
-- an announcement when a snapshot crosses a badge tier.
+- an announcement when a snapshot crosses a badge tier, passes the top one
+  another whole time, or takes you up a level.
 
 Off until you turn them on.
 
