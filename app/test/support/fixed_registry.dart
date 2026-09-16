@@ -48,28 +48,26 @@ class PendingRegistryNotifier extends CounterRegistryNotifier {
 
 PendingRegistryNotifier pendingRegistry() => PendingRegistryNotifier();
 
-/// The seed registry with a badge ladder on an event counter that no release
-/// has an emblem for (#98).
+/// The seed registry with a badge ladder put on a named counter.
 ///
-/// Apollo's Global Op medal is measured on `Apollo Mod Battle Points`, a
-/// counter the registry already knows. Giving it thresholds is a registry
-/// change and reaches an installed app at the next start (§3.1.4), while an
-/// emblem could only arrive in a release — so this is not a contrived state,
-/// it is the ordinary one for every seasonal medal.
-CounterRegistry registryWithEventLadder({DateTime? endsAt}) {
+/// Giving a counter thresholds is a registry change and reaches an installed
+/// app at the next start (§3.1.4), while the emblem for it could only arrive
+/// in a release — so a ladder without a drawing is not a contrived state, it
+/// is the ordinary one whenever a Global Op opens.
+CounterRegistry registryWithLadderOn(String key, {DateTime? endsAt}) {
   final doc =
       jsonDecode(File(seedAssetPath).readAsStringSync())
           as Map<String, dynamic>;
   final counters = doc['counters'] as Map<String, dynamic>;
-  final entry = counters['apollo_mod_battle_points'] as Map<String, dynamic>;
+  final entry = counters[key] as Map<String, dynamic>;
   entry['tiers'] = [
     {'name': 'bronze', 'value': 50},
     {'name': 'silver', 'value': 500},
     {'name': 'gold', 'value': 1000},
   ];
-  // The real registry now dates this ladder (#99). The fixture states the
-  // window itself rather than inheriting it, so 'still open' does not quietly
-  // become 'already shut' on the day the real op ends.
+  // Stated, never inherited: the real registry dates some of these ladders
+  // (#99), and inheriting would let 'still open' become 'already shut' on the
+  // day the real op ends.
   if (endsAt != null) {
     entry['ends_at'] = endsAt.toUtc().toIso8601String();
   } else {
@@ -79,9 +77,23 @@ CounterRegistry registryWithEventLadder({DateTime? endsAt}) {
   return const CounterRegistryLoader().parse(jsonEncode(doc));
 }
 
+/// A ladder on `Apollo Mod Battle Points`, which this release does draw.
+CounterRegistry registryWithEventLadder({DateTime? endsAt}) =>
+    registryWithLadderOn('apollo_mod_battle_points', endsAt: endsAt);
+
 /// Hands [registryWithEventLadder] to the providers.
 FixedRegistryNotifier eventLadderRegistry() =>
     FixedRegistryNotifier(registryWithEventLadder());
+
+/// A ladder on a counter this release draws no emblem for (#98).
+///
+/// Deliberately not the Apollo counter any more: since #99 drew its emblem,
+/// pointing the #98 tests at it would have left them asserting the right
+/// things about the wrong case — a row that names its tier because an emblem
+/// exists, not because it copes without one. `Anomaly Unique Hacks` is the
+/// plausible next ladder and has no drawing.
+FixedRegistryNotifier undrawnLadderRegistry() =>
+    FixedRegistryNotifier(registryWithLadderOn('anomaly_unique_hacks'));
 
 /// The same ladder, with its window already shut (#99).
 ///

@@ -57,7 +57,16 @@ A counter that carries `tiers` also gets an emblem beside it in the list, drawn
 in [`app/lib/presentation/widgets/medal_icon.dart`](app/lib/presentation/widgets/medal_icon.dart).
 They are the project's own drawings, deliberately not Niantic's artwork, and
 they share a grammar worth keeping: a pin means a place, a bracketed frame
-means a scan, a filled dot means a node. Adding badge thresholds to a counter
+means a scan, a filled dot means a node.
+
+The **rim** carries a second grammar, independent of the glyph. A badge that can
+always be earned gets an unbroken ring; a ladder that stops being earnable — an
+anomaly medal, which the registry dates with `ends_at` — gets a ring broken into
+four arcs, and the Global Op of a season's pair gets a stud seated in the gap at
+twelve o'clock. Put a classification on the rim rather than in the glyph: at list
+size the glyph has barely seventeen pixels to say what a counter measures, and
+none to spare. `medal_icon_test` checks the rims against the registry's own
+`ends_at` in both directions, so the drawing and the data cannot drift apart. Adding badge thresholds to a counter
 without adding its emblem fails `test/presentation/medal_icon_test.dart`, in
 both directions.
 
