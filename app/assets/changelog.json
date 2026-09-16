@@ -132,5 +132,24 @@
         "Les médailles saisonnières sont comprises : celles de Global Op et de saison d'une saison d'anomalies. Leurs paliers arrivent tout seuls, sans mise à jour à installer, et l'app sait quand une fenêtre se ferme — elle ne te proposera donc pas une date au-delà du jour où la médaille cesse d'être gagnable."
       ]
     }
+  },
+  "8": {
+    "version": "1.6.0",
+    "title": {
+      "en": "Emblems for the anomaly medals, and shorter update notes",
+      "fr": "Des emblèmes pour les médailles d'anomalie, et des notes de mise à jour plus courtes"
+    },
+    "features": {
+      "en": [
+        "The four anomaly medals — Apollo's and Orion's — are drawn at last. Their rim is broken rather than solid, which marks a medal that will stop being earnable, and the Global Op of each season carries a stud at the top.",
+        "The Events block says since when the app has been watching. An event whose column had already left your export before your first import cannot be shown at all — it now says so, instead of looking like a medal you never earned.",
+        "What changed after an update is now one line per version, with a link to the full notes. Nothing is lost: everything stays in Settings → About, and still works with no network."
+      ],
+      "fr": [
+        "Les quatre médailles d'anomalie — celles d'Apollo et d'Orion — sont enfin dessinées. Leur jante est brisée au lieu d’être pleine, ce qui signale une médaille qu’on ne pourra plus gagner, et la Global Op de chaque saison porte un plot en haut.",
+        "Le bloc Événements dit depuis quand l'app regarde. Un événement dont la colonne avait déjà quitté ton export avant ton premier relevé ne peut pas être affiché du tout — il le dit maintenant, au lieu de ressembler à une médaille que tu n’aurais pas gagnée.",
+        "Ce qui a changé après une mise à jour tient maintenant en une ligne par version, avec un lien vers les notes complètes. Rien n'est perdu : tout reste dans Réglages → À propos, et fonctionne toujours sans réseau."
+      ]
+    }
   }
 }
