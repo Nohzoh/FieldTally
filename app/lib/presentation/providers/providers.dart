@@ -178,7 +178,9 @@ final dashboardProvider = Provider<AsyncValue<List<DashboardCard>>>((ref) {
   final snapshots = ref.watch(snapshotsProvider);
   final pinned = ref.watch(pinnedCountersProvider);
 
-  if (snapshots.isLoading || pinned.isLoading) return const AsyncValue.loading();
+  if (snapshots.isLoading || pinned.isLoading) {
+    return const AsyncValue.loading();
+  }
 
   return snapshots.whenData(
     (stored) => const DashboardBuilder().build(
@@ -247,7 +249,9 @@ final shareCardProvider = Provider<AsyncValue<ShareCardData?>>((ref) {
   final snapshots = ref.watch(snapshotsProvider);
   final pinned = ref.watch(pinnedCountersProvider);
 
-  if (snapshots.isLoading || pinned.isLoading) return const AsyncValue.loading();
+  if (snapshots.isLoading || pinned.isLoading) {
+    return const AsyncValue.loading();
+  }
 
   return snapshots.whenData(
     (stored) => const ShareCardBuilder().build(
