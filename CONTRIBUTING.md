@@ -188,6 +188,14 @@ committing a new sample: replace the codename with a generic one, neutralise
 the date, and multiply every numeric value by one fixed scaling factor (which
 preserves proportions and zeros, hence the fixture's value for testing).
 
+## Working with an AI agent
+
+[`CLAUDE.md`](CLAUDE.md) holds what an agent needs beyond this file: the shape
+of the sandbox it runs in, the commands CI actually runs, and the traps this
+project has already paid for once. It is written for an agent, but the traps are
+worth a read for anyone — several of them are about this repository rather than
+about tooling.
+
 ## Reporting a problem
 
 Two issue templates exist: one for "parsing does not work" (remember to
