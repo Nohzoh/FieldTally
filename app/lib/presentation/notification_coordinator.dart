@@ -18,12 +18,12 @@ class NotificationCoordinator {
   const NotificationCoordinator({
     required this.service,
     required this.settings,
-    this.detector = const TierCrossingDetector(),
+    this.detector = const MilestoneDetector(),
   });
 
   final NotificationService service;
   final SettingsRepository settings;
-  final TierCrossingDetector detector;
+  final MilestoneDetector detector;
 
   /// How many milestone notifications to post at once.
   ///
@@ -82,7 +82,10 @@ class NotificationCoordinator {
     );
   }
 
-  /// Announces any badge tier the new snapshot crossed.
+  /// Announces what the new snapshot achieved.
+  ///
+  /// A level, badge tiers, and further multiples of a top tier — in that
+  /// order, because the level is the one an agent asks about.
   Future<void> announceMilestones({
     required StatSnapshot current,
     required StatSnapshot? previous,
@@ -92,36 +95,75 @@ class NotificationCoordinator {
   }) async {
     if (!await isEnabled()) return;
 
-    final crossings = detector.crossings(
+    final found = detector.since(
       current: current,
       previous: previous,
       registry: registry,
     );
-    if (crossings.isEmpty) return;
+    if (found.isEmpty) return;
 
     final numbers = NumberFormat.decimalPattern(language);
-    final shown = crossings.take(maxMilestones).toList();
-    for (var i = 0; i < shown.length; i++) {
-      final crossing = shown[i];
-      final label =
-          registry.forExportHeader(crossing.exportHeader)?.label(language) ??
-          crossing.exportHeader;
+    final shown = found.take(maxMilestones).toList();
+    final extra = found.length - maxMilestones;
 
-      final extra = crossings.length - maxMilestones;
+    for (var i = 0; i < shown.length; i++) {
+      final milestone = shown[i];
       final isLast = i == shown.length - 1;
+
+      // The overflow line replaces the body of the last one shown, so the
+      // count of what was left out is read exactly once.
+      final summarised = isLast && extra > 0;
 
       await service.show(
         id: PluginNotificationService.milestoneBaseId + i,
-        title: l10n.notificationMilestoneTitle(
-          tierLabel(l10n, crossing.tier.name),
-        ),
-        body: isLast && extra > 0
-            ? l10n.notificationMilestoneMore(label, extra)
-            : l10n.notificationMilestoneBody(
-                label,
-                numbers.format(crossing.value),
-              ),
+        title: _title(milestone, l10n, language, registry),
+        body: summarised
+            ? l10n.notificationMilestoneMore(
+                _label(milestone, language, registry),
+                extra,
+              )
+            : _body(milestone, l10n, numbers),
       );
     }
   }
+
+  String _title(
+    Milestone milestone,
+    AppLocalizations l10n,
+    String language,
+    CounterRegistry registry,
+  ) => switch (milestone) {
+    LevelReached(:final level) => l10n.notificationLevelTitle(level),
+    TierReached(:final tier) => l10n.notificationMilestoneTitle(
+      _label(milestone, language, registry),
+      tierLabel(l10n, tier.name),
+    ),
+    MultipleReached(:final tier, :final multiple) =>
+      l10n.notificationMultipleTitle(
+        tierLabel(l10n, tier.name),
+        multiple,
+        _label(milestone, language, registry),
+      ),
+  };
+
+  String _body(
+    Milestone milestone,
+    AppLocalizations l10n,
+    NumberFormat numbers,
+  ) => switch (milestone) {
+    LevelReached() => l10n.notificationLevelBody,
+    TierReached(:final value) || MultipleReached(:final value) =>
+      l10n.notificationMilestoneBody(numbers.format(value)),
+  };
+
+  /// The counter's own name, for the surfaces that need it.
+  String _label(
+    Milestone milestone,
+    String language,
+    CounterRegistry registry,
+  ) => switch (milestone) {
+    LevelReached() => '',
+    TierReached(:final exportHeader) || MultipleReached(:final exportHeader) =>
+      registry.forExportHeader(exportHeader)?.label(language) ?? exportHeader,
+  };
 }

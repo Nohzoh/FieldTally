@@ -17,12 +17,13 @@ import '../support/fake_notification_service.dart';
 
 const seedPath = 'assets/counters_registry_seed.json';
 
-StatSnapshot snap(Map<String, int> counters) => StatSnapshot(
+StatSnapshot snap(Map<String, int> counters, {int? level}) => StatSnapshot(
   timeSpan: TimeSpan.allTime,
   agentName: 'AgentDemo',
   faction: 'Enlightened',
   recordedAt: DateTime(2026, 1, 1),
   counters: counters,
+  level: level,
 );
 
 void main() {
@@ -137,8 +138,49 @@ void main() {
           language: 'en',
         );
 
-    test('names the tier, the counter and the value', () async {
-      // Explorer silver sits at 1000.
+    test('a level is announced, and celebrated', () async {
+      // The one milestone that arrives once per import rather than up to
+      // three times, which is why a word of celebration rings true here and
+      // would ring hollow on a badge (#103, #105).
+      await coordinator.announceMilestones(
+        current: snap(const {}, level: 13),
+        previous: snap(const {}, level: 12),
+        registry: registry,
+        l10n: l10n,
+        language: 'en',
+      );
+
+      final posted = service.shown.single;
+      expect(posted.title, contains('13'));
+      expect(posted.body, contains('Well played'));
+      expect(
+        posted.body,
+        isNot(contains('best')),
+        reason: 'an agent who recursed is reaching this level a second time',
+      );
+    });
+
+    test('a further multiple says it in words, not as a symbol', () async {
+      // Explorer onyx sits at 30,000. A notification is read aloud by the
+      // system, which has no Semantics to fall back on — the multiplication
+      // sign is read out inconsistently or skipped entirely.
+      await announce(
+        const {'Unique Portals Visited': 59000},
+        const {'Unique Portals Visited': 61000},
+      );
+
+      final posted = service.shown.single;
+      expect(posted.title, contains('Onyx'));
+      expect(posted.title, contains('2 times over'));
+      expect(posted.title, contains('Unique Portals Visited'));
+      expect(posted.title, isNot(contains('\u00d7')));
+    });
+
+    test('the title names the badge, not just the tier', () async {
+      // Explorer silver sits at 1000. The title used to read "Silver
+      // reached" and put the counter in the body — but a collapsed
+      // notification, a lock screen or a watch shows the title alone, and
+      // that said nothing about what was reached (#103).
       await announce(
         const {'Unique Portals Visited': 900},
         const {'Unique Portals Visited': 1100},
@@ -146,8 +188,13 @@ void main() {
 
       final posted = service.shown.single;
       expect(posted.title, contains('Silver'));
-      expect(posted.body, contains('Unique Portals Visited'));
+      expect(posted.title, contains('Unique Portals Visited'));
       expect(posted.body, contains('1,100'));
+      expect(
+        posted.body,
+        isNot(contains('Unique Portals Visited')),
+        reason: 'the title carries it; twice on one notification is noise',
+      );
     });
 
     test('says nothing when notifications are off', () async {

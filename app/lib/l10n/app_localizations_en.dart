@@ -1033,14 +1033,27 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String notificationMilestoneTitle(String tier) {
-    return '$tier reached';
+  String notificationMilestoneTitle(String counter, String tier) {
+    return '$tier — $counter';
   }
 
   @override
-  String notificationMilestoneBody(String counter, String value) {
-    return '$counter is now at $value.';
+  String notificationMilestoneBody(String value) {
+    return 'Now at $value.';
   }
+
+  @override
+  String notificationMultipleTitle(String tier, int count, String counter) {
+    return '$tier $count times over — $counter';
+  }
+
+  @override
+  String notificationLevelTitle(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get notificationLevelBody => 'Well played, Agent.';
 
   @override
   String notificationMilestoneMore(String counter, int count) {

@@ -9,11 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 const seedPath = 'assets/counters_registry_seed.json';
 
-StatSnapshot snap(Map<String, int> counters) => StatSnapshot(
+StatSnapshot snap(Map<String, int> counters, {int? level}) => StatSnapshot(
   timeSpan: TimeSpan.allTime,
   agentName: 'AgentDemo',
   faction: 'Enlightened',
   recordedAt: DateTime(2026, 1, 1),
+  level: level,
   counters: counters,
 );
 
@@ -27,16 +28,15 @@ void main() {
   });
 
   group('badge tiers crossed (§3.7)', () {
-    const detector = TierCrossingDetector();
+    const detector = MilestoneDetector();
 
-    List<TierCrossing> between(
+    List<TierReached> between(
       Map<String, int> before,
       Map<String, int> after,
-    ) => detector.crossings(
-      current: snap(after),
-      previous: snap(before),
-      registry: registry,
-    );
+    ) => detector
+        .since(current: snap(after), previous: snap(before), registry: registry)
+        .whereType<TierReached>()
+        .toList();
 
     test('announces a tier the new snapshot reached', () {
       // Explorer silver sits at 1000.
@@ -85,7 +85,7 @@ void main() {
       // Someone importing years of history at once does not want a burst of
       // notifications for badges earned long ago.
       expect(
-        const TierCrossingDetector().crossings(
+        const MilestoneDetector().since(
           current: snap(const {'Unique Portals Visited': 9000}),
           previous: null,
           registry: registry,
@@ -107,6 +107,168 @@ void main() {
         between(const {'Orion Tokens': 10}, const {'Orion Tokens': 99999}),
         isEmpty,
       );
+    });
+  });
+
+  group('a further multiple of a top tier (#104)', () {
+    const detector = MilestoneDetector();
+
+    List<MultipleReached> between(
+      Map<String, int> before,
+      Map<String, int> after,
+    ) => detector
+        .since(current: snap(after), previous: snap(before), registry: registry)
+        .whereType<MultipleReached>()
+        .toList();
+
+    // Explorer onyx sits at 30,000.
+    test('announces the multiple reached', () {
+      final found = between(
+        const {'Unique Portals Visited': 59000},
+        const {'Unique Portals Visited': 61000},
+      );
+
+      expect(found, hasLength(1));
+      expect(found.single.multiple, 2);
+      expect(found.single.tier.name, 'onyx');
+      expect(found.single.value, 61000);
+    });
+
+    test('several passed at once are one piece of news, not several', () {
+      // The case the burst guard could not catch: previous is not null, so
+      // every import is a real crossing. x 2 through x 9 is one achievement.
+      final found = between(
+        const {'Unique Portals Visited': 40000},
+        const {'Unique Portals Visited': 280000},
+      );
+
+      expect(found, hasLength(1));
+      expect(found.single.multiple, 9);
+    });
+
+    test('the first multiple is not announced', () {
+      // Reaching onyx is announced as a tier. Saying "one time over" beside
+      // it would be the same news twice.
+      expect(
+        between(
+          const {'Unique Portals Visited': 29000},
+          const {'Unique Portals Visited': 31000},
+        ),
+        isEmpty,
+      );
+    });
+
+    test('and never is, whatever the jump', () {
+      // Straight from below onyx to nine times over: the tier is the news,
+      // and the multiple has no earlier one to exceed.
+      expect(
+        between(
+          const {'Unique Portals Visited': 100},
+          const {'Unique Portals Visited': 280000},
+        ),
+        isEmpty,
+      );
+    });
+
+    test('a value climbing inside one multiple says nothing', () {
+      expect(
+        between(
+          const {'Unique Portals Visited': 61000},
+          const {'Unique Portals Visited': 89000},
+        ),
+        isEmpty,
+      );
+    });
+
+    test('a ladder that ends never multiplies', () {
+      // The game stops counting at a seasonal top tier, so there is nothing
+      // to announce past it (#99). Read from topTierMultiple, which is where
+      // the rule lives.
+      final seasonal = const CounterRegistryLoader().parse(
+        File(seedPath).readAsStringSync().replaceFirst(
+          '"apollo_mod_battle_points": {',
+          '"apollo_mod_battle_points": {'
+              '"tiers": [{"name": "gold", "value": 1000}],'
+              '"ends_at": "2026-09-16T18:00:00Z",',
+        ),
+      );
+
+      final found = const MilestoneDetector()
+          .since(
+            current: snap(const {'Apollo Mod Battle Points': 9000}),
+            previous: snap(const {'Apollo Mod Battle Points': 1500}),
+            registry: seasonal,
+          )
+          .whereType<MultipleReached>();
+
+      expect(found, isEmpty);
+    });
+  });
+
+  group('a new level (#105)', () {
+    const detector = MilestoneDetector();
+
+    List<Milestone> between(int? before, int? after) => detector.since(
+      current: snap(const {}, level: after),
+      previous: snap(const {}, level: before),
+      registry: registry,
+    );
+
+    test('announces the level reached', () {
+      final found = between(12, 13).whereType<LevelReached>();
+
+      expect(found, hasLength(1));
+      expect(found.single.level, 13);
+    });
+
+    test('several at once are one piece of news', () {
+      final found = between(9, 13).whereType<LevelReached>().toList();
+
+      expect(found, hasLength(1));
+      expect(
+        found.single.level,
+        13,
+        reason: 'the level reached, not each step',
+      );
+    });
+
+    test('a recursion says nothing on the way down', () {
+      expect(between(16, 1), isEmpty);
+    });
+
+    test('but climbing back is celebrated again', () {
+      // Settled deliberately: from the agent's side they did it again. A
+      // stored high-water mark would have made a recursion permanently
+      // silent, on top of going stale when a snapshot is corrected.
+      final found = between(12, 13).whereType<LevelReached>();
+
+      expect(found.single.level, 13);
+    });
+
+    test('an unknown level on either side is silence, not level zero', () {
+      // The Agent Stats migration CSV carries no level column at all.
+      expect(between(null, 13), isEmpty);
+      expect(between(12, null), isEmpty);
+      expect(between(null, null), isEmpty);
+    });
+
+    test('standing still says nothing', () {
+      expect(between(13, 13), isEmpty);
+    });
+  });
+
+  group('what comes first', () {
+    test('the level leads, then the badges', () {
+      // The level is the one an agent asks about, and only the first few are
+      // shown before the rest are summarised.
+      final found = const MilestoneDetector().since(
+        current: snap(const {'Unique Portals Visited': 2500}, level: 13),
+        previous: snap(const {'Unique Portals Visited': 50}, level: 12),
+        registry: registry,
+      );
+
+      expect(found.first, isA<LevelReached>());
+      expect(found.skip(1).every((m) => m is TierReached), isTrue);
     });
   });
 
