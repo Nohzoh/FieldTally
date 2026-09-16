@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// The metals, one per registry tier key (§3.6, #63).
@@ -69,6 +71,27 @@ class MedalPalette {
   final Color onSolid;
 }
 
+/// How a medal's rim is drawn — what kind of ladder it belongs to (#99).
+///
+/// The classification sits on the rim rather than in the glyph on purpose. At
+/// list size the glyph has about seventeen pixels to say what a counter
+/// measures; it has none to spare for saying what family the medal belongs to.
+/// The rim is drawn once, outside the glyph's square, so a variant costs no
+/// space at all and composes with every tier.
+enum MedalRim {
+  /// A badge that can always be earned: one unbroken ring.
+  permanent,
+
+  /// A ladder that stops being earnable — an anomaly medal. The ring breaks
+  /// into four arcs. It says "this one closes" without symbolising anything,
+  /// and at list size the eye still reads a ring.
+  anomaly,
+
+  /// The same broken ring, with a stud seated in the gap at twelve o'clock:
+  /// the Global Op of a season's pair, as against its Season medal.
+  anomalyGlobalOp,
+}
+
 /// The medal for a counter that has badge thresholds (#63).
 ///
 /// Deliberately drawn rather than shipped as assets: seventeen shapes of
@@ -103,6 +126,18 @@ class MedalIcon extends StatelessWidget {
   /// no drawing must not render a bare ring — better nothing at all.
   static bool existsFor(String counterKey) => _glyphs.containsKey(counterKey);
 
+  /// How this counter's emblem is rimmed.
+  ///
+  /// Public for the same reason as [emblemKeys]: `medal_icon_test` checks it
+  /// against the registry's own `ends_at`, which is the only thing keeping the
+  /// drawing and the data from drifting apart.
+  static MedalRim rimFor(String counterKey) =>
+      _anomalyGlobalOpEmblems.contains(counterKey)
+      ? MedalRim.anomalyGlobalOp
+      : _anomalyEmblems.contains(counterKey)
+      ? MedalRim.anomaly
+      : MedalRim.permanent;
+
   /// Every counter an emblem is drawn for.
   ///
   /// Public so the coverage test can check this list against the registry in
@@ -131,6 +166,7 @@ class MedalIcon extends StatelessWidget {
       child: CustomPaint(
         painter: _MedalPainter(
           glyph: glyph,
+          rim: rimFor(counterKey),
           metal: MedalMetal.of(tierName, colours.brightness),
           unearned: colours.unearned,
           ink: colours.ink,
@@ -144,6 +180,7 @@ class MedalIcon extends StatelessWidget {
 class _MedalPainter extends CustomPainter {
   _MedalPainter({
     required this.glyph,
+    required this.rim,
     required this.metal,
     required this.unearned,
     required this.ink,
@@ -151,6 +188,7 @@ class _MedalPainter extends CustomPainter {
   });
 
   final void Function(Canvas, Paint fill, Paint stroke) glyph;
+  final MedalRim rim;
   final MedalMetal? metal;
   final Color unearned;
   final Color ink;
@@ -159,6 +197,55 @@ class _MedalPainter extends CustomPainter {
   /// Everything is drawn in a 24-unit square and scaled, so one set of
   /// coordinates serves every size.
   static const _grid = 24.0;
+  static const _radius = 10.1;
+
+  /// One ring, or four arcs and possibly a stud — see [MedalRim].
+  ///
+  /// The gaps are narrow on purpose: wide enough that the ring reads as broken
+  /// at twenty-eight pixels, narrow enough that it still reads as a ring. The
+  /// Global Op stud gets a wider gap to sit in, because at list size a smaller
+  /// one disappeared into the rim entirely.
+  void _drawRim(Canvas canvas, Offset centre, Color colour) {
+    final paint = Paint()
+      ..color = colour
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.8
+      ..strokeCap = StrokeCap.round
+      ..isAntiAlias = true;
+
+    if (rim == MedalRim.permanent) {
+      canvas.drawCircle(centre, _radius, paint);
+      return;
+    }
+
+    const gap = 0.30; // radians
+    const quarter = math.pi / 2;
+    final top = rim == MedalRim.anomalyGlobalOp ? 0.62 : gap;
+    for (var k = 0; k < 4; k++) {
+      // Arc k starts at twelve o'clock plus k quarter-turns, so the gap at the
+      // top is the one opening arc 0 and the one closing arc 3.
+      final opening = k == 0 ? top : gap;
+      final closing = k == 3 ? top : gap;
+      canvas.drawArc(
+        Rect.fromCircle(center: centre, radius: _radius),
+        -quarter + opening / 2 + k * quarter,
+        quarter - opening / 2 - closing / 2,
+        false,
+        paint,
+      );
+    }
+
+    if (rim == MedalRim.anomalyGlobalOp) {
+      canvas.drawCircle(
+        centre.translate(0, -_radius),
+        2.3,
+        Paint()
+          ..color = colour
+          ..style = PaintingStyle.fill
+          ..isAntiAlias = true,
+      );
+    }
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -166,26 +253,19 @@ class _MedalPainter extends CustomPainter {
     canvas.save();
     canvas.scale(scale);
 
-    final rim = metal?.rim ?? unearned;
-    final centre = const Offset(12, 12);
+    final rimColour = metal?.rim ?? unearned;
+    const centre = Offset(12, 12);
 
     if (metal != null) {
       canvas.drawCircle(
         centre,
-        10.1,
+        _radius,
         Paint()
-          ..color = metal!.solid ? rim : rim.withValues(alpha: 0.14)
+          ..color = metal!.solid ? rimColour : rimColour.withValues(alpha: 0.14)
           ..style = PaintingStyle.fill,
       );
     }
-    canvas.drawCircle(
-      centre,
-      10.1,
-      Paint()
-        ..color = rim
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.8,
-    );
+    _drawRim(canvas, centre, rimColour);
 
     final colour = metal == null
         ? unearned
@@ -217,6 +297,7 @@ class _MedalPainter extends CustomPainter {
   @override
   bool shouldRepaint(_MedalPainter old) =>
       old.glyph != glyph ||
+      old.rim != rim ||
       old.metal?.rim != metal?.rim ||
       old.ink != ink ||
       old.unearned != unearned ||
@@ -323,6 +404,21 @@ void _pin(Canvas c, Paint p, {required bool filled}) {
     ..close();
   c.drawPath(path, p);
 }
+
+/// The emblems drawn with a broken rim, and which of those carry the Global Op
+/// stud (#99).
+///
+/// Declared here rather than read from the registry: the rim is part of the
+/// drawing, and this widget has no registry to consult. What keeps the two
+/// honest is `medal_icon_test`, which checks these sets against the counters
+/// the registry dates — in both directions, so an emblem rimmed as seasonal
+/// without a dated ladder fails just as loudly as the reverse.
+const _anomalyGlobalOpEmblems = {
+  'orion_link_and_field_points',
+  'apollo_mod_battle_points',
+};
+
+const _anomalyEmblems = {'orion_tokens', 'apollo_tokens'};
 
 final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
   // Distance covered: a winding road. No end dots — those belong to the link,
@@ -511,6 +607,68 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
         ..moveTo(8, 12.2)
         ..lineTo(11, 15.2)
         ..lineTo(16.2, 8.8),
+      stroke..strokeWidth = 2.3,
+    );
+  },
+
+  // --- the anomaly ladders (#99) ------------------------------------------
+  //
+  // Two per season: the Global Op, measured on what the op counts, and the
+  // Season medal, measured on its tokens. The two token emblems share the
+  // coin on purpose — they measure the same thing in different seasons — and
+  // differ only in what is struck on it.
+
+  // Orion's Global Op: link and field points. A field standing on a link —
+  // the base is the heavy span, its two nodes filled.
+  'orion_link_and_field_points': (c, fill, stroke) {
+    c.drawPath(
+      Path()
+        ..moveTo(5.2, 17.8)
+        ..lineTo(12, 5.4)
+        ..lineTo(18.8, 17.8),
+      stroke..strokeWidth = 1.8,
+    );
+    _line(c, stroke..strokeWidth = 2.9, 5.2, 17.8, 18.8, 17.8);
+    _dot(c, fill, 5.2, 17.8, 2.4);
+    _dot(c, fill, 18.8, 17.8, 2.4);
+  },
+
+  // Orion's Season medal: tokens. A coin, struck with the belt.
+  'orion_tokens': (c, fill, stroke) {
+    _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
+    _dot(c, fill, 8.5, 15.5, 1.8);
+    _dot(c, fill, 12, 12, 1.8);
+    _dot(c, fill, 15.5, 8.5, 1.8);
+  },
+
+  // Apollo's Global Op: mod battle points. A mod, contested from both sides.
+  'apollo_mod_battle_points': (c, fill, stroke) {
+    _roundRect(c, fill, const Rect.fromLTWH(9.4, 9.4, 5.2, 5.2), 1.2);
+    stroke.strokeWidth = 2.2;
+    c.drawPath(
+      Path()
+        ..moveTo(4.8, 7.4)
+        ..lineTo(8, 12)
+        ..lineTo(4.8, 16.6),
+      stroke,
+    );
+    c.drawPath(
+      Path()
+        ..moveTo(19.2, 7.4)
+        ..lineTo(16, 12)
+        ..lineTo(19.2, 16.6),
+      stroke,
+    );
+  },
+
+  // Apollo's Season medal: the same coin, struck with the ascent.
+  'apollo_tokens': (c, fill, stroke) {
+    _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
+    c.drawPath(
+      Path()
+        ..moveTo(8.6, 14.2)
+        ..lineTo(12, 9.4)
+        ..lineTo(15.4, 14.2),
       stroke..strokeWidth = 2.3,
     );
   },

@@ -20,19 +20,9 @@ void main() {
   bool hasTiers(MapEntry<String, dynamic> e) =>
       (e.value as Map<String, dynamic>)['tiers'] != null;
 
-  /// The ladders excused from the coverage rule below, named one by one (#99).
-  ///
-  /// Deriving this from `ends_at` instead would excuse whatever carries the
-  /// field, which is the mistake it is meant to catch: a permanent badge given
-  /// an end date by a slip of the hand would drop out of the rule and take its
-  /// emblem requirement with it, in silence. Naming them costs one line when a
-  /// Global Op opens, and that line is the review.
-  const excused = {
-    'orion_link_and_field_points',
-    'orion_tokens',
-    'apollo_mod_battle_points',
-    'apollo_tokens',
-  };
+  /// A ladder that stops being earnable carries `ends_at` (#99).
+  bool isDated(MapEntry<String, dynamic> e) =>
+      (e.value as Map<String, dynamic>)['ends_at'] != null;
 
   final counters = (seed['counters'] as Map<String, dynamic>).entries;
   final tiered = [
@@ -41,11 +31,11 @@ void main() {
   ]..sort();
   final permanent = [
     for (final e in counters)
-      if (hasTiers(e) && !excused.contains(e.key)) e.key,
+      if (hasTiers(e) && !isDated(e)) e.key,
   ]..sort();
   final dated = [
     for (final e in counters)
-      if ((e.value as Map<String, dynamic>)['ends_at'] != null) e.key,
+      if (isDated(e)) e.key,
   ]..sort();
 
   group('coverage of the registry', () {
@@ -60,10 +50,12 @@ void main() {
       // without drawing its emblem leaves a gap in the list, and the registry
       // is edited far more often than this widget.
       //
-      // Seasonal ladders are outside it on purpose. Their thresholds reach an
-      // installed app through the registry and an emblem only through a
+      // A dated ladder is outside this rule on purpose. Its thresholds reach
+      // an installed app through the registry and its emblem only through a
       // release, so the two cannot arrive together (#98) — requiring one here
-      // would forbid adding a Global Op ladder during its own op.
+      // would forbid publishing a Global Op ladder during its own op. What
+      // stops that exemption from swallowing a permanent badge is the rim
+      // check below, not this rule.
       final missing = [
         for (final key in permanent)
           if (!MedalIcon.existsFor(key)) key,
@@ -75,23 +67,46 @@ void main() {
       );
     });
 
-    test('and only a dated ladder may be excused', () {
-      // The rule above is only as good as its exception list. A counter can be
-      // excused because its ladder ends and its emblem ships a release later;
-      // a permanent badge that quietly acquires an end date fails here rather
-      // than slipping out of the coverage rule.
-      expect(excused, isNotEmpty, reason: 'four seasonal ladders are known');
+    test('a broken rim and a dated ladder mean each other', () {
+      // The rule above exempts whatever the registry dates, so on its own it
+      // could be escaped by dating a permanent badge. This is what makes that
+      // impossible, and without a list to maintain: the drawing and the
+      // registry are independent sources, and they have to agree.
+      //
+      // An earlier version of this test derived the exemption from `ends_at`
+      // and then checked that derivation against itself. Giving `explorer` an
+      // end date passed it. Falsification is the only reason this one is
+      // written the way it is.
+      final drawnAsAnomaly = [
+        for (final key in MedalIcon.emblemKeys)
+          if (MedalIcon.rimFor(key) != MedalRim.permanent) key,
+      ]..sort();
+
+      expect(drawnAsAnomaly, isNotEmpty, reason: 'four ladders are dated');
       expect(
-        dated.toSet(),
-        excused,
-        reason:
-            'ends_at is set on ${dated.join(', ')}, excused: '
-            '${excused.join(', ')}',
+        drawnAsAnomaly.toSet().difference(dated.toSet()),
+        isEmpty,
+        reason: 'rimmed as an anomaly but not dated by the registry',
       );
       expect(
-        excused.difference(tiered.toSet()),
+        dated
+            .where(MedalIcon.existsFor)
+            .toSet()
+            .difference(drawnAsAnomaly.toSet()),
         isEmpty,
-        reason: 'an excused counter with no ladder left is dead weight',
+        reason: 'dated by the registry but drawn with a permanent rim',
+      );
+    });
+
+    test('and the Global Op of each season is the marked one', () {
+      // Which of a season's two medals carries the stud is a design decision,
+      // not something derivable — so it is asserted rather than computed.
+      expect(
+        {
+          for (final key in MedalIcon.emblemKeys)
+            if (MedalIcon.rimFor(key) == MedalRim.anomalyGlobalOp) key,
+        },
+        {'orion_link_and_field_points', 'apollo_mod_battle_points'},
       );
     });
 
