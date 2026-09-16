@@ -365,6 +365,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String countersWatchedSince(String date) {
+    return 'Watched since $date. An event whose column had already left the export by then cannot be shown at all.';
+  }
+
+  @override
   String get counterExportHeader => 'Export header';
 
   @override

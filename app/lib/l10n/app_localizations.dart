@@ -685,6 +685,12 @@ abstract class AppLocalizations {
   /// **'No counter matches “{search}”.'**
   String counterSearchEmpty(String search);
 
+  /// No description provided for @countersWatchedSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Watched since {date}. An event whose column had already left the export by then cannot be shown at all.'**
+  String countersWatchedSince(String date);
+
   /// No description provided for @counterExportHeader.
   ///
   /// In en, this message translates to:
