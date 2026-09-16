@@ -28,6 +28,11 @@ gh issue list --milestone "Next Release" --state open
 Anything still open either gets finished, or moved out of the milestone with
 the reason said out loud. Do not ship a milestone with open issues silently.
 
+Then read the pull requests merged since the last tag, not the milestone alone.
+Every change is supposed to answer to an issue (#125), so the two should agree
+— and where they do not, the missing issue is the defect. Open it rather than
+letting the work go unmentioned.
+
 ## 2. Decide the version
 
 `app/pubspec.yaml` carries `version: <name>+<code>`.

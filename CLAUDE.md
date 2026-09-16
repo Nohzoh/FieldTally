@@ -126,6 +126,12 @@ memory may no longer match the file — the assert is what tells you.
 - Conventional Commits. Squash-merging means the **pull request title** becomes
   the commit message, so the title follows the convention too.
 - Commits are signed, and pull requests are the only way into `main`.
+- **Every change on `main` answers to an issue** (#125). The pull request names
+  it: `Closes #N` when it finishes the issue, `Refs #N` when it is one step of
+  it. No exception for release chores, documentation or tooling repairs — the
+  rule is worth little with a category of exceptions wide enough to hold a
+  release. Open the issue first; when work has already landed without one, open
+  it after the fact rather than leaving the gap.
 - Do not create a pull request, merge, or dispatch a release unless asked.
 
 ## Releases
@@ -156,6 +162,12 @@ what the public downloads — never report a release done on a green workflow
 alone.
 
 ### The changelog and the build number
+
+Release notes are written from the milestone, which is the practical reason for
+the issue rule above: work with no issue is invisible to them. It has already
+cost one — an emblem reached `main` untracked and would have gone unmentioned.
+Read the merged pull requests since the last tag as well, and if one has no
+issue, that is the defect, not the changelog's.
 
 `app/assets/changelog.json` is keyed by `versionCode`. `settings_screen_test`
 fakes a build number, and when that fake collides with a real changelog key the
