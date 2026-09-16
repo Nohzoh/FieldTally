@@ -591,6 +591,18 @@
   },
   "projectionNoPace": "No estimate: this counter has not moved lately.",
   "projectionTooFar": "No estimate: too far off at your recent pace.",
+  "projectionEnded": "This one can no longer be earned.",
+  "@projectionEnded": {
+    "description": "Replaces the remaining line once a seasonal ladder has closed (#99). The medal already earned stays; what ends is the chase, so this says the window is shut rather than that the agent failed."
+  },
+  "projectionAllTiers": "Every tier reached.",
+  "@projectionAllTiers": {
+    "description": "A ladder that ends, climbed to its top. Unlike onyx there is no further multiple to chase, because the game itself stops counting there."
+  },
+  "projectionAfterDeadline": "No estimate: not at this pace before it closes.",
+  "@projectionAfterDeadline": {
+    "description": "The pace does reach the target, but only after the ladder's own deadline. Distinct from projectionTooFar, which is about a pace too slow to matter rather than a window about to shut."
+  },
   "projectionBelowFirst": "Not started yet",
   "projectionPace": "{rate} per day over the last {window}",
   "@projectionPace": {

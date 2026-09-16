@@ -81,10 +81,10 @@ class BadgeProjectionCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            // There is always something ahead: a tier, or the next whole
-            // multiple of the top one (#87). So the bar, the estimate, the
-            // pace and the window selector stay put, instead of the card
-            // collapsing to a single sentence the day onyx lands.
+            // There is always something ahead on a permanent badge: a tier,
+            // or the next whole multiple of the top one (#87). A seasonal one
+            // can genuinely be finished, or shut — and then it says so rather
+            // than offering a target nobody can act on (#99).
             _remainingLine(l10n, theme, numbers, next, multiple),
             const SizedBox(height: 8),
             // §3.9: the bar is never the only carrier — the figures above
@@ -95,43 +95,48 @@ class BadgeProjectionCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(3),
             ),
             const SizedBox(height: 8),
-            Text(
-              _estimate(l10n, dates, date),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.outline,
-              ),
-            ),
-            if (projection.perDay != null && projection.perDay! > 0)
+            // Nothing below this point is about a medal already settled: an
+            // estimate, a pace and a window all answer "when", and a closed or
+            // completed ladder has no when left.
+            if (!projection.isOver && !projection.isFinished) ...[
               Text(
-                l10n.projectionPace(
-                  numbers.format(projection.perDay!.round()),
-                  _windowLabel(l10n, projection.window),
-                ),
+                _estimate(l10n, dates, date),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.outline,
                 ),
               ),
-            const SizedBox(height: 12),
-            // Labelled differently from the chart's range selector on the
-            // same screen: one picks what is plotted, the other how far back
-            // the pace is measured, and sharing "Week / Month" between them
-            // read as the same control twice.
-            SegmentedButton<ProjectionWindow>(
-              segments: [
-                ButtonSegment(
-                  value: ProjectionWindow.week,
-                  label: Text(l10n.projectionPaceWeek),
+              if (projection.perDay != null && projection.perDay! > 0)
+                Text(
+                  l10n.projectionPace(
+                    numbers.format(projection.perDay!.round()),
+                    _windowLabel(l10n, projection.window),
+                  ),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
                 ),
-                ButtonSegment(
-                  value: ProjectionWindow.month,
-                  label: Text(l10n.projectionPaceMonth),
-                ),
-              ],
-              selected: {projection.window},
-              showSelectedIcon: false,
-              onSelectionChanged: (selection) =>
-                  onWindowChanged(selection.first),
-            ),
+              const SizedBox(height: 12),
+              // Labelled differently from the chart's range selector on the
+              // same screen: one picks what is plotted, the other how far back
+              // the pace is measured, and sharing "Week / Month" between them
+              // read as the same control twice.
+              SegmentedButton<ProjectionWindow>(
+                segments: [
+                  ButtonSegment(
+                    value: ProjectionWindow.week,
+                    label: Text(l10n.projectionPaceWeek),
+                  ),
+                  ButtonSegment(
+                    value: ProjectionWindow.month,
+                    label: Text(l10n.projectionPaceMonth),
+                  ),
+                ],
+                selected: {projection.window},
+                showSelectedIcon: false,
+                onSelectionChanged: (selection) =>
+                    onWindowChanged(selection.first),
+              ),
+            ],
           ],
         ),
       ),
@@ -173,8 +178,22 @@ class BadgeProjectionCard extends StatelessWidget {
     CounterTier? next,
     int? multiple,
   ) {
-    final remaining = numbers.format(projection.remaining);
     final style = theme.textTheme.bodyLarge;
+
+    // Climbed to the top of a ladder that ends: no further multiple, because
+    // the game itself stops counting there.
+    if (projection.isFinished) {
+      return Text(l10n.projectionAllTiers, style: style);
+    }
+
+    // Shut before it was climbed. Said as a closed window rather than as a
+    // failure, and without a target the agent could act on: what is left is
+    // no longer "to go", it is out of reach.
+    if (projection.isOver) {
+      return Text(l10n.projectionEnded, style: style);
+    }
+
+    final remaining = numbers.format(projection.remaining);
 
     if (next != null) {
       return Text(
@@ -204,9 +223,16 @@ class BadgeProjectionCard extends StatelessWidget {
 
   String _estimate(AppLocalizations l10n, DateFormat dates, DateTime? date) {
     if (date != null) return l10n.projectionDate(dates.format(date));
+
+    // Three different silences now, worth telling apart: nothing is
+    // happening; something is, but the target is out of reach at that rate;
+    // or it is reachable and the window shuts first, which is the one an
+    // agent can still do something about.
+    if (projection.missesDeadline(measuredFrom)) {
+      return l10n.projectionAfterDeadline;
+    }
+
     final pace = projection.perDay;
-    // Two different silences, worth telling apart: nothing is happening, or
-    // something is but the target is out of reach at that rate.
     if (pace == null || pace <= 0) return l10n.projectionNoPace;
     return l10n.projectionTooFar;
   }

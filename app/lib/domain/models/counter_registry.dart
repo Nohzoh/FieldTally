@@ -59,6 +59,7 @@ class CounterEnrichment {
     required this.labels,
     this.periodized = true,
     this.tiers = const [],
+    this.endsAt,
   });
 
   /// Technical key (`explorer`), distinct from the export header
@@ -73,6 +74,20 @@ class CounterEnrichment {
   final String categoryKey;
   final int order;
   final Map<String, String> labels;
+
+  /// When this counter's badge stops being earnable, for a ladder that ends
+  /// (#99). Null for every permanent badge, which is all of them but the
+  /// seasonal ones.
+  ///
+  /// This is the date the medal can last be claimed — not when the column
+  /// disappears from the export, which happens about a year later and matters
+  /// to nobody's projection, and not the season's own dates. Only this one
+  /// makes a projected date honest or dishonest.
+  final DateTime? endsAt;
+
+  /// True once [endsAt] is behind. A ladder that has ended keeps its medal —
+  /// earned is earned — but has nothing left to chase.
+  bool endedBy(DateTime now) => endsAt != null && !now.isBefore(endsAt!);
 
   /// False for the three fields Ingress never scopes to the selected period
   /// (§3.1.3). The behavioural guard skips them.
@@ -97,6 +112,10 @@ class CounterEnrichment {
           for (final tier in (json['tiers'] as List? ?? const []))
             CounterTier.fromJson(tier as Map<String, dynamic>),
         ],
+        // Unparseable rather than absent is treated as absent: a malformed
+        // date in a file fetched from the network (§3.1.4) must not take the
+        // counter down with it.
+        endsAt: DateTime.tryParse(json['ends_at'] as String? ?? '')?.toUtc(),
       );
 }
 
