@@ -114,6 +114,18 @@ jobs:
         if: steps.scope.outputs.app == 'true'
         run: git diff --exit-code pubspec.lock
 
+      # The repository was formatted in one pass (#92). Without a gate it drifts
+      # straight back: format-on-save is the default in VS Code with the Dart
+      # extension, so the next contributor to open a file rewrites it, and the
+      # churn lands in a pull request about something else entirely.
+      #
+      # Generated code needs no exclusion here: drift and gen-l10n already emit
+      # this very style, so the formatter leaves their output alone and the
+      # codegen check below has nothing to disagree with.
+      - name: Check formatting
+        if: steps.scope.outputs.app == 'true'
+        run: dart format --output=none --set-exit-if-changed lib test tool
+
       - name: Analyze
         if: steps.scope.outputs.app == 'true'
         run: flutter analyze

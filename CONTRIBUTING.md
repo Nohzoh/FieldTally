@@ -135,13 +135,33 @@ user.email`), otherwise local verification fails even though GitHub shows
 ```bash
 cd app
 flutter pub get
+dart format lib test tool
 flutter analyze
 flutter test
 ```
 
-These three must pass — CI replays them on every pull request, plus a debug APK
-build and three consistency checks (bundled registry seed, generated code,
+These must pass — CI replays them on every pull request, plus a debug APK build
+and three consistency checks (bundled registry seed, generated code,
 `pubspec.lock`).
+
+**Run the formatter.** The repository is `dart format` clean and CI checks it,
+so a pull request that skips it fails before anything else is looked at. Most
+editors do this on save; if yours does not, the command above is the whole of
+it.
+
+The repository was formatted in one pass, in `e1bc959`, and that commit is
+listed in `.git-blame-ignore-revs`. GitHub honours the file on its own; locally
+it takes one command, once per clone:
+
+```bash
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
+It matters less than it sounds: `git blame` already attributes 99.8 % of
+`app/lib` past that commit on its own, because its diff matches a re-indented
+line to the one it came from. The file is there for the residue — lines the
+formatter genuinely created by splitting one in two — and for the next commit
+of this kind, should there be one.
 
 ### Code layout (§5.2 of the spec)
 
