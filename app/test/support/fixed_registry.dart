@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:fieldtally/data/registry/counter_registry_loader.dart';
@@ -46,3 +47,29 @@ class PendingRegistryNotifier extends CounterRegistryNotifier {
 }
 
 PendingRegistryNotifier pendingRegistry() => PendingRegistryNotifier();
+
+/// The seed registry with a badge ladder on an event counter that no release
+/// has an emblem for (#98).
+///
+/// Apollo's Global Op medal is measured on `Apollo Mod Battle Points`, a
+/// counter the registry already knows. Giving it thresholds is a registry
+/// change and reaches an installed app at the next start (§3.1.4), while an
+/// emblem could only arrive in a release — so this is not a contrived state,
+/// it is the ordinary one for every seasonal medal.
+CounterRegistry registryWithEventLadder() {
+  final doc =
+      jsonDecode(File(seedAssetPath).readAsStringSync())
+          as Map<String, dynamic>;
+  final counters = doc['counters'] as Map<String, dynamic>;
+  (counters['apollo_mod_battle_points'] as Map<String, dynamic>)['tiers'] = [
+    {'name': 'bronze', 'value': 50},
+    {'name': 'silver', 'value': 500},
+    {'name': 'gold', 'value': 1000},
+  ];
+
+  return const CounterRegistryLoader().parse(jsonEncode(doc));
+}
+
+/// Hands [registryWithEventLadder] to the providers.
+FixedRegistryNotifier eventLadderRegistry() =>
+    FixedRegistryNotifier(registryWithEventLadder());

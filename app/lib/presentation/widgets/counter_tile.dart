@@ -33,8 +33,13 @@ class CounterTile extends StatelessWidget {
   /// export header when the registry does not know this counter.
   final String label;
 
-  /// Registry key of the counter, when it has one and an emblem exists for
-  /// it. Null leaves the slot empty.
+  /// Registry key of a counter the registry gives badge thresholds, or null
+  /// for one that carries no medal at all.
+  ///
+  /// Deliberately not "a counter this release can draw an emblem for" (#98).
+  /// A ladder reaches an installed app through the registry (§3.1.4) and an
+  /// emblem only in a release, so the two cannot arrive together: the tier has
+  /// to be readable in the meantime.
   final String? medalKey;
 
   /// Highest tier reached, or null when the first threshold is still ahead.
@@ -59,6 +64,10 @@ class CounterTile extends StatelessWidget {
       // this tile: the counter is the title, the tier is spelled out in the
       // subtitle right beside it (§3.9).
       leading: ExcludeSemantics(
+        // Reserved whether or not anything is drawn in it, so a category
+        // mixing medals with plain counters still lines its labels up (#63).
+        // An emblem this release has never seen paints nothing rather than a
+        // bare ring — MedalIcon settles that on its own.
         child: SizedBox.square(
           dimension: 28,
           child: medalKey == null

@@ -407,4 +407,55 @@ void main() {
       expect(chip.isEnabled, isFalse);
     });
   });
+
+  group('a ladder with no emblem to draw (#98)', () {
+    // Apollo's Global Op medal is measured on a counter the registry already
+    // knows. Its thresholds can reach an installed app through the registry
+    // (§3.1.4); its emblem could only arrive in a release. The list has to
+    // work in between, which is most of the time.
+
+    testWidgets('the row names its tier like any other medal', (tester) async {
+      await pumpCounterList(tester, registry: eventLadderRegistry);
+      await search(tester, 'Apollo Mod Battle Points');
+
+      final tile = find.widgetWithText(ListTile, 'Apollo Mod Battle Points');
+      expect(
+        find.descendant(of: tile, matching: find.textContaining('Gold medal')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('and the filter no longer disagrees with the row', (
+      tester,
+    ) async {
+      // The defect this closes: the Medals filter kept the counter, the
+      // next-tier ordering ranked it, the detail screen named its tier — and
+      // the row itself said nothing at all.
+      await pumpCounterList(tester, registry: eventLadderRegistry);
+      await tester.tap(find.widgetWithText(FilterChip, 'Medals'));
+      await tester.pumpAndSettle();
+      await search(tester, 'Apollo Mod Battle Points');
+
+      final tile = find.widgetWithText(ListTile, 'Apollo Mod Battle Points');
+      expect(tile, findsOneWidget, reason: 'the filter keeps it');
+      expect(
+        find.descendant(of: tile, matching: find.textContaining('medal')),
+        findsOneWidget,
+        reason: 'and the row now says so too',
+      );
+    });
+
+    testWidgets('a counter with no ladder still says nothing', (tester) async {
+      // Apollo Tokens carries no thresholds in this registry, so nothing about
+      // it should change.
+      await pumpCounterList(tester, registry: eventLadderRegistry);
+      await search(tester, 'Apollo Tokens');
+
+      final tile = find.widgetWithText(ListTile, 'Apollo Tokens');
+      expect(
+        find.descendant(of: tile, matching: find.textContaining('medal')),
+        findsNothing,
+      );
+    });
+  });
 }
