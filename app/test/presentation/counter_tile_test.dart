@@ -3,6 +3,7 @@
 import 'package:fieldtally/domain/models/tracked_counter.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/widgets/counter_tile.dart';
+import 'package:fieldtally/presentation/widgets/medal_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +20,7 @@ TrackedCounter counterOf({required int value, int? previous}) => TrackedCounter(
 Future<void> pumpTile(
   WidgetTester tester, {
   required TrackedCounter counter,
+  String? medalKey = 'explorer',
   String? tierName,
   int? tierMultiple,
   double width = 360,
@@ -39,7 +41,7 @@ Future<void> pumpTile(
           child: CounterTile(
             counter: counter,
             label: 'Unique Portals Visited',
-            medalKey: 'explorer',
+            medalKey: medalKey,
             tierName: tierName,
             tierMultiple: tierMultiple,
           ),
@@ -109,5 +111,49 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+  });
+
+  group('a counter this release cannot draw an emblem for (#98)', () {
+    // The ordinary case for a seasonal medal, not a contrived one: a ladder
+    // reaches an installed app through the registry (§3.1.4), an emblem only
+    // in a release. They cannot arrive together.
+    const undrawn = 'not_an_emblem_this_release_knows';
+
+    testWidgets('still names the tier', (tester) async {
+      expect(
+        MedalIcon.existsFor(undrawn),
+        isFalse,
+        reason: 'the premise of this test',
+      );
+
+      await pumpTile(
+        tester,
+        counter: counterOf(value: 900, previous: 400),
+        medalKey: undrawn,
+        tierName: 'silver',
+      );
+
+      expect(find.textContaining('Silver medal ·'), findsOneWidget);
+    });
+
+    testWidgets('and still says so before the first threshold', (tester) async {
+      await pumpTile(
+        tester,
+        counter: counterOf(value: 10, previous: 5),
+        medalKey: undrawn,
+      );
+
+      expect(find.textContaining('No medal yet ·'), findsOneWidget);
+    });
+
+    testWidgets('a counter with no medal at all is untouched', (tester) async {
+      await pumpTile(
+        tester,
+        counter: counterOf(value: 10, previous: 5),
+        medalKey: null,
+      );
+
+      expect(find.textContaining('medal'), findsNothing);
+    });
   });
 }

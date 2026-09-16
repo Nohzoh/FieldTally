@@ -11,7 +11,6 @@ import '../../domain/models/tracked_counter.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../widgets/counter_tile.dart';
-import '../widgets/medal_icon.dart';
 
 /// Detailed stats view (§3.4).
 ///
@@ -143,9 +142,11 @@ class _CounterList extends ConsumerWidget {
     return CounterTile(
       counter: counter,
       label: builder.labelFor(counter),
-      // A counter with thresholds but no drawing shows no emblem rather than
-      // a bare ring — the registry can name one this release has never seen.
-      medalKey: key != null && MedalIcon.existsFor(key) ? key : null,
+      // Whether the counter carries a medal comes from the registry; whether
+      // this release can draw one is a separate question the tile settles.
+      // Gating both on the drawing left a counter with real thresholds silent
+      // in the list while the filter and the ordering ranked it (#98).
+      medalKey: builder.carriesMedal(counter) ? key : null,
       tierName: tierReached(enrichment, counter.lastValue)?.name,
       tierMultiple: topTierMultiple(enrichment, counter.lastValue),
       onTap: () => context.go(Routes.counterDetail(counter.exportHeader)),
