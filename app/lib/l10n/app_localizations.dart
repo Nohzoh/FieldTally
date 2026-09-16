@@ -1732,17 +1732,35 @@ abstract class AppLocalizations {
   /// **'{days, plural, one{Nothing recorded since yesterday. Share your stats from Ingress to keep your history going.} other{Nothing recorded for {days} days. Share your stats from Ingress to keep your history going.}}'**
   String notificationReminderBody(int days);
 
-  /// No description provided for @notificationMilestoneTitle.
+  /// Title of a badge milestone. Names the badge as well as the tier: a collapsed notification, a lock screen or a watch shows the title alone, and "Onyx reached" on its own says nothing about what was reached (#103).
   ///
   /// In en, this message translates to:
-  /// **'{tier} reached'**
-  String notificationMilestoneTitle(String tier);
+  /// **'{tier} — {counter}'**
+  String notificationMilestoneTitle(String counter, String tier);
 
-  /// No description provided for @notificationMilestoneBody.
+  /// Body of a badge milestone. The counter is in the title now (#103), so repeating it here would say the same thing twice on one notification.
   ///
   /// In en, this message translates to:
-  /// **'{counter} is now at {value}.'**
-  String notificationMilestoneBody(String counter, String value);
+  /// **'Now at {value}.'**
+  String notificationMilestoneBody(String value);
+
+  /// A further whole multiple of a top tier the game keeps counting past (#87). Spelled out in words rather than as ×{count}: a notification is read aloud by the system, and the multiplication sign is read out inconsistently or skipped.
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} {count} times over — {counter}'**
+  String notificationMultipleTitle(String tier, int count, String counter);
+
+  /// No description provided for @notificationLevelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}'**
+  String notificationLevelTitle(int level);
+
+  /// The one place a word of celebration rings true: a level arrives once per import, where a badge can arrive three times in a row. Says nothing about a personal best, because an agent who recursed and climbed back is reaching this level for the second time and it still counts (#105).
+  ///
+  /// In en, this message translates to:
+  /// **'Well played, Agent.'**
+  String get notificationLevelBody;
 
   /// No description provided for @notificationMilestoneMore.
   ///

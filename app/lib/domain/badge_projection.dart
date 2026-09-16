@@ -203,6 +203,12 @@ int multipleOf(CounterTier tier, int value) =>
 int? topTierMultiple(CounterEnrichment? enrichment, int value) {
   if (enrichment == null || enrichment.tiers.isEmpty) return null;
 
+  // A ladder that ends has a terminus, not a summit: past its top the game
+  // stops counting, so there is no multiple to report (#99). The same rule
+  // BadgeProjection.topMultiple applies, read from the same place — a test
+  // pins that the two agree.
+  if (enrichment.endsAt != null) return null;
+
   final top = enrichment.tiers.reduce((a, b) => b.value > a.value ? b : a);
   if (value < top.value) return null;
   return multipleOf(top, value);

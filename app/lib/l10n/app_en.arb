@@ -811,24 +811,53 @@
       }
     }
   },
-  "notificationMilestoneTitle": "{tier} reached",
+  "notificationMilestoneTitle": "{tier} — {counter}",
   "@notificationMilestoneTitle": {
+    "description": "Title of a badge milestone. Names the badge as well as the tier: a collapsed notification, a lock screen or a watch shows the title alone, and \"Onyx reached\" on its own says nothing about what was reached (#103).",
     "placeholders": {
+      "counter": {
+        "type": "String"
+      },
       "tier": {
         "type": "String"
       }
     }
   },
-  "notificationMilestoneBody": "{counter} is now at {value}.",
+  "notificationMilestoneBody": "Now at {value}.",
   "@notificationMilestoneBody": {
+    "description": "Body of a badge milestone. The counter is in the title now (#103), so repeating it here would say the same thing twice on one notification.",
     "placeholders": {
-      "counter": {
-        "type": "String"
-      },
       "value": {
         "type": "String"
       }
     }
+  },
+  "notificationMultipleTitle": "{tier} {count} times over — {counter}",
+  "@notificationMultipleTitle": {
+    "description": "A further whole multiple of a top tier the game keeps counting past (#87). Spelled out in words rather than as \u00d7{count}: a notification is read aloud by the system, and the multiplication sign is read out inconsistently or skipped.",
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "counter": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationLevelTitle": "Level {level}",
+  "@notificationLevelTitle": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationLevelBody": "Well played, Agent.",
+  "@notificationLevelBody": {
+    "description": "The one place a word of celebration rings true: a level arrives once per import, where a badge can arrive three times in a row. Says nothing about a personal best, because an agent who recursed and climbed back is reaching this level for the second time and it still counts (#105)."
   },
   "notificationMilestoneMore": "{counter} and {count} other badges reached.",
   "@notificationMilestoneMore": {

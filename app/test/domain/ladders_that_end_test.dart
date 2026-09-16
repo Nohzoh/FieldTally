@@ -196,6 +196,23 @@ void main() {
   group('the multiplier belongs to a summit, not a terminus', () {
     final measured = DateTime.utc(2026, 9, 16);
 
+    test('the standalone reading agrees with the projection', () {
+      // Two ways to ask the same question — the tile asks the first, the card
+      // the second — and #63's rule is that they can never disagree.
+      for (final value in [3000, 16000, 40000, 64000]) {
+        final projection = projector.project(
+          points: climb(measured, [0, value]),
+          enrichment: apolloSeason,
+          now: measured,
+        )!;
+        expect(
+          topTierMultiple(apolloSeason, value),
+          projection.topMultiple,
+          reason: '$value tokens',
+        );
+      }
+    });
+
     test('a seasonal top tier never multiplies', () {
       // 64,000 tokens is four times gold. The game stops counting at gold.
       final projection = projector.project(
