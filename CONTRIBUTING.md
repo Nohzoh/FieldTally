@@ -112,9 +112,13 @@ has to follow the convention too.
 
 Every change that reaches `main` answers to an issue, and the pull request names
 it — `Closes #N` when it finishes the issue, `Refs #N` when it is one step of
-it. This holds for release chores, documentation and tooling as much as for
-features: the release notes are written from the milestone, so work with no
-issue simply goes unmentioned.
+it. This holds for documentation and tooling as much as for features: the
+release notes are written from the milestone, so work with no issue simply goes
+unmentioned.
+
+The one exception is the **release bump** — the commit that sets the version and
+writes that release's changelog entry, along with any site page the release made
+stale. That commit cannot go missing from the notes, because it is the notes.
 
 ## Signed commits
 

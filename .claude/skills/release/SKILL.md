@@ -33,6 +33,10 @@ Every change is supposed to answer to an issue (#125), so the two should agree
 — and where they do not, the missing issue is the defect. Open it rather than
 letting the work go unmentioned.
 
+The bump written in the next two steps is the exception (#127), so do not go
+looking for its issue: it is the changelog entry, and cannot be missing from
+itself.
+
 ## 2. Decide the version
 
 `app/pubspec.yaml` carries `version: <name>+<code>`.
