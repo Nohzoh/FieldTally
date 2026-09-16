@@ -63,14 +63,13 @@ class CounterQuery {
     bool? includeInactive,
     bool? medalsOnly,
     ProgressWindow? window,
-  }) =>
-      CounterQuery(
-        search: search ?? this.search,
-        sort: sort ?? this.sort,
-        includeInactive: includeInactive ?? this.includeInactive,
-        medalsOnly: medalsOnly ?? this.medalsOnly,
-        window: window ?? this.window,
-      );
+  }) => CounterQuery(
+    search: search ?? this.search,
+    sort: sort ?? this.sort,
+    includeInactive: includeInactive ?? this.includeInactive,
+    medalsOnly: medalsOnly ?? this.medalsOnly,
+    window: window ?? this.window,
+  );
 }
 
 /// A block of counters in the list.
@@ -132,9 +131,11 @@ class CounterListBuilder {
     if (search.isNotEmpty) {
       // Search both the displayed label and the raw header: an agent may well
       // type the English name they saw in the game even with a French UI.
-      visible = visible.where((c) =>
-          labelFor(c).toLowerCase().contains(search) ||
-          c.exportHeader.toLowerCase().contains(search));
+      visible = visible.where(
+        (c) =>
+            labelFor(c).toLowerCase().contains(search) ||
+            c.exportHeader.toLowerCase().contains(search),
+      );
     }
 
     final list = visible.toList();
@@ -142,25 +143,27 @@ class CounterListBuilder {
     return switch (query.sort) {
       CounterSort.category => _byCategory(list),
       CounterSort.name => [
-          CounterSection(
-            categoryKey: null,
-            counters: list
-              ..sort((a, b) => labelFor(a)
-                  .toLowerCase()
-                  .compareTo(labelFor(b).toLowerCase())),
-          ),
-        ],
+        CounterSection(
+          categoryKey: null,
+          counters: list
+            ..sort(
+              (a, b) => labelFor(
+                a,
+              ).toLowerCase().compareTo(labelFor(b).toLowerCase()),
+            ),
+        ),
+      ],
       CounterSort.recentProgress => _byMeasure(
-          list,
-          (counter) => pace[counter.exportHeader]?.perDay,
-        ),
+        list,
+        (counter) => pace[counter.exportHeader]?.perDay,
+      ),
       CounterSort.nextTier => _byMeasure(
-          list,
-          (counter) => tierProgress(
-            registry?.forExportHeader(counter.exportHeader),
-            counter.lastValue,
-          ),
+        list,
+        (counter) => tierProgress(
+          registry?.forExportHeader(counter.exportHeader),
+          counter.lastValue,
         ),
+      ),
     };
   }
 
@@ -184,7 +187,8 @@ class CounterListBuilder {
     int byLabel(TrackedCounter a, TrackedCounter b) =>
         labelFor(a).toLowerCase().compareTo(labelFor(b).toLowerCase());
 
-    final sorted = [...counters]..sort((a, b) {
+    final sorted = [...counters]
+      ..sort((a, b) {
         final ma = measure(a);
         final mb = measure(b);
         if (ma == null && mb == null) return byLabel(a, b);
@@ -211,7 +215,8 @@ class CounterListBuilder {
 
     final sections = <String, List<TrackedCounter>>{};
     for (final counter in ordered) {
-      final key = registry?.categoryKeyFor(counter.exportHeader) ??
+      final key =
+          registry?.categoryKeyFor(counter.exportHeader) ??
           CounterRegistry.fallbackCategoryKey;
       (sections[key] ??= []).add(counter);
     }

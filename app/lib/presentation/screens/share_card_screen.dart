@@ -116,9 +116,7 @@ class _ShareCardScreenState extends ConsumerState<ShareCardScreen> {
     try {
       final bytes = await _capture();
       if (bytes == null) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(l10n.shareCardFailed)),
-        );
+        messenger.showSnackBar(SnackBar(content: Text(l10n.shareCardFailed)));
         return;
       }
 
@@ -170,18 +168,20 @@ class _Empty extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.ios_share,
-                size: 48, color: theme.colorScheme.outline),
+            Icon(Icons.ios_share, size: 48, color: theme.colorScheme.outline),
             const SizedBox(height: 16),
-            Text(title,
-                style: theme.textTheme.titleMedium,
-                textAlign: TextAlign.center),
+            Text(
+              title,
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
             Text(
               detail,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: theme.colorScheme.outline),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
             ),
           ],
         ),

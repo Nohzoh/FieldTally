@@ -10,15 +10,14 @@ StatSnapshot snap(
   int? level = 9,
   String agent = 'AgentDemo',
   String faction = 'Enlightened',
-}) =>
-    StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: agent,
-      faction: faction,
-      recordedAt: at,
-      level: level,
-      counters: counters,
-    );
+}) => StatSnapshot(
+  timeSpan: TimeSpan.allTime,
+  agentName: agent,
+  faction: faction,
+  recordedAt: at,
+  level: level,
+  counters: counters,
+);
 
 void main() {
   const builder = ShareCardBuilder();
@@ -65,16 +64,18 @@ void main() {
         pinned: const ['Lifetime AP', 'Hacks'],
       );
 
-      expect(
-        card!.lines.map((line) => line.exportHeader),
-        ['Lifetime AP', 'Hacks'],
-      );
+      expect(card!.lines.map((line) => line.exportHeader), [
+        'Lifetime AP',
+        'Hacks',
+      ]);
     });
 
     test('skips a pinned counter no import ever carried', () {
       // Usually pinned on a previous phone, or the counter left the game.
       final card = builder.build(
-        snapshots: [snap(DateTime(2026, 1, 1), const {'Hacks': 1})],
+        snapshots: [
+          snap(DateTime(2026, 1, 1), const {'Hacks': 1}),
+        ],
         pinned: const ['Never Seen', 'Hacks'],
       );
 
@@ -110,7 +111,9 @@ void main() {
 
     test('a single snapshot still makes a card, without gains', () {
       final card = builder.build(
-        snapshots: [snap(DateTime(2026, 1, 1), const {'Hacks': 100})],
+        snapshots: [
+          snap(DateTime(2026, 1, 1), const {'Hacks': 100}),
+        ],
         pinned: const ['Hacks'],
       );
 
@@ -127,7 +130,9 @@ void main() {
       );
       expect(
         builder.build(
-          snapshots: [snap(DateTime(2026, 1, 1), const {'Hacks': 1})],
+          snapshots: [
+            snap(DateTime(2026, 1, 1), const {'Hacks': 1}),
+          ],
           pinned: const [],
         ),
         isNull,

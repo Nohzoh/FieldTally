@@ -140,7 +140,8 @@ class IngressTsvParser {
     }
 
     final byName = <String, String>{
-      for (var i = 0; i < headers.length; i++) _normalize(headers[i]): values[i],
+      for (var i = 0; i < headers.length; i++)
+        _normalize(headers[i]): values[i],
     };
 
     final timeSpan = _require(byName, _timeSpanNames, 'Time Span');

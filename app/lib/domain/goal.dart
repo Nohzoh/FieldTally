@@ -83,9 +83,7 @@ class GoalProgress {
 
   /// True once the deadline has passed without the target being met.
   bool missedBy(DateTime now) =>
-      !isReached &&
-      goal.deadline != null &&
-      now.isAfter(goal.deadline!);
+      !isReached && goal.deadline != null && now.isAfter(goal.deadline!);
 }
 
 /// Computes goal progress from a counter's history (§3.7).

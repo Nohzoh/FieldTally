@@ -29,8 +29,9 @@ class AddSnapshotScreen extends ConsumerStatefulWidget {
 }
 
 class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.initialText ?? '');
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialText ?? '',
+  );
 
   StatSnapshot? _parsed;
   ImportCheck? _check;
@@ -86,11 +87,9 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
       if (!mounted) return;
       setState(() {
         _parsed = snapshot;
-        _check = ref.read(importGuardsProvider).check(
-              snapshot,
-              previous: previous?.snapshot,
-              registry: registry,
-            );
+        _check = ref
+            .read(importGuardsProvider)
+            .check(snapshot, previous: previous?.snapshot, registry: registry);
       });
     } on ExportParseException catch (e) {
       if (!mounted) return;
@@ -128,8 +127,9 @@ class _AddSnapshotScreenState extends ConsumerState<AddSnapshotScreen> {
     );
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(l10n.snapshotSaved)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.snapshotSaved)));
     context.go(Routes.home);
   }
 
@@ -328,7 +328,8 @@ class _Preview extends ConsumerWidget {
     final theme = Theme.of(context);
     final format = DateFormat(l10n.previewDetailedDateFormat, locale);
 
-    final headers = registry?.sortHeaders(snapshot.counters.keys) ??
+    final headers =
+        registry?.sortHeaders(snapshot.counters.keys) ??
         snapshot.counters.keys.toList();
 
     return Column(
@@ -338,8 +339,9 @@ class _Preview extends ConsumerWidget {
         const SizedBox(height: 4),
         Text(
           l10n.previewNotSavedYet,
-          style: theme.textTheme.bodySmall
-              ?.copyWith(color: theme.colorScheme.outline),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.outline,
+          ),
         ),
         const SizedBox(height: 12),
         Card(
@@ -374,13 +376,13 @@ class _Preview extends ConsumerWidget {
         Text(l10n.detectedValues, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         ..._grouped(headers, registry, l10n, locale).entries.map(
-              (group) => _CategoryBlock(
-                title: group.key,
-                headers: group.value,
-                snapshot: snapshot,
-                registry: registry,
-              ),
-            ),
+          (group) => _CategoryBlock(
+            title: group.key,
+            headers: group.value,
+            snapshot: snapshot,
+            registry: registry,
+          ),
+        ),
       ],
     );
   }
@@ -395,7 +397,8 @@ class _Preview extends ConsumerWidget {
   ) {
     final groups = <String, List<String>>{};
     for (final header in headers) {
-      final key = registry?.categoryKeyFor(header) ??
+      final key =
+          registry?.categoryKeyFor(header) ??
           CounterRegistry.fallbackCategoryKey;
       final label =
           registry?.categories[key]?.label(language) ?? l10n.fallbackCategory;
@@ -442,8 +445,9 @@ class _CategoryBlock extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  NumberFormat.decimalPattern(locale)
-                      .format(snapshot.counters[header]),
+                  NumberFormat.decimalPattern(
+                    locale,
+                  ).format(snapshot.counters[header]),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
@@ -509,15 +513,7 @@ class _AnomalyCard extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: Text(
-                    '• ${l10n.anomalyRegressionLine(
-                      registry
-                              ?.forExportHeader(regression.exportHeader)
-                              ?.label(locale) ??
-                          regression.exportHeader,
-                      regression.previous,
-                      regression.current,
-                      regression.drop,
-                    )}',
+                    '• ${l10n.anomalyRegressionLine(registry?.forExportHeader(regression.exportHeader)?.label(locale) ?? regression.exportHeader, regression.previous, regression.current, regression.drop)}',
                     style: TextStyle(color: scheme.onErrorContainer),
                   ),
                 ),
@@ -565,13 +561,13 @@ class _SaveActionBar extends StatelessWidget {
   }
 
   Widget _allowed(BuildContext context) => SizedBox(
-        width: double.infinity,
-        child: FilledButton.icon(
-          onPressed: saving ? null : onSave,
-          icon: const Icon(Icons.check),
-          label: Text(AppLocalizations.of(context).saveSnapshot),
-        ),
-      );
+    width: double.infinity,
+    child: FilledButton.icon(
+      onPressed: saving ? null : onSave,
+      icon: const Icon(Icons.check),
+      label: Text(AppLocalizations.of(context).saveSnapshot),
+    ),
+  );
 
   /// When a guard fires, the prominent action is the one that protects the
   /// history. The override exists, but discreetly and behind a confirmation —

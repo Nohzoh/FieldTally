@@ -121,7 +121,8 @@ class BadgeProjection {
 CounterTier? tierReached(CounterEnrichment? enrichment, int value) {
   if (enrichment == null || enrichment.tiers.isEmpty) return null;
 
-  final tiers = [...enrichment.tiers]..sort((a, b) => a.value.compareTo(b.value));
+  final tiers = [...enrichment.tiers]
+    ..sort((a, b) => a.value.compareTo(b.value));
 
   CounterTier? reached;
   for (final tier in tiers) {

@@ -121,18 +121,23 @@ class CompareScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final numbers = NumberFormat.decimalPattern(language);
-    final sections =
-        AgentComparisonBuilder(registry: registry).build(mine: mine, theirs: theirs);
+    final sections = AgentComparisonBuilder(
+      registry: registry,
+    ).build(mine: mine, theirs: theirs);
 
     return [
-      _AgentHeader(snapshot: theirs, heading: l10n.compareAgainst(theirs.agentName)),
+      _AgentHeader(
+        snapshot: theirs,
+        heading: l10n.compareAgainst(theirs.agentName),
+      ),
       const SizedBox(height: 12),
       // Said plainly rather than left to be inferred: an agent handed someone
       // else's numbers deserves to know they are not being kept.
       Text(
         l10n.compareNotKept,
-        style: theme.textTheme.bodySmall
-            ?.copyWith(color: theme.colorScheme.outline),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.outline,
+        ),
       ),
       const SizedBox(height: 8),
       for (final section in sections) ...[
@@ -141,9 +146,10 @@ class CompareScreen extends ConsumerWidget {
           section.categoryKey == null
               ? l10n.fallbackCategory
               : registry?.categories[section.categoryKey]?.label(language) ??
-                  l10n.fallbackCategory,
-          style: theme.textTheme.titleSmall
-              ?.copyWith(color: theme.colorScheme.primary),
+                    l10n.fallbackCategory,
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.primary,
+          ),
         ),
         // Repeated under every heading rather than pinned at the top: the list
         // runs to sixty counters, and a legend scrolled off the screen tells
@@ -151,7 +157,8 @@ class CompareScreen extends ConsumerWidget {
         const _ColumnLegend(),
         for (final row in section.rows)
           _Row(
-            label: registry?.forExportHeader(row.exportHeader)?.label(language) ??
+            label:
+                registry?.forExportHeader(row.exportHeader)?.label(language) ??
                 row.exportHeader,
             row: row,
             numbers: numbers,
@@ -170,7 +177,8 @@ class CompareScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final numbers = NumberFormat.decimalPattern(language);
-    final headers = registry?.sortHeaders(mine.counters.keys) ??
+    final headers =
+        registry?.sortHeaders(mine.counters.keys) ??
         (mine.counters.keys.toList()..sort());
 
     return [
@@ -180,8 +188,9 @@ class CompareScreen extends ConsumerWidget {
       const SizedBox(height: 4),
       Text(
         l10n.comparePreviewCount(mine.counters.length),
-        style: theme.textTheme.bodySmall
-            ?.copyWith(color: theme.colorScheme.outline),
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.outline,
+        ),
       ),
       const SizedBox(height: 12),
       // My own card, so it is named rather than announced as an opponent.
@@ -245,8 +254,9 @@ class _AgentHeader extends StatelessWidget {
     final date = dates.format(snapshot.recordedAt);
     // Our own payloads always carry one; a hand-edited one may not, and a
     // dangling separator reads worse than the app's usual "not known".
-    final faction =
-        snapshot.faction.trim().isEmpty ? l10n.unknownValue : snapshot.faction;
+    final faction = snapshot.faction.trim().isEmpty
+        ? l10n.unknownValue
+        : snapshot.faction;
 
     return Card(
       child: Padding(
@@ -260,7 +270,10 @@ class _AgentHeader extends StatelessWidget {
               Container(
                 width: 10,
                 height: 10,
-                decoration: BoxDecoration(color: colour, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: colour,
+                  shape: BoxShape.circle,
+                ),
               ),
               const SizedBox(width: 10),
             ],
@@ -277,8 +290,9 @@ class _AgentHeader extends StatelessWidget {
                             faction,
                             date,
                           ),
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.colorScheme.outline),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
                   ),
                 ],
               ),
@@ -297,19 +311,36 @@ class _ColumnLegend extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final style = theme.textTheme.labelSmall
-        ?.copyWith(color: theme.colorScheme.outline);
+    final style = theme.textTheme.labelSmall?.copyWith(
+      color: theme.colorScheme.outline,
+    );
 
     return Padding(
       padding: const EdgeInsets.only(top: 6, bottom: 2),
       child: Row(
         children: [
-          Expanded(child: Text(l10n.compareColumnMine, textAlign: TextAlign.end, style: style)),
-          Expanded(child: Text(l10n.compareColumnTheirs, textAlign: TextAlign.end, style: style)),
           Expanded(
-            child: Text(l10n.compareColumnDifference,
-                textAlign: TextAlign.end, style: style, maxLines: 1,
-                overflow: TextOverflow.ellipsis),
+            child: Text(
+              l10n.compareColumnMine,
+              textAlign: TextAlign.end,
+              style: style,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              l10n.compareColumnTheirs,
+              textAlign: TextAlign.end,
+              style: style,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              l10n.compareColumnDifference,
+              textAlign: TextAlign.end,
+              style: style,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
@@ -347,12 +378,18 @@ class _Row extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(_value(l10n, row.mine),
-                    textAlign: TextAlign.end, style: figures),
+                child: Text(
+                  _value(l10n, row.mine),
+                  textAlign: TextAlign.end,
+                  style: figures,
+                ),
               ),
               Expanded(
-                child: Text(_value(l10n, row.theirs),
-                    textAlign: TextAlign.end, style: figures),
+                child: Text(
+                  _value(l10n, row.theirs),
+                  textAlign: TextAlign.end,
+                  style: figures,
+                ),
               ),
               Expanded(
                 child: Text(
@@ -402,8 +439,9 @@ class _ErrorCard extends StatelessWidget {
           children: [
             Text(
               l10n.compareErrorTitle,
-              style: theme.textTheme.titleSmall
-                  ?.copyWith(color: theme.colorScheme.onErrorContainer),
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.onErrorContainer,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -414,8 +452,9 @@ class _ErrorCard extends StatelessWidget {
                   l10n.compareErrorNotCumulative,
                 ComparisonPayloadError.malformed => l10n.compareErrorMalformed,
               },
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: theme.colorScheme.onErrorContainer),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onErrorContainer,
+              ),
             ),
           ],
         ),
@@ -437,16 +476,24 @@ class _Empty extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),
       child: Column(
         children: [
-          Icon(Icons.group_outlined, size: 48, color: theme.colorScheme.outline),
+          Icon(
+            Icons.group_outlined,
+            size: 48,
+            color: theme.colorScheme.outline,
+          ),
           const SizedBox(height: 16),
-          Text(title,
-              style: theme.textTheme.titleMedium, textAlign: TextAlign.center),
+          Text(
+            title,
+            style: theme.textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
           Text(
             detail,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: theme.colorScheme.outline),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
           ),
         ],
       ),

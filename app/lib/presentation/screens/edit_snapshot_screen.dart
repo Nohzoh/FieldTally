@@ -98,7 +98,8 @@ class _EditSnapshotScreenState extends ConsumerState<EditSnapshotScreen> {
     final regressions = edited == null ? 0 : _regressionsFor(edited, all);
     final registry = ref.watch(counterRegistryProvider).asData?.value;
     final language = Localizations.localeOf(context).languageCode;
-    final headers = registry?.sortHeaders(_controllers.keys) ??
+    final headers =
+        registry?.sortHeaders(_controllers.keys) ??
         (_controllers.keys.toList()..sort());
 
     return Scaffold(
@@ -121,11 +122,15 @@ class _EditSnapshotScreenState extends ConsumerState<EditSnapshotScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.editRecordedAt,
-                            style: theme.textTheme.labelMedium),
+                        Text(
+                          l10n.editRecordedAt,
+                          style: theme.textTheme.labelMedium,
+                        ),
                         const SizedBox(height: 4),
-                        Text(dates.format(_recordedAt!),
-                            style: theme.textTheme.bodyLarge),
+                        Text(
+                          dates.format(_recordedAt!),
+                          style: theme.textTheme.bodyLarge,
+                        ),
                         const SizedBox(height: 8),
                         Wrap(
                           spacing: 8,
@@ -151,8 +156,10 @@ class _EditSnapshotScreenState extends ConsumerState<EditSnapshotScreen> {
                   _AnomalyCard(count: regressions),
                 ],
                 const SizedBox(height: 20),
-                Text(l10n.editCounterSection,
-                    style: theme.textTheme.titleMedium),
+                Text(
+                  l10n.editCounterSection,
+                  style: theme.textTheme.titleMedium,
+                ),
                 const SizedBox(height: 8),
                 for (final header in headers)
                   Padding(
@@ -166,15 +173,16 @@ class _EditSnapshotScreenState extends ConsumerState<EditSnapshotScreen> {
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         isDense: true,
-                        labelText: registry
+                        labelText:
+                            registry
                                 ?.forExportHeader(header)
                                 ?.label(language) ??
                             header,
                         errorText:
                             int.tryParse(_controllers[header]!.text.trim()) ==
-                                    null
-                                ? l10n.editInvalidValue
-                                : null,
+                                null
+                            ? l10n.editInvalidValue
+                            : null,
                       ),
                       onChanged: (_) => setState(() {}),
                     ),
@@ -226,8 +234,10 @@ class _EditSnapshotScreenState extends ConsumerState<EditSnapshotScreen> {
       before = item.snapshot;
     }
 
-    var count =
-        guards.check(edited, previous: before, registry: registry).regressions.length;
+    var count = guards
+        .check(edited, previous: before, registry: registry)
+        .regressions
+        .length;
     if (after != null) {
       count += guards
           .check(after, previous: edited, registry: registry)
@@ -247,8 +257,14 @@ class _EditSnapshotScreenState extends ConsumerState<EditSnapshotScreen> {
     );
     if (picked == null) return;
     setState(() {
-      _recordedAt = DateTime(picked.year, picked.month, picked.day,
-          current.hour, current.minute, current.second);
+      _recordedAt = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        current.hour,
+        current.minute,
+        current.second,
+      );
     });
   }
 
@@ -260,8 +276,13 @@ class _EditSnapshotScreenState extends ConsumerState<EditSnapshotScreen> {
     );
     if (picked == null) return;
     setState(() {
-      _recordedAt = DateTime(current.year, current.month, current.day,
-          picked.hour, picked.minute);
+      _recordedAt = DateTime(
+        current.year,
+        current.month,
+        current.day,
+        picked.hour,
+        picked.minute,
+      );
     });
   }
 
@@ -276,8 +297,9 @@ class _EditSnapshotScreenState extends ConsumerState<EditSnapshotScreen> {
         .update(widget.snapshotId, edited);
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(l10n.editSaved)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.editSaved)));
     context.go(Routes.snapshots);
   }
 }

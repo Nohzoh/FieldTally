@@ -44,12 +44,16 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android to post anything (§3.7).
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android to post anything (§3.7).
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+      ],
+    );
     // Order matters: tearDowns run last-registered-first, so the container is
     // disposed before the database is closed. Closing Drift while a stream
     // query is still subscribed hangs, and the dashboard adds a second one on
@@ -86,7 +90,9 @@ void main() {
   }
 
   Future<void> goToAddScreen(WidgetTester tester) async {
-    await tester.tap(find.widgetWithText(FloatingActionButton, 'Add a snapshot'));
+    await tester.tap(
+      find.widgetWithText(FloatingActionButton, 'Add a snapshot'),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -101,8 +107,9 @@ void main() {
   }
 
   group('home screen', () {
-    testWidgets('the dashboard says there is nothing to show yet',
-        (tester) async {
+    testWidgets('the dashboard says there is nothing to show yet', (
+      tester,
+    ) async {
       await pumpApp(tester);
 
       expect(find.text('Nothing to show yet'), findsOneWidget);
@@ -137,8 +144,9 @@ void main() {
       expect(find.textContaining('Nothing is saved'), findsOneWidget);
     });
 
-    testWidgets('counters are grouped by the in-game categories',
-        (tester) async {
+    testWidgets('counters are grouped by the in-game categories', (
+      tester,
+    ) async {
       await pumpApp(tester);
       await goToAddScreen(tester);
       await analyze(tester, fixture(allTimePath));
@@ -157,8 +165,9 @@ void main() {
       expect(await repository.all(), isEmpty);
     });
 
-    testWidgets('unreadable text shows an explicit error and nothing else',
-        (tester) async {
+    testWidgets('unreadable text shows an explicit error and nothing else', (
+      tester,
+    ) async {
       await pumpApp(tester);
       await goToAddScreen(tester);
       await analyze(tester, 'this is not an Ingress export');
@@ -169,8 +178,9 @@ void main() {
   });
 
   group('saving', () {
-    testWidgets('confirming stores the snapshot and returns home',
-        (tester) async {
+    testWidgets('confirming stores the snapshot and returns home', (
+      tester,
+    ) async {
       final repository = await pumpApp(tester);
       await goToAddScreen(tester);
       await analyze(tester, fixture(allTimePath));
@@ -187,8 +197,9 @@ void main() {
   });
 
   group('guards on screen (§3.1.3)', () {
-    testWidgets('a WEEK export is flagged and the primary action refuses',
-        (tester) async {
+    testWidgets('a WEEK export is flagged and the primary action refuses', (
+      tester,
+    ) async {
       await pumpApp(tester);
       await goToAddScreen(tester);
       await analyze(tester, fixture(weekPath));
@@ -199,31 +210,38 @@ void main() {
       // The prominent action is the one that protects the history; the
       // override is not a button sitting next to the message.
       expect(find.widgetWithText(FilledButton, 'Do not save'), findsOneWidget);
-      expect(find.widgetWithText(FilledButton, 'Save this snapshot'),
-          findsNothing);
+      expect(
+        find.widgetWithText(FilledButton, 'Save this snapshot'),
+        findsNothing,
+      );
       expect(find.text('Save anyway…'), findsOneWidget);
     });
 
-    testWidgets('on a small screen the reason stays visible without scrolling',
-        (tester) async {
-      // Regression seen on the emulator (320x640): the instructions and the
-      // paste field filled the screen, so the decision buttons showed without
-      // the message that justifies them.
-      await pumpApp(tester);
-      tester.view.physicalSize = const Size(320, 640);
-      tester.view.devicePixelRatio = 1.0;
+    testWidgets(
+      'on a small screen the reason stays visible without scrolling',
+      (tester) async {
+        // Regression seen on the emulator (320x640): the instructions and the
+        // paste field filled the screen, so the decision buttons showed without
+        // the message that justifies them.
+        await pumpApp(tester);
+        tester.view.physicalSize = const Size(320, 640);
+        tester.view.devicePixelRatio = 1.0;
 
-      await goToAddScreen(tester);
-      await analyze(tester, fixture(weekPath));
+        await goToAddScreen(tester);
+        await analyze(tester, fixture(weekPath));
 
-      final card = find.text('Partial period detected');
-      expect(card, findsOneWidget);
+        final card = find.text('Partial period detected');
+        expect(card, findsOneWidget);
 
-      final rect = tester.getRect(card);
-      expect(rect.top, greaterThanOrEqualTo(0));
-      expect(rect.bottom, lessThanOrEqualTo(640),
-          reason: 'the blocking message must fit on screen');
-    });
+        final rect = tester.getRect(card);
+        expect(rect.top, greaterThanOrEqualTo(0));
+        expect(
+          rect.bottom,
+          lessThanOrEqualTo(640),
+          reason: 'the blocking message must fit on screen',
+        );
+      },
+    );
 
     testWidgets('overriding requires an explicit confirmation', (tester) async {
       final repository = await pumpApp(tester);
@@ -241,8 +259,9 @@ void main() {
       expect(await repository.all(), isEmpty);
     });
 
-    testWidgets('confirming the override does store the snapshot',
-        (tester) async {
+    testWidgets('confirming the override does store the snapshot', (
+      tester,
+    ) async {
       final repository = await pumpApp(tester);
       await goToAddScreen(tester);
       await analyze(tester, fixture(weekPath));
@@ -255,37 +274,40 @@ void main() {
       expect(await repository.all(), hasLength(1));
     });
 
-    testWidgets('a WEEK imported after an ALL TIME trips the behavioural guard',
-        (tester) async {
-      await pumpApp(tester);
+    testWidgets(
+      'a WEEK imported after an ALL TIME trips the behavioural guard',
+      (tester) async {
+        await pumpApp(tester);
 
-      // First snapshot, legitimate.
-      await goToAddScreen(tester);
-      await analyze(tester, fixture(allTimePath));
-      await tester.tap(find.text('Save this snapshot'));
-      await tester.pumpAndSettle();
+        // First snapshot, legitimate.
+        await goToAddScreen(tester);
+        await analyze(tester, fixture(allTimePath));
+        await tester.tap(find.text('Save this snapshot'));
+        await tester.pumpAndSettle();
 
-      // Second snapshot, wrong period: both guards fire.
-      await goToAddScreen(tester);
-      await analyze(tester, fixture(weekPath));
+        // Second snapshot, wrong period: both guards fire.
+        await goToAddScreen(tester);
+        await analyze(tester, fixture(weekPath));
 
-      expect(find.text('Partial period detected'), findsOneWidget);
+        expect(find.text('Partial period detected'), findsOneWidget);
 
-      // The named list of drops is shown so the user can judge — the ten
-      // largest, biggest first, then a count rather than a wall of 55 lines.
-      // Matched on the full line, not just the counter name: the pasted
-      // export is still on screen and contains every header verbatim.
-      expect(
-        find.textContaining('XM Collected: 248830242 → 3652350'),
-        findsOneWidget,
-      );
-      expect(find.textContaining('and 45 more'), findsOneWidget);
-    });
+        // The named list of drops is shown so the user can judge — the ten
+        // largest, biggest first, then a count rather than a wall of 55 lines.
+        // Matched on the full line, not just the counter name: the pasted
+        // export is still on screen and contains every header verbatim.
+        expect(
+          find.textContaining('XM Collected: 248830242 → 3652350'),
+          findsOneWidget,
+        );
+        expect(find.textContaining('and 45 more'), findsOneWidget);
+      },
+    );
   });
 
   group('deleting', () {
-    testWidgets('deleting asks for confirmation then removes the snapshot',
-        (tester) async {
+    testWidgets('deleting asks for confirmation then removes the snapshot', (
+      tester,
+    ) async {
       final repository = await pumpApp(tester);
       await goToAddScreen(tester);
       await analyze(tester, fixture(allTimePath));
@@ -306,14 +328,16 @@ void main() {
   });
 
   group('localisation (§3.10)', () {
-    testWidgets('the French locale renders French, including counter labels',
-        (tester) async {
+    testWidgets('the French locale renders French, including counter labels', (
+      tester,
+    ) async {
       await pumpApp(tester, locale: const Locale('fr'));
 
       expect(find.text('Rien à afficher pour l\'instant'), findsOneWidget);
 
       await tester.tap(
-          find.widgetWithText(FloatingActionButton, 'Ajouter un relevé'));
+        find.widgetWithText(FloatingActionButton, 'Ajouter un relevé'),
+      );
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), fixture(allTimePath));
       await tester.tap(find.widgetWithText(FilledButton, 'Analyser'));

@@ -4,13 +4,13 @@ import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: date,
-      level: 9,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: date,
+  level: 9,
+  counters: counters,
+);
 
 void main() {
   const builder = DashboardBuilder();
@@ -25,7 +25,9 @@ void main() {
   test('nothing pinned means no card', () {
     expect(
       builder.build(
-        snapshots: [at(DateTime(2026, 1, 1), const {'Hacks': 10})],
+        snapshots: [
+          at(DateTime(2026, 1, 1), const {'Hacks': 10}),
+        ],
         pinned: const [],
       ),
       isEmpty,
@@ -42,16 +44,18 @@ void main() {
       pinned: const ['Links Created', 'Hacks'],
     );
 
-    expect(
-      cards.map((c) => c.counter.exportHeader),
-      ['Links Created', 'Hacks'],
-    );
+    expect(cards.map((c) => c.counter.exportHeader), [
+      'Links Created',
+      'Hacks',
+    ]);
   });
 
   test('a pinned counter that never appeared is skipped', () {
     // Usually means it was pinned on a previous phone, or left the game.
     final cards = builder.build(
-      snapshots: [at(DateTime(2026, 1, 1), const {'Hacks': 10})],
+      snapshots: [
+        at(DateTime(2026, 1, 1), const {'Hacks': 10}),
+      ],
       pinned: const ['Hacks', 'Orion Tokens'],
     );
 
@@ -89,7 +93,9 @@ void main() {
 
     test('a single point draws nothing', () {
       final cards = builder.build(
-        snapshots: [at(DateTime(2026, 1, 1), const {'Hacks': 10})],
+        snapshots: [
+          at(DateTime(2026, 1, 1), const {'Hacks': 10}),
+        ],
         pinned: const ['Hacks'],
       );
 

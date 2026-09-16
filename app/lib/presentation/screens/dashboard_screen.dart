@@ -31,7 +31,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     // After the first frame, same as the other startup tasks: this is the
     // home route, so it is always the first screen built, and by then it sits
     // under the Navigator a dialog needs.
-    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_showChangelog()));
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => unawaited(_showChangelog()),
+    );
   }
 
   Future<void> _showChangelog() async {
@@ -124,7 +126,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(child: Text('$error')),
         data: (list) => list.isEmpty
-            ? _Empty(title: l10n.dashboardEmptyTitle, detail: l10n.dashboardEmptyDetail)
+            ? _Empty(
+                title: l10n.dashboardEmptyTitle,
+                detail: l10n.dashboardEmptyDetail,
+              )
             : LayoutBuilder(
                 builder: (context, constraints) => GridView.count(
                   padding: const EdgeInsets.fromLTRB(12, 12, 12, 88),
@@ -189,7 +194,7 @@ class _Card extends ConsumerWidget {
     final registry = ref.watch(counterRegistryProvider).asData?.value;
     final label =
         registry?.forExportHeader(card.counter.exportHeader)?.label(language) ??
-            card.counter.exportHeader;
+        card.counter.exportHeader;
     final delta = card.counter.delta;
 
     return Card(
@@ -237,8 +242,9 @@ class _Card extends ConsumerWidget {
                     : '${delta >= 0 ? '+' : '−'}${numbers.format(delta.abs())}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.outline),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
               ),
               // A sparkline needs two points; with a single snapshot the card
               // says so rather than drawing a flat line that means nothing.
@@ -263,8 +269,9 @@ class _Card extends ConsumerWidget {
                           l10n.notEnoughHistory,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall
-                              ?.copyWith(color: theme.colorScheme.outline),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
                         ),
                       ),
               ),
@@ -291,18 +298,24 @@ class _Empty extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.dashboard_outlined,
-                size: 48, color: theme.colorScheme.outline),
+            Icon(
+              Icons.dashboard_outlined,
+              size: 48,
+              color: theme.colorScheme.outline,
+            ),
             const SizedBox(height: 16),
-            Text(title,
-                style: theme.textTheme.titleMedium,
-                textAlign: TextAlign.center),
+            Text(
+              title,
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 8),
             Text(
               detail,
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: theme.colorScheme.outline),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
             ),
           ],
         ),

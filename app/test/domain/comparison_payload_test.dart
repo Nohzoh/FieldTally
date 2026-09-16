@@ -14,15 +14,14 @@ StatSnapshot snapshot({
     'Unique Portals Visited': 9756,
     'Hacks': 78735,
   },
-}) =>
-    StatSnapshot(
-      timeSpan: span,
-      agentName: agent,
-      faction: faction,
-      recordedAt: at ?? DateTime(2026, 9, 13, 10, 30, 5),
-      level: level,
-      counters: counters,
-    );
+}) => StatSnapshot(
+  timeSpan: span,
+  agentName: agent,
+  faction: faction,
+  recordedAt: at ?? DateTime(2026, 9, 13, 10, 30, 5),
+  level: level,
+  counters: counters,
+);
 
 void main() {
   const codec = ComparisonPayload();
@@ -35,7 +34,8 @@ void main() {
     test('leaves an Ingress export alone', () {
       // The one that matters: everything shared into the app goes past this,
       // and a real export must carry on to the import preview untouched.
-      const export = 'Time Span\tAgent Name\tLevel\n'
+      const export =
+          'Time Span\tAgent Name\tLevel\n'
           'ALL TIME\tNohzoh\t14\n';
       expect(codec.looksLikeComparison(export), isFalse);
     });
@@ -136,32 +136,40 @@ void main() {
 
     test('a counter whose value is not a number', () {
       expect(
-        errorOf('FieldTally/1 comparison\nagent\tX\nspan\tallTime\n'
-            'recorded\t2026-09-13T10:00:00\n--\nHacks\tlots\n'),
+        errorOf(
+          'FieldTally/1 comparison\nagent\tX\nspan\tallTime\n'
+          'recorded\t2026-09-13T10:00:00\n--\nHacks\tlots\n',
+        ),
         ComparisonPayloadError.malformed,
       );
     });
 
     test('a payload with no codename', () {
       expect(
-        errorOf('FieldTally/1 comparison\nspan\tallTime\n'
-            'recorded\t2026-09-13T10:00:00\n--\nHacks\t1\n'),
+        errorOf(
+          'FieldTally/1 comparison\nspan\tallTime\n'
+          'recorded\t2026-09-13T10:00:00\n--\nHacks\t1\n',
+        ),
         ComparisonPayloadError.malformed,
       );
     });
 
     test('a payload with no date', () {
       expect(
-        errorOf('FieldTally/1 comparison\nagent\tX\nspan\tallTime\n'
-            '--\nHacks\t1\n'),
+        errorOf(
+          'FieldTally/1 comparison\nagent\tX\nspan\tallTime\n'
+          '--\nHacks\t1\n',
+        ),
         ComparisonPayloadError.malformed,
       );
     });
 
     test('a line with no tab in it', () {
       expect(
-        errorOf('FieldTally/1 comparison\nagent\tX\nspan\tallTime\n'
-            'recorded\t2026-09-13T10:00:00\n--\nHacks\n'),
+        errorOf(
+          'FieldTally/1 comparison\nagent\tX\nspan\tallTime\n'
+          'recorded\t2026-09-13T10:00:00\n--\nHacks\n',
+        ),
         ComparisonPayloadError.malformed,
       );
     });

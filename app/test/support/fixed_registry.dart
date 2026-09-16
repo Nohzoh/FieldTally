@@ -29,9 +29,8 @@ class FixedRegistryNotifier extends CounterRegistryNotifier {
 ///
 /// Used as `counterRegistryProvider.overrideWith(fixedRegistry)`.
 FixedRegistryNotifier fixedRegistry() => FixedRegistryNotifier(
-      const CounterRegistryLoader()
-          .parse(File(seedAssetPath).readAsStringSync()),
-    );
+  const CounterRegistryLoader().parse(File(seedAssetPath).readAsStringSync()),
+);
 
 /// A registry that never resolves, standing in for a first launch that has not
 /// read the bundled seed yet (§3.1.4).

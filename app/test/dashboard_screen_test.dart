@@ -20,13 +20,13 @@ import 'support/fake_notification_service.dart';
 const seedPath = 'assets/counters_registry_seed.json';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: date,
-      level: 9,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: date,
+  level: 9,
+  counters: counters,
+);
 
 void main() {
   late FieldTallyDatabase db;
@@ -46,15 +46,19 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android to post anything (§3.7).
-      notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-      counterRegistryProvider.overrideWith(fixedRegistry),
-      // Nothing unseen unless a test says otherwise: the real check reads
-      // PackageInfo, which no widget test has.
-      changelogCheckProvider.overrideWith((ref) async => changelog),
-    ]);
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android to post anything (§3.7).
+        notificationServiceProvider.overrideWithValue(
+          FakeNotificationService(),
+        ),
+        counterRegistryProvider.overrideWith(fixedRegistry),
+        // Nothing unseen unless a test says otherwise: the real check reads
+        // PackageInfo, which no widget test has.
+        changelogCheckProvider.overrideWith((ref) async => changelog),
+      ],
+    );
     // Dispose the container before closing the database: Drift hangs on close
     // while a stream query is still subscribed.
     addTearDown(db.close);
@@ -92,18 +96,22 @@ void main() {
   }
 
   group('what changed after an update (§9)', () {
-    testWidgets('the notes are shown on the first frame after an update',
-        (tester) async {
-      await pumpDashboard(tester, changelog: [
-        ChangelogRelease(
-          versionCode: 2,
-          version: '1.1.0',
-          featureNotes: const {
-            'en': ['Pick your language'],
-          },
-          fixNotes: const {},
-        ),
-      ]);
+    testWidgets('the notes are shown on the first frame after an update', (
+      tester,
+    ) async {
+      await pumpDashboard(
+        tester,
+        changelog: [
+          ChangelogRelease(
+            versionCode: 2,
+            version: '1.1.0',
+            featureNotes: const {
+              'en': ['Pick your language'],
+            },
+            fixNotes: const {},
+          ),
+        ],
+      );
 
       expect(find.text('Pick your language'), findsOneWidget);
     });
@@ -118,15 +126,17 @@ void main() {
   });
 
   group('dashboard (§3.3)', () {
-    testWidgets('without any snapshot it says there is nothing to show',
-        (tester) async {
+    testWidgets('without any snapshot it says there is nothing to show', (
+      tester,
+    ) async {
       await pumpDashboard(tester);
 
       expect(find.text('Nothing to show yet'), findsOneWidget);
     });
 
-    testWidgets('falls back to default pins on a fresh install',
-        (tester) async {
+    testWidgets('falls back to default pins on a fresh install', (
+      tester,
+    ) async {
       // An empty dashboard would be a poor first impression, so a few sensible
       // counters are shown until the agent picks their own.
       await pumpDashboard(
@@ -146,8 +156,9 @@ void main() {
       }
     });
 
-    testWidgets('shows the value and the progress on each card',
-        (tester) async {
+    testWidgets('shows the value and the progress on each card', (
+      tester,
+    ) async {
       await pumpDashboard(
         tester,
         pinned: const ['Hacks'],
@@ -162,12 +173,15 @@ void main() {
       expect(find.byType(Sparkline), findsOneWidget);
     });
 
-    testWidgets('a single snapshot shows no sparkline and says why',
-        (tester) async {
+    testWidgets('a single snapshot shows no sparkline and says why', (
+      tester,
+    ) async {
       await pumpDashboard(
         tester,
         pinned: const ['Hacks'],
-        history: [at(DateTime(2026, 1, 1), const {'Hacks': 10})],
+        history: [
+          at(DateTime(2026, 1, 1), const {'Hacks': 10}),
+        ],
       );
 
       expect(find.byType(Sparkline), findsNothing);
@@ -177,8 +191,9 @@ void main() {
       expect(find.text('—'), findsOneWidget);
     });
 
-    testWidgets('cards keep the order the agent pinned them in',
-        (tester) async {
+    testWidgets('cards keep the order the agent pinned them in', (
+      tester,
+    ) async {
       await pumpDashboard(
         tester,
         pinned: const ['Recursions', 'Hacks'],
@@ -202,7 +217,8 @@ void main() {
       expect(
         paragraph.size.height,
         greaterThanOrEqualTo(needed),
-        reason: 'clipped: "${(paragraph.text as TextSpan).toPlainText()}" '
+        reason:
+            'clipped: "${(paragraph.text as TextSpan).toPlainText()}" '
             'got ${paragraph.size.height}, needs $needed',
       );
     }
@@ -216,8 +232,9 @@ void main() {
     // shrinking a Flexible is legal and the clip is silent — so asserting the
     // absence of an exception proved only that the app does not crash.
     for (final scale in [1.0, 1.3, 1.6, 2.0]) {
-      testWidgets('no label is clipped at a text scale of $scale',
-          (tester) async {
+      testWidgets('no label is clipped at a text scale of $scale', (
+        tester,
+      ) async {
         await pumpDashboard(
           tester,
           textScale: scale,
@@ -226,8 +243,10 @@ void main() {
           pixelRatio: 2.625,
           pinned: const ['Unique Portals Visited', 'Distance Walked'],
           history: [
-            at(DateTime(2026, 1, 1),
-                const {'Unique Portals Visited': 9000, 'Distance Walked': 4000}),
+            at(DateTime(2026, 1, 1), const {
+              'Unique Portals Visited': 9000,
+              'Distance Walked': 4000,
+            }),
           ],
         );
 
@@ -242,10 +261,14 @@ void main() {
           textScale: scale,
           pinned: const ['Unique Portals Visited', 'Hacks'],
           history: [
-            at(DateTime(2026, 1, 1),
-                const {'Unique Portals Visited': 9000, 'Hacks': 78000}),
-            at(DateTime(2026, 1, 10),
-                const {'Unique Portals Visited': 9756, 'Hacks': 78735}),
+            at(DateTime(2026, 1, 1), const {
+              'Unique Portals Visited': 9000,
+              'Hacks': 78000,
+            }),
+            at(DateTime(2026, 1, 10), const {
+              'Unique Portals Visited': 9756,
+              'Hacks': 78735,
+            }),
           ],
         );
 
@@ -265,8 +288,10 @@ void main() {
         pixelRatio: 1.0,
         pinned: const ['Lifetime AP', 'Unique Portals Visited'],
         history: [
-          at(DateTime(2026, 1, 1),
-              const {'Lifetime AP': 101542335, 'Unique Portals Visited': 9756}),
+          at(DateTime(2026, 1, 1), const {
+            'Lifetime AP': 101542335,
+            'Unique Portals Visited': 9756,
+          }),
         ],
       );
 
@@ -291,8 +316,10 @@ void main() {
         pixelRatio: 1.0,
         pinned: const ['Unique Portals Visited', 'Hacks'],
         history: [
-          at(DateTime(2026, 1, 1),
-              const {'Unique Portals Visited': 9000, 'Hacks': 78000}),
+          at(DateTime(2026, 1, 1), const {
+            'Unique Portals Visited': 9000,
+            'Hacks': 78000,
+          }),
         ],
       );
 

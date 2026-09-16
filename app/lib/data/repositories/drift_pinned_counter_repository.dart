@@ -11,16 +11,15 @@ class DriftPinnedCounterRepository implements PinnedCounterRepository {
 
   @override
   Future<List<String>> pinned() async => _headers(
-        await (_db.select(_db.pinnedCounters)
-              ..orderBy([(p) => OrderingTerm.asc(p.position)]))
-            .get(),
-      );
+    await (_db.select(
+      _db.pinnedCounters,
+    )..orderBy([(p) => OrderingTerm.asc(p.position)])).get(),
+  );
 
   @override
-  Stream<List<String>> watchPinned() => (_db.select(_db.pinnedCounters)
-        ..orderBy([(p) => OrderingTerm.asc(p.position)]))
-      .watch()
-      .map(_headers);
+  Stream<List<String>> watchPinned() => (_db.select(
+    _db.pinnedCounters,
+  )..orderBy([(p) => OrderingTerm.asc(p.position)])).watch().map(_headers);
 
   @override
   Future<void> setPinned(List<String> exportHeaders) async {
@@ -40,6 +39,7 @@ class DriftPinnedCounterRepository implements PinnedCounterRepository {
     });
   }
 
-  List<String> _headers(List<PinnedCounter> rows) =>
-      [for (final row in rows) row.exportHeader];
+  List<String> _headers(List<PinnedCounter> rows) => [
+    for (final row in rows) row.exportHeader,
+  ];
 }

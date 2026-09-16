@@ -6,17 +6,17 @@ import 'package:fieldtally/domain/models/changelog_release.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 ChangelogRelease release(int versionCode) => ChangelogRelease(
-      versionCode: versionCode,
-      version: '1.$versionCode.0',
-      featureNotes: {
-        'en': ['feature $versionCode'],
-        'fr': ['nouveauté $versionCode'],
-      },
-      fixNotes: {
-        'en': ['fix $versionCode'],
-        'fr': ['correction $versionCode'],
-      },
-    );
+  versionCode: versionCode,
+  version: '1.$versionCode.0',
+  featureNotes: {
+    'en': ['feature $versionCode'],
+    'fr': ['nouveauté $versionCode'],
+  },
+  fixNotes: {
+    'en': ['fix $versionCode'],
+    'fr': ['correction $versionCode'],
+  },
+);
 
 void main() {
   final all = [release(2), release(3), release(4)];
@@ -73,19 +73,21 @@ void main() {
     const loader = ChangelogLoader();
 
     test('parses releases keyed by version code, in both languages', () {
-      final releases = loader.parse(jsonEncode({
-        '2': {
-          'version': '1.1.0',
-          'features': {
-            'en': ['Pick your language'],
-            'fr': ['Choisis ta langue'],
+      final releases = loader.parse(
+        jsonEncode({
+          '2': {
+            'version': '1.1.0',
+            'features': {
+              'en': ['Pick your language'],
+              'fr': ['Choisis ta langue'],
+            },
+            'fixes': {
+              'en': ['Dashboard labels fit again'],
+              'fr': ['Les libellés du tableau de bord tiennent à nouveau'],
+            },
           },
-          'fixes': {
-            'en': ['Dashboard labels fit again'],
-            'fr': ['Les libellés du tableau de bord tiennent à nouveau'],
-          },
-        },
-      }));
+        }),
+      );
 
       expect(releases.single.versionCode, 2);
       expect(releases.single.version, '1.1.0');
@@ -94,29 +96,33 @@ void main() {
     });
 
     test('an unknown language falls back to English', () {
-      final releases = loader.parse(jsonEncode({
-        '2': {
-          'version': '1.1.0',
-          'features': {
-            'en': ['Pick your language'],
+      final releases = loader.parse(
+        jsonEncode({
+          '2': {
+            'version': '1.1.0',
+            'features': {
+              'en': ['Pick your language'],
+            },
+            'fixes': <String, dynamic>{},
           },
-          'fixes': <String, dynamic>{},
-        },
-      }));
+        }),
+      );
 
       expect(releases.single.features('de'), ['Pick your language']);
       expect(releases.single.fixes('en'), isEmpty);
     });
 
     test('a release with only fixes parses', () {
-      final releases = loader.parse(jsonEncode({
-        '3': {
-          'version': '1.1.1',
-          'fixes': {
-            'en': ['One fix'],
+      final releases = loader.parse(
+        jsonEncode({
+          '3': {
+            'version': '1.1.1',
+            'fixes': {
+              'en': ['One fix'],
+            },
           },
-        },
-      }));
+        }),
+      );
 
       expect(releases.single.features('en'), isEmpty);
       expect(releases.single.fixes('en'), ['One fix']);

@@ -6,7 +6,6 @@
 // moment back printed the day alone, so a morning and an evening snapshot
 // looked like the same one twice.
 
-
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
@@ -33,19 +32,16 @@ const _localisations = <LocalizationsDelegate<Object>>[
 ];
 
 /// Two snapshots on the same day, morning and evening.
-final _sameDay = [
-  DateTime(2026, 3, 4, 9, 15),
-  DateTime(2026, 3, 4, 20, 40),
-];
+final _sameDay = [DateTime(2026, 3, 4, 9, 15), DateTime(2026, 3, 4, 20, 40)];
 
 StatSnapshot _snapshot(DateTime at, int hacks) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: at,
-      level: 9,
-      counters: {'Hacks': hacks},
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: at,
+  level: 9,
+  counters: {'Hacks': hacks},
+);
 
 /// The tooltip labels the chart would draw for [points].
 List<String> _tooltipLabels(LineChartData data, List<DateTime> points) {
@@ -113,8 +109,7 @@ void main() {
     });
 
     testWidgets('does so in French too', (tester) async {
-      final data =
-          await _pumpChart(tester, at: _sameDay, languageCode: 'fr');
+      final data = await _pumpChart(tester, at: _sameDay, languageCode: 'fr');
 
       expect(_tooltipLabels(data, _sameDay).first, contains('09:15'));
     });
@@ -133,12 +128,16 @@ void main() {
       addTearDown(tester.view.reset);
 
       db = FieldTallyDatabase(NativeDatabase.memory());
-      container = ProviderContainer(overrides: [
-        databaseProvider.overrideWithValue(db),
-        notificationServiceProvider.overrideWithValue(FakeNotificationService()),
-        counterRegistryProvider.overrideWith(fixedRegistry),
-        changelogCheckProvider.overrideWith((ref) async => const []),
-      ]);
+      container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          notificationServiceProvider.overrideWithValue(
+            FakeNotificationService(),
+          ),
+          counterRegistryProvider.overrideWith(fixedRegistry),
+          changelogCheckProvider.overrideWith((ref) async => const []),
+        ],
+      );
       addTearDown(db.close);
       addTearDown(container.dispose);
 
@@ -177,8 +176,9 @@ void main() {
       expect(find.text('4 Mar 2026'), findsNothing);
     });
 
-    testWidgets('shows the time even when nothing shares the day',
-        (tester) async {
+    testWidgets('shows the time even when nothing shares the day', (
+      tester,
+    ) async {
       // Always, rather than only when it disambiguates: a row whose label
       // depended on its neighbours would be rewritten by a later import.
       await pumpDetail(tester, at: [DateTime(2026, 3, 4, 9, 15)]);

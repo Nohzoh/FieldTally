@@ -70,8 +70,11 @@ class CsvImportPlanner {
     final regressions = <CsvRegression>[];
 
     void collect(StatSnapshot candidate, StatSnapshot? previous) {
-      final check =
-          guards.check(candidate, previous: previous, registry: registry);
+      final check = guards.check(
+        candidate,
+        previous: previous,
+        registry: registry,
+      );
       for (final regression in check.regressions) {
         regressions.add(
           CsvRegression(at: candidate.recordedAt, regression: regression),

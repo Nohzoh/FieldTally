@@ -45,7 +45,8 @@ class DashboardBuilder {
     final sorted = [...snapshots]
       ..sort((a, b) => a.recordedAt.compareTo(b.recordedAt));
     final tracked = {
-      for (final counter in tracker.track(sorted)) counter.exportHeader: counter,
+      for (final counter in tracker.track(sorted))
+        counter.exportHeader: counter,
     };
 
     final cards = <DashboardCard>[];

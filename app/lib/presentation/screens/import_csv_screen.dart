@@ -49,8 +49,9 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
 
     try {
       final registry = await ref.read(counterRegistryProvider.future);
-      final snapshots = AgentStatsCsvParser(registry: registry)
-          .parse(_controller.text);
+      final snapshots = AgentStatsCsvParser(
+        registry: registry,
+      ).parse(_controller.text);
       final existing = await ref.read(snapshotRepositoryProvider).latest();
 
       if (!mounted) return;
@@ -83,7 +84,9 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
     // history crosses tiers that were earned long ago, and announcing them
     // would be a burst of stale congratulations (§3.7). The reminder is still
     // re-armed, because the newest snapshot has just moved.
-    await ref.read(notificationCoordinatorProvider).rescheduleReminder(
+    await ref
+        .read(notificationCoordinatorProvider)
+        .rescheduleReminder(
           latestSnapshot: (await repository.latest())?.snapshot.recordedAt,
           l10n: l10n,
         );
@@ -166,8 +169,9 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
                   // declarative guard simply does not exist.
                   Text(
                     l10n.importCsvNoTimeSpan,
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.colorScheme.outline),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
                   ),
                 ],
               ],
@@ -326,15 +330,7 @@ class _AnomalyCard extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Text(
-                  '• ${l10n.importCsvAnomalyLine(
-                    dates.format(found.at),
-                    registry
-                            ?.forExportHeader(found.regression.exportHeader)
-                            ?.label(language) ??
-                        found.regression.exportHeader,
-                    found.regression.previous,
-                    found.regression.current,
-                  )}',
+                  '• ${l10n.importCsvAnomalyLine(dates.format(found.at), registry?.forExportHeader(found.regression.exportHeader)?.label(language) ?? found.regression.exportHeader, found.regression.previous, found.regression.current)}',
                   style: TextStyle(color: scheme.onErrorContainer),
                 ),
               ),

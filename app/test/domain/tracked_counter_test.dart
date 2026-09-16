@@ -4,13 +4,13 @@ import 'package:fieldtally/domain/models/tracked_counter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: date,
-      level: 9,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: date,
+  level: 9,
+  counters: counters,
+);
 
 TrackedCounter of(List<TrackedCounter> counters, String header) =>
     counters.firstWhere((c) => c.exportHeader == header);

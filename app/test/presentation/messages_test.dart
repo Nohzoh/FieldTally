@@ -9,12 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 ImportCheck checkWith({
   TimeSpan timeSpan = TimeSpan.allTime,
   List<CounterRegression> regressions = const [],
-}) =>
-    ImportCheck(
-      declaredTimeSpan: timeSpan,
-      regressions: regressions,
-      comparedAgainstPrevious: true,
-    );
+}) => ImportCheck(
+  declaredTimeSpan: timeSpan,
+  regressions: regressions,
+  comparedAgainstPrevious: true,
+);
 
 CounterRegression drop(String header, int from, int to) =>
     CounterRegression(exportHeader: header, previous: from, current: to);
@@ -46,10 +45,9 @@ void main() {
         contains('1 counter has gone down'),
       );
       expect(
-        checkWith(regressions: [
-          drop('Hacks', 100, 80),
-          drop('Links Created', 9, 1),
-        ]).message(en),
+        checkWith(
+          regressions: [drop('Hacks', 100, 80), drop('Links Created', 9, 1)],
+        ).message(en),
         contains('2 counters have gone down'),
       );
     });
@@ -95,8 +93,10 @@ void main() {
     });
 
     test('a column failure names the column', () {
-      const error =
-          ExportParseException(ParseErrorKind.missingColumn, column: 'Agent Name');
+      const error = ExportParseException(
+        ParseErrorKind.missingColumn,
+        column: 'Agent Name',
+      );
 
       expect(error.message(en), contains('Agent Name'));
     });
@@ -155,12 +155,24 @@ void main() {
     }
 
     test('a single day is worded, not numbered', () {
-      expect(en.settingsReminderDelay(1), 'Remind me after a day without a snapshot');
-      expect(fr.settingsReminderDelay(1), 'Me rappeler après un jour sans relevé');
+      expect(
+        en.settingsReminderDelay(1),
+        'Remind me after a day without a snapshot',
+      );
+      expect(
+        fr.settingsReminderDelay(1),
+        'Me rappeler après un jour sans relevé',
+      );
       // "since yesterday" rather than "for 1 day": the reminder fires a day
       // after the last snapshot, and that is how a person would say it.
-      expect(en.notificationReminderBody(1), startsWith('Nothing recorded since yesterday.'));
-      expect(fr.notificationReminderBody(1), startsWith("Rien d'enregistré depuis hier."));
+      expect(
+        en.notificationReminderBody(1),
+        startsWith('Nothing recorded since yesterday.'),
+      );
+      expect(
+        fr.notificationReminderBody(1),
+        startsWith("Rien d'enregistré depuis hier."),
+      );
     });
   });
 }

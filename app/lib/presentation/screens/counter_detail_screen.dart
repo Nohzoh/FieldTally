@@ -140,9 +140,14 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
           const SizedBox(height: 16),
           SegmentedButton<ChartRange>(
             segments: [
-              ButtonSegment(value: ChartRange.week, label: Text(l10n.rangeWeek)),
               ButtonSegment(
-                  value: ChartRange.month, label: Text(l10n.rangeMonth)),
+                value: ChartRange.week,
+                label: Text(l10n.rangeWeek),
+              ),
+              ButtonSegment(
+                value: ChartRange.month,
+                label: Text(l10n.rangeMonth),
+              ),
               ButtonSegment(value: ChartRange.all, label: Text(l10n.rangeAll)),
             ],
             selected: {_range},
@@ -157,8 +162,9 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
                 ? Center(
                     child: Text(
                       l10n.rangeNoData,
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: theme.colorScheme.outline),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.outline,
+                      ),
                     ),
                   )
                 : CounterChart(series: series, target: target),
@@ -170,8 +176,9 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
                 '${series.gain! >= 0 ? '+' : '−'}'
                 '${numbers.format(series.gain!.abs())}',
               ),
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.outline),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
             ),
           ],
           if (projection != null) ...[
@@ -186,8 +193,9 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
             const SizedBox(height: 12),
             Text(
               l10n.counterNoTiers,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.outline),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
             ),
           ],
           if (points.isNotEmpty) ...[

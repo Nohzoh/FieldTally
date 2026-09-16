@@ -10,30 +10,33 @@ import 'package:flutter_test/flutter_test.dart';
 const seedPath = 'assets/counters_registry_seed.json';
 
 StatSnapshot snap(Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: DateTime(2026, 1, 1),
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: DateTime(2026, 1, 1),
+  counters: counters,
+);
 
 void main() {
   late CounterRegistry registry;
 
   setUp(() {
-    registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
+    registry = const CounterRegistryLoader().parse(
+      File(seedPath).readAsStringSync(),
+    );
   });
 
   group('badge tiers crossed (§3.7)', () {
     const detector = TierCrossingDetector();
 
-    List<TierCrossing> between(Map<String, int> before, Map<String, int> after) =>
-        detector.crossings(
-          current: snap(after),
-          previous: snap(before),
-          registry: registry,
-        );
+    List<TierCrossing> between(
+      Map<String, int> before,
+      Map<String, int> after,
+    ) => detector.crossings(
+      current: snap(after),
+      previous: snap(before),
+      registry: registry,
+    );
 
     test('announces a tier the new snapshot reached', () {
       // Explorer silver sits at 1000.
@@ -50,16 +53,20 @@ void main() {
 
     test('landing exactly on a threshold counts as crossing it', () {
       expect(
-        between(const {'Unique Portals Visited': 999},
-            const {'Unique Portals Visited': 1000}),
+        between(
+          const {'Unique Portals Visited': 999},
+          const {'Unique Portals Visited': 1000},
+        ),
         hasLength(1),
       );
     });
 
     test('says nothing when no threshold was passed', () {
       expect(
-        between(const {'Unique Portals Visited': 1100},
-            const {'Unique Portals Visited': 1200}),
+        between(
+          const {'Unique Portals Visited': 1100},
+          const {'Unique Portals Visited': 1200},
+        ),
         isEmpty,
       );
     });
@@ -124,18 +131,21 @@ void main() {
       );
     });
 
-    test('an overdue reminder is pushed just ahead rather than into the past', () {
-      // A time in the past is either fired instantly or dropped, depending on
-      // the platform; neither is what was meant.
-      final now = DateTime(2026, 3, 1, 12);
-      final next = planner.nextReminder(
-        latestSnapshot: DateTime(2026, 1, 1),
-        now: now,
-      );
+    test(
+      'an overdue reminder is pushed just ahead rather than into the past',
+      () {
+        // A time in the past is either fired instantly or dropped, depending on
+        // the platform; neither is what was meant.
+        final now = DateTime(2026, 3, 1, 12);
+        final next = planner.nextReminder(
+          latestSnapshot: DateTime(2026, 1, 1),
+          now: now,
+        );
 
-      expect(next!.isAfter(now), isTrue);
-      expect(next.difference(now).inMinutes, lessThanOrEqualTo(5));
-    });
+        expect(next!.isAfter(now), isTrue);
+        expect(next.difference(now).inMinutes, lessThanOrEqualTo(5));
+      },
+    );
 
     test('the delay is configurable', () {
       const patient = ReminderPlanner(after: Duration(days: 30));

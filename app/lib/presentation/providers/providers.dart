@@ -57,9 +57,8 @@ final settingsRepositoryProvider = Provider<SettingsRepository>(
 );
 
 final counterRegistryServiceProvider = Provider<CounterRegistryService>(
-  (ref) => CounterRegistryService(
-    settings: ref.watch(settingsRepositoryProvider),
-  ),
+  (ref) =>
+      CounterRegistryService(settings: ref.watch(settingsRepositoryProvider)),
 );
 
 /// Counter enrichment registry (§3.1.2, §3.1.4).
@@ -84,8 +83,7 @@ class CounterRegistryNotifier extends AsyncNotifier<CounterRegistry> {
   /// passed. Swallows every failure; call it and forget it.
   Future<void> refreshFromNetwork() async {
     final current = state.asData?.value;
-    final refreshed =
-        await ref.read(counterRegistryServiceProvider).refresh();
+    final refreshed = await ref.read(counterRegistryServiceProvider).refresh();
 
     // Only swap when the fetch actually brought something new, so the UI does
     // not rebuild for nothing on every launch.
@@ -97,8 +95,8 @@ class CounterRegistryNotifier extends AsyncNotifier<CounterRegistry> {
 
 final counterRegistryProvider =
     AsyncNotifierProvider<CounterRegistryNotifier, CounterRegistry>(
-  CounterRegistryNotifier.new,
-);
+      CounterRegistryNotifier.new,
+    );
 
 /// Whether the registry may be refreshed over the network (§3.1.4).
 /// Absent means enabled, which is the documented default.
@@ -119,9 +117,11 @@ final snapshotsProvider = StreamProvider<List<StoredSnapshot>>(
 /// Recomputed from the snapshots rather than stored, so it stays correct when
 /// a snapshot is edited or deleted.
 final trackedCountersProvider = Provider<AsyncValue<List<TrackedCounter>>>(
-  (ref) => ref.watch(snapshotsProvider).whenData(
-        (stored) => const CounterTracker()
-            .track([for (final s in stored) s.snapshot]),
+  (ref) => ref
+      .watch(snapshotsProvider)
+      .whenData(
+        (stored) =>
+            const CounterTracker().track([for (final s in stored) s.snapshot]),
       ),
 );
 
@@ -145,8 +145,8 @@ class CounterQueryNotifier extends Notifier<CounterQuery> {
 
 final counterQueryProvider =
     NotifierProvider<CounterQueryNotifier, CounterQuery>(
-  CounterQueryNotifier.new,
-);
+      CounterQueryNotifier.new,
+    );
 
 /// Each counter's pace over the window the list is currently measuring (#89).
 ///
@@ -167,9 +167,11 @@ final pinnedCounterRepositoryProvider = Provider<PinnedCounterRepository>(
 /// Counters shown on the dashboard, falling back to the defaults until the
 /// agent has picked their own (§3.3).
 final pinnedCountersProvider = StreamProvider<List<String>>(
-  (ref) => ref.watch(pinnedCounterRepositoryProvider).watchPinned().map(
-        (pinned) =>
-            pinned.isEmpty ? PinnedCounterRepository.defaults : pinned,
+  (ref) => ref
+      .watch(pinnedCounterRepositoryProvider)
+      .watchPinned()
+      .map(
+        (pinned) => pinned.isEmpty ? PinnedCounterRepository.defaults : pinned,
       ),
 );
 
@@ -240,8 +242,8 @@ class ShareCardRangeNotifier extends Notifier<ChartRange> {
 
 final shareCardRangeProvider =
     NotifierProvider<ShareCardRangeNotifier, ChartRange>(
-  ShareCardRangeNotifier.new,
-);
+      ShareCardRangeNotifier.new,
+    );
 
 /// The card itself, rebuilt when the history, the pinned selection or the
 /// chosen period changes. Null inside the data means there is nothing to show.
@@ -264,7 +266,10 @@ final shareCardProvider = Provider<AsyncValue<ShareCardData?>>((ref) {
 
 /// How the app follows or overrides the system theme (§3.9).
 final themeModeProvider = StreamProvider<ThemeMode>(
-  (ref) => ref.watch(settingsRepositoryProvider).watch(SettingKeys.themeMode).map(
+  (ref) => ref
+      .watch(settingsRepositoryProvider)
+      .watch(SettingKeys.themeMode)
+      .map(
         (value) => switch (value) {
           'light' => ThemeMode.light,
           'dark' => ThemeMode.dark,
@@ -278,9 +283,10 @@ final themeModeProvider = StreamProvider<ThemeMode>(
 /// Null is the default and the interesting case: the app has two translations
 /// and should use whichever the phone asks for, rather than imposing one.
 final localeProvider = StreamProvider<Locale?>(
-  (ref) => ref.watch(settingsRepositoryProvider).watch(SettingKeys.locale).map(
-        (value) => value == null || value.isEmpty ? null : Locale(value),
-      ),
+  (ref) => ref
+      .watch(settingsRepositoryProvider)
+      .watch(SettingKeys.locale)
+      .map((value) => value == null || value.isEmpty ? null : Locale(value)),
 );
 
 /// Whether the app is tinted with the agent's faction colour (§3.9).
@@ -297,7 +303,8 @@ final factionColoursProvider = StreamProvider<bool>(
 /// changed faction re-imports, and the app should follow rather than keep
 /// painting the old one.
 final currentFactionProvider = Provider<String?>(
-  (ref) => ref.watch(snapshotsProvider).asData?.value.firstOrNull?.snapshot.faction,
+  (ref) =>
+      ref.watch(snapshotsProvider).asData?.value.firstOrNull?.snapshot.faction,
 );
 
 /// Colour the whole app is generated from (§3.9).
@@ -330,7 +337,9 @@ final changelogServiceProvider = Provider<ChangelogService>(
 /// (§9). A one-shot check: it also records the running build as seen, so it
 /// must only ever be read once per app session — the dashboard does that, on
 /// its first frame.
-final changelogCheckProvider = FutureProvider<List<ChangelogRelease>>((ref) async {
+final changelogCheckProvider = FutureProvider<List<ChangelogRelease>>((
+  ref,
+) async {
   final build = await ref.watch(buildInfoProvider.future);
   final versionCode = int.tryParse(build.build);
   if (versionCode == null) return const [];

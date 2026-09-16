@@ -9,12 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// A modest curve: 100 to 200 over four days.
 CounterSeries series() => CounterSeries(
-      points: [
-        for (var i = 0; i < 4; i++)
-          (at: DateTime(2026, 1, 1).add(Duration(days: i)), value: 100 + i * 33),
-      ],
-      range: ChartRange.all,
-    );
+  points: [
+    for (var i = 0; i < 4; i++)
+      (at: DateTime(2026, 1, 1).add(Duration(days: i)), value: 100 + i * 33),
+  ],
+  range: ChartRange.all,
+);
 
 Future<LineChartData> pumpChart(
   WidgetTester tester, {
@@ -63,8 +63,9 @@ void main() {
       expect(data.extraLinesData.horizontalLines.single.y, 2000);
     });
 
-    testWidgets('a distant target squashes the curve, deliberately',
-        (tester) async {
+    testWidgets('a distant target squashes the curve, deliberately', (
+      tester,
+    ) async {
       // The decision of #61, and the one most likely to be undone by accident
       // later: an agent who set themselves something out of reach should learn
       // it by looking. The curve keeping a comfortable share of the height
@@ -86,10 +87,12 @@ void main() {
         target: const ChartTarget(value: 2000, kind: ChartTargetKind.goal),
       );
 
-      final line =
-          tester.widget<LineChart>(find.byType(LineChart)).data.extraLinesData
-              .horizontalLines
-              .single;
+      final line = tester
+          .widget<LineChart>(find.byType(LineChart))
+          .data
+          .extraLinesData
+          .horizontalLines
+          .single;
 
       expect(line.label.labelResolver(line), 'Goal · 2K');
       // Dashed, so colour is not the only thing telling it from the data line.

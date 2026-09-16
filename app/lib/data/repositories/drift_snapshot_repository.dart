@@ -11,25 +11,27 @@ import '../db/database.dart';
 /// All knowledge of the SQL schema stops here: above this layer, only
 /// [StoredSnapshot] is passed around.
 class DriftSnapshotRepository implements SnapshotRepository {
-  DriftSnapshotRepository(this._db, {Uuid? uuid}) : _uuid = uuid ?? const Uuid();
+  DriftSnapshotRepository(this._db, {Uuid? uuid})
+    : _uuid = uuid ?? const Uuid();
 
   final FieldTallyDatabase _db;
   final Uuid _uuid;
 
   @override
   Future<List<StoredSnapshot>> all() async {
-    final rows = await (_db.select(_db.snapshots)
-          ..orderBy([(s) => OrderingTerm.desc(s.recordedAt)]))
-        .get();
+    final rows = await (_db.select(
+      _db.snapshots,
+    )..orderBy([(s) => OrderingTerm.desc(s.recordedAt)])).get();
     return _hydrate(rows);
   }
 
   @override
   Future<StoredSnapshot?> latest() async {
-    final row = await (_db.select(_db.snapshots)
-          ..orderBy([(s) => OrderingTerm.desc(s.recordedAt)])
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (_db.select(_db.snapshots)
+              ..orderBy([(s) => OrderingTerm.desc(s.recordedAt)])
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return (await _hydrate([row])).first;
   }
@@ -42,7 +44,9 @@ class DriftSnapshotRepository implements SnapshotRepository {
     // The snapshot and its counters land together or not at all: a snapshot
     // without its values would skew every computation derived from it.
     await _db.transaction(() async {
-      await _db.into(_db.snapshots).insert(
+      await _db
+          .into(_db.snapshots)
+          .insert(
             SnapshotsCompanion.insert(
               id: id,
               agentName: snapshot.agentName,
@@ -71,9 +75,9 @@ class DriftSnapshotRepository implements SnapshotRepository {
 
   @override
   Future<StoredSnapshot> update(String id, StatSnapshot snapshot) async {
-    final existing = await (_db.select(_db.snapshots)
-          ..where((s) => s.id.equals(id)))
-        .getSingle();
+    final existing = await (_db.select(
+      _db.snapshots,
+    )..where((s) => s.id.equals(id))).getSingle();
 
     // The counters are replaced rather than merged: an edit that removes a
     // value must actually remove it, and a leftover row would resurface in
@@ -89,9 +93,9 @@ class DriftSnapshotRepository implements SnapshotRepository {
         ),
       );
 
-      await (_db.delete(_db.counterValues)
-            ..where((c) => c.snapshotId.equals(id)))
-          .go();
+      await (_db.delete(
+        _db.counterValues,
+      )..where((c) => c.snapshotId.equals(id))).go();
 
       await _db.batch((batch) {
         batch.insertAll(_db.counterValues, [
@@ -131,9 +135,9 @@ class DriftSnapshotRepository implements SnapshotRepository {
     if (rows.isEmpty) return const [];
 
     final ids = rows.map((r) => r.id).toList();
-    final values = await (_db.select(_db.counterValues)
-          ..where((c) => c.snapshotId.isIn(ids)))
-        .get();
+    final values = await (_db.select(
+      _db.counterValues,
+    )..where((c) => c.snapshotId.isIn(ids))).get();
 
     final bySnapshot = <String, Map<String, int>>{};
     for (final value in values) {

@@ -62,14 +62,15 @@ class AgentComparisonBuilder {
     required StatSnapshot theirs,
   }) {
     final headers = <String>{...mine.counters.keys, ...theirs.counters.keys};
-    final ordered = registry?.sortHeaders(headers) ?? (headers.toList()..sort());
+    final ordered =
+        registry?.sortHeaders(headers) ?? (headers.toList()..sort());
 
     final sections = <ComparisonSection>[];
     for (final header in ordered) {
       final categoryKey = registry == null
           ? null
           : registry!.forExportHeader(header)?.categoryKey ??
-              CounterRegistry.fallbackCategoryKey;
+                CounterRegistry.fallbackCategoryKey;
 
       final row = ComparisonRow(
         exportHeader: header,

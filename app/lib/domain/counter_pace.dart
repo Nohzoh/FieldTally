@@ -59,7 +59,10 @@ Map<String, CounterPace> paceByCounter(
   final points = <String, List<({DateTime at, int value})>>{};
   for (final snapshot in sorted) {
     for (final entry in snapshot.counters.entries) {
-      (points[entry.key] ??= []).add((at: snapshot.recordedAt, value: entry.value));
+      (points[entry.key] ??= []).add((
+        at: snapshot.recordedAt,
+        value: entry.value,
+      ));
     }
   }
 

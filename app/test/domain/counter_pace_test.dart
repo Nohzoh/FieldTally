@@ -11,13 +11,13 @@ import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.allTime,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: date,
-      level: 9,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.allTime,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: date,
+  level: 9,
+  counters: counters,
+);
 
 final day = DateTime(2026, 3, 1);
 DateTime on(int offset) => day.add(Duration(days: offset));
@@ -39,14 +39,19 @@ void main() {
     test('since the last snapshot, the recent spike wins', () {
       final paces = paceByCounter(history, ProgressWindow.sinceLastSnapshot);
 
-      expect(paces['Links Created']!.perDay,
-          greaterThan(paces['Hacks']!.perDay));
+      expect(
+        paces['Links Created']!.perDay,
+        greaterThan(paces['Hacks']!.perDay),
+      );
     });
 
     test('over a month, the early burst wins', () {
       final paces = paceByCounter(history, ProgressWindow.month);
 
-      expect(paces['Hacks']!.perDay, greaterThan(paces['Links Created']!.perDay));
+      expect(
+        paces['Hacks']!.perDay,
+        greaterThan(paces['Links Created']!.perDay),
+      );
     });
 
     test('over a week, neither the burst nor the whole history', () {
@@ -96,8 +101,12 @@ void main() {
     });
 
     test('a single snapshot yields nothing at all', () {
-      expect(paceByCounter([at(on(0), const {'Hacks': 10})],
-          ProgressWindow.month), isEmpty);
+      expect(
+        paceByCounter([
+          at(on(0), const {'Hacks': 10}),
+        ], ProgressWindow.month),
+        isEmpty,
+      );
     });
 
     test('two snapshots at the same instant give no span to divide by', () {

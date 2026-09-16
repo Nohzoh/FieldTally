@@ -23,7 +23,8 @@ class ComparisonPayloadException implements Exception {
   final String? detail;
 
   @override
-  String toString() => 'ComparisonPayloadException(${error.name}'
+  String toString() =>
+      'ComparisonPayloadException(${error.name}'
       '${detail == null ? '' : ': $detail'})';
 }
 
@@ -191,7 +192,8 @@ class ComparisonPayload {
       .where((line) => line.trim().isNotEmpty)
       .toList();
 
-  String _stamp(DateTime at) => '${_pad(at.year, 4)}-${_pad(at.month, 2)}-'
+  String _stamp(DateTime at) =>
+      '${_pad(at.year, 4)}-${_pad(at.month, 2)}-'
       '${_pad(at.day, 2)}T${_pad(at.hour, 2)}:${_pad(at.minute, 2)}:'
       '${_pad(at.second, 2)}';
 

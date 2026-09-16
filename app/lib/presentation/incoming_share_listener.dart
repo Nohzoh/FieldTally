@@ -42,13 +42,15 @@ class _IncomingShareListenerState extends ConsumerState<IncomingShareListener> {
     _subscription = source.textStream().listen(_open);
 
     // A share that launched the app is delivered separately from the stream.
-    unawaited(source.initialText().then((text) {
-      if (text == null) return;
-      _open(text);
-      // Mark it consumed, otherwise returning to the app later replays the
-      // same share and offers to import a snapshot already dealt with.
-      source.reset();
-    }));
+    unawaited(
+      source.initialText().then((text) {
+        if (text == null) return;
+        _open(text);
+        // Mark it consumed, otherwise returning to the app later replays the
+        // same share and offers to import a snapshot already dealt with.
+        source.reset();
+      }),
+    );
   }
 
   void _open(String text) {

@@ -45,10 +45,8 @@ class CounterTier {
   final String name;
   final num value;
 
-  factory CounterTier.fromJson(Map<String, dynamic> json) => CounterTier(
-        name: json['name'] as String,
-        value: json['value'] as num,
-      );
+  factory CounterTier.fromJson(Map<String, dynamic> json) =>
+      CounterTier(name: json['name'] as String, value: json['value'] as num);
 }
 
 /// The enrichment entry for one counter.
@@ -109,9 +107,9 @@ class CounterRegistry {
     required this.updatedAt,
     required List<CounterCategory> categories,
     required List<CounterEnrichment> counters,
-  })  : categories = {for (final c in categories) c.key: c},
-        _byExportHeader = {for (final c in counters) c.exportHeader: c},
-        _byKey = {for (final c in counters) c.key: c};
+  }) : categories = {for (final c in categories) c.key: c},
+       _byExportHeader = {for (final c in counters) c.exportHeader: c},
+       _byKey = {for (final c in counters) c.key: c};
 
   /// Fallback category for any counter not yet enriched.
   static const fallbackCategoryKey = 'other';
@@ -126,11 +124,11 @@ class CounterRegistry {
   /// Empty registry: every counter is unknown to it. Useful as a last resort
   /// if even the bundled copy is unreadable — the app has to keep working.
   factory CounterRegistry.empty() => CounterRegistry(
-        schemaVersion: 0,
-        updatedAt: '',
-        categories: const [],
-        counters: const [],
-      );
+    schemaVersion: 0,
+    updatedAt: '',
+    categories: const [],
+    counters: const [],
+  );
 
   factory CounterRegistry.fromJson(Map<String, dynamic> json) {
     final counters = <CounterEnrichment>[];
@@ -138,7 +136,9 @@ class CounterRegistry {
     for (final entry in raw.entries) {
       counters.add(
         CounterEnrichment.fromJson(
-            entry.key, entry.value as Map<String, dynamic>),
+          entry.key,
+          entry.value as Map<String, dynamic>,
+        ),
       );
     }
 

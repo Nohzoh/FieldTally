@@ -3,16 +3,16 @@ import 'package:fieldtally/domain/goal.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 List<SeriesPoint> daily(DateTime from, List<int> values) => [
-      for (var i = 0; i < values.length; i++)
-        (at: from.add(Duration(days: i)), value: values[i]),
-    ];
+  for (var i = 0; i < values.length; i++)
+    (at: from.add(Duration(days: i)), value: values[i]),
+];
 
 Goal goal(int target, {DateTime? deadline}) => Goal(
-      exportHeader: 'Unique Portals Visited',
-      target: target,
-      deadline: deadline,
-      createdAt: DateTime(2026, 1, 1),
-    );
+  exportHeader: 'Unique Portals Visited',
+  target: target,
+  deadline: deadline,
+  createdAt: DateTime(2026, 1, 1),
+);
 
 void main() {
   const tracker = GoalTracker();
@@ -23,8 +23,10 @@ void main() {
 
   group('where the goal stands', () {
     test('reports what is left and how far along', () {
-      final progress =
-          tracker.progressFor(goal(2000), daily(DateTime(2026, 1, 1), [1500]))!;
+      final progress = tracker.progressFor(
+        goal(2000),
+        daily(DateTime(2026, 1, 1), [1500]),
+      )!;
 
       expect(progress.value, 1500);
       expect(progress.remaining, 500);
@@ -33,8 +35,10 @@ void main() {
     });
 
     test('a goal already met is met', () {
-      final progress =
-          tracker.progressFor(goal(1000), daily(DateTime(2026, 1, 1), [1500]))!;
+      final progress = tracker.progressFor(
+        goal(1000),
+        daily(DateTime(2026, 1, 1), [1500]),
+      )!;
 
       expect(progress.isReached, isTrue);
       expect(progress.remaining, 0);
@@ -45,8 +49,10 @@ void main() {
     test('progress is measured against the target, not since it was set', () {
       // Someone who sets a goal already halfway there wants to see halfway,
       // not zero.
-      final progress =
-          tracker.progressFor(goal(2000), daily(DateTime(2026, 1, 1), [1000]))!;
+      final progress = tracker.progressFor(
+        goal(2000),
+        daily(DateTime(2026, 1, 1), [1000]),
+      )!;
 
       expect(progress.progress, closeTo(0.5, 0.001));
     });
@@ -61,8 +67,10 @@ void main() {
 
       expect(progress.perDay, closeTo(10, 0.001));
       expect(progress.daysToTarget, closeTo(55, 0.001));
-      expect(progress.projectedDate!.difference(DateTime(2026, 1, 6)).inDays,
-          55);
+      expect(
+        progress.projectedDate!.difference(DateTime(2026, 1, 6)).inDays,
+        55,
+      );
     });
 
     test('a stalled counter gets none rather than a wrong one', () {

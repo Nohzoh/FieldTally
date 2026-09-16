@@ -27,8 +27,9 @@ void main() {
   late CounterRegistry registry;
 
   setUp(() {
-    registry =
-        const CounterRegistryLoader().parse(File(seedPath).readAsStringSync());
+    registry = const CounterRegistryLoader().parse(
+      File(seedPath).readAsStringSync(),
+    );
   });
 
   AgentStatsCsvParser parser({bool withRegistry = true}) =>
@@ -37,8 +38,9 @@ void main() {
   group('a file without a header row', () {
     test('reads the documented column order', () {
       // ap, lifetime_ap, explorer
-      final snapshots =
-          parser().parse(row('2026-01-15', [3281218, 101542335, 9756]));
+      final snapshots = parser().parse(
+        row('2026-01-15', [3281218, 101542335, 9756]),
+      );
 
       final counters = snapshots.single.counters;
       expect(counters['Current AP'], 3281218);
@@ -48,8 +50,9 @@ void main() {
 
     test('the time is optional and defaults to midnight', () {
       final withoutTime = parser().parse(row('2026-01-15', [10, 20]));
-      final withTime =
-          parser().parse(row('2026-01-15', [10, 20], time: '18:30:00'));
+      final withTime = parser().parse(
+        row('2026-01-15', [10, 20], time: '18:30:00'),
+      );
 
       expect(withoutTime.single.recordedAt, DateTime(2026, 1, 15));
       expect(withTime.single.recordedAt, DateTime(2026, 1, 15, 18, 30));
@@ -65,8 +68,9 @@ void main() {
     });
 
     test('a comment containing spaces stays one field', () {
-      final snapshots = parser()
-          .parse(row('2026-01-15', [10], comment: 'two words here'));
+      final snapshots = parser().parse(
+        row('2026-01-15', [10], comment: 'two words here'),
+      );
 
       expect(snapshots.single.counters, {'Current AP': 10});
     });
@@ -76,7 +80,8 @@ void main() {
     test('maps by name, so a reordered file still reads correctly', () {
       // The header wins over the documented order — the only thing that
       // survives the format gaining or losing a column.
-      const raw = 'Date hacker explorer\n'
+      const raw =
+          'Date hacker explorer\n'
           '2026-01-15 78735 9756';
 
       final counters = parser().parse(raw).single.counters;
@@ -86,7 +91,8 @@ void main() {
     });
 
     test('a header with a time column is handled', () {
-      const raw = 'Date Heure ap lifetime_ap\n'
+      const raw =
+          'Date Heure ap lifetime_ap\n'
           '2026-01-15 13:07:39 3281218 101542335';
 
       final snapshot = parser().parse(raw).single;
@@ -100,7 +106,8 @@ void main() {
     test('hyphenated keys are translated', () {
       // Agent Stats writes mind-controller where the registry writes
       // mind_controller.
-      const raw = 'Date mind-controller country-master nl-1331-meetups\n'
+      const raw =
+          'Date mind-controller country-master nl-1331-meetups\n'
           '2026-01-15 9527 1362460 1';
 
       final counters = parser().parse(raw).single.counters;
@@ -168,10 +175,7 @@ void main() {
       final snapshots = parser().parse(raw);
 
       expect(snapshots, hasLength(3));
-      expect(
-        snapshots.map((s) => s.recordedAt.day),
-        [1, 10, 20],
-      );
+      expect(snapshots.map((s) => s.recordedAt.day), [1, 10, 20]);
     });
 
     test('the behavioural guard still applies across imported rows', () {
@@ -180,10 +184,12 @@ void main() {
       //
       // The third column, explorer, on purpose: ap and lifetime_ap are the two
       // fields Ingress never periodises, so the guard rightly ignores them.
-      final snapshots = parser().parse([
-        row('2026-01-01', [1, 2, 100]),
-        row('2026-01-10', [1, 2, 40]),
-      ].join('\n'));
+      final snapshots = parser().parse(
+        [
+          row('2026-01-01', [1, 2, 100]),
+          row('2026-01-10', [1, 2, 40]),
+        ].join('\n'),
+      );
 
       final check = const ImportGuards().check(
         snapshots.last,
@@ -201,42 +207,61 @@ void main() {
     test('empty file', () {
       expect(
         () => parser().parse('   \n  '),
-        throwsA(isA<ExportParseException>()
-            .having((e) => e.kind, 'kind', ParseErrorKind.emptyText)),
+        throwsA(
+          isA<ExportParseException>().having(
+            (e) => e.kind,
+            'kind',
+            ParseErrorKind.emptyText,
+          ),
+        ),
       );
     });
 
     test('a header with no rows', () {
       expect(
         () => parser().parse('Date ap lifetime_ap'),
-        throwsA(isA<ExportParseException>()
-            .having((e) => e.kind, 'kind', ParseErrorKind.headerOnly)),
+        throwsA(
+          isA<ExportParseException>().having(
+            (e) => e.kind,
+            'kind',
+            ParseErrorKind.headerOnly,
+          ),
+        ),
       );
     });
 
     test('a malformed date, reported with its line', () {
       expect(
         () => parser().parse('15/01/2026 10 20'),
-        throwsA(isA<ExportParseException>()
-            .having((e) => e.kind, 'kind', ParseErrorKind.invalidDate)
-            .having((e) => e.position, 'line', 1)),
+        throwsA(
+          isA<ExportParseException>()
+              .having((e) => e.kind, 'kind', ParseErrorKind.invalidDate)
+              .having((e) => e.position, 'line', 1),
+        ),
       );
     });
 
     test('a date that does not exist', () {
       expect(
         () => parser().parse(row('2026-02-30', [10])),
-        throwsA(isA<ExportParseException>()
-            .having((e) => e.kind, 'kind', ParseErrorKind.nonExistentDate)),
+        throwsA(
+          isA<ExportParseException>().having(
+            (e) => e.kind,
+            'kind',
+            ParseErrorKind.nonExistentDate,
+          ),
+        ),
       );
     });
 
     test('a non-numeric value names its column', () {
       expect(
         () => parser().parse('Date ap lifetime_ap\n2026-01-15 10 lots'),
-        throwsA(isA<ExportParseException>()
-            .having((e) => e.kind, 'kind', ParseErrorKind.notAnInteger)
-            .having((e) => e.column, 'column', 'lifetime_ap')),
+        throwsA(
+          isA<ExportParseException>()
+              .having((e) => e.kind, 'kind', ParseErrorKind.notAnInteger)
+              .having((e) => e.column, 'column', 'lifetime_ap'),
+        ),
       );
     });
 

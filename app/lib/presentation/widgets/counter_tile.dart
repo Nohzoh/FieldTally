@@ -72,8 +72,9 @@ class CounterTile extends StatelessWidget {
           Flexible(
             child: Text(
               _subtitle(l10n, numbers),
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.outline),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -139,10 +140,12 @@ class _InactiveChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        l10n.inactiveSince(DateFormat(l10n.shortDateFormat, locale)
-            .format(lastSeen)),
-        style: theme.textTheme.labelSmall
-            ?.copyWith(color: theme.colorScheme.outline),
+        l10n.inactiveSince(
+          DateFormat(l10n.shortDateFormat, locale).format(lastSeen),
+        ),
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: theme.colorScheme.outline,
+        ),
       ),
     );
   }

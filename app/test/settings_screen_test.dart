@@ -25,8 +25,11 @@ Finder get _notifications => find.byType(SwitchListTile).last;
 /// The screen is taller than a phone: anything below the About divider has to
 /// be scrolled to before it is even built.
 Future<void> scrollTo(WidgetTester tester, Finder target) async {
-  await tester.scrollUntilVisible(target, 200,
-      scrollable: find.byType(Scrollable).first);
+  await tester.scrollUntilVisible(
+    target,
+    200,
+    scrollable: find.byType(Scrollable).first,
+  );
   await tester.pumpAndSettle();
 }
 
@@ -54,20 +57,22 @@ void main() {
 
     db = FieldTallyDatabase(NativeDatabase.memory());
     notifications = FakeNotificationService();
-    container = ProviderContainer(overrides: [
-      databaseProvider.overrideWithValue(db),
-      // No test asks Android for anything.
-      notificationServiceProvider.overrideWithValue(notifications),
-      if (build != null) buildInfoProvider.overrideWith((ref) async => build),
-      // No test touches the real network. This one always fails, which is also
-      // the case that must leave the app fully usable.
-      counterRegistryServiceProvider.overrideWith(
-        (ref) => CounterRegistryService(
-          settings: ref.watch(settingsRepositoryProvider),
-          client: MockClient((_) async => http.Response('nope', 503)),
+    container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        // No test asks Android for anything.
+        notificationServiceProvider.overrideWithValue(notifications),
+        if (build != null) buildInfoProvider.overrideWith((ref) async => build),
+        // No test touches the real network. This one always fails, which is also
+        // the case that must leave the app fully usable.
+        counterRegistryServiceProvider.overrideWith(
+          (ref) => CounterRegistryService(
+            settings: ref.watch(settingsRepositoryProvider),
+            client: MockClient((_) async => http.Response('nope', 503)),
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
     // Dispose the container before closing the database: closing Drift while a
     // stream query is still subscribed hangs.
     addTearDown(db.close);
@@ -114,8 +119,9 @@ void main() {
       expect(toggle.value, isTrue);
     });
 
-    testWidgets('says what is downloaded and that nothing is sent',
-        (tester) async {
+    testWidgets('says what is downloaded and that nothing is sent', (
+      tester,
+    ) async {
       // This is the only network request in the whole of v1, so the wording
       // has to be plain rather than reassuring.
       await pumpSettings(tester);
@@ -142,9 +148,15 @@ void main() {
 
     testWidgets('carries the non-affiliation notice', (tester) async {
       await pumpSettings(tester);
-      await scrollTo(tester, find.textContaining('not affiliated with Niantic'));
+      await scrollTo(
+        tester,
+        find.textContaining('not affiliated with Niantic'),
+      );
 
-      expect(find.textContaining('not affiliated with Niantic'), findsOneWidget);
+      expect(
+        find.textContaining('not affiliated with Niantic'),
+        findsOneWidget,
+      );
     });
   });
 
@@ -186,8 +198,9 @@ void main() {
       expect(find.textContaining('refused'), findsOneWidget);
     });
 
-    testWidgets('switching them off cancels the pending reminder',
-        (tester) async {
+    testWidgets('switching them off cancels the pending reminder', (
+      tester,
+    ) async {
       await pumpSettings(tester);
 
       await tester.tap(_notifications);
@@ -245,20 +258,25 @@ void main() {
         '1',
       );
       // And it reads as a sentence rather than "after 1 days".
-      expect(find.text('Remind me after a day without a snapshot'),
-          findsOneWidget);
+      expect(
+        find.text('Remind me after a day without a snapshot'),
+        findsOneWidget,
+      );
     });
   });
 
   group('language (§3.10)', () {
-    testWidgets('follows the system until a language is picked',
-        (tester) async {
+    testWidgets('follows the system until a language is picked', (
+      tester,
+    ) async {
       await pumpSettings(tester);
       await scrollTo(tester, find.byType(DropdownButton<String?>));
 
       expect(
         tester
-            .widget<DropdownButton<String?>>(find.byType(DropdownButton<String?>))
+            .widget<DropdownButton<String?>>(
+              find.byType(DropdownButton<String?>),
+            )
             .value,
         isNull,
       );
@@ -301,9 +319,11 @@ void main() {
       await scrollTo(tester, find.byType(DropdownButton<ThemeMode>));
 
       expect(
-        tester.widget<DropdownButton<ThemeMode>>(
-          find.byType(DropdownButton<ThemeMode>),
-        ).value,
+        tester
+            .widget<DropdownButton<ThemeMode>>(
+              find.byType(DropdownButton<ThemeMode>),
+            )
+            .value,
         ThemeMode.system,
       );
 
@@ -320,8 +340,9 @@ void main() {
       );
     });
 
-    testWidgets('faction colours are off, and say there is no faction yet',
-        (tester) async {
+    testWidgets('faction colours are off, and say there is no faction yet', (
+      tester,
+    ) async {
       // Without a snapshot the switch has nothing to follow, and saying so
       // beats a control that looks broken.
       await pumpSettings(tester);
@@ -359,8 +380,7 @@ void main() {
   });
 
   group('about (§9)', () {
-    testWidgets('names the running build and copies it on tap',
-        (tester) async {
+    testWidgets('names the running build and copies it on tap', (tester) async {
       // The first question on any bug report is "which version?".
       //
       // The clipboard is a platform channel, so it is mocked rather than read
@@ -376,8 +396,10 @@ void main() {
         },
       );
       addTearDown(
-        () => tester.binding.defaultBinaryMessenger
-            .setMockMethodCallHandler(SystemChannels.platform, null),
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
       );
 
       await pumpSettings(tester);
@@ -390,8 +412,9 @@ void main() {
       expect(find.text('Version copied.'), findsOneWidget);
     });
 
-    testWidgets('a build with no commit says so rather than naming one',
-        (tester) async {
+    testWidgets('a build with no commit says so rather than naming one', (
+      tester,
+    ) async {
       // A working copy must not claim a commit that may not hold what runs.
       await pumpSettings(
         tester,
@@ -410,8 +433,9 @@ void main() {
       expect(find.text('abc1234'), findsOneWidget);
     });
 
-    testWidgets('offers the source and a way to support the project',
-        (tester) async {
+    testWidgets('offers the source and a way to support the project', (
+      tester,
+    ) async {
       await pumpSettings(tester);
       await scrollTo(tester, find.text('Source code'));
 

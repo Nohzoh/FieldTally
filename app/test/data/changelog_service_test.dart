@@ -22,13 +22,13 @@ class _FixedLoader implements ChangelogLoader {
 }
 
 ChangelogRelease release(int versionCode) => ChangelogRelease(
-      versionCode: versionCode,
-      version: '1.$versionCode.0',
-      featureNotes: {
-        'en': ['feature $versionCode'],
-      },
-      fixNotes: const {},
-    );
+  versionCode: versionCode,
+  version: '1.$versionCode.0',
+  featureNotes: {
+    'en': ['feature $versionCode'],
+  },
+  fixNotes: const {},
+);
 
 void main() {
   late FieldTallyDatabase db;
@@ -43,9 +43,9 @@ void main() {
   tearDown(() => db.close());
 
   ChangelogService service() => ChangelogService(
-        settings: settings,
-        loader: _FixedLoader([release(2), release(3)]),
-      );
+    settings: settings,
+    loader: _FixedLoader([release(2), release(3)]),
+  );
 
   Future<String?> lastSeen() =>
       settings.read(SettingKeys.changelogLastSeenBuild);

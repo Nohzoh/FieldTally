@@ -18,15 +18,14 @@ StatSnapshot snapshotWith({
   TimeSpan timeSpan = TimeSpan.allTime,
   required Map<String, int> counters,
   DateTime? recordedAt,
-}) =>
-    StatSnapshot(
-      timeSpan: timeSpan,
-      agentName: 'AgentDemo',
-      faction: 'Enlightened',
-      recordedAt: recordedAt ?? DateTime(2026, 1, 15),
-      level: 9,
-      counters: counters,
-    );
+}) => StatSnapshot(
+  timeSpan: timeSpan,
+  agentName: 'AgentDemo',
+  faction: 'Enlightened',
+  recordedAt: recordedAt ?? DateTime(2026, 1, 15),
+  level: 9,
+  counters: counters,
+);
 
 void main() {
   const guards = ImportGuards();
@@ -49,8 +48,9 @@ void main() {
 
     for (final span in [TimeSpan.week, TimeSpan.month, TimeSpan.now]) {
       test('${span.name} is refused', () {
-        final check =
-            guards.check(snapshotWith(timeSpan: span, counters: const {}));
+        final check = guards.check(
+          snapshotWith(timeSpan: span, counters: const {}),
+        );
         expect(check.isBlocked, isTrue);
       });
     }
@@ -105,14 +105,15 @@ void main() {
     test('drops are sorted largest first', () {
       final check = guards.check(
         snapshotWith(counters: const {'Hacks': 90, 'Links Created': 10}),
-        previous:
-            snapshotWith(counters: const {'Hacks': 100, 'Links Created': 500}),
+        previous: snapshotWith(
+          counters: const {'Hacks': 100, 'Links Created': 500},
+        ),
       );
 
-      expect(
-        check.regressions.map((r) => r.exportHeader),
-        ['Links Created', 'Hacks'],
-      );
+      expect(check.regressions.map((r) => r.exportHeader), [
+        'Links Created',
+        'Hacks',
+      ]);
     });
 
     test('a counter appearing is not a regression', () {
@@ -143,15 +144,19 @@ void main() {
 
       expect(
         tolerant
-            .check(snapshotWith(counters: const {'Hacks': 96}),
-                previous: previous)
+            .check(
+              snapshotWith(counters: const {'Hacks': 96}),
+              previous: previous,
+            )
             .hasRegressions,
         isFalse,
       );
       expect(
         tolerant
-            .check(snapshotWith(counters: const {'Hacks': 94}),
-                previous: previous)
+            .check(
+              snapshotWith(counters: const {'Hacks': 94}),
+              previous: previous,
+            )
             .hasRegressions,
         isTrue,
       );
@@ -200,18 +205,22 @@ void main() {
       // and the guard skips them — a reason that has nothing to do with
       // recursion. This pins the outcome so that reason cannot quietly change.
       final check = guards.check(
-        snapshotWith(counters: const {
-          'Level': 1,
-          'Current AP': 0,
-          'Recursions': 1,
-          'Hacks': 78735,
-        }),
-        previous: snapshotWith(counters: const {
-          'Level': 16,
-          'Current AP': 40000000,
-          'Recursions': 0,
-          'Hacks': 78735,
-        }),
+        snapshotWith(
+          counters: const {
+            'Level': 1,
+            'Current AP': 0,
+            'Recursions': 1,
+            'Hacks': 78735,
+          },
+        ),
+        previous: snapshotWith(
+          counters: const {
+            'Level': 16,
+            'Current AP': 40000000,
+            'Recursions': 0,
+            'Hacks': 78735,
+          },
+        ),
       );
 
       expect(check.hasRegressions, isFalse);
@@ -223,8 +232,9 @@ void main() {
       // registry is fetched from Pages, so it can change without a release.
       // Marking `ap` periodized there would block every recursing agent's next
       // import, remotely. This fails if that ever happens.
-      final registry = const CounterRegistryLoader()
-          .parse(File(seedPath).readAsStringSync());
+      final registry = const CounterRegistryLoader().parse(
+        File(seedPath).readAsStringSync(),
+      );
 
       expect(registry.isPeriodized('Current AP'), isFalse);
       expect(registry.isPeriodized('Level'), isFalse);
@@ -240,29 +250,35 @@ void main() {
       expect(check.hasRegressions, isFalse);
     });
 
-    test('but a recursion does not excuse a lifetime counter going backwards',
-        () {
-      // The tolerance covers the two fields recursion resets, and is not an
-      // amnesty for the snapshot carrying them: a WEEK export imported on the
-      // evening of a recursion is still the mistake the guard exists to catch.
-      final check = guards.check(
-        snapshotWith(counters: const {
-          'Level': 1,
-          'Current AP': 0,
-          'Recursions': 1,
-          'Hacks': 12,
-        }),
-        previous: snapshotWith(counters: const {
-          'Level': 16,
-          'Current AP': 40000000,
-          'Recursions': 0,
-          'Hacks': 78735,
-        }),
-      );
+    test(
+      'but a recursion does not excuse a lifetime counter going backwards',
+      () {
+        // The tolerance covers the two fields recursion resets, and is not an
+        // amnesty for the snapshot carrying them: a WEEK export imported on the
+        // evening of a recursion is still the mistake the guard exists to catch.
+        final check = guards.check(
+          snapshotWith(
+            counters: const {
+              'Level': 1,
+              'Current AP': 0,
+              'Recursions': 1,
+              'Hacks': 12,
+            },
+          ),
+          previous: snapshotWith(
+            counters: const {
+              'Level': 16,
+              'Current AP': 40000000,
+              'Recursions': 0,
+              'Hacks': 78735,
+            },
+          ),
+        );
 
-      expect(check.regressions.map((r) => r.exportHeader), ['Hacks']);
-      expect(check.isBlocked, isTrue);
-    });
+        expect(check.regressions.map((r) => r.exportHeader), ['Hacks']);
+        expect(check.isBlocked, isTrue);
+      },
+    );
 
     test('guard 2 protects the CSV path, which has no Time Span', () {
       // On that path (Appendix B) the declarative guard is blind: the column

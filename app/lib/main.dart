@@ -34,10 +34,7 @@ class FieldTallyApp extends ConsumerWidget {
           // it, generated from the app's own colour or from their faction
           // (§3.9).
           themeMode: mode,
-          theme: ThemeData(
-            colorSchemeSeed: seed,
-            brightness: Brightness.light,
-          ),
+          theme: ThemeData(colorSchemeSeed: seed, brightness: Brightness.light),
           darkTheme: ThemeData(
             colorSchemeSeed: seed,
             brightness: Brightness.dark,

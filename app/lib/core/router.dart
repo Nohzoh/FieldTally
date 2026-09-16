@@ -49,72 +49,72 @@ abstract final class Routes {
 /// state, and sharing it across widget tests would make them depend on their
 /// execution order.
 GoRouter createRouter() => GoRouter(
+  routes: [
+    GoRoute(
+      path: Routes.home,
+      builder: (context, state) => const DashboardScreen(),
       routes: [
         GoRoute(
-          path: Routes.home,
-          builder: (context, state) => const DashboardScreen(),
+          path: 'add',
+          builder: (context, state) => AddSnapshotScreen(
+            // Incoming shares (§3.1) will drop the text received from
+            // Ingress here, landing straight on the preview.
+            initialText: state.extra as String?,
+          ),
+        ),
+        GoRoute(
+          path: 'snapshots',
+          builder: (context, state) => const SnapshotListScreen(),
           routes: [
             GoRoute(
-              path: 'add',
-              builder: (context, state) => AddSnapshotScreen(
-                // Incoming shares (§3.1) will drop the text received from
-                // Ingress here, landing straight on the preview.
-                initialText: state.extra as String?,
-              ),
+              path: ':id',
+              builder: (context, state) =>
+                  EditSnapshotScreen(snapshotId: state.pathParameters['id']!),
             ),
+          ],
+        ),
+        GoRoute(
+          path: 'pins',
+          builder: (context, state) => const CustomisePinsScreen(),
+        ),
+        GoRoute(
+          path: 'settings',
+          builder: (context, state) => const SettingsScreen(),
+        ),
+        GoRoute(
+          path: 'import',
+          builder: (context, state) => const ImportCsvScreen(),
+        ),
+        GoRoute(
+          path: 'share',
+          builder: (context, state) => const ShareCardScreen(),
+        ),
+        GoRoute(
+          path: 'compare',
+          builder: (context, state) => CompareScreen(
+            // Set when a share brought another agent's totals in; null
+            // when the agent opened the screen to send their own.
+            incoming: state.extra as String?,
+          ),
+        ),
+        GoRoute(
+          path: 'counters',
+          builder: (context, state) => const CounterListScreen(),
+          routes: [
             GoRoute(
-              path: 'snapshots',
-              builder: (context, state) => const SnapshotListScreen(),
-              routes: [
-                GoRoute(
-                  path: ':id',
-                  builder: (context, state) => EditSnapshotScreen(
-                    snapshotId: state.pathParameters['id']!,
-                  ),
+              path: ':header',
+              builder: (context, state) => CounterDetailScreen(
+                exportHeader: Uri.decodeComponent(
+                  state.pathParameters['header']!,
                 ),
-              ],
-            ),
-            GoRoute(
-              path: 'pins',
-              builder: (context, state) => const CustomisePinsScreen(),
-            ),
-            GoRoute(
-              path: 'settings',
-              builder: (context, state) => const SettingsScreen(),
-            ),
-            GoRoute(
-              path: 'import',
-              builder: (context, state) => const ImportCsvScreen(),
-            ),
-            GoRoute(
-              path: 'share',
-              builder: (context, state) => const ShareCardScreen(),
-            ),
-            GoRoute(
-              path: 'compare',
-              builder: (context, state) => CompareScreen(
-                // Set when a share brought another agent's totals in; null
-                // when the agent opened the screen to send their own.
-                incoming: state.extra as String?,
               ),
-            ),
-            GoRoute(
-              path: 'counters',
-              builder: (context, state) => const CounterListScreen(),
-              routes: [
-                GoRoute(
-                  path: ':header',
-                  builder: (context, state) => CounterDetailScreen(
-                    exportHeader:
-                        Uri.decodeComponent(state.pathParameters['header']!),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
       ],
-    );
+    ),
+  ],
+);
 
 /// Instance used by the application.
 final router = createRouter();

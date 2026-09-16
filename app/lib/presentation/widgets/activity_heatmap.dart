@@ -36,8 +36,9 @@ class ActivityHeatmap extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Text(
           l10n.activityEmpty,
-          style: theme.textTheme.bodySmall
-              ?.copyWith(color: theme.colorScheme.outline),
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.outline,
+          ),
         ),
       );
     }
@@ -53,8 +54,9 @@ class ActivityHeatmap extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             l10n.activitySubtitle,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.colorScheme.outline),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
           ),
           const SizedBox(height: 8),
           ActivityCalendar(activityByDay: activityByDay, from: from, to: to),
@@ -66,12 +68,12 @@ class ActivityHeatmap extends StatelessWidget {
               activityByDay.length,
               NumberFormat.compact(locale: locale).format(peak),
             ),
-            style: theme.textTheme.labelSmall
-                ?.copyWith(color: theme.colorScheme.outline),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
           ),
         ],
       ),
     );
   }
-
 }

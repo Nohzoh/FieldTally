@@ -4,12 +4,12 @@ import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-      timeSpan: TimeSpan.unknown,
-      agentName: '',
-      faction: '',
-      recordedAt: date,
-      counters: counters,
-    );
+  timeSpan: TimeSpan.unknown,
+  agentName: '',
+  faction: '',
+  recordedAt: date,
+  counters: counters,
+);
 
 void main() {
   const planner = CsvImportPlanner();
@@ -53,25 +53,25 @@ void main() {
   });
 
   test('compares the file against what is already stored', () {
-    final plan = planner.plan(
-      [at(DateTime(2026, 6, 1), const {'Hacks': 40})],
-      existingLatest: at(DateTime(2026, 1, 1), const {'Hacks': 100}),
-    );
+    final plan = planner.plan([
+      at(DateTime(2026, 6, 1), const {'Hacks': 40}),
+    ], existingLatest: at(DateTime(2026, 1, 1), const {'Hacks': 100}));
 
     expect(plan.isBlocked, isTrue);
   });
 
-  test('a file predating the stored history is a backfill, not a regression',
-      () {
-    // Importing years of older data is exactly what this feature is for; its
-    // values are legitimately lower than today's.
-    final plan = planner.plan(
-      [at(DateTime(2020, 1, 1), const {'Hacks': 5})],
-      existingLatest: at(DateTime(2026, 1, 1), const {'Hacks': 100}),
-    );
+  test(
+    'a file predating the stored history is a backfill, not a regression',
+    () {
+      // Importing years of older data is exactly what this feature is for; its
+      // values are legitimately lower than today's.
+      final plan = planner.plan([
+        at(DateTime(2020, 1, 1), const {'Hacks': 5}),
+      ], existingLatest: at(DateTime(2026, 1, 1), const {'Hacks': 100}));
 
-    expect(plan.isBlocked, isFalse);
-  });
+      expect(plan.isBlocked, isFalse);
+    },
+  );
 
   test('a counter appearing partway through is not a regression', () {
     final plan = planner.plan([
@@ -91,9 +91,9 @@ void main() {
     ]);
 
     expect(plan.regressions, hasLength(2));
-    expect(
-      plan.regressions.map((r) => r.at),
-      [DateTime(2024, 2, 1), DateTime(2024, 4, 1)],
-    );
+    expect(plan.regressions.map((r) => r.at), [
+      DateTime(2024, 2, 1),
+      DateTime(2024, 4, 1),
+    ]);
   });
 }

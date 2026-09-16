@@ -8,15 +8,17 @@ class DriftSettingsRepository implements SettingsRepository {
 
   @override
   Future<String?> read(String key) async {
-    final row = await (_db.select(_db.appSettings)
-          ..where((s) => s.key.equals(key)))
-        .getSingleOrNull();
+    final row = await (_db.select(
+      _db.appSettings,
+    )..where((s) => s.key.equals(key))).getSingleOrNull();
     return row?.value;
   }
 
   @override
   Future<void> write(String key, String value) async {
-    await _db.into(_db.appSettings).insertOnConflictUpdate(
+    await _db
+        .into(_db.appSettings)
+        .insertOnConflictUpdate(
           AppSettingsCompanion.insert(key: key, value: value),
         );
   }

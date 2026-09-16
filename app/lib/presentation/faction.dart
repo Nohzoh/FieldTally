@@ -15,7 +15,7 @@ const resistanceColour = Color(0xFF3E8FE0);
 /// an unknown faction is never quietly painted as one of the two. Fan-made
 /// exports have carried invented factions before.
 Color? factionColour(String faction) => switch (faction.trim().toLowerCase()) {
-      'enlightened' => enlightenedColour,
-      'resistance' => resistanceColour,
-      _ => null,
-    };
+  'enlightened' => enlightenedColour,
+  'resistance' => resistanceColour,
+  _ => null,
+};
