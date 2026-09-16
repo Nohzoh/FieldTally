@@ -108,6 +108,14 @@ generates its changelog from the commits. If you squash-merge, remember that
 GitHub uses the **pull request title** as the commit message — so that title
 has to follow the convention too.
 
+## One issue per change
+
+Every change that reaches `main` answers to an issue, and the pull request names
+it — `Closes #N` when it finishes the issue, `Refs #N` when it is one step of
+it. This holds for release chores, documentation and tooling as much as for
+features: the release notes are written from the milestone, so work with no
+issue simply goes unmentioned.
+
 ## Signed commits
 
 Commits must be signed. The project uses **SSH** signing rather than GPG: less
