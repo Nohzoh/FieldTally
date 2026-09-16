@@ -90,7 +90,14 @@ void main() {
   testWidgets(
     'contact sheet',
     (tester) async {
-      tester.view.physicalSize = const Size(1000, 1500);
+      // Sized from the emblem count rather than pinned, so that drawing the
+      // next one does not silently overflow the sheet by a row. It did: adding
+      // the eighteenth pushed a fixed 1500 over by 28 pixels, and the striped
+      // overflow band lands on the very thing the sheet exists to judge.
+      tester.view.physicalSize = Size(
+        1000,
+        240 + MedalIcon.emblemKeys.length * 76,
+      );
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
 

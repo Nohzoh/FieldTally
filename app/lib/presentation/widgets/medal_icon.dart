@@ -418,7 +418,7 @@ const _anomalyGlobalOpEmblems = {
   'apollo_mod_battle_points',
 };
 
-const _anomalyEmblems = {'orion_tokens', 'apollo_tokens'};
+const _anomalyEmblems = {'orion_tokens', 'apollo_tokens', 'cygnus_tokens'};
 
 final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
   // Distance covered: a winding road. No end dots — those belong to the link,
@@ -657,6 +657,27 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
         ..moveTo(19.2, 7.4)
         ..lineTo(16, 12)
         ..lineTo(19.2, 16.6),
+      stroke,
+    );
+  },
+
+  // Cygnus's Season medal: the swan itself — two strokes of wing, and the
+  // neck rising to a beak.
+  //
+  // Not a coin, unlike Apollo's and Orion's. Those two struck their season
+  // into a shared shape, which made every Season medal look alike across
+  // seasons; what matters more is that the medals *of one season* look alike,
+  // and Cygnus has three of them. So the motif is the whole glyph here, and
+  // the rim is left to say which of the three this is.
+  'cygnus_tokens': (c, fill, stroke) {
+    stroke.strokeWidth = 2.2;
+    _line(c, stroke, 5.4, 18.6, 11.4, 11.4);
+    _line(c, stroke, 8.6, 19, 14.6, 11.8);
+    c.drawPath(
+      Path()
+        ..moveTo(13.6, 19.2)
+        ..cubicTo(12.4, 10.4, 17.6, 7.8, 19.2, 10.6)
+        ..lineTo(21, 9.4),
       stroke,
     );
   },
