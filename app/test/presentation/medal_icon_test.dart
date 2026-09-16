@@ -17,9 +17,35 @@ void main() {
   // is the file a contributor edits, key by key.
   final seed =
       jsonDecode(File(seedPath).readAsStringSync()) as Map<String, dynamic>;
+  bool hasTiers(MapEntry<String, dynamic> e) =>
+      (e.value as Map<String, dynamic>)['tiers'] != null;
+
+  /// The ladders excused from the coverage rule below, named one by one (#99).
+  ///
+  /// Deriving this from `ends_at` instead would excuse whatever carries the
+  /// field, which is the mistake it is meant to catch: a permanent badge given
+  /// an end date by a slip of the hand would drop out of the rule and take its
+  /// emblem requirement with it, in silence. Naming them costs one line when a
+  /// Global Op opens, and that line is the review.
+  const excused = {
+    'orion_link_and_field_points',
+    'orion_tokens',
+    'apollo_mod_battle_points',
+    'apollo_tokens',
+  };
+
+  final counters = (seed['counters'] as Map<String, dynamic>).entries;
   final tiered = [
-    for (final entry in (seed['counters'] as Map<String, dynamic>).entries)
-      if ((entry.value as Map<String, dynamic>)['tiers'] != null) entry.key,
+    for (final e in counters)
+      if (hasTiers(e)) e.key,
+  ]..sort();
+  final permanent = [
+    for (final e in counters)
+      if (hasTiers(e) && !excused.contains(e.key)) e.key,
+  ]..sort();
+  final dated = [
+    for (final e in counters)
+      if ((e.value as Map<String, dynamic>)['ends_at'] != null) e.key,
   ]..sort();
 
   group('coverage of the registry', () {
@@ -29,18 +55,43 @@ void main() {
       expect(tiered.length, greaterThan(10));
     });
 
-    test('every counter with thresholds has an emblem', () {
+    test('every permanent badge has an emblem', () {
       // The one test worth having: adding a badge counter to the registry
       // without drawing its emblem leaves a gap in the list, and the registry
       // is edited far more often than this widget.
+      //
+      // Seasonal ladders are outside it on purpose. Their thresholds reach an
+      // installed app through the registry and an emblem only through a
+      // release, so the two cannot arrive together (#98) — requiring one here
+      // would forbid adding a Global Op ladder during its own op.
       final missing = [
-        for (final key in tiered)
+        for (final key in permanent)
           if (!MedalIcon.existsFor(key)) key,
       ];
       expect(
         missing,
         isEmpty,
         reason: 'no emblem drawn for: ${missing.join(', ')}',
+      );
+    });
+
+    test('and only a dated ladder may be excused', () {
+      // The rule above is only as good as its exception list. A counter can be
+      // excused because its ladder ends and its emblem ships a release later;
+      // a permanent badge that quietly acquires an end date fails here rather
+      // than slipping out of the coverage rule.
+      expect(excused, isNotEmpty, reason: 'four seasonal ladders are known');
+      expect(
+        dated.toSet(),
+        excused,
+        reason:
+            'ends_at is set on ${dated.join(', ')}, excused: '
+            '${excused.join(', ')}',
+      );
+      expect(
+        excused.difference(tiered.toSet()),
+        isEmpty,
+        reason: 'an excused counter with no ladder left is dead weight',
       );
     });
 

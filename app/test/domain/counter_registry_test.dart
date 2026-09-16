@@ -93,7 +93,7 @@ void main() {
 
     test('leaves counters that are not medals without thresholds', () {
       // Anomaly counters never had a badge, and never will.
-      expect(registry.forExportHeader('Orion Tokens')!.tiers, isEmpty);
+      expect(registry.forExportHeader('XM Collected')!.tiers, isEmpty);
       expect(registry.forExportHeader('Current AP')!.tiers, isEmpty);
     });
   });

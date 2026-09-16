@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-14",
-  "_readme": "FieldTally counter enrichment layer (spec §3.1.2, §3.1.4). This is NOT the list of supported counters: the app's registry is derived from actual imports. A counter missing from here is still tracked normally, shown under its raw label in the 'other' category. Adding a counter means one pull request on this single file, with no Dart change.",
+  "updated_at": "2026-09-16",
+  "_readme": "FieldTally counter enrichment layer (spec §3.1.2, §3.1.4). This is NOT the list of supported counters: the app's registry is derived from actual imports. A counter missing from here is still tracked normally, shown under its raw label in the 'other' category. Adding a counter means one pull request on this single file, with no Dart change. A counter may carry 'tiers' (badge thresholds) and, for a badge that stops being earnable, 'ends_at' — the UTC instant the medal can last be claimed, which is neither the end of the event nor the day the column leaves the export.",
   "categories": [
     {
       "key": "core",
@@ -979,7 +979,26 @@
       "label": {
         "en": "Orion Tokens",
         "fr": "Jetons Orion"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 5000
+        },
+        {
+          "name": "silver",
+          "value": 8000
+        },
+        {
+          "name": "gold",
+          "value": 15000
+        },
+        {
+          "name": "platinum",
+          "value": 25000
+        }
+      ],
+      "ends_at": "2026-06-30T23:59:00Z"
     },
     "orion_link_and_field_points": {
       "export_header": "Orion Link And Field Points",
@@ -988,7 +1007,22 @@
       "label": {
         "en": "Orion Link And Field Points",
         "fr": "Points liens et champs Orion"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 1000
+        },
+        {
+          "name": "silver",
+          "value": 2500
+        },
+        {
+          "name": "gold",
+          "value": 6000
+        }
+      ],
+      "ends_at": "2026-05-11T18:00:00Z"
     },
     "apollo_tokens": {
       "export_header": "Apollo Tokens",
@@ -997,7 +1031,22 @@
       "label": {
         "en": "Apollo Tokens",
         "fr": "Jetons Apollo"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 4000
+        },
+        {
+          "name": "silver",
+          "value": 8000
+        },
+        {
+          "name": "gold",
+          "value": 16000
+        }
+      ],
+      "ends_at": "2026-10-01T23:59:00Z"
     },
     "apollo_mod_battle_points": {
       "export_header": "Apollo Mod Battle Points",
@@ -1006,7 +1055,22 @@
       "label": {
         "en": "Apollo Mod Battle Points",
         "fr": "Points de bataille de mods Apollo"
-      }
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 50
+        },
+        {
+          "name": "silver",
+          "value": 500
+        },
+        {
+          "name": "gold",
+          "value": 1000
+        }
+      ],
+      "ends_at": "2026-09-16T18:00:00Z"
     },
     "recursions": {
       "export_header": "Recursions",

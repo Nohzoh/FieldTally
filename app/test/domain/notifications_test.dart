@@ -104,7 +104,7 @@ void main() {
 
     test('counters without thresholds are ignored', () {
       expect(
-        between(const {'Orion Tokens': 10}, const {'Orion Tokens': 99999}),
+        between(const {'XM Collected': 10}, const {'XM Collected': 99999}),
         isEmpty,
       );
     });
