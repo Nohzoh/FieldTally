@@ -220,10 +220,10 @@ void main() {
     testWidgets('a counter without thresholds shows no card', (tester) async {
       await pumpDetail(
         tester,
-        'Orion Tokens',
+        'XM Collected',
         history: [
-          at(DateTime(2026, 1, 1), const {'Orion Tokens': 100}),
-          at(DateTime(2026, 1, 2), const {'Orion Tokens': 200}),
+          at(DateTime(2026, 1, 1), const {'XM Collected': 100}),
+          at(DateTime(2026, 1, 2), const {'XM Collected': 200}),
         ],
       );
 

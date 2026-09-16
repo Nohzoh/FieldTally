@@ -171,9 +171,9 @@ void main() {
       // Most counters have no thresholds; none of them should grow a medal
       // line, and none should show an emblem.
       await pumpCounterList(tester);
-      await search(tester, 'Orion Tokens');
+      await search(tester, 'XM Collected');
 
-      final tile = find.widgetWithText(ListTile, 'Orion Tokens');
+      final tile = find.widgetWithText(ListTile, 'XM Collected');
       expect(
         find.descendant(of: tile, matching: find.byType(MedalIcon)),
         findsNothing,
@@ -297,9 +297,9 @@ void main() {
       // Most counters have none — anomaly counters never will — and saying so
       // beats leaving an empty space.
       await pumpCounterList(tester);
-      await search(tester, 'Orion Tokens');
+      await search(tester, 'XM Collected');
 
-      await tester.tap(find.widgetWithText(ListTile, 'Orion Tokens'));
+      await tester.tap(find.widgetWithText(ListTile, 'XM Collected'));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('No badge threshold'), findsOneWidget);
@@ -446,12 +446,12 @@ void main() {
     });
 
     testWidgets('a counter with no ladder still says nothing', (tester) async {
-      // Apollo Tokens carries no thresholds in this registry, so nothing about
-      // it should change.
+      // Anomaly Unique Hacks sits in the same category and carries no
+      // thresholds, so nothing about it should change.
       await pumpCounterList(tester, registry: eventLadderRegistry);
-      await search(tester, 'Apollo Tokens');
+      await search(tester, 'Anomaly Unique Hacks');
 
-      final tile = find.widgetWithText(ListTile, 'Apollo Tokens');
+      final tile = find.widgetWithText(ListTile, 'Anomaly Unique Hacks');
       expect(
         find.descendant(of: tile, matching: find.textContaining('medal')),
         findsNothing,

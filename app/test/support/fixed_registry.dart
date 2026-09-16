@@ -67,8 +67,13 @@ CounterRegistry registryWithEventLadder({DateTime? endsAt}) {
     {'name': 'silver', 'value': 500},
     {'name': 'gold', 'value': 1000},
   ];
+  // The real registry now dates this ladder (#99). The fixture states the
+  // window itself rather than inheriting it, so 'still open' does not quietly
+  // become 'already shut' on the day the real op ends.
   if (endsAt != null) {
     entry['ends_at'] = endsAt.toUtc().toIso8601String();
+  } else {
+    entry.remove('ends_at');
   }
 
   return const CounterRegistryLoader().parse(jsonEncode(doc));

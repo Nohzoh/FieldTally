@@ -197,11 +197,11 @@ void main() {
 
   group('counters without thresholds', () {
     test('yield no projection at all', () {
-      // Most counters have none, and Orion Tokens never will.
+      // Most counters have none, and XM Collected never will.
       expect(
         projector.project(
           points: daily(DateTime(2026, 1, 1), [10, 20]),
-          enrichment: enrichment('Orion Tokens'),
+          enrichment: enrichment('XM Collected'),
         ),
         isNull,
       );
