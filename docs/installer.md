@@ -78,8 +78,9 @@ Ouvre FieldTally, puis dans Ingress : écran de stats → **Partager** →
 **FieldTally**. Ton premier relevé est enregistré, et l'app commence à
 construire ton historique.
 
-Tu arrives d'Agent Stats ? Ton export CSV existant est lisible tel quel :
-menu → **Relevés** → **Importer depuis Agent Stats**.
+Tu arrives d'Agent Stats ? Copie le tableau de sa page d'export et colle-le
+dans menu → **Relevés** → **Importer depuis Agent Stats**. Le bandeau et la
+pagination peuvent venir avec, ils sont ignorés.
 
 ## Mettre à jour
 
