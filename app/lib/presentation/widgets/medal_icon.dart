@@ -420,6 +420,26 @@ const _anomalyGlobalOpEmblems = {
 
 const _anomalyEmblems = {'orion_tokens', 'apollo_tokens', 'cygnus_tokens'};
 
+/// Orion: a coin struck with the belt. Worn by both of its medals (#123).
+void _orionMotif(Canvas c, Paint fill, Paint stroke) {
+  _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
+  _dot(c, fill, 8.5, 15.5, 1.8);
+  _dot(c, fill, 12, 12, 1.8);
+  _dot(c, fill, 15.5, 8.5, 1.8);
+}
+
+/// Apollo: the same coin, struck with the ascent. Worn by both of its medals.
+void _apolloMotif(Canvas c, Paint fill, Paint stroke) {
+  _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
+  c.drawPath(
+    Path()
+      ..moveTo(8.6, 14.2)
+      ..lineTo(12, 9.4)
+      ..lineTo(15.4, 14.2),
+    stroke..strokeWidth = 2.3,
+  );
+}
+
 final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
   // Distance covered: a winding road. No end dots — those belong to the link,
   // and at list size a line between two dots was the same drawing.
@@ -616,64 +636,25 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
     );
   },
 
-  // --- the anomaly ladders (#99) ------------------------------------------
+  // --- the anomaly ladders (#99, #123) -------------------------------------
   //
-  // Two per season: the Global Op, measured on what the op counts, and the
-  // Season medal, measured on its tokens. The two token emblems share the
-  // coin on purpose — they measure the same thing in different seasons — and
-  // differ only in what is struck on it.
-
-  // Orion's Global Op: link and field points. A field standing on a link —
-  // the base is the heavy span, its two nodes filled.
-  'orion_link_and_field_points': (c, fill, stroke) {
-    c.drawPath(
-      Path()
-        ..moveTo(5.2, 17.8)
-        ..lineTo(12, 5.4)
-        ..lineTo(18.8, 17.8),
-      stroke..strokeWidth = 1.8,
-    );
-    _line(c, stroke..strokeWidth = 2.9, 5.2, 17.8, 18.8, 17.8);
-    _dot(c, fill, 5.2, 17.8, 2.4);
-    _dot(c, fill, 18.8, 17.8, 2.4);
-  },
-
-  // Orion's Season medal: tokens. A coin, struck with the belt.
-  'orion_tokens': (c, fill, stroke) {
-    _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
-    _dot(c, fill, 8.5, 15.5, 1.8);
-    _dot(c, fill, 12, 12, 1.8);
-    _dot(c, fill, 15.5, 8.5, 1.8);
-  },
-
-  // Apollo's Global Op: mod battle points. A mod, contested from both sides.
-  'apollo_mod_battle_points': (c, fill, stroke) {
-    _roundRect(c, fill, const Rect.fromLTWH(9.4, 9.4, 5.2, 5.2), 1.2);
-    stroke.strokeWidth = 2.2;
-    c.drawPath(
-      Path()
-        ..moveTo(4.8, 7.4)
-        ..lineTo(8, 12)
-        ..lineTo(4.8, 16.6),
-      stroke,
-    );
-    c.drawPath(
-      Path()
-        ..moveTo(19.2, 7.4)
-        ..lineTo(16, 12)
-        ..lineTo(19.2, 16.6),
-      stroke,
-    );
-  },
-
-  // Cygnus's Season medal: the swan itself — two strokes of wing, and the
-  // neck rising to a beak.
+  // A season's medals share one motif, because they are the ones that end up
+  // side by side: the counters of a season sit consecutively in the events
+  // category, while medals of different seasons never meet. What each medal
+  // measures is not drawn at all — the rim says which of its season's medals
+  // this is, and the label beside it says the rest.
   //
-  // Not a coin, unlike Apollo's and Orion's. Those two struck their season
-  // into a shared shape, which made every Season medal look alike across
-  // seasons; what matters more is that the medals *of one season* look alike,
-  // and Cygnus has three of them. So the motif is the whole glyph here, and
-  // the rim is left to say which of the three this is.
+  // So the coin is no longer a mark of "Season medal". It is simply part of
+  // what Orion and Apollo look like, and Cygnus does without one.
+  'orion_link_and_field_points': _orionMotif,
+  'orion_tokens': _orionMotif,
+
+  'apollo_mod_battle_points': _apolloMotif,
+  'apollo_tokens': _apolloMotif,
+
+  // Cygnus: the swan itself — two strokes of wing, and the neck rising to a
+  // beak. Its Global Ops have no counter to sit beside yet; when one appears,
+  // it takes this motif too.
   'cygnus_tokens': (c, fill, stroke) {
     stroke.strokeWidth = 2.2;
     _line(c, stroke, 5.4, 18.6, 11.4, 11.4);
@@ -684,18 +665,6 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
         ..cubicTo(12.4, 10.4, 17.6, 7.8, 19.2, 10.6)
         ..lineTo(21, 9.4),
       stroke,
-    );
-  },
-
-  // Apollo's Season medal: the same coin, struck with the ascent.
-  'apollo_tokens': (c, fill, stroke) {
-    _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
-    c.drawPath(
-      Path()
-        ..moveTo(8.6, 14.2)
-        ..lineTo(12, 9.4)
-        ..lineTo(15.4, 14.2),
-      stroke..strokeWidth = 2.3,
     );
   },
 
