@@ -124,6 +124,10 @@ class AgentStatsCsvParser {
       throw const ExportParseException(ParseErrorKind.headerOnly);
     }
 
+    if (header != null) {
+      _checkHeaderFits(header, lines[start], start + 1);
+    }
+
     final snapshots = [
       for (var i = start; i < lines.length; i++)
         _parseRow(lines[i], i + 1, header ?? columns, agentName),
@@ -132,6 +136,41 @@ class AgentStatsCsvParser {
     snapshots.sort((a, b) => a.recordedAt.compareTo(b.recordedAt));
     return snapshots;
   }
+
+  /// The header must account for exactly the values a data row carries (#132).
+  ///
+  /// This is the check whose absence let a whole history import one column to
+  /// the left, twice, from two different copies of the same page: once when a
+  /// rotated `Date` header came back as `ate` and was taken for a counter, and
+  /// once when the row-number column `#` came across in the header while its
+  /// cells did not. Both times the header held one entry more than the row had
+  /// values, and nothing compared the two.
+  ///
+  /// Counted without the comment on either side, since Appendix B makes it
+  /// optional and its absence is not a misalignment.
+  void _checkHeaderFits(List<String> header, String firstRow, int lineNumber) {
+    final named = header.where((h) => h != 'comment').length;
+    final fields = _fields(firstRow);
+    final values = fields
+        .sublist(_valueStart(fields))
+        .where((f) => !f.quoted)
+        .length;
+
+    if (named != values) {
+      throw ExportParseException(
+        ParseErrorKind.columnCountMismatch,
+        position: lineNumber,
+        expected: named,
+        actual: values,
+      );
+    }
+  }
+
+  /// Where a row's counter values begin: past the date, and past the time when
+  /// one is there. The time is optional (Appendix B) and tells itself apart by
+  /// its colons.
+  int _valueStart(List<({String value, bool quoted})> fields) =>
+      fields.length > 1 && _timePattern.hasMatch(fields[1].value) ? 2 : 1;
 
   bool _looksLikeHeader(String line) {
     final lower = line.toLowerCase();
@@ -209,12 +248,8 @@ class AgentStatsCsvParser {
     // The time is optional (Appendix B). Whether field 1 is a time or the
     // first value is decided by its shape, which is unambiguous: a time has
     // colons, a counter does not.
-    var index = 1;
-    var time = '';
-    if (fields.length > 1 && _timePattern.hasMatch(fields[1].value)) {
-      time = fields[1].value;
-      index = 2;
-    }
+    final index = _valueStart(fields);
+    final time = index == 2 ? fields[1].value : '';
 
     final values = fields.sublist(index);
     final counters = <String, int>{};

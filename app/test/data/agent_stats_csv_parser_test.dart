@@ -203,6 +203,86 @@ void main() {
     });
   });
 
+  group('a header that does not fit the rows (#132)', () {
+    // Both cases are real: they are what the two ways of copying the Agent
+    // Stats export page actually produced. Each used to import a whole
+    // history one column to the left and report success.
+
+    /// A row in the documented order, with a time and an empty comment, as
+    /// the real export writes them.
+    String realRow(String date) => row(
+      date,
+      List<int>.generate(AgentStatsCsvParser.columns.length, (i) => i + 1),
+      time: '20:16:15',
+      comment: '',
+    );
+
+    test('a rotated Date header copied as "ate" is caught', () {
+      // The header is complete but its first entry is not recognised as a
+      // date, so it stays and stands in for a counter.
+      final header = [
+        'ate',
+        ...AgentStatsCsvParser.columns,
+        'Comment',
+      ].join(' ');
+
+      expect(
+        () => parser().parse('$header\n${realRow('2026-09-05')}'),
+        throwsA(
+          isA<ExportParseException>().having(
+            (e) => e.kind,
+            'kind',
+            ParseErrorKind.columnCountMismatch,
+          ),
+        ),
+      );
+    });
+
+    test('a row-number column with no cells is caught', () {
+      // Sharing the page gives the header in full — including the '#' column,
+      // whose cells do not come across.
+      final header = [
+        '#',
+        'Date',
+        ...AgentStatsCsvParser.columns,
+        'Comment',
+      ].join(' ');
+
+      expect(
+        () => parser().parse('$header\n${realRow('2026-09-05')}'),
+        throwsA(
+          isA<ExportParseException>().having(
+            (e) => e.kind,
+            'kind',
+            ParseErrorKind.columnCountMismatch,
+          ),
+        ),
+      );
+    });
+
+    test('a header that does fit is used', () {
+      final header = [
+        'Date',
+        ...AgentStatsCsvParser.columns,
+        'Comment',
+      ].join(' ');
+      final snapshots = parser().parse('$header\n${realRow('2026-09-05')}');
+
+      // Values were generated 1, 2, 3… in column order, so the first counter
+      // holds 1 and the second 2. Off by one would show immediately.
+      expect(snapshots.single.counters['Current AP'], 1);
+      expect(snapshots.single.counters['Lifetime AP'], 2);
+    });
+
+    test('and no header at all still falls back to the documented order', () {
+      // The workaround agents use today: delete the header line.
+      final snapshots = parser().parse(realRow('2026-09-05'));
+
+      expect(snapshots.single.counters['Current AP'], 1);
+      expect(snapshots.single.counters['Lifetime AP'], 2);
+    });
+  });
+
   group('clean failures', () {
     test('empty file', () {
       expect(
