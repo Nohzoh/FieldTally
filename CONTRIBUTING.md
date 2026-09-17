@@ -59,6 +59,12 @@ They are the project's own drawings, deliberately not Niantic's artwork, and
 they share a grammar worth keeping: a pin means a place, a bracketed frame
 means a scan, a filled dot means a node.
 
+**A glyph says what the counter measures, and the counter is its `export_header`
+— never its key.** The keys are Ingress badge names, and some of them lie about
+what they count: Illuminator counts mind units, Mind Controller counts control
+fields. Drawing from the key put those two emblems on each other's counters
+until #129.
+
 The **rim** carries a second grammar, independent of the glyph. A badge that can
 always be earned gets an unbroken ring; a ladder that stops being earnable — an
 anomaly medal, which the registry dates with `ends_at` — gets a ring broken into

@@ -449,19 +449,27 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
     );
   },
 
-  // A field: three nodes, joined.
+  // Mind units taken: a centre, and the zone it commands.
+  //
+  // The key is a badge name and badge names lie: Illuminator counts mind
+  // units, not fields (#129). What a glyph says comes from the counter's
+  // export header, never from its key.
   'illuminator': (c, fill, stroke) {
-    c.drawPath(
-      Path()
-        ..moveTo(12, 5.2)
-        ..lineTo(18.8, 17.2)
-        ..lineTo(5.2, 17.2)
-        ..close(),
+    _dot(c, fill, 12, 12, 2.9);
+    c.drawArc(
+      Rect.fromCircle(center: const Offset(12, 12), radius: 7.6),
+      -0.9,
+      1.8,
+      false,
+      stroke..strokeWidth = 2.2,
+    );
+    c.drawArc(
+      Rect.fromCircle(center: const Offset(12, 12), radius: 7.6),
+      2.24,
+      1.8,
+      false,
       stroke,
     );
-    _dot(c, fill, 12, 5.2, 2.2);
-    _dot(c, fill, 18.8, 17.2, 2.2);
-    _dot(c, fill, 5.2, 17.2, 2.2);
   },
 
   // Deploying: pieces set around a centre.
@@ -522,23 +530,20 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
     _ring(c, stroke..strokeWidth = 2.1, 12, 19.6, 2.3);
   },
 
-  // Holding ground: a centre, and the zone it commands.
+  // A field: three nodes, joined. Mind Controller counts control fields,
+  // whatever its name suggests (#129).
   'mind_controller': (c, fill, stroke) {
-    _dot(c, fill, 12, 12, 2.9);
-    c.drawArc(
-      Rect.fromCircle(center: const Offset(12, 12), radius: 7.6),
-      -0.9,
-      1.8,
-      false,
-      stroke..strokeWidth = 2.2,
-    );
-    c.drawArc(
-      Rect.fromCircle(center: const Offset(12, 12), radius: 7.6),
-      2.24,
-      1.8,
-      false,
+    c.drawPath(
+      Path()
+        ..moveTo(12, 5.2)
+        ..lineTo(18.8, 17.2)
+        ..lineTo(5.2, 17.2)
+        ..close(),
       stroke,
     );
+    _dot(c, fill, 12, 5.2, 2.2);
+    _dot(c, fill, 18.8, 17.2, 2.2);
+    _dot(c, fill, 5.2, 17.2, 2.2);
   },
 
   // Getting there first: a marker, and rays.
