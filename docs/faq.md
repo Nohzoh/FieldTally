@@ -74,8 +74,14 @@ il n'y a pas de serveur pour la faire.
 
 ## Puis-je récupérer mon historique Agent Stats ?
 
-Oui. L'export CSV d'Agent Stats est lu tel quel : menu → **Relevés** →
-**Importer depuis Agent Stats**. Tout l'historique arrive d'un coup.
+Oui. Agent Stats ne propose pas de fichier à télécharger, mais sa page d'export
+affiche ton historique dans un tableau : sélectionne-le, copie-le, et colle-le
+dans menu → **Relevés** → **Importer depuis Agent Stats**.
+
+Pas besoin d'être précis. Le bandeau, la pagination et les titres de colonnes
+peuvent venir avec, ils sont ignorés — et l'app te dit combien de lignes elle a
+écartées avant d'enregistrer quoi que ce soit. La page est paginée, donc compte
+un collage par page.
 
 Attention : ce format ne dit pas s'il s'agit d'un cumul ou d'une période, donc
 seul le contrôle de cohérence s'applique à cet import. L'app te signale les
