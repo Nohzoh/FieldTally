@@ -575,6 +575,21 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String importCsvIgnored(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lignes n\'étaient pas des relevés et ont été ignorées.',
+      one: '1 ligne n\'était pas un relevé et a été ignorée.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importCsvHeaderIgnored =>
+      'Les titres de colonnes ne correspondaient pas aux lignes : l\'ordre des colonnes documenté a été utilisé à la place.';
+
+  @override
   String importCsvRange(String from, String to) {
     return 'Du $from au $to';
   }

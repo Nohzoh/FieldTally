@@ -569,6 +569,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String importCsvIgnored(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines were not snapshots and were skipped.',
+      one: '1 line was not a snapshot and was skipped.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importCsvHeaderIgnored =>
+      'The column titles did not match the rows, so the documented column order was used instead.';
+
+  @override
   String importCsvRange(String from, String to) {
     return 'From $from to $to';
   }

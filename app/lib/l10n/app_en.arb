@@ -456,6 +456,15 @@
       }
     }
   },
+  "importCsvIgnored": "{count, plural, =1{1 line was not a snapshot and was skipped.} other{{count} lines were not snapshots and were skipped.}}",
+  "@importCsvIgnored": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importCsvHeaderIgnored": "The column titles did not match the rows, so the documented column order was used instead.",
   "importCsvRange": "From {from} to {to}",
   "@importCsvRange": {
     "placeholders": {

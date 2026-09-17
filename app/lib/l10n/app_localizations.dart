@@ -1009,6 +1009,18 @@ abstract class AppLocalizations {
   /// **'{count} snapshots, {counters} counters'**
   String importCsvSummary(int count, int counters);
 
+  /// No description provided for @importCsvIgnored.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 line was not a snapshot and was skipped.} other{{count} lines were not snapshots and were skipped.}}'**
+  String importCsvIgnored(int count);
+
+  /// No description provided for @importCsvHeaderIgnored.
+  ///
+  /// In en, this message translates to:
+  /// **'The column titles did not match the rows, so the documented column order was used instead.'**
+  String get importCsvHeaderIgnored;
+
   /// No description provided for @importCsvRange.
   ///
   /// In en, this message translates to:
