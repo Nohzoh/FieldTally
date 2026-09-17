@@ -151,6 +151,8 @@
   "importCsvInstructions": "Colle l'export CSV d'Agent Stats. Tout ton historique arrive d'un coup — rien n'est enregistré tant que tu n'as pas confirmé.",
   "importCsvField": "CSV Agent Stats",
   "importCsvSummary": "{count} relevés, {counters} compteurs",
+  "importCsvIgnored": "{count, plural, =1{1 ligne n'était pas un relevé et a été ignorée.} other{{count} lignes n'étaient pas des relevés et ont été ignorées.}}",
+  "importCsvHeaderIgnored": "Les titres de colonnes ne correspondaient pas aux lignes : l'ordre des colonnes documenté a été utilisé à la place.",
   "importCsvRange": "Du {from} au {to}",
   "importCsvNoTimeSpan": "Ce format ne porte pas de colonne de période : seule la vérification de cohérence protège l'import. Toutes les paires de lignes ont été vérifiées.",
   "importCsvConfirm": "Importer {count} relevés",
