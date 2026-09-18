@@ -1142,4 +1142,33 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get snapshotChangesNoPrevious =>
       'This is your earliest snapshot, so there is nothing before it to compare against.';
+
+  @override
+  String get withinReachTitle => 'Within reach';
+
+  @override
+  String get withinReachWindow => 'At your pace over the last 30 days';
+
+  @override
+  String withinReachDays(String tier, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'about $count days',
+      one: 'about a day',
+    );
+    return '$tier · $_temp0';
+  }
+
+  @override
+  String get withinReachEmpty =>
+      'No badge is within reach at your recent pace.';
+
+  @override
+  String get withinReachEmptyDetail =>
+      'A badge appears here once a counter has moved enough lately to support an honest estimate — and stays out when that estimate would be a guess.';
+
+  @override
+  String get withinReachNeedsHistory =>
+      'Two snapshots are needed before a pace can be measured.';
 }

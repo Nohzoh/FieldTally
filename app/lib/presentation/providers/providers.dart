@@ -26,6 +26,7 @@ import '../../domain/repositories/goal_repository.dart';
 import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
+import '../../domain/badges_within_reach.dart';
 import '../../domain/share_card.dart';
 import '../../domain/snapshot_changes.dart';
 import '../faction.dart';
@@ -112,6 +113,20 @@ final onlineRegistryUpdatesProvider = StreamProvider<bool>(
 final snapshotsProvider = StreamProvider<List<StoredSnapshot>>(
   (ref) => ref.watch(snapshotRepositoryProvider).watchAll(),
 );
+
+/// Badges the recent pace puts within reach, soonest first (#148).
+///
+/// Empty rather than absent when nothing qualifies: "no honest estimate" is a
+/// normal state of this list, not a failure to load.
+final withinReachProvider = Provider<List<ReachableBadge>>((ref) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final registry = ref.watch(counterRegistryProvider).asData?.value;
+
+  return const WithinReachBuilder().build(
+    snapshots: [for (final stored in snapshots) stored.snapshot],
+    registry: registry,
+  );
+});
 
 /// What one snapshot recorded that the one before it had not (#147).
 ///

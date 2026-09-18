@@ -954,5 +954,27 @@
     }
   },
   "snapshotChangesNone": "Nothing moved between these two snapshots.",
-  "snapshotChangesNoPrevious": "This is your earliest snapshot, so there is nothing before it to compare against."
+  "snapshotChangesNoPrevious": "This is your earliest snapshot, so there is nothing before it to compare against.",
+  "withinReachTitle": "Within reach",
+  "@withinReachTitle": {
+    "description": "A ranking of badges by how long each would take at the recent pace, across every counter (#148). Distinct from the counter list's \"closest to its next tier\" sort, which measures the share of the stretch already crossed — a counter at 95 % of onyx can be four hundred days out."
+  },
+  "withinReachWindow": "At your pace over the last 30 days",
+  "@withinReachWindow": {
+    "description": "States the window rather than leaving it assumed: the whole ranking changes with it."
+  },
+  "withinReachDays": "{tier} · {count, plural, one{about a day} other{about {count} days}}",
+  "@withinReachDays": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "withinReachEmpty": "No badge is within reach at your recent pace.",
+  "withinReachEmptyDetail": "A badge appears here once a counter has moved enough lately to support an honest estimate — and stays out when that estimate would be a guess.",
+  "withinReachNeedsHistory": "Two snapshots are needed before a pace can be measured."
 }

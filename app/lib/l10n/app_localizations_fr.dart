@@ -1121,7 +1121,7 @@ class AppLocalizationsFr extends AppLocalizations {
       locale: localeName,
       other: '$count jours',
       one: '1 jour',
-      zero: 'moins d’un jour',
+      zero: 'moins d\'un jour',
     );
     return '$_temp0';
   }
@@ -1143,9 +1143,38 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get snapshotChangesNone => 'Rien n’a bougé entre ces deux relevés.';
+  String get snapshotChangesNone => 'Rien n\'a bougé entre ces deux relevés.';
 
   @override
   String get snapshotChangesNoPrevious =>
-      'C’est ton relevé le plus ancien : il n’y a rien avant lui à quoi le comparer.';
+      'C\'est ton relevé le plus ancien : il n\'y a rien avant lui à quoi le comparer.';
+
+  @override
+  String get withinReachTitle => 'À portée';
+
+  @override
+  String get withinReachWindow => 'À ton rythme des 30 derniers jours';
+
+  @override
+  String withinReachDays(String tier, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'environ $count jours',
+      one: 'environ un jour',
+    );
+    return '$tier · $_temp0';
+  }
+
+  @override
+  String get withinReachEmpty =>
+      'Aucune médaille n\'est à portée à ton rythme récent.';
+
+  @override
+  String get withinReachEmptyDetail =>
+      'Une médaille apparaît ici quand un compteur a assez bougé récemment pour permettre une estimation honnête — et reste dehors quand cette estimation ne serait qu\'une supposition.';
+
+  @override
+  String get withinReachNeedsHistory =>
+      'Il faut deux relevés pour mesurer un rythme.';
 }

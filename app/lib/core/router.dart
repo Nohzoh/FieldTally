@@ -12,6 +12,7 @@ import '../presentation/screens/settings_screen.dart';
 import '../presentation/screens/snapshot_changes_screen.dart';
 import '../presentation/screens/share_card_screen.dart';
 import '../presentation/screens/snapshot_list_screen.dart';
+import '../presentation/screens/within_reach_screen.dart';
 
 /// Application routes (§5.1: go_router).
 ///
@@ -26,6 +27,9 @@ abstract final class Routes {
   static const customisePins = '/pins';
   static const settings = '/settings';
   static const importCsv = '/import';
+
+  /// Badges ranked by how long each would take (#148).
+  static const withinReach = '/reach';
 
   /// The shareable stats card (§3.8).
   static const shareCard = '/share';
@@ -101,6 +105,10 @@ GoRouter createRouter() => GoRouter(
         GoRoute(
           path: 'import',
           builder: (context, state) => const ImportCsvScreen(),
+        ),
+        GoRoute(
+          path: 'reach',
+          builder: (context, state) => const WithinReachScreen(),
         ),
         GoRoute(
           path: 'share',
