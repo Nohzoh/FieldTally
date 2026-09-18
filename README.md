@@ -27,13 +27,26 @@ of Niantic, Inc. This project uses no protected asset.
   when a counter goes backwards: the two mistakes that silently corrupt a
   history.
 - Tracks **every** counter it meets, including ones it has never seen, under
-  their original name.
-- Customisable dashboard, activity calendar, personal goals, local reminders.
+  their original name — and says since when it has been watching, so an event
+  that closed before your first snapshot reads as a stated unknown rather than
+  a silence.
+- Customisable dashboard, activity calendar, personal goals, local reminders,
+  and an announcement when a snapshot crosses a badge tier, passes a further
+  onyx multiple, or raises a level.
 - Per-counter charts on their own scale, each with a line at what you are
   chasing: your goal if you set one, otherwise the next badge tier.
 - Badge projections, with the medal you have reached drawn beside every
-  counter that carries one.
-- CSV import from Agent Stats, CSV export, shareable stats card as a PNG.
+  counter that carries one. Onyx is not the end: past it the app counts in
+  whole multiples, as the game does. Anomaly medals are understood too —
+  ladders that stop being earnable, marked by a broken rim, whose thresholds
+  arrive through the registry without an app update.
+- A counter list you can search, narrow to the counters carrying a medal, and
+  order by the badge you are closest to, with recent progress measured as a
+  pace per day over a window you choose.
+- Brings an **Agent Stats** history over. That site has no file to download,
+  so the app takes its export page pasted as it comes — banner, pagination and
+  column titles included — and reports what it could not read before saving
+  anything. CSV export, shareable stats card as a PNG.
 - Puts your totals next to another agent's, phone to phone, through the
   share sheet — no server, and what they send you is never written to your
   history.
