@@ -126,17 +126,22 @@ memory may no longer match the file — the assert is what tells you.
 - Conventional Commits. Squash-merging means the **pull request title** becomes
   the commit message, so the title follows the convention too.
 - Commits are signed, and pull requests are the only way into `main`.
-- **Every change on `main` answers to an issue** (#125). The pull request names
-  it: `Closes #N` when it finishes the issue, `Refs #N` when it is one step of
-  it. Documentation, tooling repairs and emblems are included. Open the issue
-  first; when work has already landed without one, open it after the fact
-  rather than leaving the gap.
-- **The release bump is the one exception** (#127): the commit that sets the
-  version and writes that release's changelog entry, with any site page the
-  release made stale. The rule exists because notes written from the milestone
-  miss work that has no issue — which cannot happen to the commit that *is* the
-  changelog entry. It also has no *why* to preserve; the reasoning lives in the
-  issues the milestone already collects.
+- **Every change to the app answers to an issue** (#125, narrowed by #144).
+  The app is `app/` — code, assets, l10n — plus the release workflow. The pull
+  request names it: `Closes #N` when it finishes the issue, `Refs #N` when it is
+  one step of it. Open the issue first; when work has already landed without
+  one, open it after the fact rather than leaving the gap. The reason is the
+  changelog and nothing else: notes are written from the milestone, so an app
+  change with no issue is invisible when they are written.
+- **Documentation, the site, skills and tooling do not need one** (#144). An
+  issue there is welcome when the change has a *why* worth keeping apart from
+  the diff, and optional otherwise. The counter registry is on this side as
+  well: it reaches installed apps by itself, never through a release, so it
+  never appears in release notes.
+- **The release bump is excepted even though it touches the app** (#127): the
+  commit that sets the version and writes that release's changelog entry, with
+  any site page the release made stale. It cannot go missing from the notes,
+  because it *is* the notes.
 - Do not create a pull request, merge, or dispatch a release unless asked.
 
 ## Releases
@@ -168,11 +173,13 @@ alone.
 
 ### The changelog and the build number
 
-Release notes are written from the milestone, which is the practical reason for
-the issue rule above: work with no issue is invisible to them. It has already
+Release notes are written from the milestone, which is the whole reason for the
+issue rule above: app work with no issue is invisible to them. It has already
 cost one — an emblem reached `main` untracked and would have gone unmentioned.
-Read the merged pull requests since the last tag as well, and if one has no
-issue, that is the defect, not the changelog's — the bump itself excepted.
+Read the merged pull requests since the last tag as well. If one touched `app/`
+and has no issue, that is the defect, not the changelog's — the bump excepted.
+If it touched only documentation or tooling, it needs no issue (#144) and
+belongs in the notes only if a user would notice it.
 
 `app/assets/changelog.json` is keyed by `versionCode`. `settings_screen_test`
 fakes a build number, and when that fake collides with a real changelog key the
