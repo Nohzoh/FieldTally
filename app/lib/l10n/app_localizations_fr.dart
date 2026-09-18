@@ -1105,4 +1105,47 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get changelogFullNotes => 'Lire les notes complètes';
+
+  @override
+  String get snapshotChangesTitle => 'Ce qui a changé';
+
+  @override
+  String snapshotChangesInterval(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String snapshotChangesSpan(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours',
+      one: '1 jour',
+      zero: 'moins d’un jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String snapshotChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count compteurs ont bougé',
+      one: '1 compteur a bougé',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String snapshotChangesValues(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String get snapshotChangesNone => 'Rien n’a bougé entre ces deux relevés.';
+
+  @override
+  String get snapshotChangesNoPrevious =>
+      'C’est ton relevé le plus ancien : il n’y a rien avant lui à quoi le comparer.';
 }

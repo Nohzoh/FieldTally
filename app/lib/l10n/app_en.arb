@@ -908,5 +908,51 @@
       }
     }
   },
-  "changelogFullNotes": "Read the full notes"
+  "changelogFullNotes": "Read the full notes",
+  "snapshotChangesTitle": "What changed",
+  "@snapshotChangesTitle": {
+    "description": "Title of the screen reached by tapping a snapshot (#147). Deliberately not \"this outing\": the app cannot know whether two snapshots bracket an afternoon of play or six idle weeks — the agent chose when to record, and that choice is the only boundary there is."
+  },
+  "snapshotChangesInterval": "{from} → {to}",
+  "@snapshotChangesInterval": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "snapshotChangesSpan": "{count, plural, =0{less than a day} one{1 day} other{{count} days}}",
+  "@snapshotChangesSpan": {
+    "description": "How long the interval lasted. Rounded down to whole days, and saying so below one: an afternoon reads as \"less than a day\" rather than as zero.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "snapshotChangesCount": "{count, plural, one{1 counter moved} other{{count} counters moved}}",
+  "@snapshotChangesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "snapshotChangesValues": "{from} → {to}",
+  "@snapshotChangesValues": {
+    "description": "A counter's two ends on one row. Separate from snapshotChangesInterval, which joins two dates: they read the same today and have no reason to stay identical in every language.",
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "snapshotChangesNone": "Nothing moved between these two snapshots.",
+  "snapshotChangesNoPrevious": "This is your earliest snapshot, so there is nothing before it to compare against."
 }

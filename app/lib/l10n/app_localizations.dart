@@ -1815,6 +1815,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Read the full notes'**
   String get changelogFullNotes;
+
+  /// Title of the screen reached by tapping a snapshot (#147). Deliberately not "this outing": the app cannot know whether two snapshots bracket an afternoon of play or six idle weeks — the agent chose when to record, and that choice is the only boundary there is.
+  ///
+  /// In en, this message translates to:
+  /// **'What changed'**
+  String get snapshotChangesTitle;
+
+  /// No description provided for @snapshotChangesInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} → {to}'**
+  String snapshotChangesInterval(String from, String to);
+
+  /// How long the interval lasted. Rounded down to whole days, and saying so below one: an afternoon reads as "less than a day" rather than as zero.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{less than a day} one{1 day} other{{count} days}}'**
+  String snapshotChangesSpan(int count);
+
+  /// No description provided for @snapshotChangesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 counter moved} other{{count} counters moved}}'**
+  String snapshotChangesCount(int count);
+
+  /// A counter's two ends on one row. Separate from snapshotChangesInterval, which joins two dates: they read the same today and have no reason to stay identical in every language.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} → {to}'**
+  String snapshotChangesValues(String from, String to);
+
+  /// No description provided for @snapshotChangesNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing moved between these two snapshots.'**
+  String get snapshotChangesNone;
+
+  /// No description provided for @snapshotChangesNoPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your earliest snapshot, so there is nothing before it to compare against.'**
+  String get snapshotChangesNoPrevious;
 }
 
 class _AppLocalizationsDelegate

@@ -27,6 +27,7 @@ import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 import '../../domain/share_card.dart';
+import '../../domain/snapshot_changes.dart';
 import '../faction.dart';
 import '../notification_coordinator.dart';
 
@@ -111,6 +112,33 @@ final onlineRegistryUpdatesProvider = StreamProvider<bool>(
 final snapshotsProvider = StreamProvider<List<StoredSnapshot>>(
   (ref) => ref.watch(snapshotRepositoryProvider).watchAll(),
 );
+
+/// What one snapshot recorded that the one before it had not (#147).
+///
+/// Null when the id names the earliest snapshot, which has nothing before it —
+/// and, for the same reason and with the same answer, when it names no
+/// snapshot at all. The screen is reached by tapping a row, so an unknown id
+/// is not a state an agent can arrive in.
+///
+/// Ordered here rather than trusting the repository's order: the pair is
+/// "this snapshot and the one recorded before it", which is a fact about
+/// `recordedAt` and not about the order rows came back in.
+final snapshotChangesProvider = Provider.family<SnapshotChanges?, String>((
+  ref,
+  id,
+) {
+  final stored = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final registry = ref.watch(counterRegistryProvider).asData?.value;
+
+  final sorted = [...stored]
+    ..sort((a, b) => a.snapshot.recordedAt.compareTo(b.snapshot.recordedAt));
+  final index = sorted.indexWhere((s) => s.id == id);
+  if (index <= 0) return null;
+
+  return SnapshotChangesBuilder(
+    registry: registry,
+  ).between(earlier: sorted[index - 1].snapshot, later: sorted[index].snapshot);
+});
 
 /// Counter state derived from the whole history (§3.1.2, §3.2).
 ///
