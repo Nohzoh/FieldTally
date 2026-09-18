@@ -91,7 +91,14 @@ Off until you turn them on.
 
 ## What does not exist yet
 
-No account, no leaderboard, no comparison at a distance and no overlaid curves,
-no finished iOS build, no reading of a screenshot. None of that is possible
-without a server, and v1 has none. Comparing in person does work: two phones in
-the same room need nobody. See the [roadmap]({{ '/en/roadmap' | relative_url }}).
+No account, no leaderboard, no comparison at a distance and no overlaid curves.
+None of that exists without a server, and v1 has none — which is exactly what
+lets it ask for nothing and collect nothing. Comparing in person does work: two
+phones in the same room need nobody.
+
+No iOS build either, and no reading of a screenshot. Those two are not about the
+server: the first needs a paid developer account and a trip through the App
+Store, the second would only matter if the game's share text ever disappeared.
+
+What is missing, and what is being considered, is tracked in the
+[issues](https://github.com/Nohzoh/FieldTally/issues).
