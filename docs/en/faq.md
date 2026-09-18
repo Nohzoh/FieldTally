@@ -71,8 +71,14 @@ import reads that file. There is no automatic sync: there is no server to do it.
 
 ## Can I bring my Agent Stats history over?
 
-Yes. The Agent Stats CSV export is read as is: menu → **Snapshots** → **Import
-from Agent Stats**. The whole history comes across at once.
+Yes. Agent Stats offers no file to download, but its export page shows your
+history as a table: select it, copy it, and paste it into menu → **Snapshots** →
+**Import from Agent Stats**.
+
+You do not have to be precise. The banner, the pagination and the column titles
+can come along — they are ignored, and the app tells you how many lines it set
+aside before saving anything. The page is paginated, so expect one paste per
+page.
 
 Note that this format does not say whether a row is a running total or a period,
 so only the consistency check applies to it. The app shows you any regressions

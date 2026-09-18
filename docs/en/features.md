@@ -44,6 +44,12 @@ make and the most annoying: it overwrites your history with tiny numbers.
   next badge. Plus an activity calendar and the exact export column name so you
   can find the counter in the game.
 
+Under the **Events** category, the app says since when it has been watching. The
+Ingress export is cumulative, so every counter it carries arrives complete — but
+an event's column eventually leaves it. An event that closed before your first
+snapshot is nowhere, and the app says so rather than letting its silence pass
+for a medal you failed to earn.
+
 ## Projections and goals
 
 **Next badge** shows what is left and an estimated date at your recent pace —
@@ -53,6 +59,12 @@ answer is years out, the app says so instead of inventing a date.
 Onyx is not the end of it. Past the top threshold the app counts in multiples
 of it, the way the game does: how many whole times over you are, and what is
 left to the next one.
+
+**Anomaly medals** — a campaign's Global Op and its Season medal — are
+recognisable by their broken rim rather than a solid one: they stop being
+earnable on a date, and the app knows it. The Global Op's carries a stud at the
+top as well. Their thresholds arrive through the registry rather than an app
+update, so a campaign that opens is understood without installing anything.
 
 You can set a **personal goal** on any counter, with or without a deadline, and
 see whether your current pace gets you there. On the chart, the scale stretches

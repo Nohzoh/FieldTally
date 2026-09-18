@@ -71,8 +71,9 @@ What you can check for yourself, which is worth more than a promise:
 Open FieldTally, then in Ingress: stats screen → **Share** → **FieldTally**.
 Your first snapshot is saved and the app starts building your history.
 
-Coming from Agent Stats? Your existing CSV export is read as is: menu →
-**Snapshots** → **Import from Agent Stats**.
+Coming from Agent Stats? Copy the table from its export page and paste it into
+menu → **Snapshots** → **Import from Agent Stats**. The banner and the
+pagination can come along, they are ignored.
 
 ## Updating
 

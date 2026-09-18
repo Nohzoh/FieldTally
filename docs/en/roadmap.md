@@ -10,9 +10,9 @@ lang_alt: /feuille-de-route
 ## Today — v1
 
 Everything on the [features page]({{ '/en/features' | relative_url }}): import
-by sharing, import guards, dashboard, per-counter charts, badge projections,
-goals, local reminders, shareable card, CSV export, light and dark themes,
-French and English.
+by sharing, bringing an Agent Stats history over, import guards, dashboard,
+per-counter charts, badge projections, goals, local reminders, shareable card,
+CSV export, light and dark themes, French and English.
 
 v1 is **entirely local** and will stay that way. It is not a step towards
 something better: it is what makes it possible to ask for nothing and collect
