@@ -46,6 +46,57 @@ maintainer check on their phone.
 
 This is also why text in the rendered contact sheets is unreadable blocks.
 
+## Seeing the site
+
+`docs/` has had its own layout and stylesheet since #139, so a change there has
+to be looked at rather than reasoned about. The proxy blocks `github.io`, so
+the published site cannot be fetched from here — building it locally is the
+only way to see it at all.
+
+Ruby is already installed and on `PATH`. Jekyll is not:
+
+```sh
+gem install jekyll                        # 4.4.1 at the time of writing
+export PATH=/opt/rbenv/versions/3.3.6/bin:$PATH   # where the binstub lands
+jekyll build --source docs --destination /tmp/site
+```
+
+**Serve it over HTTP. A preview opened as `file://` shows an unstyled page**,
+and that has already been mistaken for a broken stylesheet. The cause is not
+the CSS: `relative_url` emits root-absolute paths — `/assets/css/site.css` —
+which `file://` resolves against the filesystem root. `python3 -m http.server`
+from the destination directory is enough.
+
+`--baseurl ''` is harmless but does nothing locally: `_config.yml` declares no
+`baseurl`, because `actions/jekyll-build-pages` injects the real one. So the
+local build links `/assets/…` where the published site links `/FieldTally/…`.
+That is expected, not a defect to chase.
+
+Then look at it at phone size, which is the size that matters:
+
+```python
+# pip install playwright — but never `playwright install`: the browsers are
+# already under PLAYWRIGHT_BROWSERS_PATH.
+b = p.chromium.launch(
+    executable_path='/opt/pw-browsers/chromium-1194/chrome-linux/chrome')
+ctx = b.new_context(viewport={'width': 390, 'height': 844},
+                    device_scale_factor=2)
+page = ctx.new_page()
+page.emulate_media(color_scheme='dark')   # the only way to see the dark palette
+page.goto(url, wait_until='networkidle')
+page.screenshot(path=…, full_page=True)
+```
+
+`document.documentElement.scrollHeight` is worth printing alongside: #139's
+first draft rendered the home page at 3999 CSS pixels because three screenshots
+sat at full width each, and the number said so before the image did.
+
+The local build is **not** the published one. GitHub builds with
+`ghcr.io/actions/jekyll-build-pages`, which emits an `assets/css/style.css`
+that the local build does not — nothing references it, but it is a reminder
+that the two differ. And as with the test font above, the render here is
+evidence, not a verdict: the maintainer reads this site on a phone.
+
 ## The commands CI actually runs
 
 Two jobs. `python3 tool/validate_registry.py` runs on its own from the
