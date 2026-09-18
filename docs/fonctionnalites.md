@@ -98,7 +98,15 @@ Désactivées tant que tu ne les as pas activées.
 ## Ce qui n'existe pas encore
 
 Pas de compte, pas de classement entre agents, pas de comparaison à distance ni
-de courbes superposées, pas de version iOS aboutie, pas de lecture automatique
-d'une capture d'écran. Rien de tout cela n'est possible sans serveur, et la v1
-n'en a pas. La comparaison en présence, elle, existe : deux téléphones dans la
-même pièce n'ont besoin de personne. Voir la [feuille de route]({{ '/feuille-de-route' | relative_url }}).
+de courbes superposées. Rien de tout cela n'existe sans serveur, et la v1 n'en a
+pas — c'est précisément ce qui lui permet de ne rien demander et de ne rien
+collecter. La comparaison en présence, elle, existe : deux téléphones dans la
+même pièce n'ont besoin de personne.
+
+Pas de version iOS non plus, ni de lecture automatique d'une capture d'écran.
+Ces deux-là ne tiennent pas au serveur : la première demande un compte
+développeur payant et un passage par l'App Store, la seconde n'aurait d'intérêt
+que si le partage de texte du jeu venait à disparaître.
+
+Ce qui manque, et ce qui est envisagé, se suit dans les
+[issues](https://github.com/Nohzoh/FieldTally/issues).
