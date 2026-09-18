@@ -3,8 +3,6 @@ layout: default
 title: Roadmap
 lang_alt: /feuille-de-route
 ---
-{% include nav-en.html %}
-
 # Roadmap
 
 ## Today — v1

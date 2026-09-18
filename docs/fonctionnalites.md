@@ -3,8 +3,6 @@ layout: default
 title: Fonctionnalités
 lang_alt: /en/features
 ---
-{% include nav-fr.html %}
-
 # Fonctionnalités
 
 ## Ajouter un relevé

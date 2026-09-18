@@ -3,8 +3,6 @@ layout: default
 title: Confidentialité
 lang_alt: /en/privacy
 ---
-{% include nav-fr.html %}
-
 # Confidentialité
 
 Cette page est courte parce qu'il n'y a pas grand-chose à dire. Elle sera

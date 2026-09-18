@@ -3,8 +3,6 @@ layout: default
 title: Contribuer
 lang_alt: /en/contributing
 ---
-{% include nav-fr.html %}
-
 # Contribuer
 
 ## Déclarer un compteur — sans écrire de code

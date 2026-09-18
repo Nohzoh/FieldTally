@@ -3,8 +3,6 @@ layout: default
 title: Contributing
 lang_alt: /contribuer
 ---
-{% include nav-en.html %}
-
 # Contributing
 
 ## Declare a counter — no code needed

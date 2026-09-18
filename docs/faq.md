@@ -3,8 +3,6 @@ layout: default
 title: FAQ
 lang_alt: /en/faq
 ---
-{% include nav-fr.html %}
-
 # Questions fréquentes
 
 ## Pourquoi l'app n'est-elle pas sur le Play Store ?

@@ -3,8 +3,6 @@ layout: default
 title: Mentions légales
 lang_alt: /en/legal
 ---
-{% include nav-fr.html %}
-
 # Mentions légales et crédits
 
 ## Non-affiliation
