@@ -3,8 +3,6 @@ layout: default
 title: Installer FieldTally
 lang_alt: /en/install
 ---
-{% include nav-fr.html %}
-
 # Installer FieldTally
 
 FieldTally n'est pas sur le Play Store. Tu installes un fichier `.apk`

@@ -3,8 +3,6 @@ layout: default
 title: Features
 lang_alt: /fonctionnalites
 ---
-{% include nav-en.html %}
-
 # Features
 
 ## Adding a snapshot

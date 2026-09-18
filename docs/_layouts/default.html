@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{%- if page.url contains '/en/' -%}
+  {%- assign site_lang = 'en' -%}
+{%- else -%}
+  {%- assign site_lang = 'fr' -%}
+{%- endif -%}
+<html lang="{{ site_lang }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if page.title and page.title != site.title %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+<meta name="description" content="{{ page.description | default: site.description | strip_newlines }}">
+
+<!-- Follows the reader's system, like the app itself. Both values are the
+     page background, so the browser chrome does not fight the page. -->
+<meta name="theme-color" content="#fbfbfa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16181b" media="(prefers-color-scheme: dark)">
+
+<link rel="icon" href="{{ '/brand/fieldtally-icon.png' | relative_url }}">
+<link rel="apple-touch-icon" href="{{ '/brand/fieldtally-icon.png' | relative_url }}">
+<link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
+{%- if page.lang_alt %}
+<link rel="alternate" hreflang="{% if site_lang == 'fr' %}en{% else %}fr{% endif %}" href="{{ page.lang_alt | absolute_url }}">
+{%- endif %}
+</head>
+
+<body class="{% if page.url == '/' or page.url == '/en/' %}is-home{% endif %}">
+
+<a class="skip" href="#content">
+  {%- if site_lang == 'fr' %}Aller au contenu{% else %}Skip to content{% endif -%}
+</a>
+
+<header class="masthead">
+  <a class="wordmark" href="{% if site_lang == 'fr' %}{{ '/' | relative_url }}{% else %}{{ '/en/' | relative_url }}{% endif %}">
+    <img src="{{ '/brand/fieldtally-icon.png' | relative_url }}" alt="" width="32" height="32">
+    <span>{{ site.title }}</span>
+  </a>
+  {% if site_lang == 'fr' %}{% include nav-fr.html %}{% else %}{% include nav-en.html %}{% endif %}
+</header>
+
+<main id="content">
+  {{ content }}
+</main>
+
+<footer class="colophon">
+  <p class="unofficial">
+    {%- if site_lang == 'fr' -%}
+    Outil de fan, sans lien avec Niantic, Inc. « Ingress », les noms de médailles
+    et de compteurs sont des marques et du contenu de Niantic, Inc.
+    {%- else -%}
+    A fan-made tool with no connection to Niantic, Inc. “Ingress”, along with
+    badge and counter names, are trademarks and content of Niantic, Inc.
+    {%- endif -%}
+  </p>
+  <p>
+    <a href="https://github.com/Nohzoh/FieldTally">GitHub</a> ·
+    <a href="https://github.com/Nohzoh/FieldTally/blob/main/LICENSE">AGPL v3</a>
+    {%- if page.lang_alt %} ·
+    <a href="{{ page.lang_alt | relative_url }}" rel="alternate">
+      {%- if site_lang == 'fr' %}English{% else %}Français{% endif -%}
+    </a>
+    {%- endif %}
+  </p>
+</footer>
+
+</body>
+</html>

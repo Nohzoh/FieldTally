@@ -1,0 +1,260 @@
+/* FieldTally site.
+ *
+ * Mobile first, because the app is and because that is where this gets read.
+ *
+ * The palette is not invented: it is the five medal metals from
+ * app/lib/presentation/widgets/medal_icon.dart, which were already tuned by
+ * hand for a light and a dark ground. Platinum is the accent, and it is
+ * essentially the teal the whole app is seeded with.
+ */
+
+:root {
+  --bronze: #a0703f;
+  --silver: #8e979f;
+  --gold: #c69320;
+  --accent: #3e9e97;     /* platinum */
+  --ink: #33383d;        /* onyx */
+
+  --bg: #fbfbfa;
+  --surface: #fff;
+  --muted: #5f676e;
+  --rule: #e4e4e1;
+  --accent-soft: rgba(62, 158, 151, 0.1);
+
+  --measure: 34rem;
+  --gap: 1.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bronze: #c08b52;
+    --silver: #aab4bc;
+    --gold: #dca92c;
+    --accent: #57bdb5;
+    --ink: #c9cfd5;
+
+    --bg: #16181b;
+    --surface: #1e2125;
+    --muted: #949ca3;
+    --rule: #2c3035;
+    --accent-soft: rgba(87, 189, 181, 0.12);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 1rem/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Room for the home indicator on a phone, and for thumbs generally. */
+  padding: 0 1rem env(safe-area-inset-bottom, 0);
+}
+
+/* Keyboard users first: visible only when focused. */
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 10;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.4rem;
+}
+
+/* --- header ------------------------------------------------------------ */
+
+.masthead {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1.25rem 0 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: inherit;
+  text-decoration: none;
+}
+
+.wordmark img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0.85rem 0 0;
+  font-size: 0.9rem;
+}
+
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.15rem 0;
+  border-bottom: 2px solid transparent;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* --- content ----------------------------------------------------------- */
+
+main {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1.75rem 0 2.5rem;
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin: 2.25rem 0 0.75rem;
+}
+
+h1 { font-size: 1.9rem; margin-top: 0.5rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+
+h2 {
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+p, ul, ol { margin: 0 0 1rem; }
+li { margin-bottom: 0.35rem; }
+
+a { color: var(--accent); text-underline-offset: 0.15em; }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background: var(--accent-soft);
+  padding: 0.1em 0.35em;
+  border-radius: 0.3rem;
+  /* A signing fingerprint is 64 characters and must not widen the page. */
+  overflow-wrap: anywhere;
+}
+
+pre {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 0.6rem;
+  padding: 0.9rem;
+  overflow-x: auto;
+}
+pre code { background: none; padding: 0; }
+
+blockquote {
+  margin: 1.25rem 0;
+  padding: 0.85rem 1rem;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+blockquote p:last-child { margin-bottom: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
+}
+th { font-weight: 600; }
+
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+
+/* --- screenshots -------------------------------------------------------- */
+
+/* The pages write them as plain <img> in a paragraph; they scale rather than
+   sitting at a fixed 240px, so three of them fit a phone. */
+main p img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  border: 1px solid var(--rule);
+}
+
+main p:has(img) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  justify-content: center;
+}
+
+/* Two to a row on a phone, three on a wide screen. At full width each they
+   pushed the first heading four screens down.
+   The calc() is what guarantees the pair: a flat 11rem is 4px too wide for two
+   of them on a 390px phone, and they fall back to one per row. */
+main p:has(img) img {
+  flex: 1 1 8.5rem;
+  max-width: min(11rem, calc((100% - var(--gap)) / 2));
+}
+
+/* --- the home page ------------------------------------------------------ */
+
+.is-home main > h1 {
+  font-size: 2.4rem;
+  margin-bottom: 0.5rem;
+}
+
+/* The promise, which is the whole argument of the project. */
+.is-home main > p:first-of-type {
+  font-size: 1.15rem;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+}
+
+/* --- footer ------------------------------------------------------------- */
+
+.colophon {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 1.5rem 0 2.5rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.colophon p { margin: 0 0 0.5rem; }
+.colophon a { color: var(--muted); }
+.colophon a:hover { color: var(--accent); }
+
+/* --- wider screens ------------------------------------------------------ */
+
+@media (min-width: 46rem) {
+  :root { --measure: 42rem; }
+  main p:has(img) img { flex: 1 1 11rem; max-width: 13rem; }
+  h1 { font-size: 2.2rem; }
+  .is-home main > h1 { font-size: 3rem; }
+  .masthead { display: flex; align-items: baseline; gap: 1.5rem; }
+  .site-nav { margin-top: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
