@@ -9,6 +9,7 @@ import '../presentation/screens/dashboard_screen.dart';
 import '../presentation/screens/edit_snapshot_screen.dart';
 import '../presentation/screens/import_csv_screen.dart';
 import '../presentation/screens/settings_screen.dart';
+import '../presentation/screens/snapshot_changes_screen.dart';
 import '../presentation/screens/share_card_screen.dart';
 import '../presentation/screens/snapshot_list_screen.dart';
 
@@ -32,6 +33,15 @@ abstract final class Routes {
   /// Putting two agents' numbers side by side (#64). Reached with no extra to
   /// send, or with the text another agent shared to read it.
   static const compare = '/compare';
+
+  /// What a snapshot recorded that the one before it had not (#147).
+  ///
+  /// A sibling of the correction route rather than a child of it, although it
+  /// reads as one: nesting would put the edit screen between this one and the
+  /// list, so backing out of a reading would land on a form the agent never
+  /// asked for. Both are one step from the list, which is where both came
+  /// from.
+  static String snapshotChanges(String id) => '/snapshots/changes/$id';
 
   /// Correcting a snapshot (§3.2) addresses it by its stored id.
   static String editSnapshot(String id) => '/snapshots/$id';
@@ -66,6 +76,13 @@ GoRouter createRouter() => GoRouter(
           path: 'snapshots',
           builder: (context, state) => const SnapshotListScreen(),
           routes: [
+            // Before ':id', so the literal segment is never read as an id.
+            GoRoute(
+              path: 'changes/:id',
+              builder: (context, state) => SnapshotChangesScreen(
+                snapshotId: state.pathParameters['id']!,
+              ),
+            ),
             GoRoute(
               path: ':id',
               builder: (context, state) =>

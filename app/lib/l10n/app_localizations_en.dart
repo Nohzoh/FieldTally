@@ -1098,4 +1098,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changelogFullNotes => 'Read the full notes';
+
+  @override
+  String get snapshotChangesTitle => 'What changed';
+
+  @override
+  String snapshotChangesInterval(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String snapshotChangesSpan(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+      zero: 'less than a day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String snapshotChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count counters moved',
+      one: '1 counter moved',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String snapshotChangesValues(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String get snapshotChangesNone =>
+      'Nothing moved between these two snapshots.';
+
+  @override
+  String get snapshotChangesNoPrevious =>
+      'This is your earliest snapshot, so there is nothing before it to compare against.';
 }

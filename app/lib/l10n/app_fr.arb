@@ -283,5 +283,12 @@
   "changelogNewHeading": "✨ Nouveautés",
   "changelogFixedHeading": "🐛 Corrections",
   "changelogHeadline": "{version} — {title}",
-  "changelogFullNotes": "Lire les notes complètes"
+  "changelogFullNotes": "Lire les notes complètes",
+  "snapshotChangesTitle": "Ce qui a changé",
+  "snapshotChangesInterval": "{from} → {to}",
+  "snapshotChangesSpan": "{count, plural, =0{moins d\u2019un jour} one{1 jour} other{{count} jours}}",
+  "snapshotChangesCount": "{count, plural, one{1 compteur a bougé} other{{count} compteurs ont bougé}}",
+  "snapshotChangesValues": "{from} → {to}",
+  "snapshotChangesNone": "Rien n\u2019a bougé entre ces deux relevés.",
+  "snapshotChangesNoPrevious": "C\u2019est ton relevé le plus ancien : il n\u2019y a rien avant lui à quoi le comparer."
 }

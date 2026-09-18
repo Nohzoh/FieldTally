@@ -156,6 +156,11 @@ class _SnapshotList extends ConsumerWidget {
         final snapshot = stored.snapshot;
 
         return ListTile(
+          // The row itself opens what this snapshot recorded that the one
+          // before it had not (#147). The bookkeeping actions stay on the
+          // right, where they were: reviewing is what an agent comes here to
+          // do, correcting and deleting are what they come here to do rarely.
+          onTap: () => context.go(Routes.snapshotChanges(stored.id)),
           // A migrated snapshot has no level: the Agent Stats format carries
           // no such column (Appendix B), so the avatar says so rather than
           // printing the absence.
