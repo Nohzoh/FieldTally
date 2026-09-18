@@ -114,17 +114,28 @@ generates its changelog from the commits. If you squash-merge, remember that
 GitHub uses the **pull request title** as the commit message — so that title
 has to follow the convention too.
 
-## One issue per change
+## One issue per change to the app
 
-Every change that reaches `main` answers to an issue, and the pull request names
-it — `Closes #N` when it finishes the issue, `Refs #N` when it is one step of
-it. This holds for documentation and tooling as much as for features: the
-release notes are written from the milestone, so work with no issue simply goes
-unmentioned.
+Every change that touches the **application** — `app/`, meaning code, assets,
+l10n, and the release workflow — answers to an issue, and the pull request names
+it: `Closes #N` when it finishes the issue, `Refs #N` when it is one step of it.
 
-The one exception is the **release bump** — the commit that sets the version and
-writes that release's changelog entry, along with any site page the release made
-stale. That commit cannot go missing from the notes, because it is the notes.
+The reason is the changelog. Release notes are written from the milestone, so a
+change to the app with no issue behind it is invisible at the moment they are
+written. That has already cost one: an emblem reached `main` untracked and would
+have gone unmentioned in the release that shipped it.
+
+Everything else — the site, the README, `CONTRIBUTING.md`, `CLAUDE.md`, the
+skills, tooling — does **not** require one (#144). An issue is still welcome
+there when the change has a *why* worth keeping separately from the diff, but it
+is no longer a condition of entry. The counter registry sits on that side too:
+it reaches installed apps on their own, never through a release, so it never
+appears in release notes.
+
+The **release bump** keeps the exception #127 carved out — the commit that sets
+the version and writes that release's changelog entry, along with any site page
+the release made stale. That commit cannot go missing from the notes, because it
+is the notes.
 
 ## Signed commits
 
