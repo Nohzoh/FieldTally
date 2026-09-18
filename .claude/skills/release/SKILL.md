@@ -163,7 +163,10 @@ correctly signed APK as unsigned.
 - Rename the milestone to the version, and create a fresh empty **Next
   Release**.
 - Re-read anything that claims a state the release changed: the site's home
-  page, the README, the install page.
+  page, the README, the install page — **in both languages**. The site carries
+  a full English mirror under `docs/en/`, and nothing checks that the two stay
+  in step. Twice now a correction landed in French only, once leaving the
+  English pages telling agents to download a file that does not exist (#137).
 - Tell the user the fingerprint and the commit the build carries.
 
 ## Traps already paid for

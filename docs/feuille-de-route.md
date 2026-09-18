@@ -10,9 +10,9 @@ lang_alt: /en/roadmap
 ## Aujourd'hui — v1
 
 Tout ce que décrit la page [Fonctionnalités]({{ '/fonctionnalites' | relative_url }}) : import par
-partage, garde-fous, tableau de bord, graphique par compteur, projections de
-médailles, objectifs, rappels locaux, carte partageable, export CSV, thème clair
-et sombre, français et anglais.
+partage, reprise d'un historique Agent Stats, garde-fous, tableau de bord,
+graphique par compteur, projections de médailles, objectifs, rappels locaux,
+carte partageable, export CSV, thème clair et sombre, français et anglais.
 
 La v1 est **entièrement locale** et le restera. Ce n'est pas une étape avant
 mieux : c'est ce qui permet de ne rien demander et de ne rien collecter.
