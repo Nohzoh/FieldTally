@@ -29,6 +29,7 @@ import '../../domain/repositories/snapshot_repository.dart';
 import '../../data/updates/update_check_service.dart';
 import '../../domain/badges_within_reach.dart';
 import '../../domain/pace_change.dart';
+import '../../domain/year_in_review.dart';
 import '../../domain/share_card.dart';
 import '../../domain/snapshot_changes.dart';
 import '../faction.dart';
@@ -115,6 +116,28 @@ final onlineRegistryUpdatesProvider = StreamProvider<bool>(
 final snapshotsProvider = StreamProvider<List<StoredSnapshot>>(
   (ref) => ref.watch(snapshotRepositoryProvider).watchAll(),
 );
+
+/// Years the history actually touches, newest first (#153).
+final recordedYearsProvider = Provider<List<int>>((ref) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final years = {for (final s in snapshots) s.snapshot.recordedAt.year}.toList()
+    ..sort((a, b) => b.compareTo(a));
+  return years;
+});
+
+/// One year, read back from the history on the device (#153).
+///
+/// Null when the year holds too little to say anything, which the screen
+/// reports rather than drawing an empty page.
+final yearInReviewProvider = Provider.family<YearInReview?, int>((ref, year) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final registry = ref.watch(counterRegistryProvider).asData?.value;
+
+  return YearInReviewBuilder(registry: registry).build(
+    snapshots: [for (final stored in snapshots) stored.snapshot],
+    year: year,
+  );
+});
 
 /// Counters the agent pinned that started or stopped moving (#149).
 ///

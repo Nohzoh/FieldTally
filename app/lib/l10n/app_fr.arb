@@ -301,5 +301,17 @@
   "settingsUpdateAvailableDetail": "Ouvre la page de la version, où tu la télécharges toi-même. L'app n'installe jamais rien d'elle-même : il faudrait pour cela demander à Android le droit d'installer des applications, et elle n'en veut pas.",
   "paceStopped": "{counter} n'a pas bougé le mois dernier",
   "paceResumed": "{counter} repart",
-  "paceChangesTitle": "Depuis le mois dernier"
+  "paceChangesTitle": "Depuis le mois dernier",
+  "yearInReviewTitle": "{year} en revue",
+  "yearInReviewPartial": "Ton historique commence le {date} : ceci ne couvre qu'une partie de l'année.",
+  "yearInReviewSpan": "Du {from} au {to}",
+  "yearInReviewGains": "Ce qui a bougé",
+  "yearInReviewGain": "+{gain}",
+  "yearInReviewMedals": "Médailles franchies",
+  "yearInReviewMedal": "{counter} · {tier}",
+  "yearInReviewBusiest": "Ton mois le plus chargé a été {month}.",
+  "yearInReviewGap": "{count, plural, one{Ta plus longue période sans relevé a duré 1 jour : ceci décrit ce que tu as enregistré.} other{Ta plus longue période sans relevé a duré {count} jours : ceci décrit ce que tu as enregistré.}}",
+  "yearInReviewEmpty": "Il n'y a pas assez d'historique en {year} pour la relire.",
+  "yearInReviewEmptyDetail": "Deux relevés dans la même année, c'est le minimum.",
+  "yearInReviewMenu": "L'année en revue"
 }

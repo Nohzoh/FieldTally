@@ -63,6 +63,13 @@ Onyx is not the end of it. Past the top threshold the app counts in multiples
 of it, the way the game does: how many whole times over you are, and what is
 left to the next one.
 
+**Year in review** reads a year of your history back: what moved most, the
+medals you crossed and when the app saw them, your busiest month. Entirely on
+your phone, with no server — and with its caveats said rather than hidden: if
+your history does not reach back to 1 January it says so, and it names your
+longest stretch without an import, because a recap built from a history with a
+hole describes what you recorded rather than what you did.
+
 **Within reach** ranks your badges by how long each would take, across every
 counter. It is not the same question as which one is closest: a counter at 95 %
 of onyx can be four hundred days away and one at 60 % three days away. A badge
