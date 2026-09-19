@@ -17,14 +17,21 @@ class HomeWidgetCoordinator {
 
   final HomeWidgetGateway gateway;
 
-  /// Keys written to the widget's storage. Two lines' worth, plus one shared
-  /// state flag the native side switches its layout on.
+  /// Keys written to the widget's storage. `_maxLines` lines' worth, plus one
+  /// shared state flag the native side switches its layout on.
   static const _stateKey = 'widget_state';
   static const _titleKey = 'widget_title';
   static const _detailKey = 'widget_detail';
   static const _labelPrefix = 'widget_label_';
   static const _valuePrefix = 'widget_value_';
   static const _linePrefix = 'widget_line_';
+
+  /// The native layout's own row plafond (#177) — must match
+  /// `HomeWidgetSummaryBuilder`'s default `maxLines` and the number of
+  /// `widget_row_*` blocks in `field_tally_widget.xml`. Kept as its own
+  /// constant rather than reading the summary's line count, since a message
+  /// state (no lines at all) still has this many slots to clear.
+  static const _maxLines = 4;
 
   Future<void> sync({
     required HomeWidgetSummary summary,
@@ -73,7 +80,7 @@ class HomeWidgetCoordinator {
     await gateway.write(_detailKey, detail);
     // A message state shows no lines. Clearing rather than leaving a stale
     // pair behind from before the agent unpinned everything.
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < _maxLines; i++) {
       await gateway.write('$_labelPrefix$i', null);
       await gateway.write('$_valuePrefix$i', null);
       await gateway.write('$_linePrefix$i', null);
@@ -92,7 +99,7 @@ class HomeWidgetCoordinator {
 
     final numbers = NumberFormat.decimalPattern(languageCode);
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < _maxLines; i++) {
       if (i >= summary.lines.length) {
         await gateway.write('$_labelPrefix$i', null);
         await gateway.write('$_valuePrefix$i', null);

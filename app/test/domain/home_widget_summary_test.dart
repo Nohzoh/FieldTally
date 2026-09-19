@@ -156,6 +156,32 @@ void main() {
       expect(summary.lines.length, 2);
     });
 
+    test(
+      "the default cap admits four, the native layout's own plafond (#177)",
+      () {
+        final summary = builder.build(
+          snapshots: [
+            at(DateTime(2026, 1, 1), const {
+              'Hacks': 1,
+              'Links Created': 2,
+              'Resonators Deployed': 3,
+              'Unique Portals Visited': 4,
+              'Distance Walked': 5,
+            }),
+          ],
+          pinned: const [
+            'Hacks',
+            'Links Created',
+            'Resonators Deployed',
+            'Unique Portals Visited',
+            'Distance Walked',
+          ],
+        );
+
+        expect(summary.lines.length, 4);
+      },
+    );
+
     test('a pinned counter absent from every snapshot yields no line', () {
       // The same rule DashboardBuilder already enforces: an agent who pinned
       // this from another phone, or a counter that left the game.
