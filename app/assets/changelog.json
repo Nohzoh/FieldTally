@@ -199,5 +199,32 @@
       "en": [],
       "fr": []
     }
+  },
+  "11": {
+    "version": "1.9.0",
+    "title": {
+      "en": "A home screen widget, and a yearly recap generated on your phone",
+      "fr": "Un widget d’écran d’accueil, et un récapitulatif annuel généré sur ton téléphone"
+    },
+    "features": {
+      "en": [
+        "A home screen widget shows up to two pinned counters — their value, recent progress, and distance to the next medal — without opening the app.",
+        "A new yearly recap reads a year of your history back on the device: totals, medals crossed, your busiest month, and the counter that never moved at all. Generated entirely offline, from what is already on your phone.",
+        "The dashboard now says, in a line under your pinned counters, when one of them has clearly started or stopped moving — not every wobble, only a change worth noticing.",
+        "The counter list has a new \"Never moved\" filter: only the counters whose value has never changed since you started tracking them, the honest version of \"what am I not doing\".",
+        "Since FieldTally is on no store, it now checks on its own for a newer release and offers to open it, rather than leaving you to notice by chance."
+      ],
+      "fr": [
+        "Un widget d’écran d’accueil affiche jusqu’à deux compteurs épinglés — leur valeur, leur progression récente, et la distance jusqu’à la prochaine médaille — sans avoir à ouvrir l’app.",
+        "Un nouveau récapitulatif annuel relit une année de ton historique directement sur le téléphone : totaux, médailles franchies, ton mois le plus actif, et le compteur qui n’a jamais bougé. Généré entièrement hors ligne, à partir de ce qui est déjà sur ton téléphone.",
+        "Le tableau de bord dit maintenant, sur une ligne sous tes compteurs épinglés, quand l’un d’eux a clairement commencé ou arrêté de bouger — pas chaque petite variation, seulement un changement qui vaut d’être signalé.",
+        "La liste des compteurs a un nouveau filtre « Jamais bougé » : seulement les compteurs dont la valeur n’a jamais changé depuis que tu les suis, la version honnête de « qu’est-ce que je ne fais pas ».",
+        "Comme FieldTally n’est sur aucun store, l’app vérifie maintenant elle-même si une nouvelle version existe et propose de l’ouvrir, plutôt que de te laisser t’en apercevoir par hasard."
+      ]
+    },
+    "fixes": {
+      "en": [],
+      "fr": []
+    }
   }
 }
