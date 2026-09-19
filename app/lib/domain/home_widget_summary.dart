@@ -52,15 +52,18 @@ class HomeWidgetSummary {
 /// what counts as progress, would be a second copy of a rule the app already
 /// got right once.
 class HomeWidgetSummaryBuilder {
-  const HomeWidgetSummaryBuilder({this.registry, this.maxLines = 2});
+  const HomeWidgetSummaryBuilder({this.registry, this.maxLines = 4});
 
   /// Gives each line its next tier and how far it is. Without one, every line
   /// carries a value and a delta and nothing about a medal — which is exactly
   /// what the dashboard itself does before the registry has loaded.
   final CounterRegistry? registry;
 
-  /// A widget cell has room for very little text. Two is what the issue asked
-  /// for, and more would not fit a launcher's smallest reasonable size.
+  /// The native layout's own plafond (#177) — four rows is what the widget
+  /// supports at its largest, not what shows at any given size. How many of
+  /// these actually render is decided natively, from the widget's current
+  /// on-screen size; this only bounds how much Dart ever precomputes, so a
+  /// resize needs no recomputation, just more of what is already written.
   final int maxLines;
 
   /// A fixed instant, not the wall clock, used only to satisfy

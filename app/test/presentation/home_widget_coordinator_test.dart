@@ -162,19 +162,68 @@ void main() {
       },
     );
 
-    test('a stale second line from before an unpin is cleared', () async {
-      // Seeded rather than left absent: an unwritten key and an explicitly
-      // cleared one are indistinguishable to this fake's map lookup, and a
-      // test that never tells the two apart cannot catch the guard going
-      // missing — it did, on the first draft of this test.
-      gateway.written['widget_label_1'] = 'Links Created';
-      gateway.written['widget_value_1'] = '7';
+    test(
+      'stale lines from a larger previous selection are all cleared',
+      () async {
+        // Seeded rather than left absent: an unwritten key and an explicitly
+        // cleared one are indistinguishable to this fake's map lookup, and a
+        // test that never tells the two apart cannot catch the guard going
+        // missing — it did, on the first draft of this test, back when the
+        // widget only ever had two slots to clear (#177 raised that to four).
+        gateway.written['widget_label_1'] = 'Links Created';
+        gateway.written['widget_value_1'] = '7';
+        gateway.written['widget_label_3'] = 'Resonators Deployed';
+        gateway.written['widget_value_3'] = '12';
 
+        await coordinator.sync(
+          summary: summaryOf(const [
+            (
+              exportHeader: 'Hacks',
+              value: 500,
+              delta: null,
+              nextTier: null,
+              remainingToNextTier: null,
+            ),
+          ]),
+          l10n: en,
+          languageCode: 'en',
+          registry: registry,
+        );
+
+        expect(gateway.written['widget_label_1'], isNull);
+        expect(gateway.written['widget_value_1'], isNull);
+        expect(gateway.written['widget_label_3'], isNull);
+        expect(gateway.written['widget_value_3'], isNull);
+      },
+    );
+
+    test('four pinned counters write all four rows', () async {
       await coordinator.sync(
         summary: summaryOf(const [
           (
             exportHeader: 'Hacks',
-            value: 500,
+            value: 1,
+            delta: null,
+            nextTier: null,
+            remainingToNextTier: null,
+          ),
+          (
+            exportHeader: 'Links Created',
+            value: 2,
+            delta: null,
+            nextTier: null,
+            remainingToNextTier: null,
+          ),
+          (
+            exportHeader: 'Resonators Deployed',
+            value: 3,
+            delta: null,
+            nextTier: null,
+            remainingToNextTier: null,
+          ),
+          (
+            exportHeader: 'Unique Portals Visited',
+            value: 4,
             delta: null,
             nextTier: null,
             remainingToNextTier: null,
@@ -182,11 +231,12 @@ void main() {
         ]),
         l10n: en,
         languageCode: 'en',
-        registry: registry,
       );
 
-      expect(gateway.written['widget_label_1'], isNull);
-      expect(gateway.written['widget_value_1'], isNull);
+      expect(gateway.written['widget_value_0'], '1');
+      expect(gateway.written['widget_value_1'], '2');
+      expect(gateway.written['widget_value_2'], '3');
+      expect(gateway.written['widget_value_3'], '4');
     });
 
     test('numbers and the tier name follow the language asked for', () async {
