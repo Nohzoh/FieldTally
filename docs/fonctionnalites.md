@@ -43,6 +43,11 @@ chiffres minuscules.
   l'historique, avec un trait à ce que tu vises — ton objectif si tu en as
   fixé un, sinon la prochaine médaille. Plus un calendrier d'activité et le
   nom exact de la colonne d'export pour retrouver le compteur dans le jeu.
+- **Ce qu'un relevé a enregistré** : taper un relevé dans l'historique ouvre ce
+  qu'il porte que le précédent n'avait pas, compteur par compteur, sur
+  l'intervalle réel entre les deux. Un compteur qui n'a pas bougé n'y figure
+  pas, et un compteur absent de l'un des deux relevés n'y figure pas non plus :
+  ne pas avoir été rapporté n'est pas la même chose que ne pas avoir bougé.
 
 Sous la catégorie **Événements**, l'app dit depuis quand elle regarde. L'export
 Ingress est cumulatif, donc tout compteur qu'il porte arrive complet — mais la
@@ -60,6 +65,13 @@ d'inventer une date.
 L'onyx n'est pas la fin. Passé le dernier palier, l'app compte en multiples de
 celui-ci, comme le jeu : combien de fois entières tu l'as dépassé, et ce qu'il
 reste jusqu'à la suivante.
+
+**À portée** classe tes médailles par le temps qu'elles demanderaient, tous
+compteurs confondus. Ce n'est pas la même question que celle de la plus proche :
+un compteur à 95 % d'onyx peut être à quatre cents jours, et un à 60 % à trois
+jours. Une médaille n'y apparaît que si ton rythme récent permet une estimation
+honnête — et une échelle de saison dont la date limite tombe avant n'y apparaît
+pas du tout.
 
 Les **médailles d'anomalie** — la Global Op et la médaille de saison d'une
 campagne — se reconnaissent à leur jante brisée au lieu d'être pleine : elles

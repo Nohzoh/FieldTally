@@ -41,6 +41,11 @@ make and the most annoying: it overwrites your history with tiny numbers.
   with a line at what you are chasing — your goal if you set one, otherwise the
   next badge. Plus an activity calendar and the exact export column name so you
   can find the counter in the game.
+- **What a snapshot recorded**: tapping a snapshot in your history opens what
+  it carries that the one before it did not, counter by counter, over the real
+  interval between the two. A counter that did not move is absent, and so is a
+  counter missing from either snapshot: not having been reported is not the
+  same as not having moved.
 
 Under the **Events** category, the app says since when it has been watching. The
 Ingress export is cumulative, so every counter it carries arrives complete — but
@@ -57,6 +62,12 @@ answer is years out, the app says so instead of inventing a date.
 Onyx is not the end of it. Past the top threshold the app counts in multiples
 of it, the way the game does: how many whole times over you are, and what is
 left to the next one.
+
+**Within reach** ranks your badges by how long each would take, across every
+counter. It is not the same question as which one is closest: a counter at 95 %
+of onyx can be four hundred days away and one at 60 % three days away. A badge
+appears there only when your recent pace supports an honest estimate — and a
+seasonal ladder whose deadline falls first does not appear at all.
 
 **Anomaly medals** — a campaign's Global Op and its Season medal — are
 recognisable by their broken rim rather than a solid one: they stop being
