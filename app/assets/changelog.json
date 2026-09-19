@@ -178,5 +178,26 @@
         "Les dessins de « Champs de contrôle créés » et « Unités mentales capturées » étaient sur le compteur l’un de l’autre, chacun montrant ce que mesure l’autre."
       ]
     }
+  },
+  "10": {
+    "version": "1.8.0",
+    "title": {
+      "en": "What each snapshot recorded, and the badges within your reach",
+      "fr": "Ce que chaque relevé a enregistré, et les médailles à ta portée"
+    },
+    "features": {
+      "en": [
+        "Tapping a snapshot in your history now opens what it recorded that the one before it had not: how much each counter moved, over the real interval between the two. A counter that did not move, or that was not reported at all, stays out of the way.",
+        "A new screen, Within reach, ranks your badges by how long each would take at your recent pace. It is not the same question as which one is closest: a counter at 95 % of onyx can be four hundred days away, and one at 60 % three days away."
+      ],
+      "fr": [
+        "Taper un relevé dans ton historique ouvre maintenant ce qu’il a enregistré que le précédent n’avait pas : de combien chaque compteur a bougé, sur l’intervalle réel entre les deux. Un compteur qui n’a pas bougé, ou qui n’a pas été rapporté du tout, ne vient pas encombrer la liste.",
+        "Un nouvel écran, « À portée », classe tes médailles par le temps qu’elles demanderaient à ton rythme récent. Ce n’est pas la même question que celle de la plus proche : un compteur à 95 % d’onyx peut être à quatre cents jours, et un à 60 % à trois jours."
+      ]
+    },
+    "fixes": {
+      "en": [],
+      "fr": []
+    }
   }
 }
