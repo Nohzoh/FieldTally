@@ -90,7 +90,7 @@
                     android:layout_marginStart="8dp"
                     android:textColor="@color/widget_text_secondary"
                     android:textSize="12sp"
-                    android:maxLines="1"
+                    android:maxLines="2"
                     android:ellipsize="end"
                     tools:text="+320 · 1,200 to Silver" />
             </LinearLayout>
@@ -139,7 +139,7 @@
                     android:layout_marginStart="8dp"
                     android:textColor="@color/widget_text_secondary"
                     android:textSize="12sp"
-                    android:maxLines="1"
+                    android:maxLines="2"
                     android:ellipsize="end"
                     tools:text="+18" />
             </LinearLayout>
