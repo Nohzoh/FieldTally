@@ -80,6 +80,8 @@
   "filterMedalsTooltip": "Seulement les compteurs qui donnent une médaille",
   "filterInactive": "Inactifs",
   "filterInactiveTooltip": "Inclure les compteurs qui n'apparaissent plus dans les imports",
+  "filterNeverMoved": "Jamais bougé",
+  "filterNeverMovedTooltip": "Seulement les compteurs dont la valeur n'a jamais changé",
   "progressWindowLabel": "Mesuré sur",
   "progressWindowSinceLast": "Dernier relevé",
   "progressWindowWeek": "7 jours",

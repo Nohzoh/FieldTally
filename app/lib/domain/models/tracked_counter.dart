@@ -20,6 +20,7 @@ class TrackedCounter {
     required this.status,
     this.previousValue,
     this.isMonotonic = true,
+    this.hasEverMoved = true,
   });
 
   /// Stable identity of the counter: its export column name.
@@ -46,6 +47,16 @@ class TrackedCounter {
   /// Feeds the behavioural guard. True by default: nearly every Ingress
   /// counter can only grow or stay flat.
   final bool isMonotonic;
+
+  /// Whether the value has ever changed across the whole tracked history —
+  /// not just since the last snapshot (§165).
+  ///
+  /// A counter seen in only one snapshot has not been *observed* to change
+  /// either, so this is false for it too: there is no evidence it has moved.
+  /// Deliberately not "is it still zero" — an imported Agent Stats history
+  /// can start non-zero, and that would flag a counter as "never moved" that
+  /// plainly has.
+  final bool hasEverMoved;
 
   bool get isActive => status == CounterStatus.active;
 
@@ -87,6 +98,9 @@ class CounterTracker {
     final lastSeen = <String, DateTime>{};
     final lastValue = <String, int>{};
     final previousValue = <String, int>{};
+    // Absent, not false: a header with no entry here has only ever been seen
+    // once, which is a different fact from "seen twice and unchanged".
+    final everMoved = <String, bool>{};
 
     for (final snapshot in sorted) {
       for (final entry in snapshot.counters.entries) {
@@ -95,6 +109,11 @@ class CounterTracker {
         // always spans two snapshots that actually carried the counter.
         if (lastValue.containsKey(entry.key)) {
           previousValue[entry.key] = lastValue[entry.key]!;
+          if (lastValue[entry.key] != entry.value) {
+            // Sticky: a counter that moved once and later returned to an
+            // earlier value has still moved, so this is never cleared back.
+            everMoved[entry.key] = true;
+          }
         }
         lastSeen[entry.key] = snapshot.recordedAt;
         lastValue[entry.key] = entry.value;
@@ -112,6 +131,7 @@ class CounterTracker {
           status: reference.difference(lastSeen[header]!) > inactivityThreshold
               ? CounterStatus.inactive
               : CounterStatus.active,
+          hasEverMoved: everMoved[header] ?? false,
         ),
     ];
   }

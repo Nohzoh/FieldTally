@@ -274,6 +274,14 @@ class _Controls extends ConsumerWidget {
                   onSelected: notifier.showInactive,
                 ),
               ),
+              Tooltip(
+                message: l10n.filterNeverMovedTooltip,
+                child: FilterChip(
+                  label: Text(l10n.filterNeverMoved),
+                  selected: query.neverMovedOnly,
+                  onSelected: notifier.showNeverMovedOnly,
+                ),
+              ),
             ],
           ),
           // Only while something measures across it, so the control is never

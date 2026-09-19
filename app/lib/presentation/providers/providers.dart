@@ -280,6 +280,9 @@ class CounterQueryNotifier extends Notifier<CounterQuery> {
 
   void showMedalsOnly(bool value) => state = state.copyWith(medalsOnly: value);
 
+  void showNeverMovedOnly(bool value) =>
+      state = state.copyWith(neverMovedOnly: value);
+
   void measureOver(ProgressWindow window) =>
       state = state.copyWith(window: window);
 }

@@ -583,6 +583,18 @@ abstract class AppLocalizations {
   /// **'Include counters that no longer appear in imports'**
   String get filterInactiveTooltip;
 
+  /// Filter chip narrowing the list to counters whose value has never changed across the whole tracked history (#165) — the honest version of "what am I not doing", not merely "still at zero".
+  ///
+  /// In en, this message translates to:
+  /// **'Never moved'**
+  String get filterNeverMoved;
+
+  /// No description provided for @filterNeverMovedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Only counters whose value has never changed'**
+  String get filterNeverMovedTooltip;
+
   /// Labels the window the recent-progress ordering measures across. Shown only while that ordering is selected, so the control is never dead (#89).
   ///
   /// In en, this message translates to:
