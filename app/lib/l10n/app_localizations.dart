@@ -1857,6 +1857,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This is your earliest snapshot, so there is nothing before it to compare against.'**
   String get snapshotChangesNoPrevious;
+
+  /// A ranking of badges by how long each would take at the recent pace, across every counter (#148). Distinct from the counter list's "closest to its next tier" sort, which measures the share of the stretch already crossed — a counter at 95 % of onyx can be four hundred days out.
+  ///
+  /// In en, this message translates to:
+  /// **'Within reach'**
+  String get withinReachTitle;
+
+  /// States the window rather than leaving it assumed: the whole ranking changes with it.
+  ///
+  /// In en, this message translates to:
+  /// **'At your pace over the last 30 days'**
+  String get withinReachWindow;
+
+  /// No description provided for @withinReachDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} · {count, plural, one{about a day} other{about {count} days}}'**
+  String withinReachDays(String tier, int count);
+
+  /// No description provided for @withinReachEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No badge is within reach at your recent pace.'**
+  String get withinReachEmpty;
+
+  /// No description provided for @withinReachEmptyDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'A badge appears here once a counter has moved enough lately to support an honest estimate — and stays out when that estimate would be a guess.'**
+  String get withinReachEmptyDetail;
+
+  /// No description provided for @withinReachNeedsHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Two snapshots are needed before a pace can be measured.'**
+  String get withinReachNeedsHistory;
 }
 
 class _AppLocalizationsDelegate

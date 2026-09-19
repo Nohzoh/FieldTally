@@ -286,9 +286,15 @@
   "changelogFullNotes": "Lire les notes complètes",
   "snapshotChangesTitle": "Ce qui a changé",
   "snapshotChangesInterval": "{from} → {to}",
-  "snapshotChangesSpan": "{count, plural, =0{moins d\u2019un jour} one{1 jour} other{{count} jours}}",
+  "snapshotChangesSpan": "{count, plural, =0{moins d'un jour} one{1 jour} other{{count} jours}}",
   "snapshotChangesCount": "{count, plural, one{1 compteur a bougé} other{{count} compteurs ont bougé}}",
   "snapshotChangesValues": "{from} → {to}",
-  "snapshotChangesNone": "Rien n\u2019a bougé entre ces deux relevés.",
-  "snapshotChangesNoPrevious": "C\u2019est ton relevé le plus ancien : il n\u2019y a rien avant lui à quoi le comparer."
+  "snapshotChangesNone": "Rien n'a bougé entre ces deux relevés.",
+  "snapshotChangesNoPrevious": "C'est ton relevé le plus ancien : il n'y a rien avant lui à quoi le comparer.",
+  "withinReachTitle": "À portée",
+  "withinReachWindow": "À ton rythme des 30 derniers jours",
+  "withinReachDays": "{tier} · {count, plural, one{environ un jour} other{environ {count} jours}}",
+  "withinReachEmpty": "Aucune médaille n'est à portée à ton rythme récent.",
+  "withinReachEmptyDetail": "Une médaille apparaît ici quand un compteur a assez bougé récemment pour permettre une estimation honnête — et reste dehors quand cette estimation ne serait qu'une supposition.",
+  "withinReachNeedsHistory": "Il faut deux relevés pour mesurer un rythme."
 }
