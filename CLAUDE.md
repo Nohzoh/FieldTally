@@ -184,6 +184,14 @@ memory may no longer match the file — the assert is what tells you.
   one, open it after the fact rather than leaving the gap. The reason is the
   changelog and nothing else: notes are written from the milestone, so an app
   change with no issue is invisible when they are written.
+- **That issue needs the Next Release milestone too, by merge time.** Existing
+  is not enough — notes are written *from the milestone*, so an issue still
+  sitting in the backlog when its pull request merges to `main` is as invisible
+  as having no issue at all. Assign the **Next Release** milestone to it
+  yourself when you open the issue or merge the change; do not wait for the
+  maintainer to triage it in later. Renaming a milestone to a shipped version
+  and opening the next empty **Next Release** is the maintainer's call, made at
+  release time (release skill, step 8) — never do that yourself.
 - **Documentation, the site, skills and tooling do not need one** (#144). An
   issue there is welcome when the change has a *why* worth keeping apart from
   the diff, and optional otherwise. The counter registry is on this side as
