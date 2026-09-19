@@ -30,19 +30,30 @@ of Niantic, Inc. This project uses no protected asset.
   their original name — and says since when it has been watching, so an event
   that closed before your first snapshot reads as a stated unknown rather than
   a silence.
+- Tapping a snapshot in your history opens what it recorded that the one
+  before it had not: how much each counter moved, over the real interval
+  between the two.
 - Customisable dashboard, activity calendar, personal goals, local reminders,
-  and an announcement when a snapshot crosses a badge tier, passes a further
-  onyx multiple, or raises a level.
+  an announcement when a snapshot crosses a badge tier, passes a further onyx
+  multiple, or raises a level, and a line noting when a pinned counter has
+  clearly started or stopped moving.
+- A home screen widget shows up to two pinned counters — their value, recent
+  progress, and distance to the next medal — without opening the app.
 - Per-counter charts on their own scale, each with a line at what you are
   chasing: your goal if you set one, otherwise the next badge tier.
 - Badge projections, with the medal you have reached drawn beside every
   counter that carries one. Onyx is not the end: past it the app counts in
   whole multiples, as the game does. Anomaly medals are understood too —
   ladders that stop being earnable, marked by a broken rim, whose thresholds
-  arrive through the registry without an app update.
-- A counter list you can search, narrow to the counters carrying a medal, and
-  order by the badge you are closest to, with recent progress measured as a
-  pace per day over a window you choose.
+  arrive through the registry without an app update. A dedicated screen,
+  Within reach, ranks every badge by how long it would take at your recent
+  pace — not the same question as which one is nearest.
+- A counter list you can search, narrow to the counters carrying a medal or
+  to the ones you have never touched at all, and order by the badge you are
+  closest to, with recent progress measured as a pace per day over a window
+  you choose.
+- A yearly recap, generated entirely on the device: totals, medals crossed,
+  your busiest month, and the counter that never moved at all.
 - Brings an **Agent Stats** history over. That site has no file to download,
   so the app takes its export page pasted as it comes — banner, pagination and
   column titles included — and reports what it could not read before saving
@@ -50,6 +61,8 @@ of Niantic, Inc. This project uses no protected asset.
 - Puts your totals next to another agent's, phone to phone, through the
   share sheet — no server, and what they send you is never written to your
   history.
+- Checks on its own for a newer release — the app is sideloaded, so no store
+  does that for it.
 - Light and dark themes, optional faction colouring, French and English.
 
 The full picture is in [`docs/spec/SPECIFICATION-v1.md`](docs/spec/SPECIFICATION-v1.md)

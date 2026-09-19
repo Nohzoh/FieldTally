@@ -31,14 +31,21 @@ chiffres minuscules.
 ## Voir sa progression
 
 - **Tableau de bord** : les compteurs que tu épingles, avec leur valeur, leur
-  progression depuis le relevé précédent et une courbe de tendance.
+  progression depuis le relevé précédent et une courbe de tendance — plus une
+  ligne qui signale quand l'un d'eux a clairement commencé ou arrêté de
+  bouger. Pas chaque petite variation, seulement un changement qui vaut d'être
+  signalé.
+- **Widget d'écran d'accueil** : jusqu'à deux compteurs épinglés — leur
+  valeur, leur progression récente, et la distance jusqu'à la prochaine
+  médaille — sans avoir à ouvrir l'app.
 - **Tous les compteurs** : la liste complète, groupée par catégorie et dans
   l'ordre du jeu, avec recherche, tri et filtres. Les compteurs liés à une
   médaille portent son emblème, et le palier atteint est écrit à côté — et la
-  liste peut être réduite à ces seuls compteurs, ou triée par la médaille dont
-  tu es le plus proche. La progression récente se mesure en rythme par jour
-  sur une durée que tu choisis, si bien que des compteurs relevés à des
-  rythmes différents deviennent comparables.
+  liste peut être réduite à ces seuls compteurs, à ceux que tu n'as jamais
+  touchés du tout, ou triée par la médaille dont tu es le plus proche. La
+  progression récente se mesure en rythme par jour sur une durée que tu
+  choisis, si bien que des compteurs relevés à des rythmes différents
+  deviennent comparables.
 - **Détail d'un compteur** : graphique sur la semaine, le mois ou tout
   l'historique, avec un trait à ce que tu vises — ton objectif si tu en as
   fixé un, sinon la prochaine médaille. Plus un calendrier d'activité et le

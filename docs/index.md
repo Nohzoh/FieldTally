@@ -40,7 +40,11 @@ compteur plutôt qu'un graphique unique illisible.
   l'onyx passé elle continue de compter : combien de fois, et ce qu'il reste
   jusqu'à la suivante.
 - **Une liste que tu peux réduire** : seulement les compteurs qui donnent une
-  médaille, triés par celle dont tu es le plus proche.
+  médaille, seulement ceux que tu n'as jamais touchés du tout, ou triés par
+  celle dont tu es le plus proche.
+- **Un widget d'écran d'accueil**, avec jusqu'à deux compteurs épinglés et
+  leur distance jusqu'à la prochaine médaille.
+- **Un récapitulatif annuel**, généré entièrement sur l'appareil.
 - **Les médailles d'anomalie comprises**, jante brisée pour dire qu'elles
   cessent d'être gagnables, et leurs seuils qui arrivent sans mise à jour.
 - **Des objectifs personnels** et des **rappels** planifiés sur l'appareil.
