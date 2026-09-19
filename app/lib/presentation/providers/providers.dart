@@ -28,7 +28,10 @@ import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 import '../../data/updates/update_check_service.dart';
 import '../../domain/badges_within_reach.dart';
+import '../../data/widgets/home_widget_gateway.dart';
+import '../../domain/home_widget_summary.dart';
 import '../../domain/pace_change.dart';
+import '../home_widget_coordinator.dart';
 import '../../domain/year_in_review.dart';
 import '../../domain/share_card.dart';
 import '../../domain/snapshot_changes.dart';
@@ -136,6 +139,30 @@ final yearInReviewProvider = Provider.family<YearInReview?, int>((ref, year) {
   return YearInReviewBuilder(registry: registry).build(
     snapshots: [for (final stored in snapshots) stored.snapshot],
     year: year,
+  );
+});
+
+/// The home screen widget (#154), at arm's length behind an interface so a
+/// test can hand it a fake.
+final homeWidgetGatewayProvider = Provider<HomeWidgetGateway>(
+  (ref) => const PluginHomeWidgetGateway(),
+);
+
+/// Phrases what the widget shows and writes it.
+final homeWidgetCoordinatorProvider = Provider<HomeWidgetCoordinator>(
+  (ref) => HomeWidgetCoordinator(gateway: ref.watch(homeWidgetGatewayProvider)),
+);
+
+/// What the widget would show right now, from the pinned counters and the
+/// history alone — the same builder `sync` reads from before phrasing it.
+final homeWidgetSummaryProvider = Provider<HomeWidgetSummary>((ref) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final pinned = ref.watch(pinnedCountersProvider).asData?.value ?? const [];
+  final registry = ref.watch(counterRegistryProvider).asData?.value;
+
+  return HomeWidgetSummaryBuilder(registry: registry).build(
+    snapshots: [for (final stored in snapshots) stored.snapshot],
+    pinned: pinned,
   );
 });
 

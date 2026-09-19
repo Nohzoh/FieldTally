@@ -64,6 +64,7 @@ dependencies:
   # it cannot drift from the APK someone is reporting a bug about.
   package_info_plus: ^10.2.1
   url_launcher: ^6.3.2
+  home_widget: ^0.10.0
 
 dev_dependencies:
   flutter_test:

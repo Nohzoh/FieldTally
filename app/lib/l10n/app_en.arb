@@ -1080,5 +1080,22 @@
     }
   },
   "yearInReviewEmptyDetail": "Two snapshots in the same year is the least it takes.",
-  "yearInReviewMenu": "Year in review"
+  "yearInReviewMenu": "Year in review",
+  "homeWidgetUnpinnedTitle": "Pin a counter",
+  "@homeWidgetUnpinnedTitle": {
+    "description": "Shown on the home screen widget when nothing is pinned at all (#154), distinct from homeEmptyTitle which covers pinned-but-no-snapshot-yet."
+  },
+  "homeWidgetUnpinnedDetail": "Open FieldTally and pin one from the dashboard.",
+  "homeWidgetRemaining": "{remaining} to {tier}",
+  "@homeWidgetRemaining": {
+    "description": "Compact form of projectionRemaining for the home screen widget, which has room for a few words rather than a sentence.",
+    "placeholders": {
+      "remaining": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  }
 }

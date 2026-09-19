@@ -1254,4 +1254,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yearInReviewMenu => 'Year in review';
+
+  @override
+  String get homeWidgetUnpinnedTitle => 'Pin a counter';
+
+  @override
+  String get homeWidgetUnpinnedDetail =>
+      'Open FieldTally and pin one from the dashboard.';
+
+  @override
+  String homeWidgetRemaining(String remaining, String tier) {
+    return '$remaining to $tier';
+  }
 }

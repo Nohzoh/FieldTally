@@ -1995,6 +1995,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Year in review'**
   String get yearInReviewMenu;
+
+  /// Shown on the home screen widget when nothing is pinned at all (#154), distinct from homeEmptyTitle which covers pinned-but-no-snapshot-yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin a counter'**
+  String get homeWidgetUnpinnedTitle;
+
+  /// No description provided for @homeWidgetUnpinnedDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Open FieldTally and pin one from the dashboard.'**
+  String get homeWidgetUnpinnedDetail;
+
+  /// Compact form of projectionRemaining for the home screen widget, which has room for a few words rather than a sentence.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} to {tier}'**
+  String homeWidgetRemaining(String remaining, String tier);
 }
 
 class _AppLocalizationsDelegate

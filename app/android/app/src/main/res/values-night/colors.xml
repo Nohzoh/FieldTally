@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home screen widget (#154), dark — the same deep teal as the adaptive
+         icon's background layer, so the widget reads as part of the same app
+         rather than a plain system-grey box. -->
+    <color name="widget_background">#0E2624</color>
+    <color name="widget_text_primary">#F5F7F6</color>
+    <color name="widget_text_secondary">#9FB0AC</color>
+</resources>
