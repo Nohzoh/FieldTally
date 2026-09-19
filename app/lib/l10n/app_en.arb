@@ -976,5 +976,15 @@
   },
   "withinReachEmpty": "No badge is within reach at your recent pace.",
   "withinReachEmptyDetail": "A badge appears here once a counter has moved enough lately to support an honest estimate — and stays out when that estimate would be a guess.",
-  "withinReachNeedsHistory": "Two snapshots are needed before a pace can be measured."
+  "withinReachNeedsHistory": "Two snapshots are needed before a pace can be measured.",
+  "settingsUpdateAvailable": "Version {version} is available",
+  "@settingsUpdateAvailable": {
+    "description": "Shown in Settings only when the project site reports a newer release than the installed build (#34). FieldTally is sideloaded, so nothing else tells an agent that a version exists.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsUpdateAvailableDetail": "Opens the release page, where you download it yourself. The app never installs anything on its own — that would mean asking Android for the right to install applications, which it does not want."
 }

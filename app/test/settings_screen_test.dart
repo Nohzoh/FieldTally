@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/build_info.dart';
 import 'package:fieldtally/core/router.dart';
@@ -483,6 +485,66 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SwitchListTile), findsWidgets);
+    });
+  });
+
+  group('a newer release, for an app no store watches (#34)', () {
+    /// What the project site publishes, seeded straight into the cache: the
+    /// screen reads that, never the network, so it answers instantly and
+    /// answers the same offline.
+    Future<void> siteSays({required int build}) async {
+      await container
+          .read(settingsRepositoryProvider)
+          .write(
+            SettingKeys.latestRelease,
+            jsonEncode({
+              'version': '9.9.9',
+              'build': build,
+              'url': 'https://github.com/Nohzoh/FieldTally/releases/tag/v9.9.9',
+            }),
+          );
+    }
+
+    testWidgets('is offered when the site knows a higher build', (
+      tester,
+    ) async {
+      await pumpSettings(tester);
+      // runningBuild is 9999.
+      await siteSays(build: 10000);
+      await tester.pumpAndSettle();
+      await scrollTo(tester, find.textContaining('is available'));
+
+      expect(find.text('Version 9.9.9 is available'), findsOneWidget);
+      expect(
+        find.textContaining('never installs anything on its own'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('is absent when the running build is the newest', (
+      tester,
+    ) async {
+      await pumpSettings(tester);
+      await siteSays(build: 9999);
+      await tester.pumpAndSettle();
+
+      // Scrolled to where the line would be before asserting it is not there.
+      // Settings is a lazy list, so an assertion made from the top of it would
+      // pass whether or not the line exists.
+      await scrollTo(tester, find.textContaining('Version 1.2.3'));
+
+      expect(find.textContaining('is available'), findsNothing);
+    });
+
+    testWidgets('is absent on a device that has heard nothing', (tester) async {
+      // The ordinary state: a fresh install, or a phone that has never had
+      // network since installing. Saying nothing is the correct answer, and
+      // it must not look like a failure.
+      await pumpSettings(tester);
+      await tester.pumpAndSettle();
+      await scrollTo(tester, find.textContaining('Version 1.2.3'));
+
+      expect(find.textContaining('is available'), findsNothing);
     });
   });
 }

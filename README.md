@@ -116,10 +116,12 @@ The procedure is in [`docs/release.md`](docs/release.md).
 
 ## Privacy
 
-No collection, no telemetry, no account. A single network request in the whole
-of v1: reading the public `counters.json` file from GitHub Pages, sending no
-personal data, and switchable off in the settings. The full statement is on the
-[privacy page](https://nohzoh.github.io/FieldTally/en/privacy).
+No collection, no telemetry, no account. Two network requests in the whole of
+v1, both `GET`s on public files served from GitHub Pages, both sending no
+personal data and both switched off by the same setting: `counters.json` for
+counter names and thresholds, and `latest.json` to say which release is the
+newest — the app is sideloaded, so nothing else would. The full statement is on
+the [privacy page](https://nohzoh.github.io/FieldTally/en/privacy).
 
 ## Licence
 

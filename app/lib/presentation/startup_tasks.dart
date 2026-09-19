@@ -8,11 +8,11 @@ import 'providers/providers.dart';
 
 /// Work kicked off once when the app starts.
 ///
-/// Two tasks: refreshing the counter registry from GitHub Pages (§3.1.4), and
-/// re-arming the "nothing recorded lately" reminder (§3.7). Both are
-/// deliberately fire-and-forget — nothing on screen waits for them, and they
-/// fail silently, because neither is worth delaying a frame or showing an
-/// error over.
+/// Three tasks: refreshing the counter registry from GitHub Pages (§3.1.4),
+/// asking the same site whether a newer release exists (#34), and re-arming
+/// the "nothing recorded lately" reminder (§3.7). All three are deliberately
+/// fire-and-forget — nothing on screen waits for them, and they fail silently,
+/// because none is worth delaying a frame or showing an error over.
 class StartupTasks extends ConsumerStatefulWidget {
   const StartupTasks({super.key, required this.child});
 
@@ -32,6 +32,9 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
       unawaited(
         ref.read(counterRegistryProvider.notifier).refreshFromNetwork(),
       );
+      // Its own preference is the registry's, and its own interval keeps this
+      // to one request a day whatever an agent does with the app.
+      unawaited(ref.read(updateCheckServiceProvider).refresh());
       unawaited(_armReminder());
     });
   }
