@@ -36,8 +36,12 @@ by counter, each on its own scale rather than as one unreadable chart.
   or nothing at all when your pace cannot support an honest estimate. The
   medal's emblem is drawn beside the counter, and once you are past onyx it
   keeps counting: how many times over, and how far to the next.
-- **A list you can narrow**: only the counters that carry a medal, ordered by
-  the one you are closest to reaching.
+- **A list you can narrow**: only the counters that carry a medal, only the
+  ones you have never touched at all, or ordered by the one you are closest to
+  reaching.
+- **A home screen widget**, with up to two pinned counters and how close they
+  are to their next medal.
+- **A yearly recap**, generated entirely on the device.
 - **Anomaly medals understood**, a broken rim to say they stop being earnable,
   and thresholds that arrive without an update.
 - **Personal goals** and **reminders**, scheduled on the device.

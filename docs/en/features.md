@@ -30,13 +30,18 @@ make and the most annoying: it overwrites your history with tiny numbers.
 ## Seeing your progress
 
 - **Dashboard**: the counters you pin, with their value, their progress since
-  the previous snapshot and a trend line.
+  the previous snapshot and a trend line — plus a line noting when one of them
+  has clearly started or stopped moving. Not every wobble, only a change worth
+  noticing.
+- **Home screen widget**: up to two pinned counters — their value, recent
+  progress, and distance to the next medal — without opening the app.
 - **All counters**: the full list, grouped by category in the game's own order,
   with search, sorting and filters. Counters that carry a badge show its
   emblem, with the tier you have reached named beside it — and the list can be
-  narrowed to those counters alone, or ordered by the badge you are closest to.
-  Recent progress is measured as a pace per day over a window you pick, so
-  counters you record at different rhythms can be compared.
+  narrowed to those counters alone, to the ones you have never touched at all,
+  or ordered by the badge you are closest to. Recent progress is measured as a
+  pace per day over a window you pick, so counters you record at different
+  rhythms can be compared.
 - **Counter detail**: a chart over the week, the month or the whole history,
   with a line at what you are chasing — your goal if you set one, otherwise the
   next badge. Plus an activity calendar and the exact export column name so you
