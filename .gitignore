@@ -48,3 +48,7 @@ docs/Gemfile.lock
 # own `flutter test --coverage` (§7.3). Generated, never committed.
 docs/coverage/
 docs/coverage.json
+
+# Python bytecode from the tools under tool/.
+__pycache__/
+*.pyc

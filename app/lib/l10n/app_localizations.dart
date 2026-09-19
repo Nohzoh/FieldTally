@@ -1893,6 +1893,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Two snapshots are needed before a pace can be measured.'**
   String get withinReachNeedsHistory;
+
+  /// Shown in Settings only when the project site reports a newer release than the installed build (#34). FieldTally is sideloaded, so nothing else tells an agent that a version exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} is available'**
+  String settingsUpdateAvailable(String version);
+
+  /// No description provided for @settingsUpdateAvailableDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the release page, where you download it yourself. The app never installs anything on its own — that would mean asking Android for the right to install applications, which it does not want.'**
+  String get settingsUpdateAvailableDetail;
 }
 
 class _AppLocalizationsDelegate
