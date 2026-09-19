@@ -745,6 +745,18 @@ abstract class AppLocalizations {
   /// **'Pick between {min} and {max} counters to show on the dashboard.'**
   String customiseHint(int min, int max);
 
+  /// No description provided for @customiseWidgetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Widget counters'**
+  String get customiseWidgetTitle;
+
+  /// No description provided for @customiseWidgetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick between {min} and {max} counters to show on the home screen widget.'**
+  String customiseWidgetHint(int min, int max);
+
   /// No description provided for @customiseSelected.
   ///
   /// In en, this message translates to:
@@ -1659,6 +1671,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The image could not be produced.'**
   String get shareCardFailed;
+
+  /// No description provided for @settingsWidgetSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Home screen widget'**
+  String get settingsWidgetSection;
+
+  /// No description provided for @settingsWidgetCounters.
+  ///
+  /// In en, this message translates to:
+  /// **'Widget counters'**
+  String get settingsWidgetCounters;
+
+  /// No description provided for @settingsWidgetCountersDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which counters the home screen widget shows.'**
+  String get settingsWidgetCountersDetail;
 
   /// No description provided for @settingsAppearanceSection.
   ///

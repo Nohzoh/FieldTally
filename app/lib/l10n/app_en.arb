@@ -307,6 +307,18 @@
       }
     }
   },
+  "customiseWidgetTitle": "Widget counters",
+  "customiseWidgetHint": "Pick between {min} and {max} counters to show on the home screen widget.",
+  "@customiseWidgetHint": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "customiseSelected": "{count} of {max} selected",
   "@customiseSelected": {
     "placeholders": {
@@ -802,6 +814,9 @@
   "shareCardEmptyTitle": "Nothing to share yet",
   "shareCardEmptyDetail": "Record a snapshot and your card will be ready.",
   "shareCardFailed": "The image could not be produced.",
+  "settingsWidgetSection": "Home screen widget",
+  "settingsWidgetCounters": "Widget counters",
+  "settingsWidgetCountersDetail": "Choose which counters the home screen widget shows.",
   "settingsAppearanceSection": "Appearance",
   "settingsLanguage": "Language",
   "settingsLanguageSystem": "System",

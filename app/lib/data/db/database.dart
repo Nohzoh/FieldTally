@@ -65,6 +65,22 @@ class PinnedCounters extends Table {
   Set<Column> get primaryKey => {exportHeader};
 }
 
+/// Counters the user chose to show on the home screen widget (#174),
+/// independently of [PinnedCounters].
+///
+/// Its own table rather than a flag on `PinnedCounters`: the two selections
+/// are allowed to diverge, and an empty table means "follow the dashboard
+/// pins" rather than "nothing", so it cannot simply reuse those rows either.
+class WidgetPinnedCounters extends Table {
+  /// Export header, the stable identity of a counter (§3.1.2).
+  TextColumn get exportHeader => text()();
+
+  IntColumn get position => integer()();
+
+  @override
+  Set<Column> get primaryKey => {exportHeader};
+}
+
 /// Small key/value store for preferences and cached remote content.
 ///
 /// A table rather than shared_preferences: the app already carries a database,
@@ -103,14 +119,21 @@ class Goals extends Table {
 }
 
 @DriftDatabase(
-  tables: [Snapshots, CounterValues, PinnedCounters, AppSettings, Goals],
+  tables: [
+    Snapshots,
+    CounterValues,
+    PinnedCounters,
+    AppSettings,
+    Goals,
+    WidgetPinnedCounters,
+  ],
 )
 class FieldTallyDatabase extends _$FieldTallyDatabase {
   FieldTallyDatabase([QueryExecutor? executor])
     : super(executor ?? driftDatabase(name: 'fieldtally'));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -130,6 +153,10 @@ class FieldTallyDatabase extends _$FieldTallyDatabase {
       // v5 adds personal goals (§3.7). An empty table is the right state
       // for an agent who has not set any.
       if (from < 5) await m.createTable(goals);
+      // v6 adds the widget's own counter selection (#174), separate from the
+      // dashboard's pins. Empty means "follow the dashboard pins", which is
+      // exactly the state a table with nothing backfilled is in.
+      if (from < 6) await m.createTable(widgetPinnedCounters);
     },
     beforeOpen: (details) async {
       // Without this, SQLite ignores `onDelete: cascade`: deleting a

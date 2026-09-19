@@ -401,6 +401,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get customiseWidgetTitle => 'Widget counters';
+
+  @override
+  String customiseWidgetHint(int min, int max) {
+    return 'Pick between $min and $max counters to show on the home screen widget.';
+  }
+
+  @override
   String customiseSelected(int count, int max) {
     return '$count of $max selected';
   }
@@ -985,6 +993,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareCardFailed => 'The image could not be produced.';
+
+  @override
+  String get settingsWidgetSection => 'Home screen widget';
+
+  @override
+  String get settingsWidgetCounters => 'Widget counters';
+
+  @override
+  String get settingsWidgetCountersDetail =>
+      'Choose which counters the home screen widget shows.';
 
   @override
   String get settingsAppearanceSection => 'Appearance';

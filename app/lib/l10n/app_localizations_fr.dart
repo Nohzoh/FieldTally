@@ -405,6 +405,14 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get customiseWidgetTitle => 'Compteurs du widget';
+
+  @override
+  String customiseWidgetHint(int min, int max) {
+    return 'Choisis entre $min et $max compteurs à afficher sur le widget de l\'écran d\'accueil.';
+  }
+
+  @override
   String customiseSelected(int count, int max) {
     return '$count sur $max sélectionnés';
   }
@@ -992,6 +1000,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shareCardFailed => 'L\'image n\'a pas pu être produite.';
+
+  @override
+  String get settingsWidgetSection => 'Widget de l\'écran d\'accueil';
+
+  @override
+  String get settingsWidgetCounters => 'Compteurs du widget';
+
+  @override
+  String get settingsWidgetCountersDetail =>
+      'Choisis les compteurs affichés par le widget de l\'écran d\'accueil.';
 
   @override
   String get settingsAppearanceSection => 'Apparence';
