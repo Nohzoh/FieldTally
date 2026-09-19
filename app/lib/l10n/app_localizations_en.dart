@@ -1180,4 +1180,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsUpdateAvailableDetail =>
       'Opens the release page, where you download it yourself. The app never installs anything on its own — that would mean asking Android for the right to install applications, which it does not want.';
+
+  @override
+  String paceStopped(String counter) {
+    return '$counter has not moved in the last month';
+  }
+
+  @override
+  String paceResumed(String counter) {
+    return '$counter is moving again';
+  }
+
+  @override
+  String get paceChangesTitle => 'Since last month';
 }

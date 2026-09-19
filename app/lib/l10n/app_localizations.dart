@@ -1905,6 +1905,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Opens the release page, where you download it yourself. The app never installs anything on its own — that would mean asking Android for the right to install applications, which it does not want.'**
   String get settingsUpdateAvailableDetail;
+
+  /// Said under the dashboard when a pinned counter moved over the previous month and not at all over the recent one (#149). A fact, not a judgement: the app deliberately says nothing about a counter that merely sped up or slowed down, because saying that would need a threshold nobody can defend.
+  ///
+  /// In en, this message translates to:
+  /// **'{counter} has not moved in the last month'**
+  String paceStopped(String counter);
+
+  /// No description provided for @paceResumed.
+  ///
+  /// In en, this message translates to:
+  /// **'{counter} is moving again'**
+  String paceResumed(String counter);
+
+  /// No description provided for @paceChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Since last month'**
+  String get paceChangesTitle;
 }
 
 class _AppLocalizationsDelegate

@@ -28,6 +28,7 @@ import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 import '../../data/updates/update_check_service.dart';
 import '../../domain/badges_within_reach.dart';
+import '../../domain/pace_change.dart';
 import '../../domain/share_card.dart';
 import '../../domain/snapshot_changes.dart';
 import '../faction.dart';
@@ -114,6 +115,21 @@ final onlineRegistryUpdatesProvider = StreamProvider<bool>(
 final snapshotsProvider = StreamProvider<List<StoredSnapshot>>(
   (ref) => ref.watch(snapshotRepositoryProvider).watchAll(),
 );
+
+/// Counters the agent pinned that started or stopped moving (#149).
+///
+/// Empty is the ordinary answer and must stay cheap to render: most months
+/// nothing has changed, and the dashboard shows nothing rather than a heading
+/// over an empty space.
+final paceChangesProvider = Provider<List<CounterShift>>((ref) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final pinned = ref.watch(pinnedCountersProvider).asData?.value ?? const [];
+
+  return const PaceChangeFinder().find(
+    snapshots: [for (final stored in snapshots) stored.snapshot],
+    pinned: pinned,
+  );
+});
 
 /// Asks the project site whether a newer release exists (#34).
 final updateCheckServiceProvider = Provider<UpdateCheckService>(
