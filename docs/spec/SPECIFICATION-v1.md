@@ -306,7 +306,7 @@ Objectif : quelqu'un qui n'a jamais entendu parler de GitHub doit pouvoir compre
 - **Installer l'app** : guide pas-à-pas pour un public non technique — télécharger l'APK depuis la dernière Release, autoriser l'installation depuis une source inconnue, et une explication rassurante de l'avertissement Play Protect (voir §6).
 - **FAQ** : pourquoi pas sur le Play Store (pour l'instant), mes données sont-elles envoyées quelque part (non — tout reste sur le téléphone), que faire si l'ajout de stats ne fonctionne pas.
 - **Confidentialité** : politique simple et honnête — v1 100 % locale, aucune donnée collectée, aucun tiers.
-- **Feuille de route** : reprise du contenu du §13, formulée simplement.
+- ~~**Feuille de route** : reprise du contenu du §13, formulée simplement.~~ Page retirée une fois la majeure partie livrée : ce qui restait est passé en issues (#152 à #157), et une page qui ne liste plus que des intentions se lit comme un engagement qu'elle n'est pas.
 - **Contribuer** : la partie plus technique (lancer le projet en local, structure du code) pour les développeurs qui voudraient participer.
 - **Mentions légales / crédits** : disclaimer Niantic/Ingress, licence du projet, remerciements à Agent Stats comme source d'inspiration.
 

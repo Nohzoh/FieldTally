@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/router.dart';
 import '../../domain/dashboard.dart';
+import '../../domain/pace_change.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../widgets/changelog_dialog.dart';
@@ -86,6 +87,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
               PopupMenuItem(
+                value: Routes.withinReach,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.flag_outlined),
+                  title: Text(l10n.withinReachTitle),
+                ),
+              ),
+              PopupMenuItem(
+                value: Routes.yearInReview,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.auto_stories_outlined),
+                  title: Text(l10n.yearInReviewMenu),
+                ),
+              ),
+              PopupMenuItem(
                 value: Routes.shareCard,
                 child: ListTile(
                   dense: true,
@@ -135,18 +152,96 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 detail: l10n.dashboardEmptyDetail,
               )
             : LayoutBuilder(
-                builder: (context, constraints) => GridView.count(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 88),
-                  // Two columns are too narrow below roughly 340pt: counter
-                  // names are long, and a 110pt card clipped both the label
-                  // and the caption. One column there, three on a tablet.
-                  crossAxisCount: _columnsFor(constraints.maxWidth),
-                  mainAxisExtent: _cardExtent(context),
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  children: [for (final card in list) _Card(card: card)],
+                // A scroll view of slivers rather than a grid, so the remark
+                // about what stopped or restarted (#149) scrolls with the
+                // cards instead of sitting over them.
+                builder: (context, constraints) => CustomScrollView(
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                      sliver: SliverGrid.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          // Two columns are too narrow below roughly
+                          // 340pt: counter names are long, and a 110pt
+                          // card clipped both the label and the caption.
+                          // One column there, three on a tablet.
+                          crossAxisCount: _columnsFor(constraints.maxWidth),
+                          mainAxisExtent: _cardExtent(context),
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                        ),
+                        itemCount: list.length,
+                        itemBuilder: (context, index) =>
+                            _Card(card: list[index]),
+                      ),
+                    ),
+                    const SliverToBoxAdapter(child: _PaceChanges()),
+                    // Room for the floating action button, which the grid's
+                    // own bottom padding used to provide.
+                    const SliverToBoxAdapter(child: SizedBox(height: 88)),
+                  ],
                 ),
               ),
+      ),
+    );
+  }
+}
+
+/// What started or stopped moving, under the cards (#149).
+///
+/// A remark rather than a report: at most three lines, and most months none at
+/// all. Nothing is drawn when there is nothing to say — a heading over an
+/// empty space reads as a feature that is broken rather than as good news.
+///
+/// Deliberately not a notification. §3.7 fires on something that happened — a
+/// tier, a multiple, a level. A counter having gone quiet is an observation,
+/// and pushing an observation is how an app becomes a nag.
+class _PaceChanges extends ConsumerWidget {
+  const _PaceChanges();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final shifts = ref.watch(paceChangesProvider);
+    if (shifts.isEmpty) return const SizedBox.shrink();
+
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final registry = ref.watch(counterRegistryProvider).asData?.value;
+    final language = Localizations.localeOf(context).languageCode;
+
+    String label(String header) =>
+        registry?.forExportHeader(header)?.label(language) ?? header;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.paceChangesTitle,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          for (final shift in shifts)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                switch (shift.shift) {
+                  PaceShift.stopped => l10n.paceStopped(
+                    label(shift.exportHeader),
+                  ),
+                  PaceShift.resumed => l10n.paceResumed(
+                    label(shift.exportHeader),
+                  ),
+                },
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

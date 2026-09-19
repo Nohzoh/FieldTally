@@ -3,8 +3,6 @@ layout: default
 title: Install FieldTally
 lang_alt: /installer
 ---
-{% include nav-en.html %}
-
 # Install FieldTally
 
 FieldTally is not on the Play Store. You install an `.apk` file directly, which
@@ -71,8 +69,9 @@ What you can check for yourself, which is worth more than a promise:
 Open FieldTally, then in Ingress: stats screen → **Share** → **FieldTally**.
 Your first snapshot is saved and the app starts building your history.
 
-Coming from Agent Stats? Your existing CSV export is read as is: menu →
-**Snapshots** → **Import from Agent Stats**.
+Coming from Agent Stats? Copy the table from its export page and paste it into
+menu → **Snapshots** → **Import from Agent Stats**. The banner and the
+pagination can come along, they are ignored.
 
 ## Updating
 
@@ -81,9 +80,18 @@ data is kept. **Only use APKs published here**: an update signed with a
 different key is refused by Android, which is exactly what the signature is
 for.
 
-There is no automatic update — a sideloaded app has no store to notify it. If
-you want one, [Obtainium](https://github.com/ImranR98/Obtainium) follows GitHub
-releases and handles it.
+The app now tells you when a release is out: Settings names the version and
+opens its page. It learns that by reading one small public file from the
+project site, under the same *Update online* setting as the counter registry,
+and it sends nothing.
+
+**It never installs anything itself.** Doing so would mean asking Android for
+the right to install applications, and an app whose whole argument is that it
+does almost nothing should not widen what it can do to save you two taps. You
+download and install it the way you did the first time.
+
+If you want real automation, [Obtainium](https://github.com/ImranR98/Obtainium)
+follows GitHub releases and handles detection, download and install.
 
 ## Uninstalling
 

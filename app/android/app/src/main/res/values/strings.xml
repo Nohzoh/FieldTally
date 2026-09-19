@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home screen widget (#154): only what appears before Flutter has ever
+         written to the widget's storage — the first seconds after it is added
+         to a home screen, on an install that has not yet finished its first
+         launch. Everything shown afterwards comes from HomeWidgetCoordinator,
+         in the app's own language, not from here. -->
+    <string name="widget_initial_title">FieldTally</string>
+    <string name="widget_initial_detail">Open the app to get started</string>
+</resources>

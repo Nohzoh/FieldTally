@@ -3,4 +3,12 @@
     <!-- Background layer of the adaptive icon, the same deep teal the app and
          the shareable card are built on. -->
     <color name="ic_launcher_background">#0E2624</color>
+
+    <!-- Home screen widget (#154), light. A launcher gives the widget its own
+         surface to sit on, so these need to hold their own contrast rather
+         than inheriting the app's Material theme, which the widget process
+         never runs. -->
+    <color name="widget_background">#FBFBFA</color>
+    <color name="widget_text_primary">#171C1B</color>
+    <color name="widget_text_secondary">#55625F</color>
 </resources>

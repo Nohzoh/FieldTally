@@ -13,6 +13,11 @@ import 'package:http/testing.dart';
 const seedPath = 'assets/counters_registry_seed.json';
 
 /// A registry that is valid but visibly different from the bundled seed.
+///
+/// Deliberately tiny, which is what lets the size checks below tell the two
+/// apart: "more than fifty counters" means the bundled seed, never this. A
+/// floor rather than an exact count, so that declaring a counter stays the one
+/// pull request on one file that CONTRIBUTING promises.
 String remoteRegistry({
   String updatedAt = '2099-01-01',
   String label = 'Remote Hacks',
@@ -76,8 +81,9 @@ void main() {
     test('falls back to the bundled copy when nothing is cached', () async {
       final registry = await service().load();
 
-      // The seed carries the whole of Appendix A.
-      expect(registry.length, 59);
+      // The seed carries the whole of Appendix A, so its size alone says the
+      // bundled copy is what came back.
+      expect(registry.length, greaterThan(50));
     });
 
     test('prefers the cached copy once there is one', () async {
@@ -94,7 +100,7 @@ void main() {
 
       final registry = await service().load();
 
-      expect(registry.length, 59);
+      expect(registry.length, greaterThan(50));
     });
   });
 
@@ -204,7 +210,11 @@ void main() {
         ),
       ).refresh();
 
-      expect(registry.length, 59, reason: 'the bundled copy is kept');
+      expect(
+        registry.length,
+        greaterThan(50),
+        reason: 'the bundled copy is kept',
+      );
     });
 
     test('adopts a newer version', () async {
@@ -274,7 +284,7 @@ void main() {
           ),
         ).refresh();
 
-        expect(registry.length, 59);
+        expect(registry.length, greaterThan(50));
       },
     );
   });
@@ -292,7 +302,11 @@ void main() {
       final registry = await service(client: client).refresh();
 
       expect(calls, 0);
-      expect(registry.length, 59, reason: 'still fully usable offline');
+      expect(
+        registry.length,
+        greaterThan(50),
+        reason: 'still fully usable offline',
+      );
     });
 
     test('turning it back on resumes fetching', () async {

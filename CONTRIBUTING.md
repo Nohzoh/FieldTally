@@ -59,6 +59,12 @@ They are the project's own drawings, deliberately not Niantic's artwork, and
 they share a grammar worth keeping: a pin means a place, a bracketed frame
 means a scan, a filled dot means a node.
 
+**A glyph says what the counter measures, and the counter is its `export_header`
+— never its key.** The keys are Ingress badge names, and some of them lie about
+what they count: Illuminator counts mind units, Mind Controller counts control
+fields. Drawing from the key put those two emblems on each other's counters
+until #129.
+
 The **rim** carries a second grammar, independent of the glyph. A badge that can
 always be earned gets an unbroken ring; a ladder that stops being earnable — an
 anomaly medal, which the registry dates with `ends_at` — gets a ring broken into
@@ -107,6 +113,29 @@ This convention is not cosmetic: the release pipeline (§7.2 of the spec)
 generates its changelog from the commits. If you squash-merge, remember that
 GitHub uses the **pull request title** as the commit message — so that title
 has to follow the convention too.
+
+## One issue per change to the app
+
+Every change that touches the **application** — `app/`, meaning code, assets,
+l10n, and the release workflow — answers to an issue, and the pull request names
+it: `Closes #N` when it finishes the issue, `Refs #N` when it is one step of it.
+
+The reason is the changelog. Release notes are written from the milestone, so a
+change to the app with no issue behind it is invisible at the moment they are
+written. That has already cost one: an emblem reached `main` untracked and would
+have gone unmentioned in the release that shipped it.
+
+Everything else — the site, the README, `CONTRIBUTING.md`, `CLAUDE.md`, the
+skills, tooling — does **not** require one (#144). An issue is still welcome
+there when the change has a *why* worth keeping separately from the diff, but it
+is no longer a condition of entry. The counter registry sits on that side too:
+it reaches installed apps on their own, never through a release, so it never
+appears in release notes.
+
+The **release bump** keeps the exception #127 carved out — the commit that sets
+the version and writes that release's changelog entry, along with any site page
+the release made stale. That commit cannot go missing from the notes, because it
+is the notes.
 
 ## Signed commits
 

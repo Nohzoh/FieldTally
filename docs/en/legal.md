@@ -3,8 +3,6 @@ layout: default
 title: Legal
 lang_alt: /mentions-legales
 ---
-{% include nav-en.html %}
-
 # Legal and credits
 
 ## Not affiliated

@@ -151,5 +151,53 @@
         "Ce qui a changé après une mise à jour tient maintenant en une ligne par version, avec un lien vers les notes complètes. Rien n'est perdu : tout reste dans Réglages → À propos, et fonctionne toujours sans réseau."
       ]
     }
+  },
+  "9": {
+    "version": "1.7.0",
+    "title": {
+      "en": "A forgiving Agent Stats import, and medals that match their season",
+      "fr": "Un import Agent Stats plus tolérant, et des médailles accordées à leur saison"
+    },
+    "features": {
+      "en": [
+        "Bringing your history over from Agent Stats now takes a copy of its export page as it comes — banner, pagination and column titles included. Whatever could not be read as a snapshot is counted and shown to you before anything is saved.",
+        "The medals of one anomaly season now look alike. Orion’s two share a drawing, Apollo’s two share another, and Cygnus has its swan. The rim still tells you which one is the Global Op."
+      ],
+      "fr": [
+        "Récupérer ton historique depuis Agent Stats se fait maintenant en copiant sa page d’export telle quelle — bandeau, pagination et titres de colonnes compris. Ce qui n’a pas pu être lu comme un relevé est compté et t’est montré avant que rien ne soit enregistré.",
+        "Les médailles d’une même saison d’anomalies se ressemblent enfin. Les deux d’Orion partagent un dessin, les deux d’Apollo un autre, et Cygnus a son cygne. La jante continue de dire laquelle est la Global Op."
+      ]
+    },
+    "fixes": {
+      "en": [
+        "An Agent Stats import could put every value one column off and report success. It cannot any more.",
+        "The drawings for Control Fields Created and Mind Units Captured sat on each other’s counter, each showing what the other one measures."
+      ],
+      "fr": [
+        "Un import Agent Stats pouvait décaler toutes les valeurs d’une colonne et annoncer une réussite. Ce n’est plus possible.",
+        "Les dessins de « Champs de contrôle créés » et « Unités mentales capturées » étaient sur le compteur l’un de l’autre, chacun montrant ce que mesure l’autre."
+      ]
+    }
+  },
+  "10": {
+    "version": "1.8.0",
+    "title": {
+      "en": "What each snapshot recorded, and the badges within your reach",
+      "fr": "Ce que chaque relevé a enregistré, et les médailles à ta portée"
+    },
+    "features": {
+      "en": [
+        "Tapping a snapshot in your history now opens what it recorded that the one before it had not: how much each counter moved, over the real interval between the two. A counter that did not move, or that was not reported at all, stays out of the way.",
+        "A new screen, Within reach, ranks your badges by how long each would take at your recent pace. It is not the same question as which one is closest: a counter at 95 % of onyx can be four hundred days away, and one at 60 % three days away."
+      ],
+      "fr": [
+        "Taper un relevé dans ton historique ouvre maintenant ce qu’il a enregistré que le précédent n’avait pas : de combien chaque compteur a bougé, sur l’intervalle réel entre les deux. Un compteur qui n’a pas bougé, ou qui n’a pas été rapporté du tout, ne vient pas encombrer la liste.",
+        "Un nouvel écran, « À portée », classe tes médailles par le temps qu’elles demanderaient à ton rythme récent. Ce n’est pas la même question que celle de la plus proche : un compteur à 95 % d’onyx peut être à quatre cents jours, et un à 60 % à trois jours."
+      ]
+    },
+    "fixes": {
+      "en": [],
+      "fr": []
+    }
   }
 }

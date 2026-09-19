@@ -3,8 +3,6 @@ layout: default
 title: Installer FieldTally
 lang_alt: /en/install
 ---
-{% include nav-fr.html %}
-
 # Installer FieldTally
 
 FieldTally n'est pas sur le Play Store. Tu installes un fichier `.apk`
@@ -78,8 +76,9 @@ Ouvre FieldTally, puis dans Ingress : écran de stats → **Partager** →
 **FieldTally**. Ton premier relevé est enregistré, et l'app commence à
 construire ton historique.
 
-Tu arrives d'Agent Stats ? Ton export CSV existant est lisible tel quel :
-menu → **Relevés** → **Importer depuis Agent Stats**.
+Tu arrives d'Agent Stats ? Copie le tableau de sa page d'export et colle-le
+dans menu → **Relevés** → **Importer depuis Agent Stats**. Le bandeau et la
+pagination peuvent venir avec, ils sont ignorés.
 
 ## Mettre à jour
 
@@ -87,6 +86,20 @@ Télécharge le nouvel APK depuis la même page et installe-le par-dessus. Tes
 données sont conservées. **N'utilise que les APK publiés ici** : une mise à jour
 signée avec une autre clé sera refusée par Android, ce qui est précisément le
 but de la signature.
+
+L'app te dit maintenant quand une version est sortie : les Réglages la nomment
+et ouvrent sa page. Elle l'apprend en lisant un petit fichier public sur le site
+du projet, sous le même réglage *Mettre à jour en ligne* que le registre des
+compteurs, et n'envoie rien.
+
+**Elle n'installe jamais rien d'elle-même.** Il faudrait pour cela demander à
+Android le droit d'installer des applications, et une app dont tout l'argument
+est qu'elle ne fait presque rien n'a pas à élargir ce qu'elle peut faire pour
+t'épargner deux gestes. Tu télécharges et installes comme la première fois.
+
+Si tu veux une vraie automatisation,
+[Obtainium](https://github.com/ImranR98/Obtainium) suit les releases GitHub et
+s'occupe de la détection, du téléchargement et de l'installation.
 
 ## Désinstaller
 

@@ -3,8 +3,6 @@ layout: default
 title: FieldTally
 lang_alt: /en/
 ---
-{% include nav-fr.html %}
-
 # FieldTally
 
 **Suis tes statistiques Ingress sur ton téléphone, sans compte et sans serveur.**

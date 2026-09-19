@@ -3,8 +3,6 @@ layout: default
 title: FieldTally
 lang_alt: /
 ---
-{% include nav-en.html %}
-
 # FieldTally
 
 **Track your Ingress stats on your phone, with no account and no server.**
@@ -40,6 +38,8 @@ by counter, each on its own scale rather than as one unreadable chart.
   keeps counting: how many times over, and how far to the next.
 - **A list you can narrow**: only the counters that carry a medal, ordered by
   the one you are closest to reaching.
+- **Anomaly medals understood**, a broken rim to say they stop being earnable,
+  and thresholds that arrive without an update.
 - **Personal goals** and **reminders**, scheduled on the device.
 - **A stats card** as an image, ready to post.
 - **A comparison with an agent next to you**, phone to phone, with no server.

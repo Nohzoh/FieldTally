@@ -575,6 +575,21 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String importCsvIgnored(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lignes n\'étaient pas des relevés et ont été ignorées.',
+      one: '1 ligne n\'était pas un relevé et a été ignorée.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get importCsvHeaderIgnored =>
+      'Les titres de colonnes ne correspondaient pas aux lignes : l\'ordre des colonnes documenté a été utilisé à la place.';
+
+  @override
   String importCsvRange(String from, String to) {
     return 'Du $from au $to';
   }
@@ -1090,4 +1105,171 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get changelogFullNotes => 'Lire les notes complètes';
+
+  @override
+  String get snapshotChangesTitle => 'Ce qui a changé';
+
+  @override
+  String snapshotChangesInterval(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String snapshotChangesSpan(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours',
+      one: '1 jour',
+      zero: 'moins d\'un jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String snapshotChangesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count compteurs ont bougé',
+      one: '1 compteur a bougé',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String snapshotChangesValues(String from, String to) {
+    return '$from → $to';
+  }
+
+  @override
+  String get snapshotChangesNone => 'Rien n\'a bougé entre ces deux relevés.';
+
+  @override
+  String get snapshotChangesNoPrevious =>
+      'C\'est ton relevé le plus ancien : il n\'y a rien avant lui à quoi le comparer.';
+
+  @override
+  String get withinReachTitle => 'À portée';
+
+  @override
+  String get withinReachWindow => 'À ton rythme des 30 derniers jours';
+
+  @override
+  String withinReachDays(String tier, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'environ $count jours',
+      one: 'environ un jour',
+    );
+    return '$tier · $_temp0';
+  }
+
+  @override
+  String get withinReachEmpty =>
+      'Aucune médaille n\'est à portée à ton rythme récent.';
+
+  @override
+  String get withinReachEmptyDetail =>
+      'Une médaille apparaît ici quand un compteur a assez bougé récemment pour permettre une estimation honnête — et reste dehors quand cette estimation ne serait qu\'une supposition.';
+
+  @override
+  String get withinReachNeedsHistory =>
+      'Il faut deux relevés pour mesurer un rythme.';
+
+  @override
+  String settingsUpdateAvailable(String version) {
+    return 'La version $version est disponible';
+  }
+
+  @override
+  String get settingsUpdateAvailableDetail =>
+      'Ouvre la page de la version, où tu la télécharges toi-même. L\'app n\'installe jamais rien d\'elle-même : il faudrait pour cela demander à Android le droit d\'installer des applications, et elle n\'en veut pas.';
+
+  @override
+  String paceStopped(String counter) {
+    return '$counter n\'a pas bougé le mois dernier';
+  }
+
+  @override
+  String paceResumed(String counter) {
+    return '$counter repart';
+  }
+
+  @override
+  String get paceChangesTitle => 'Depuis le mois dernier';
+
+  @override
+  String yearInReviewTitle(String year) {
+    return '$year en revue';
+  }
+
+  @override
+  String yearInReviewPartial(String date) {
+    return 'Ton historique commence le $date : ceci ne couvre qu\'une partie de l\'année.';
+  }
+
+  @override
+  String yearInReviewSpan(String from, String to) {
+    return 'Du $from au $to';
+  }
+
+  @override
+  String get yearInReviewGains => 'Ce qui a bougé';
+
+  @override
+  String yearInReviewGain(String gain) {
+    return '+$gain';
+  }
+
+  @override
+  String get yearInReviewMedals => 'Médailles franchies';
+
+  @override
+  String yearInReviewMedal(String counter, String tier) {
+    return '$counter · $tier';
+  }
+
+  @override
+  String yearInReviewBusiest(String month) {
+    return 'Ton mois le plus chargé a été $month.';
+  }
+
+  @override
+  String yearInReviewGap(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Ta plus longue période sans relevé a duré $count jours : ceci décrit ce que tu as enregistré.',
+      one:
+          'Ta plus longue période sans relevé a duré 1 jour : ceci décrit ce que tu as enregistré.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String yearInReviewEmpty(String year) {
+    return 'Il n\'y a pas assez d\'historique en $year pour la relire.';
+  }
+
+  @override
+  String get yearInReviewEmptyDetail =>
+      'Deux relevés dans la même année, c\'est le minimum.';
+
+  @override
+  String get yearInReviewMenu => 'L\'année en revue';
+
+  @override
+  String get homeWidgetUnpinnedTitle => 'Épingle un compteur';
+
+  @override
+  String get homeWidgetUnpinnedDetail =>
+      'Ouvre FieldTally et épingles-en un depuis le tableau de bord.';
+
+  @override
+  String homeWidgetRemaining(String remaining, String tier) {
+    return '$remaining avant $tier';
+  }
 }

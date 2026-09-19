@@ -3,8 +3,6 @@ layout: default
 title: Features
 lang_alt: /fonctionnalites
 ---
-{% include nav-en.html %}
-
 # Features
 
 ## Adding a snapshot
@@ -43,6 +41,17 @@ make and the most annoying: it overwrites your history with tiny numbers.
   with a line at what you are chasing — your goal if you set one, otherwise the
   next badge. Plus an activity calendar and the exact export column name so you
   can find the counter in the game.
+- **What a snapshot recorded**: tapping a snapshot in your history opens what
+  it carries that the one before it did not, counter by counter, over the real
+  interval between the two. A counter that did not move is absent, and so is a
+  counter missing from either snapshot: not having been reported is not the
+  same as not having moved.
+
+Under the **Events** category, the app says since when it has been watching. The
+Ingress export is cumulative, so every counter it carries arrives complete — but
+an event's column eventually leaves it. An event that closed before your first
+snapshot is nowhere, and the app says so rather than letting its silence pass
+for a medal you failed to earn.
 
 ## Projections and goals
 
@@ -53,6 +62,25 @@ answer is years out, the app says so instead of inventing a date.
 Onyx is not the end of it. Past the top threshold the app counts in multiples
 of it, the way the game does: how many whole times over you are, and what is
 left to the next one.
+
+**Year in review** reads a year of your history back: what moved most, the
+medals you crossed and when the app saw them, your busiest month. Entirely on
+your phone, with no server — and with its caveats said rather than hidden: if
+your history does not reach back to 1 January it says so, and it names your
+longest stretch without an import, because a recap built from a history with a
+hole describes what you recorded rather than what you did.
+
+**Within reach** ranks your badges by how long each would take, across every
+counter. It is not the same question as which one is closest: a counter at 95 %
+of onyx can be four hundred days away and one at 60 % three days away. A badge
+appears there only when your recent pace supports an honest estimate — and a
+seasonal ladder whose deadline falls first does not appear at all.
+
+**Anomaly medals** — a campaign's Global Op and its Season medal — are
+recognisable by their broken rim rather than a solid one: they stop being
+earnable on a date, and the app knows it. The Global Op's carries a stud at the
+top as well. Their thresholds arrive through the registry rather than an app
+update, so a campaign that opens is understood without installing anything.
 
 You can set a **personal goal** on any counter, with or without a deadline, and
 see whether your current pace gets you there. On the chart, the scale stretches
@@ -81,7 +109,14 @@ Off until you turn them on.
 
 ## What does not exist yet
 
-No account, no leaderboard, no comparison at a distance and no overlaid curves,
-no finished iOS build, no reading of a screenshot. None of that is possible
-without a server, and v1 has none. Comparing in person does work: two phones in
-the same room need nobody. See the [roadmap]({{ '/en/roadmap' | relative_url }}).
+No account, no leaderboard, no comparison at a distance and no overlaid curves.
+None of that exists without a server, and v1 has none — which is exactly what
+lets it ask for nothing and collect nothing. Comparing in person does work: two
+phones in the same room need nobody.
+
+No iOS build either, and no reading of a screenshot. Those two are not about the
+server: the first needs a paid developer account and a trip through the App
+Store, the second would only matter if the game's share text ever disappeared.
+
+What is missing, and what is being considered, is tracked in the
+[issues](https://github.com/Nohzoh/FieldTally/issues).

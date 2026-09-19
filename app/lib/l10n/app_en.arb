@@ -456,6 +456,15 @@
       }
     }
   },
+  "importCsvIgnored": "{count, plural, =1{1 line was not a snapshot and was skipped.} other{{count} lines were not snapshots and were skipped.}}",
+  "@importCsvIgnored": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importCsvHeaderIgnored": "The column titles did not match the rows, so the documented column order was used instead.",
   "importCsvRange": "From {from} to {to}",
   "@importCsvRange": {
     "placeholders": {
@@ -899,5 +908,194 @@
       }
     }
   },
-  "changelogFullNotes": "Read the full notes"
+  "changelogFullNotes": "Read the full notes",
+  "snapshotChangesTitle": "What changed",
+  "@snapshotChangesTitle": {
+    "description": "Title of the screen reached by tapping a snapshot (#147). Deliberately not \"this outing\": the app cannot know whether two snapshots bracket an afternoon of play or six idle weeks — the agent chose when to record, and that choice is the only boundary there is."
+  },
+  "snapshotChangesInterval": "{from} → {to}",
+  "@snapshotChangesInterval": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "snapshotChangesSpan": "{count, plural, =0{less than a day} one{1 day} other{{count} days}}",
+  "@snapshotChangesSpan": {
+    "description": "How long the interval lasted. Rounded down to whole days, and saying so below one: an afternoon reads as \"less than a day\" rather than as zero.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "snapshotChangesCount": "{count, plural, one{1 counter moved} other{{count} counters moved}}",
+  "@snapshotChangesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "snapshotChangesValues": "{from} → {to}",
+  "@snapshotChangesValues": {
+    "description": "A counter's two ends on one row. Separate from snapshotChangesInterval, which joins two dates: they read the same today and have no reason to stay identical in every language.",
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "snapshotChangesNone": "Nothing moved between these two snapshots.",
+  "snapshotChangesNoPrevious": "This is your earliest snapshot, so there is nothing before it to compare against.",
+  "withinReachTitle": "Within reach",
+  "@withinReachTitle": {
+    "description": "A ranking of badges by how long each would take at the recent pace, across every counter (#148). Distinct from the counter list's \"closest to its next tier\" sort, which measures the share of the stretch already crossed — a counter at 95 % of onyx can be four hundred days out."
+  },
+  "withinReachWindow": "At your pace over the last 30 days",
+  "@withinReachWindow": {
+    "description": "States the window rather than leaving it assumed: the whole ranking changes with it."
+  },
+  "withinReachDays": "{tier} · {count, plural, one{about a day} other{about {count} days}}",
+  "@withinReachDays": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "withinReachEmpty": "No badge is within reach at your recent pace.",
+  "withinReachEmptyDetail": "A badge appears here once a counter has moved enough lately to support an honest estimate — and stays out when that estimate would be a guess.",
+  "withinReachNeedsHistory": "Two snapshots are needed before a pace can be measured.",
+  "settingsUpdateAvailable": "Version {version} is available",
+  "@settingsUpdateAvailable": {
+    "description": "Shown in Settings only when the project site reports a newer release than the installed build (#34). FieldTally is sideloaded, so nothing else tells an agent that a version exists.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsUpdateAvailableDetail": "Opens the release page, where you download it yourself. The app never installs anything on its own — that would mean asking Android for the right to install applications, which it does not want.",
+  "paceStopped": "{counter} has not moved in the last month",
+  "@paceStopped": {
+    "description": "Said under the dashboard when a pinned counter moved over the previous month and not at all over the recent one (#149). A fact, not a judgement: the app deliberately says nothing about a counter that merely sped up or slowed down, because saying that would need a threshold nobody can defend.",
+    "placeholders": {
+      "counter": {
+        "type": "String"
+      }
+    }
+  },
+  "paceResumed": "{counter} is moving again",
+  "@paceResumed": {
+    "placeholders": {
+      "counter": {
+        "type": "String"
+      }
+    }
+  },
+  "paceChangesTitle": "Since last month",
+  "yearInReviewTitle": "{year} in review",
+  "@yearInReviewTitle": {
+    "description": "A year read back, built on the device from the history alone (#153). The roadmap filed this under \"would need a server\"; it does not.",
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewPartial": "Your history starts on {date}, so this covers part of the year.",
+  "@yearInReviewPartial": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewSpan": "From {from} to {to}",
+  "@yearInReviewSpan": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewGains": "What moved",
+  "yearInReviewGain": "+{gain}",
+  "@yearInReviewGain": {
+    "placeholders": {
+      "gain": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewMedals": "Medals crossed",
+  "yearInReviewMedal": "{counter} · {tier}",
+  "@yearInReviewMedal": {
+    "placeholders": {
+      "counter": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewBusiest": "Your busiest month was {month}.",
+  "@yearInReviewBusiest": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewGap": "{count, plural, one{Your longest stretch without an import was 1 day, so this describes what you recorded.} other{Your longest stretch without an import was {count} days, so this describes what you recorded.}}",
+  "@yearInReviewGap": {
+    "description": "The honest caveat on everything above: a recap built from a history with a hole is describing what was recorded, not what was done.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yearInReviewEmpty": "There is not enough history in {year} to read it back.",
+  "@yearInReviewEmpty": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewEmptyDetail": "Two snapshots in the same year is the least it takes.",
+  "yearInReviewMenu": "Year in review",
+  "homeWidgetUnpinnedTitle": "Pin a counter",
+  "@homeWidgetUnpinnedTitle": {
+    "description": "Shown on the home screen widget when nothing is pinned at all (#154), distinct from homeEmptyTitle which covers pinned-but-no-snapshot-yet."
+  },
+  "homeWidgetUnpinnedDetail": "Open FieldTally and pin one from the dashboard.",
+  "homeWidgetRemaining": "{remaining} to {tier}",
+  "@homeWidgetRemaining": {
+    "description": "Compact form of projectionRemaining for the home screen widget, which has room for a few words rather than a sentence.",
+    "placeholders": {
+      "remaining": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  }
 }

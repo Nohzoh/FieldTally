@@ -21,9 +21,12 @@ on:
         type: boolean
         default: false
 
-# Writes twice now: the tag, and the release.
+# Writes three things now: the tag, the release, and a dispatch of pages.yml.
 permissions:
   contents: write
+  # To dispatch pages.yml once the tag exists, so docs/latest.json
+  # catches up with the release it is meant to advertise (#34).
+  actions: write
 
 concurrency:
   group: release-${{ github.ref }}
@@ -216,3 +219,17 @@ jobs:
             --title "$TAG" \
             --generate-notes \
             --verify-tag
+
+      # docs/latest.json is generated from the newest tag when Pages builds,
+      # never committed (#34). The tag exists only as of the step above, so
+      # nothing has rebuilt the site since — and until it does, every
+      # installed app is still being told the previous release is the newest
+      # one.
+      #
+      # Dispatched rather than left to the next push to main: the whole point
+      # of the file is that it is right the moment a release is published.
+      - name: Rebuild the site, so it advertises this release
+        if: github.ref_type == 'tag' || !inputs.dry_run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

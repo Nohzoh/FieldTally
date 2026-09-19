@@ -18,6 +18,8 @@ class CsvImportPlan {
     required this.snapshots,
     required this.regressions,
     required this.counterCount,
+    this.ignoredLines = 0,
+    this.headerIgnored = false,
   });
 
   /// Chronological, oldest first.
@@ -28,6 +30,20 @@ class CsvImportPlan {
 
   /// Distinct counters across the whole file.
   final int counterCount;
+
+  /// Lines of the paste that carried no data row (#133).
+  ///
+  /// Shown rather than swallowed: a paste off a web page legitimately brings a
+  /// banner and a pagination strip, but a damaged row would be skipped by the
+  /// same rule, and the agent is the one who can tell the two apart.
+  final int ignoredLines;
+
+  /// True when a header was present but did not fit the rows, so the column
+  /// order came from Appendix B instead (#132).
+  final bool headerIgnored;
+
+  /// Anything worth saying about what was passed over.
+  bool get hasNotes => ignoredLines > 0 || headerIgnored;
 
   bool get isEmpty => snapshots.isEmpty;
   bool get hasRegressions => regressions.isNotEmpty;
@@ -58,6 +74,8 @@ class CsvImportPlanner {
     List<StatSnapshot> snapshots, {
     StatSnapshot? existingLatest,
     CounterRegistry? registry,
+    int ignoredLines = 0,
+    bool headerIgnored = false,
   }) {
     if (snapshots.isEmpty) {
       return const CsvImportPlan(
@@ -103,6 +121,8 @@ class CsvImportPlanner {
       snapshots: snapshots,
       regressions: regressions,
       counterCount: counters.length,
+      ignoredLines: ignoredLines,
+      headerIgnored: headerIgnored,
     );
   }
 }
