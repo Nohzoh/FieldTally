@@ -318,7 +318,10 @@ void main() {
 
       // Scoped to the cards: the app bar title ellipsising next to its
       // actions is standard Material behaviour, and a separate concern.
-      visit(tester.renderObject(find.byType(GridView)));
+      //
+      // The grid became a sliver when the dashboard gained the remark below
+      // it (#149). Same scope, same intent — the anchor moved, not the check.
+      visit(tester.renderObject(find.byType(SliverGrid)));
       expect(clipped, isEmpty, reason: 'clipped text: $clipped');
     });
 
@@ -426,6 +429,76 @@ void main() {
         await container.read(pinnedCounterRepositoryProvider).pinned(),
         isNot(contains('Unique Portals Visited')),
       );
+    });
+  });
+
+  group('what started or stopped moving (#149)', () {
+    /// Three snapshots a month apart, so both windows exist.
+    List<StatSnapshot> twoWindows(Map<String, (int, int, int)> counters) {
+      final end = DateTime(2026, 6, 30);
+      return [
+        at(end.subtract(const Duration(days: 60)), {
+          for (final e in counters.entries) e.key: e.value.$1,
+        }),
+        at(end.subtract(const Duration(days: 30)), {
+          for (final e in counters.entries) e.key: e.value.$2,
+        }),
+        at(end, {for (final e in counters.entries) e.key: e.value.$3}),
+      ];
+    }
+
+    testWidgets('says so when a pinned counter has gone quiet', (tester) async {
+      await pumpDashboard(
+        tester,
+        history: twoWindows(const {'Hacks': (0, 300, 300)}),
+        pinned: const ['Hacks'],
+      );
+
+      expect(find.text('Since last month'), findsOneWidget);
+      expect(
+        find.text('Hacks has not moved in the last month'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('and when one is moving again', (tester) async {
+      await pumpDashboard(
+        tester,
+        history: twoWindows(const {'Hacks': (300, 300, 600)}),
+        pinned: const ['Hacks'],
+      );
+
+      expect(find.text('Hacks is moving again'), findsOneWidget);
+    });
+
+    testWidgets('draws nothing at all when there is nothing to say', (
+      tester,
+    ) async {
+      // The ordinary month. A heading over an empty space reads as a broken
+      // feature rather than as good news, so neither is drawn.
+      await pumpDashboard(
+        tester,
+        history: twoWindows(const {'Hacks': (0, 300, 600)}),
+        pinned: const ['Hacks'],
+      );
+
+      expect(find.text('Since last month'), findsNothing);
+      expect(find.textContaining('has not moved'), findsNothing);
+    });
+
+    testWidgets('never speaks about a counter the agent did not pin', (
+      tester,
+    ) async {
+      await pumpDashboard(
+        tester,
+        history: twoWindows(const {
+          'Hacks': (0, 300, 300),
+          'Links Created': (0, 50, 50),
+        }),
+        pinned: const ['Hacks'],
+      );
+
+      expect(find.textContaining('Links Created'), findsNothing);
     });
   });
 }

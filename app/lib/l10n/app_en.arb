@@ -986,5 +986,23 @@
       }
     }
   },
-  "settingsUpdateAvailableDetail": "Opens the release page, where you download it yourself. The app never installs anything on its own — that would mean asking Android for the right to install applications, which it does not want."
+  "settingsUpdateAvailableDetail": "Opens the release page, where you download it yourself. The app never installs anything on its own — that would mean asking Android for the right to install applications, which it does not want.",
+  "paceStopped": "{counter} has not moved in the last month",
+  "@paceStopped": {
+    "description": "Said under the dashboard when a pinned counter moved over the previous month and not at all over the recent one (#149). A fact, not a judgement: the app deliberately says nothing about a counter that merely sped up or slowed down, because saying that would need a threshold nobody can defend.",
+    "placeholders": {
+      "counter": {
+        "type": "String"
+      }
+    }
+  },
+  "paceResumed": "{counter} is moving again",
+  "@paceResumed": {
+    "placeholders": {
+      "counter": {
+        "type": "String"
+      }
+    }
+  },
+  "paceChangesTitle": "Since last month"
 }

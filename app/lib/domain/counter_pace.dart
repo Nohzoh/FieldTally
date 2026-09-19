@@ -44,10 +44,18 @@ typedef CounterPace = ({int gain, double days, double perDay});
 /// A counter absent from the result has no measurable pace — one snapshot, or
 /// none inside the window. That is "not known yet", which the list keeps apart
 /// from "no progress".
+/// [asOf] moves the whole measurement back in time: points after it are
+/// ignored and it becomes the reference the window counts back from (#149).
+/// Null, which is the normal case, means the most recent snapshot.
+///
+/// This is what lets one window be compared with the one before it without a
+/// second copy of the anchoring rule — and a second copy is exactly how a
+/// screen ends up disagreeing with the list about how fast a counter moves.
 Map<String, CounterPace> paceByCounter(
   List<StatSnapshot> snapshots,
-  ProgressWindow window,
-) {
+  ProgressWindow window, {
+  DateTime? asOf,
+}) {
   if (snapshots.length < 2) return const {};
 
   final sorted = [...snapshots]
@@ -66,11 +74,18 @@ Map<String, CounterPace> paceByCounter(
     }
   }
 
-  final reference = sorted.last.recordedAt;
+  final reference = asOf ?? sorted.last.recordedAt;
   final paces = <String, CounterPace>{};
 
   for (final entry in points.entries) {
-    final series = entry.value;
+    // Truncated to the reference, so an earlier window measures what was known
+    // then rather than ending at today's value.
+    final series = asOf == null
+        ? entry.value
+        : [
+            for (final p in entry.value)
+              if (!p.at.isAfter(asOf)) p,
+          ];
     if (series.length < 2) continue;
 
     final last = series.last;
