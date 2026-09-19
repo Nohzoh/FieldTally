@@ -97,7 +97,7 @@ class CounterRegistryService {
           .get(Uri.parse(endpoint))
           .timeout(const Duration(seconds: 10));
 
-      if (response.statusCode != 200) return load();
+      if (response.statusCode != 200) return await load();
 
       final body = utf8.decode(response.bodyBytes);
 
@@ -105,7 +105,7 @@ class CounterRegistryService {
       // replace a good cache. This is the client-side half of the guarantee
       // the CI validation makes on the other end (§7.3).
       final fetched = loader.parse(body);
-      if (fetched.length == 0) return load();
+      if (fetched.length == 0) return await load();
 
       // Adopt only what is strictly newer than what the device already has.
       //
