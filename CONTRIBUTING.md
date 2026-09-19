@@ -125,6 +125,14 @@ change to the app with no issue behind it is invisible at the moment they are
 written. That has already cost one: an emblem reached `main` untracked and would
 have gone unmentioned in the release that shipped it.
 
+The issue also has to be *in* that milestone, not just exist. Attach it to
+**Next Release** no later than when its pull request merges to `main` — an
+issue left in the backlog behind a merged change is exactly as invisible to
+the changelog as no issue at all. Only the maintainer renames a milestone to
+a shipped version or opens the next empty **Next Release** (release skill,
+step 8); attaching an issue to the current one is everyone else's job, done
+at merge time, not left for that triage to catch.
+
 Everything else — the site, the README, `CONTRIBUTING.md`, `CLAUDE.md`, the
 skills, tooling — does **not** require one (#144). An issue is still welcome
 there when the change has a *why* worth keeping separately from the diff, but it
