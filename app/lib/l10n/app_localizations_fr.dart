@@ -1199,4 +1199,65 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get paceChangesTitle => 'Depuis le mois dernier';
+
+  @override
+  String yearInReviewTitle(String year) {
+    return '$year en revue';
+  }
+
+  @override
+  String yearInReviewPartial(String date) {
+    return 'Ton historique commence le $date : ceci ne couvre qu\'une partie de l\'année.';
+  }
+
+  @override
+  String yearInReviewSpan(String from, String to) {
+    return 'Du $from au $to';
+  }
+
+  @override
+  String get yearInReviewGains => 'Ce qui a bougé';
+
+  @override
+  String yearInReviewGain(String gain) {
+    return '+$gain';
+  }
+
+  @override
+  String get yearInReviewMedals => 'Médailles franchies';
+
+  @override
+  String yearInReviewMedal(String counter, String tier) {
+    return '$counter · $tier';
+  }
+
+  @override
+  String yearInReviewBusiest(String month) {
+    return 'Ton mois le plus chargé a été $month.';
+  }
+
+  @override
+  String yearInReviewGap(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Ta plus longue période sans relevé a duré $count jours : ceci décrit ce que tu as enregistré.',
+      one:
+          'Ta plus longue période sans relevé a duré 1 jour : ceci décrit ce que tu as enregistré.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String yearInReviewEmpty(String year) {
+    return 'Il n\'y a pas assez d\'historique en $year pour la relire.';
+  }
+
+  @override
+  String get yearInReviewEmptyDetail =>
+      'Deux relevés dans la même année, c\'est le minimum.';
+
+  @override
+  String get yearInReviewMenu => 'L\'année en revue';
 }

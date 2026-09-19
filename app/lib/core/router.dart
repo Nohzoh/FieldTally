@@ -13,6 +13,7 @@ import '../presentation/screens/snapshot_changes_screen.dart';
 import '../presentation/screens/share_card_screen.dart';
 import '../presentation/screens/snapshot_list_screen.dart';
 import '../presentation/screens/within_reach_screen.dart';
+import '../presentation/screens/year_in_review_screen.dart';
 
 /// Application routes (§5.1: go_router).
 ///
@@ -30,6 +31,9 @@ abstract final class Routes {
 
   /// Badges ranked by how long each would take (#148).
   static const withinReach = '/reach';
+
+  /// A year read back (#153).
+  static const yearInReview = '/year';
 
   /// The shareable stats card (§3.8).
   static const shareCard = '/share';
@@ -109,6 +113,10 @@ GoRouter createRouter() => GoRouter(
         GoRoute(
           path: 'reach',
           builder: (context, state) => const WithinReachScreen(),
+        ),
+        GoRoute(
+          path: 'year',
+          builder: (context, state) => const YearInReviewScreen(),
         ),
         GoRoute(
           path: 'share',

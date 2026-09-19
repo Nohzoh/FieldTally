@@ -95,6 +95,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
               PopupMenuItem(
+                value: Routes.yearInReview,
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.auto_stories_outlined),
+                  title: Text(l10n.yearInReviewMenu),
+                ),
+              ),
+              PopupMenuItem(
                 value: Routes.shareCard,
                 child: ListTile(
                   dense: true,

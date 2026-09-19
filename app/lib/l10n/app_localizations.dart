@@ -1923,6 +1923,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Since last month'**
   String get paceChangesTitle;
+
+  /// A year read back, built on the device from the history alone (#153). The roadmap filed this under "would need a server"; it does not.
+  ///
+  /// In en, this message translates to:
+  /// **'{year} in review'**
+  String yearInReviewTitle(String year);
+
+  /// No description provided for @yearInReviewPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Your history starts on {date}, so this covers part of the year.'**
+  String yearInReviewPartial(String date);
+
+  /// No description provided for @yearInReviewSpan.
+  ///
+  /// In en, this message translates to:
+  /// **'From {from} to {to}'**
+  String yearInReviewSpan(String from, String to);
+
+  /// No description provided for @yearInReviewGains.
+  ///
+  /// In en, this message translates to:
+  /// **'What moved'**
+  String get yearInReviewGains;
+
+  /// No description provided for @yearInReviewGain.
+  ///
+  /// In en, this message translates to:
+  /// **'+{gain}'**
+  String yearInReviewGain(String gain);
+
+  /// No description provided for @yearInReviewMedals.
+  ///
+  /// In en, this message translates to:
+  /// **'Medals crossed'**
+  String get yearInReviewMedals;
+
+  /// No description provided for @yearInReviewMedal.
+  ///
+  /// In en, this message translates to:
+  /// **'{counter} · {tier}'**
+  String yearInReviewMedal(String counter, String tier);
+
+  /// No description provided for @yearInReviewBusiest.
+  ///
+  /// In en, this message translates to:
+  /// **'Your busiest month was {month}.'**
+  String yearInReviewBusiest(String month);
+
+  /// The honest caveat on everything above: a recap built from a history with a hole is describing what was recorded, not what was done.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Your longest stretch without an import was 1 day, so this describes what you recorded.} other{Your longest stretch without an import was {count} days, so this describes what you recorded.}}'**
+  String yearInReviewGap(int count);
+
+  /// No description provided for @yearInReviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There is not enough history in {year} to read it back.'**
+  String yearInReviewEmpty(String year);
+
+  /// No description provided for @yearInReviewEmptyDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Two snapshots in the same year is the least it takes.'**
+  String get yearInReviewEmptyDetail;
+
+  /// No description provided for @yearInReviewMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Year in review'**
+  String get yearInReviewMenu;
 }
 
 class _AppLocalizationsDelegate

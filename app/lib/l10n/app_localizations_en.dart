@@ -1193,4 +1193,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paceChangesTitle => 'Since last month';
+
+  @override
+  String yearInReviewTitle(String year) {
+    return '$year in review';
+  }
+
+  @override
+  String yearInReviewPartial(String date) {
+    return 'Your history starts on $date, so this covers part of the year.';
+  }
+
+  @override
+  String yearInReviewSpan(String from, String to) {
+    return 'From $from to $to';
+  }
+
+  @override
+  String get yearInReviewGains => 'What moved';
+
+  @override
+  String yearInReviewGain(String gain) {
+    return '+$gain';
+  }
+
+  @override
+  String get yearInReviewMedals => 'Medals crossed';
+
+  @override
+  String yearInReviewMedal(String counter, String tier) {
+    return '$counter · $tier';
+  }
+
+  @override
+  String yearInReviewBusiest(String month) {
+    return 'Your busiest month was $month.';
+  }
+
+  @override
+  String yearInReviewGap(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Your longest stretch without an import was $count days, so this describes what you recorded.',
+      one:
+          'Your longest stretch without an import was 1 day, so this describes what you recorded.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String yearInReviewEmpty(String year) {
+    return 'There is not enough history in $year to read it back.';
+  }
+
+  @override
+  String get yearInReviewEmptyDetail =>
+      'Two snapshots in the same year is the least it takes.';
+
+  @override
+  String get yearInReviewMenu => 'Year in review';
 }

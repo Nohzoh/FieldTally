@@ -66,6 +66,14 @@ L'onyx n'est pas la fin. Passé le dernier palier, l'app compte en multiples de
 celui-ci, comme le jeu : combien de fois entières tu l'as dépassé, et ce qu'il
 reste jusqu'à la suivante.
 
+**L'année en revue** relit une année de ton historique : ce qui a le plus
+bougé, les médailles franchies et quand l'app les a vues, ton mois le plus
+chargé. Entièrement sur ton téléphone, sans serveur — et avec ses réserves
+dites plutôt que tues : si ton historique ne remonte pas au 1er janvier, elle
+le dit, et elle rappelle ta plus longue période sans relevé, parce qu'un récap
+bâti sur un historique troué décrit ce que tu as enregistré, pas ce que tu as
+fait.
+
 **À portée** classe tes médailles par le temps qu'elles demanderaient, tous
 compteurs confondus. Ce n'est pas la même question que celle de la plus proche :
 un compteur à 95 % d'onyx peut être à quatre cents jours, et un à 60 % à trois

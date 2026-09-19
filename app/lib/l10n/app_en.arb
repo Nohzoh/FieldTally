@@ -1004,5 +1004,81 @@
       }
     }
   },
-  "paceChangesTitle": "Since last month"
+  "paceChangesTitle": "Since last month",
+  "yearInReviewTitle": "{year} in review",
+  "@yearInReviewTitle": {
+    "description": "A year read back, built on the device from the history alone (#153). The roadmap filed this under \"would need a server\"; it does not.",
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewPartial": "Your history starts on {date}, so this covers part of the year.",
+  "@yearInReviewPartial": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewSpan": "From {from} to {to}",
+  "@yearInReviewSpan": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewGains": "What moved",
+  "yearInReviewGain": "+{gain}",
+  "@yearInReviewGain": {
+    "placeholders": {
+      "gain": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewMedals": "Medals crossed",
+  "yearInReviewMedal": "{counter} · {tier}",
+  "@yearInReviewMedal": {
+    "placeholders": {
+      "counter": {
+        "type": "String"
+      },
+      "tier": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewBusiest": "Your busiest month was {month}.",
+  "@yearInReviewBusiest": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewGap": "{count, plural, one{Your longest stretch without an import was 1 day, so this describes what you recorded.} other{Your longest stretch without an import was {count} days, so this describes what you recorded.}}",
+  "@yearInReviewGap": {
+    "description": "The honest caveat on everything above: a recap built from a history with a hole is describing what was recorded, not what was done.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yearInReviewEmpty": "There is not enough history in {year} to read it back.",
+  "@yearInReviewEmpty": {
+    "placeholders": {
+      "year": {
+        "type": "String"
+      }
+    }
+  },
+  "yearInReviewEmptyDetail": "Two snapshots in the same year is the least it takes.",
+  "yearInReviewMenu": "Year in review"
 }
