@@ -313,5 +313,8 @@
   "yearInReviewGap": "{count, plural, one{Ta plus longue période sans relevé a duré 1 jour : ceci décrit ce que tu as enregistré.} other{Ta plus longue période sans relevé a duré {count} jours : ceci décrit ce que tu as enregistré.}}",
   "yearInReviewEmpty": "Il n'y a pas assez d'historique en {year} pour la relire.",
   "yearInReviewEmptyDetail": "Deux relevés dans la même année, c'est le minimum.",
-  "yearInReviewMenu": "L'année en revue"
+  "yearInReviewMenu": "L'année en revue",
+  "homeWidgetUnpinnedTitle": "Épingle un compteur",
+  "homeWidgetUnpinnedDetail": "Ouvre FieldTally et épingles-en un depuis le tableau de bord.",
+  "homeWidgetRemaining": "{remaining} avant {tier}"
 }

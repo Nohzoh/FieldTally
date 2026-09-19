@@ -1260,4 +1260,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get yearInReviewMenu => 'L\'année en revue';
+
+  @override
+  String get homeWidgetUnpinnedTitle => 'Épingle un compteur';
+
+  @override
+  String get homeWidgetUnpinnedDetail =>
+      'Ouvre FieldTally et épingles-en un depuis le tableau de bord.';
+
+  @override
+  String homeWidgetRemaining(String remaining, String tier) {
+    return '$remaining avant $tier';
+  }
 }

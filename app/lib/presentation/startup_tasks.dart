@@ -8,11 +8,16 @@ import 'providers/providers.dart';
 
 /// Work kicked off once when the app starts.
 ///
-/// Three tasks: refreshing the counter registry from GitHub Pages (§3.1.4),
-/// asking the same site whether a newer release exists (#34), and re-arming
-/// the "nothing recorded lately" reminder (§3.7). All three are deliberately
-/// fire-and-forget — nothing on screen waits for them, and they fail silently,
-/// because none is worth delaying a frame or showing an error over.
+/// Three fire-and-forget tasks kicked off once: refreshing the counter
+/// registry from GitHub Pages (§3.1.4), asking the same site whether a newer
+/// release exists (#34), and re-arming the "nothing recorded lately" reminder
+/// (§3.7). Nothing on screen waits for them, and they fail silently, because
+/// none is worth delaying a frame or showing an error over.
+///
+/// A fourth task is not fire-once but standing: keeping the home screen
+/// widget in step with the history (#154). That one is a `ref.listen` in
+/// [build] rather than a post-frame callback, because it has to fire again
+/// on every later change too, not just at launch.
 class StartupTasks extends ConsumerStatefulWidget {
   const StartupTasks({super.key, required this.child});
 
@@ -65,6 +70,43 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
     }
   }
 
+  /// Debounced by nothing but Riverpod itself: `snapshotsProvider` and
+  /// `pinnedCountersProvider` only emit when the underlying Drift query's
+  /// result actually changes, so an edit that leaves a pinned counter's value
+  /// untouched does not trigger a rewrite.
+  void _syncHomeWidget() {
+    final snapshots = ref.read(snapshotsProvider);
+    final pinned = ref.read(pinnedCountersProvider);
+    if (!snapshots.hasValue || !pinned.hasValue) return;
+
+    unawaited(_writeHomeWidget());
+  }
+
+  Future<void> _writeHomeWidget() async {
+    try {
+      final l10n = AppLocalizations.of(context);
+      final locale = Localizations.localeOf(context);
+      final summary = ref.read(homeWidgetSummaryProvider);
+      final registry = ref.read(counterRegistryProvider).asData?.value;
+
+      await ref
+          .read(homeWidgetCoordinatorProvider)
+          .sync(
+            summary: summary,
+            l10n: l10n,
+            languageCode: locale.languageCode,
+            registry: registry,
+          );
+    } catch (_) {
+      // Silent by design, like everything else here: a widget one refresh
+      // behind is a stale home screen, not a broken app.
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    ref.listen(snapshotsProvider, (_, _) => _syncHomeWidget());
+    ref.listen(pinnedCountersProvider, (_, _) => _syncHomeWidget());
+    return widget.child;
+  }
 }
