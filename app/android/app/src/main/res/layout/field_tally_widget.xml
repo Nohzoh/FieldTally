@@ -4,6 +4,7 @@
      FieldTallyWidgetProvider toggles which one is visible; only one is ever
      shown, the other collapsed with GONE so it takes no space. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
