@@ -233,6 +233,11 @@
   "filterMedalsTooltip": "Only counters that carry a badge",
   "filterInactive": "Inactive",
   "filterInactiveTooltip": "Include counters that no longer appear in imports",
+  "filterNeverMoved": "Never moved",
+  "@filterNeverMoved": {
+    "description": "Filter chip narrowing the list to counters whose value has never changed across the whole tracked history (#165) — the honest version of \"what am I not doing\", not merely \"still at zero\"."
+  },
+  "filterNeverMovedTooltip": "Only counters whose value has never changed",
   "progressWindowLabel": "Measured over",
   "@progressWindowLabel": {
     "description": "Labels the window the recent-progress ordering measures across. Shown only while that ordering is selected, so the control is never dead (#89)."

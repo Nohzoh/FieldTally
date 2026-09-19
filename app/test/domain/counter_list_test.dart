@@ -15,6 +15,7 @@ TrackedCounter counter(
   int? previous,
   CounterStatus status = CounterStatus.active,
   DateTime? firstSeen,
+  bool hasEverMoved = true,
 }) => TrackedCounter(
   exportHeader: header,
   firstSeen: firstSeen ?? DateTime(2026, 1, 1),
@@ -22,6 +23,7 @@ TrackedCounter counter(
   lastValue: last,
   previousValue: previous,
   status: status,
+  hasEverMoved: hasEverMoved,
 );
 
 List<String> headersOf(List<CounterSection> sections) => [
@@ -281,6 +283,49 @@ void main() {
       ], const CounterQuery(medalsOnly: true));
 
       expect(headersOf(sections), isEmpty);
+    });
+  });
+
+  group('the never-moved filter (#165)', () {
+    test('keeps only counters whose value has never changed', () {
+      final sections = builder.build([
+        counter('Hacks', hasEverMoved: false),
+        counter('Links Created', hasEverMoved: true),
+        counter('Recursions', hasEverMoved: false),
+      ], const CounterQuery(neverMovedOnly: true));
+
+      expect(headersOf(sections)..sort(), ['Hacks', 'Recursions']);
+    });
+
+    test('composes with the search rather than replacing it', () {
+      final sections = builder.build([
+        counter('Hacks', hasEverMoved: false),
+        counter('Links Created', hasEverMoved: false),
+      ], const CounterQuery(neverMovedOnly: true, search: 'links'));
+
+      expect(headersOf(sections), ['Links Created']);
+    });
+
+    test('composes with the inactive filter too', () {
+      final sections = builder.build([
+        counter('Hacks', hasEverMoved: false),
+        counter(
+          'Links Created',
+          hasEverMoved: false,
+          status: CounterStatus.inactive,
+        ),
+      ], const CounterQuery(neverMovedOnly: true, includeInactive: false));
+
+      expect(headersOf(sections), ['Hacks']);
+    });
+
+    test('off by default, so the list is unchanged for anyone ignoring it', () {
+      final sections = builder.build([
+        counter('Hacks', hasEverMoved: false),
+        counter('Recursions', hasEverMoved: true),
+      ], const CounterQuery());
+
+      expect(headersOf(sections)..sort(), ['Hacks', 'Recursions']);
     });
   });
 

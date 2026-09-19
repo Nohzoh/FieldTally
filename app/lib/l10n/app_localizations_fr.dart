@@ -309,6 +309,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Inclure les compteurs qui n\'apparaissent plus dans les imports';
 
   @override
+  String get filterNeverMoved => 'Jamais bougé';
+
+  @override
+  String get filterNeverMovedTooltip =>
+      'Seulement les compteurs dont la valeur n\'a jamais changé';
+
+  @override
   String get progressWindowLabel => 'Mesuré sur';
 
   @override

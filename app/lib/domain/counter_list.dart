@@ -37,6 +37,7 @@ class CounterQuery {
     this.sort = CounterSort.category,
     this.includeInactive = true,
     this.medalsOnly = false,
+    this.neverMovedOnly = false,
     this.window = ProgressWindow.sinceLastSnapshot,
   });
 
@@ -54,6 +55,12 @@ class CounterQuery {
   /// app has the most to say about: a medal, a tier, a projection, a date.
   final bool medalsOnly;
 
+  /// Narrows the list to counters whose value has never changed across the
+  /// whole tracked history — the honest version of "what am I not doing"
+  /// (#165). The natural complement to [CounterSort.recentProgress], which
+  /// answers "how fast", not "at all".
+  final bool neverMovedOnly;
+
   /// How far back [CounterSort.recentProgress] measures (#89).
   final ProgressWindow window;
 
@@ -62,12 +69,14 @@ class CounterQuery {
     CounterSort? sort,
     bool? includeInactive,
     bool? medalsOnly,
+    bool? neverMovedOnly,
     ProgressWindow? window,
   }) => CounterQuery(
     search: search ?? this.search,
     sort: sort ?? this.sort,
     includeInactive: includeInactive ?? this.includeInactive,
     medalsOnly: medalsOnly ?? this.medalsOnly,
+    neverMovedOnly: neverMovedOnly ?? this.neverMovedOnly,
     window: window ?? this.window,
   );
 }
@@ -125,6 +134,10 @@ class CounterListBuilder {
       // nothing qualifies — which is why the screen does not offer the filter
       // until one has loaded, rather than emptying the list without saying so.
       visible = visible.where(carriesMedal);
+    }
+
+    if (query.neverMovedOnly) {
+      visible = visible.where((c) => !c.hasEverMoved);
     }
 
     final search = query.search.trim().toLowerCase();

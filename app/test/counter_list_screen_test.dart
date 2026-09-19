@@ -340,6 +340,50 @@ void main() {
       );
     });
 
+    testWidgets(
+      'the never-moved chip narrows the list to counters at rest (#165)',
+      (tester) async {
+        final repository = await pumpCounterList(tester);
+
+        // Carries every counter of the fixture at its existing value, so
+        // only Explorer has moved between the two snapshots — the same
+        // recipe the onyx-multiplier test uses below.
+        final base = const IngressTsvParser().parseSingle(fixture(allTimePath));
+        await repository.save(
+          StatSnapshot(
+            timeSpan: TimeSpan.allTime,
+            agentName: 'AgentDemo',
+            faction: 'Enlightened',
+            recordedAt: DateTime(2026, 6, 1),
+            counters: {
+              ...base.counters,
+              'Unique Portals Visited':
+                  base.counters['Unique Portals Visited']! + 500,
+            },
+            level: 9,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await search(tester, 'Unique Portals Visited');
+        await tester.tap(find.widgetWithText(FilterChip, 'Never moved'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.widgetWithText(ListTile, 'Unique Portals Visited'),
+          findsNothing,
+          reason: 'it moved between the two snapshots',
+        );
+
+        await search(tester, 'Hacks');
+        expect(
+          find.widgetWithText(ListTile, 'Hacks'),
+          findsOneWidget,
+          reason: 'unchanged across both snapshots',
+        );
+      },
+    );
+
     testWidgets('the inactive filter is a named chip now, not a bare eye', (
       tester,
     ) async {

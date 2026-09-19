@@ -149,4 +149,80 @@ void main() {
       expect(of(counters, 'Orion Tokens').isActive, isFalse);
     });
   });
+
+  group('has this ever moved (#165)', () {
+    test(
+      'a counter seen in only one snapshot has not been observed to move',
+      () {
+        final counters = tracker.track([
+          at(DateTime(2026, 1, 1), {'Hacks': 500}),
+        ]);
+
+        expect(of(counters, 'Hacks').hasEverMoved, isFalse);
+      },
+    );
+
+    test('the same value across every snapshot has not moved', () {
+      final counters = tracker.track([
+        at(DateTime(2026, 1, 1), {'Hacks': 500}),
+        at(DateTime(2026, 1, 10), {'Hacks': 500}),
+        at(DateTime(2026, 1, 20), {'Hacks': 500}),
+      ]);
+
+      expect(of(counters, 'Hacks').hasEverMoved, isFalse);
+    });
+
+    test('a value that changes even once has moved', () {
+      final counters = tracker.track([
+        at(DateTime(2026, 1, 1), {'Hacks': 500}),
+        at(DateTime(2026, 1, 10), {'Hacks': 500}),
+        at(DateTime(2026, 1, 20), {'Hacks': 510}),
+      ]);
+
+      expect(of(counters, 'Hacks').hasEverMoved, isTrue);
+    });
+
+    test('is not the same as "still at zero"', () {
+      // The rejected definition: an Agent Stats history can be imported
+      // starting from a non-zero value, and that counter has still never
+      // moved since this app started watching it.
+      final counters = tracker.track([
+        at(DateTime(2026, 1, 1), {'Hacks': 78000}),
+        at(DateTime(2026, 1, 10), {'Hacks': 78000}),
+      ]);
+
+      expect(of(counters, 'Hacks').lastValue, isNot(0));
+      expect(of(counters, 'Hacks').hasEverMoved, isFalse);
+    });
+
+    test(
+      'sticks once true, even once the value settles back and stays there',
+      () {
+        // The last transition alone (600 -> 600) is not a change. Only
+        // remembering the most recent comparison, rather than accumulating
+        // across the whole history, would wrongly say this counter is at
+        // rest.
+        final counters = tracker.track([
+          at(DateTime(2026, 1, 1), {'Hacks': 500}),
+          at(DateTime(2026, 1, 10), {'Hacks': 600}),
+          at(DateTime(2026, 1, 20), {'Hacks': 600}),
+        ]);
+
+        expect(of(counters, 'Hacks').hasEverMoved, isTrue);
+      },
+    );
+
+    test('a snapshot that did not carry the counter is not a comparison', () {
+      // Absence is not a value (§3.1.2): the counter's actual two
+      // observations are equal, so it has not moved, even though it dropped
+      // out of the middle snapshot.
+      final counters = tracker.track([
+        at(DateTime(2026, 1, 1), {'Orion Tokens': 500}),
+        at(DateTime(2026, 1, 10), {'Hacks': 5}),
+        at(DateTime(2026, 1, 20), {'Orion Tokens': 500}),
+      ]);
+
+      expect(of(counters, 'Orion Tokens').hasEverMoved, isFalse);
+    });
+  });
 }

@@ -306,6 +306,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Include counters that no longer appear in imports';
 
   @override
+  String get filterNeverMoved => 'Never moved';
+
+  @override
+  String get filterNeverMovedTooltip =>
+      'Only counters whose value has never changed';
+
+  @override
   String get progressWindowLabel => 'Measured over';
 
   @override
