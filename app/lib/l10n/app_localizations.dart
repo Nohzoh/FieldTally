@@ -1009,6 +1009,18 @@ abstract class AppLocalizations {
   /// **'{count} snapshots, {counters} counters'**
   String importCsvSummary(int count, int counters);
 
+  /// No description provided for @importCsvIgnored.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 line was not a snapshot and was skipped.} other{{count} lines were not snapshots and were skipped.}}'**
+  String importCsvIgnored(int count);
+
+  /// No description provided for @importCsvHeaderIgnored.
+  ///
+  /// In en, this message translates to:
+  /// **'The column titles did not match the rows, so the documented column order was used instead.'**
+  String get importCsvHeaderIgnored;
+
   /// No description provided for @importCsvRange.
   ///
   /// In en, this message translates to:
@@ -1803,6 +1815,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Read the full notes'**
   String get changelogFullNotes;
+
+  /// Title of the screen reached by tapping a snapshot (#147). Deliberately not "this outing": the app cannot know whether two snapshots bracket an afternoon of play or six idle weeks — the agent chose when to record, and that choice is the only boundary there is.
+  ///
+  /// In en, this message translates to:
+  /// **'What changed'**
+  String get snapshotChangesTitle;
+
+  /// No description provided for @snapshotChangesInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} → {to}'**
+  String snapshotChangesInterval(String from, String to);
+
+  /// How long the interval lasted. Rounded down to whole days, and saying so below one: an afternoon reads as "less than a day" rather than as zero.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{less than a day} one{1 day} other{{count} days}}'**
+  String snapshotChangesSpan(int count);
+
+  /// No description provided for @snapshotChangesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 counter moved} other{{count} counters moved}}'**
+  String snapshotChangesCount(int count);
+
+  /// A counter's two ends on one row. Separate from snapshotChangesInterval, which joins two dates: they read the same today and have no reason to stay identical in every language.
+  ///
+  /// In en, this message translates to:
+  /// **'{from} → {to}'**
+  String snapshotChangesValues(String from, String to);
+
+  /// No description provided for @snapshotChangesNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing moved between these two snapshots.'**
+  String get snapshotChangesNone;
+
+  /// No description provided for @snapshotChangesNoPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your earliest snapshot, so there is nothing before it to compare against.'**
+  String get snapshotChangesNoPrevious;
+
+  /// A ranking of badges by how long each would take at the recent pace, across every counter (#148). Distinct from the counter list's "closest to its next tier" sort, which measures the share of the stretch already crossed — a counter at 95 % of onyx can be four hundred days out.
+  ///
+  /// In en, this message translates to:
+  /// **'Within reach'**
+  String get withinReachTitle;
+
+  /// States the window rather than leaving it assumed: the whole ranking changes with it.
+  ///
+  /// In en, this message translates to:
+  /// **'At your pace over the last 30 days'**
+  String get withinReachWindow;
+
+  /// No description provided for @withinReachDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} · {count, plural, one{about a day} other{about {count} days}}'**
+  String withinReachDays(String tier, int count);
+
+  /// No description provided for @withinReachEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No badge is within reach at your recent pace.'**
+  String get withinReachEmpty;
+
+  /// No description provided for @withinReachEmptyDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'A badge appears here once a counter has moved enough lately to support an honest estimate — and stays out when that estimate would be a guess.'**
+  String get withinReachEmptyDetail;
+
+  /// No description provided for @withinReachNeedsHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Two snapshots are needed before a pace can be measured.'**
+  String get withinReachNeedsHistory;
+
+  /// Shown in Settings only when the project site reports a newer release than the installed build (#34). FieldTally is sideloaded, so nothing else tells an agent that a version exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} is available'**
+  String settingsUpdateAvailable(String version);
+
+  /// No description provided for @settingsUpdateAvailableDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the release page, where you download it yourself. The app never installs anything on its own — that would mean asking Android for the right to install applications, which it does not want.'**
+  String get settingsUpdateAvailableDetail;
+
+  /// Said under the dashboard when a pinned counter moved over the previous month and not at all over the recent one (#149). A fact, not a judgement: the app deliberately says nothing about a counter that merely sped up or slowed down, because saying that would need a threshold nobody can defend.
+  ///
+  /// In en, this message translates to:
+  /// **'{counter} has not moved in the last month'**
+  String paceStopped(String counter);
+
+  /// No description provided for @paceResumed.
+  ///
+  /// In en, this message translates to:
+  /// **'{counter} is moving again'**
+  String paceResumed(String counter);
+
+  /// No description provided for @paceChangesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Since last month'**
+  String get paceChangesTitle;
+
+  /// A year read back, built on the device from the history alone (#153). The roadmap filed this under "would need a server"; it does not.
+  ///
+  /// In en, this message translates to:
+  /// **'{year} in review'**
+  String yearInReviewTitle(String year);
+
+  /// No description provided for @yearInReviewPartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Your history starts on {date}, so this covers part of the year.'**
+  String yearInReviewPartial(String date);
+
+  /// No description provided for @yearInReviewSpan.
+  ///
+  /// In en, this message translates to:
+  /// **'From {from} to {to}'**
+  String yearInReviewSpan(String from, String to);
+
+  /// No description provided for @yearInReviewGains.
+  ///
+  /// In en, this message translates to:
+  /// **'What moved'**
+  String get yearInReviewGains;
+
+  /// No description provided for @yearInReviewGain.
+  ///
+  /// In en, this message translates to:
+  /// **'+{gain}'**
+  String yearInReviewGain(String gain);
+
+  /// No description provided for @yearInReviewMedals.
+  ///
+  /// In en, this message translates to:
+  /// **'Medals crossed'**
+  String get yearInReviewMedals;
+
+  /// No description provided for @yearInReviewMedal.
+  ///
+  /// In en, this message translates to:
+  /// **'{counter} · {tier}'**
+  String yearInReviewMedal(String counter, String tier);
+
+  /// No description provided for @yearInReviewBusiest.
+  ///
+  /// In en, this message translates to:
+  /// **'Your busiest month was {month}.'**
+  String yearInReviewBusiest(String month);
+
+  /// The honest caveat on everything above: a recap built from a history with a hole is describing what was recorded, not what was done.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Your longest stretch without an import was 1 day, so this describes what you recorded.} other{Your longest stretch without an import was {count} days, so this describes what you recorded.}}'**
+  String yearInReviewGap(int count);
+
+  /// No description provided for @yearInReviewEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There is not enough history in {year} to read it back.'**
+  String yearInReviewEmpty(String year);
+
+  /// No description provided for @yearInReviewEmptyDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Two snapshots in the same year is the least it takes.'**
+  String get yearInReviewEmptyDetail;
+
+  /// No description provided for @yearInReviewMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Year in review'**
+  String get yearInReviewMenu;
+
+  /// Shown on the home screen widget when nothing is pinned at all (#154), distinct from homeEmptyTitle which covers pinned-but-no-snapshot-yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin a counter'**
+  String get homeWidgetUnpinnedTitle;
+
+  /// No description provided for @homeWidgetUnpinnedDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Open FieldTally and pin one from the dashboard.'**
+  String get homeWidgetUnpinnedDetail;
+
+  /// Compact form of projectionRemaining for the home screen widget, which has room for a few words rather than a sentence.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} to {tier}'**
+  String homeWidgetRemaining(String remaining, String tier);
 }
 
 class _AppLocalizationsDelegate

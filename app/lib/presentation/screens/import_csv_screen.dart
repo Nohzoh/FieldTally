@@ -49,7 +49,7 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
 
     try {
       final registry = await ref.read(counterRegistryProvider.future);
-      final snapshots = AgentStatsCsvParser(
+      final read = AgentStatsCsvParser(
         registry: registry,
       ).parse(_controller.text);
       final existing = await ref.read(snapshotRepositoryProvider).latest();
@@ -57,9 +57,11 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
       if (!mounted) return;
       setState(() {
         _plan = const CsvImportPlanner().plan(
-          snapshots,
+          read.snapshots,
           existingLatest: existing?.snapshot,
           registry: registry,
+          ignoredLines: read.ignoredLines,
+          headerIgnored: read.headerIgnored,
         );
       });
     } on ExportParseException catch (e) {
@@ -164,6 +166,27 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
                     ),
                     style: theme.textTheme.bodyMedium,
                   ),
+                  // Tolerating a paste off a web page is only honest if what
+                  // was passed over is named: the banner and the pagination
+                  // are skipped by the same rule a damaged row would be (#133).
+                  if (plan.ignoredLines > 0) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.importCsvIgnored(plan.ignoredLines),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.outline,
+                      ),
+                    ),
+                  ],
+                  if (plan.headerIgnored) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.importCsvHeaderIgnored,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.outline,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   // Said out loud rather than left implicit: on this path the
                   // declarative guard simply does not exist.

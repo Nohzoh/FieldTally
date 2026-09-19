@@ -28,6 +28,19 @@ gh issue list --milestone "Next Release" --state open
 Anything still open either gets finished, or moved out of the milestone with
 the reason said out loud. Do not ship a milestone with open issues silently.
 
+Then read the pull requests merged since the last tag, not the milestone alone.
+Every change **to the app** is supposed to answer to an issue (#125, narrowed by
+#144), so for those the two should agree — and where they do not, the missing
+issue is the defect. Open it rather than letting the work go unmentioned.
+
+A pull request that touched only documentation, the site or tooling needs no
+issue and will legitimately be absent from the milestone. It is not a defect;
+mention it in the notes only if a user would notice the difference.
+
+The bump written in the next two steps is the exception (#127), so do not go
+looking for its issue: it is the changelog entry, and cannot be missing from
+itself.
+
 ## 2. Decide the version
 
 `app/pubspec.yaml` carries `version: <name>+<code>`.
@@ -154,7 +167,10 @@ correctly signed APK as unsigned.
 - Rename the milestone to the version, and create a fresh empty **Next
   Release**.
 - Re-read anything that claims a state the release changed: the site's home
-  page, the README, the install page.
+  page, the README, the install page — **in both languages**. The site carries
+  a full English mirror under `docs/en/`, and nothing checks that the two stay
+  in step. Twice now a correction landed in French only, once leaving the
+  English pages telling agents to download a file that does not exist (#137).
 - Tell the user the fingerprint and the commit the build carries.
 
 ## Traps already paid for

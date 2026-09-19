@@ -17,8 +17,14 @@ void main() {
   });
 
   group('bundled registry', () {
-    test('loads with its 59 counters and its categories', () {
-      expect(registry.length, 59);
+    test('loads with its counters and its categories', () {
+      // A floor rather than an exact count. CONTRIBUTING promises that
+      // declaring a counter is "one pull request on this single file, with no
+      // Dart change", and an exact count broke that promise on every single
+      // addition. What the precision was worth is covered better by the test
+      // below, which checks the registry against a real export column by
+      // column; this one only has to catch a seed that failed to parse.
+      expect(registry.length, greaterThan(50));
       expect(registry.categories, contains('discovery'));
       expect(
         registry.categories,

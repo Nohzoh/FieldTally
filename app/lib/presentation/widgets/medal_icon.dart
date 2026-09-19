@@ -418,7 +418,27 @@ const _anomalyGlobalOpEmblems = {
   'apollo_mod_battle_points',
 };
 
-const _anomalyEmblems = {'orion_tokens', 'apollo_tokens'};
+const _anomalyEmblems = {'orion_tokens', 'apollo_tokens', 'cygnus_tokens'};
+
+/// Orion: a coin struck with the belt. Worn by both of its medals (#123).
+void _orionMotif(Canvas c, Paint fill, Paint stroke) {
+  _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
+  _dot(c, fill, 8.5, 15.5, 1.8);
+  _dot(c, fill, 12, 12, 1.8);
+  _dot(c, fill, 15.5, 8.5, 1.8);
+}
+
+/// Apollo: the same coin, struck with the ascent. Worn by both of its medals.
+void _apolloMotif(Canvas c, Paint fill, Paint stroke) {
+  _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
+  c.drawPath(
+    Path()
+      ..moveTo(8.6, 14.2)
+      ..lineTo(12, 9.4)
+      ..lineTo(15.4, 14.2),
+    stroke..strokeWidth = 2.3,
+  );
+}
 
 final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
   // Distance covered: a winding road. No end dots — those belong to the link,
@@ -449,19 +469,27 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
     );
   },
 
-  // A field: three nodes, joined.
+  // Mind units taken: a centre, and the zone it commands.
+  //
+  // The key is a badge name and badge names lie: Illuminator counts mind
+  // units, not fields (#129). What a glyph says comes from the counter's
+  // export header, never from its key.
   'illuminator': (c, fill, stroke) {
-    c.drawPath(
-      Path()
-        ..moveTo(12, 5.2)
-        ..lineTo(18.8, 17.2)
-        ..lineTo(5.2, 17.2)
-        ..close(),
+    _dot(c, fill, 12, 12, 2.9);
+    c.drawArc(
+      Rect.fromCircle(center: const Offset(12, 12), radius: 7.6),
+      -0.9,
+      1.8,
+      false,
+      stroke..strokeWidth = 2.2,
+    );
+    c.drawArc(
+      Rect.fromCircle(center: const Offset(12, 12), radius: 7.6),
+      2.24,
+      1.8,
+      false,
       stroke,
     );
-    _dot(c, fill, 12, 5.2, 2.2);
-    _dot(c, fill, 18.8, 17.2, 2.2);
-    _dot(c, fill, 5.2, 17.2, 2.2);
   },
 
   // Deploying: pieces set around a centre.
@@ -522,23 +550,20 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
     _ring(c, stroke..strokeWidth = 2.1, 12, 19.6, 2.3);
   },
 
-  // Holding ground: a centre, and the zone it commands.
+  // A field: three nodes, joined. Mind Controller counts control fields,
+  // whatever its name suggests (#129).
   'mind_controller': (c, fill, stroke) {
-    _dot(c, fill, 12, 12, 2.9);
-    c.drawArc(
-      Rect.fromCircle(center: const Offset(12, 12), radius: 7.6),
-      -0.9,
-      1.8,
-      false,
-      stroke..strokeWidth = 2.2,
-    );
-    c.drawArc(
-      Rect.fromCircle(center: const Offset(12, 12), radius: 7.6),
-      2.24,
-      1.8,
-      false,
+    c.drawPath(
+      Path()
+        ..moveTo(12, 5.2)
+        ..lineTo(18.8, 17.2)
+        ..lineTo(5.2, 17.2)
+        ..close(),
       stroke,
     );
+    _dot(c, fill, 12, 5.2, 2.2);
+    _dot(c, fill, 18.8, 17.2, 2.2);
+    _dot(c, fill, 5.2, 17.2, 2.2);
   },
 
   // Getting there first: a marker, and rays.
@@ -611,65 +636,35 @@ final _glyphs = <String, void Function(Canvas, Paint, Paint)>{
     );
   },
 
-  // --- the anomaly ladders (#99) ------------------------------------------
+  // --- the anomaly ladders (#99, #123) -------------------------------------
   //
-  // Two per season: the Global Op, measured on what the op counts, and the
-  // Season medal, measured on its tokens. The two token emblems share the
-  // coin on purpose — they measure the same thing in different seasons — and
-  // differ only in what is struck on it.
+  // A season's medals share one motif, because they are the ones that end up
+  // side by side: the counters of a season sit consecutively in the events
+  // category, while medals of different seasons never meet. What each medal
+  // measures is not drawn at all — the rim says which of its season's medals
+  // this is, and the label beside it says the rest.
+  //
+  // So the coin is no longer a mark of "Season medal". It is simply part of
+  // what Orion and Apollo look like, and Cygnus does without one.
+  'orion_link_and_field_points': _orionMotif,
+  'orion_tokens': _orionMotif,
 
-  // Orion's Global Op: link and field points. A field standing on a link —
-  // the base is the heavy span, its two nodes filled.
-  'orion_link_and_field_points': (c, fill, stroke) {
-    c.drawPath(
-      Path()
-        ..moveTo(5.2, 17.8)
-        ..lineTo(12, 5.4)
-        ..lineTo(18.8, 17.8),
-      stroke..strokeWidth = 1.8,
-    );
-    _line(c, stroke..strokeWidth = 2.9, 5.2, 17.8, 18.8, 17.8);
-    _dot(c, fill, 5.2, 17.8, 2.4);
-    _dot(c, fill, 18.8, 17.8, 2.4);
-  },
+  'apollo_mod_battle_points': _apolloMotif,
+  'apollo_tokens': _apolloMotif,
 
-  // Orion's Season medal: tokens. A coin, struck with the belt.
-  'orion_tokens': (c, fill, stroke) {
-    _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
-    _dot(c, fill, 8.5, 15.5, 1.8);
-    _dot(c, fill, 12, 12, 1.8);
-    _dot(c, fill, 15.5, 8.5, 1.8);
-  },
-
-  // Apollo's Global Op: mod battle points. A mod, contested from both sides.
-  'apollo_mod_battle_points': (c, fill, stroke) {
-    _roundRect(c, fill, const Rect.fromLTWH(9.4, 9.4, 5.2, 5.2), 1.2);
+  // Cygnus: the swan itself — two strokes of wing, and the neck rising to a
+  // beak. Its Global Ops have no counter to sit beside yet; when one appears,
+  // it takes this motif too.
+  'cygnus_tokens': (c, fill, stroke) {
     stroke.strokeWidth = 2.2;
+    _line(c, stroke, 5.4, 18.6, 11.4, 11.4);
+    _line(c, stroke, 8.6, 19, 14.6, 11.8);
     c.drawPath(
       Path()
-        ..moveTo(4.8, 7.4)
-        ..lineTo(8, 12)
-        ..lineTo(4.8, 16.6),
+        ..moveTo(13.6, 19.2)
+        ..cubicTo(12.4, 10.4, 17.6, 7.8, 19.2, 10.6)
+        ..lineTo(21, 9.4),
       stroke,
-    );
-    c.drawPath(
-      Path()
-        ..moveTo(19.2, 7.4)
-        ..lineTo(16, 12)
-        ..lineTo(19.2, 16.6),
-      stroke,
-    );
-  },
-
-  // Apollo's Season medal: the same coin, struck with the ascent.
-  'apollo_tokens': (c, fill, stroke) {
-    _ring(c, stroke..strokeWidth = 2.2, 12, 12, 7.4);
-    c.drawPath(
-      Path()
-        ..moveTo(8.6, 14.2)
-        ..lineTo(12, 9.4)
-        ..lineTo(15.4, 14.2),
-      stroke..strokeWidth = 2.3,
     );
   },
 

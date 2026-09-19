@@ -26,7 +26,15 @@ import '../../domain/repositories/goal_repository.dart';
 import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
+import '../../data/updates/update_check_service.dart';
+import '../../domain/badges_within_reach.dart';
+import '../../data/widgets/home_widget_gateway.dart';
+import '../../domain/home_widget_summary.dart';
+import '../../domain/pace_change.dart';
+import '../home_widget_coordinator.dart';
+import '../../domain/year_in_review.dart';
 import '../../domain/share_card.dart';
+import '../../domain/snapshot_changes.dart';
 import '../faction.dart';
 import '../notification_coordinator.dart';
 
@@ -111,6 +119,139 @@ final onlineRegistryUpdatesProvider = StreamProvider<bool>(
 final snapshotsProvider = StreamProvider<List<StoredSnapshot>>(
   (ref) => ref.watch(snapshotRepositoryProvider).watchAll(),
 );
+
+/// Years the history actually touches, newest first (#153).
+final recordedYearsProvider = Provider<List<int>>((ref) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final years = {for (final s in snapshots) s.snapshot.recordedAt.year}.toList()
+    ..sort((a, b) => b.compareTo(a));
+  return years;
+});
+
+/// One year, read back from the history on the device (#153).
+///
+/// Null when the year holds too little to say anything, which the screen
+/// reports rather than drawing an empty page.
+final yearInReviewProvider = Provider.family<YearInReview?, int>((ref, year) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final registry = ref.watch(counterRegistryProvider).asData?.value;
+
+  return YearInReviewBuilder(registry: registry).build(
+    snapshots: [for (final stored in snapshots) stored.snapshot],
+    year: year,
+  );
+});
+
+/// The home screen widget (#154), at arm's length behind an interface so a
+/// test can hand it a fake.
+final homeWidgetGatewayProvider = Provider<HomeWidgetGateway>(
+  (ref) => const PluginHomeWidgetGateway(),
+);
+
+/// Phrases what the widget shows and writes it.
+final homeWidgetCoordinatorProvider = Provider<HomeWidgetCoordinator>(
+  (ref) => HomeWidgetCoordinator(gateway: ref.watch(homeWidgetGatewayProvider)),
+);
+
+/// What the widget would show right now, from the pinned counters and the
+/// history alone — the same builder `sync` reads from before phrasing it.
+final homeWidgetSummaryProvider = Provider<HomeWidgetSummary>((ref) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final pinned = ref.watch(pinnedCountersProvider).asData?.value ?? const [];
+  final registry = ref.watch(counterRegistryProvider).asData?.value;
+
+  return HomeWidgetSummaryBuilder(registry: registry).build(
+    snapshots: [for (final stored in snapshots) stored.snapshot],
+    pinned: pinned,
+  );
+});
+
+/// Counters the agent pinned that started or stopped moving (#149).
+///
+/// Empty is the ordinary answer and must stay cheap to render: most months
+/// nothing has changed, and the dashboard shows nothing rather than a heading
+/// over an empty space.
+final paceChangesProvider = Provider<List<CounterShift>>((ref) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final pinned = ref.watch(pinnedCountersProvider).asData?.value ?? const [];
+
+  return const PaceChangeFinder().find(
+    snapshots: [for (final stored in snapshots) stored.snapshot],
+    pinned: pinned,
+  );
+});
+
+/// Asks the project site whether a newer release exists (#34).
+final updateCheckServiceProvider = Provider<UpdateCheckService>(
+  (ref) => UpdateCheckService(settings: ref.watch(settingsRepositoryProvider)),
+);
+
+/// The newer release to offer, or null — which is the normal case.
+///
+/// Reads the cache rather than the network, so Settings answers instantly and
+/// answers the same offline. The refresh that fills that cache runs at startup
+/// and at most once a day.
+///
+/// Watched rather than read once: the startup check can land while Settings is
+/// already open, and a line that only appears after a restart would be a worse
+/// answer than no line at all.
+final availableUpdateProvider = FutureProvider<LatestRelease?>((ref) async {
+  ref.watch(_cachedLatestReleaseProvider);
+
+  final build = await ref.watch(buildInfoProvider.future);
+  final installed = int.tryParse(build.build);
+  if (installed == null) return null;
+
+  return ref.watch(updateCheckServiceProvider).newerThan(installed);
+});
+
+/// Only there to make [availableUpdateProvider] recompute when the cached file
+/// changes. Its value is deliberately unused — the service reads the row.
+final _cachedLatestReleaseProvider = StreamProvider<String?>(
+  (ref) =>
+      ref.watch(settingsRepositoryProvider).watch(SettingKeys.latestRelease),
+);
+
+/// Badges the recent pace puts within reach, soonest first (#148).
+///
+/// Empty rather than absent when nothing qualifies: "no honest estimate" is a
+/// normal state of this list, not a failure to load.
+final withinReachProvider = Provider<List<ReachableBadge>>((ref) {
+  final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final registry = ref.watch(counterRegistryProvider).asData?.value;
+
+  return const WithinReachBuilder().build(
+    snapshots: [for (final stored in snapshots) stored.snapshot],
+    registry: registry,
+  );
+});
+
+/// What one snapshot recorded that the one before it had not (#147).
+///
+/// Null when the id names the earliest snapshot, which has nothing before it —
+/// and, for the same reason and with the same answer, when it names no
+/// snapshot at all. The screen is reached by tapping a row, so an unknown id
+/// is not a state an agent can arrive in.
+///
+/// Ordered here rather than trusting the repository's order: the pair is
+/// "this snapshot and the one recorded before it", which is a fact about
+/// `recordedAt` and not about the order rows came back in.
+final snapshotChangesProvider = Provider.family<SnapshotChanges?, String>((
+  ref,
+  id,
+) {
+  final stored = ref.watch(snapshotsProvider).asData?.value ?? const [];
+  final registry = ref.watch(counterRegistryProvider).asData?.value;
+
+  final sorted = [...stored]
+    ..sort((a, b) => a.snapshot.recordedAt.compareTo(b.snapshot.recordedAt));
+  final index = sorted.indexWhere((s) => s.id == id);
+  if (index <= 0) return null;
+
+  return SnapshotChangesBuilder(
+    registry: registry,
+  ).between(earlier: sorted[index - 1].snapshot, later: sorted[index].snapshot);
+});
 
 /// Counter state derived from the whole history (§3.1.2, §3.2).
 ///

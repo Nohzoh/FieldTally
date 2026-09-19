@@ -3,8 +3,6 @@ layout: default
 title: Confidentialité
 lang_alt: /en/privacy
 ---
-{% include nav-fr.html %}
-
 # Confidentialité
 
 Cette page est courte parce qu'il n'y a pas grand-chose à dire. Elle sera
@@ -36,18 +34,25 @@ Dans l'autre sens : les chiffres qu'un autre agent t'envoie pour comparaison ne
 sont **jamais** enregistrés. Ils vivent le temps de l'écran et n'entrent pas dans
 ton historique.
 
-## La seule requête réseau
+## Les seules requêtes réseau
 
-L'app télécharge, au démarrage et au plus une fois par jour, un fichier public
-hébergé sur GitHub Pages :
+L'app télécharge, au démarrage et au plus une fois par jour, deux fichiers
+publics hébergés sur GitHub Pages :
 
 ```
 https://nohzoh.github.io/FieldTally/registry/counters.json
+https://nohzoh.github.io/FieldTally/latest.json
 ```
 
-Ce fichier contient les noms, catégories et seuils de médailles des compteurs.
+Le premier contient les noms, catégories et seuils de médailles des compteurs.
 Il permet de nommer correctement un nouveau compteur sans attendre une mise à
 jour de l'app.
+
+Le second dit quelle est la version publiée la plus récente — trois lignes, et
+rien d'autre. L'app s'installe à la main, donc rien ne t'avertirait autrement
+qu'une nouvelle version existe. Elle te le dit dans les Réglages et ouvre la
+page de la version ; **elle n'installe rien d'elle-même**, ce qui demanderait à
+Android le droit d'installer des applications. Elle n'en veut pas.
 
 En détail, pour que ce soit vérifiable plutôt que promis :
 
@@ -57,10 +62,12 @@ En détail, pour que ce soit vérifiable plutôt que promis :
   serveur web voit une visite — adresse IP et type de client. C'est inévitable
   dès qu'un téléchargement a lieu, et c'est la raison pour laquelle il est
   désactivable.
-- **Tu peux la couper** : Réglages → *Mettre à jour en ligne*. L'app fonctionne
-  alors entièrement hors-ligne, avec la copie du fichier embarquée dans l'APK.
-  Aucune fonctionnalité n'est perdue ; seuls les compteurs ajoutés après la
-  version installée resteront sous leur nom d'origine.
+- **Tu peux les couper** : Réglages → *Mettre à jour en ligne*. Un seul
+  réglage gouverne les deux — l'app fonctionne alors entièrement hors-ligne,
+  avec la copie du registre embarquée dans l'APK. Aucune fonctionnalité n'est
+  perdue ; seuls les compteurs ajoutés après la version installée resteront
+  sous leur nom d'origine, et l'app cessera de te signaler les nouvelles
+  versions.
 
 ## Les notifications
 

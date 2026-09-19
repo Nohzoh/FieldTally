@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home screen widget (#154). Rounded to roughly match a modern launcher's
+     own widget corners rather than sitting as a hard-edged rectangle inside
+     one. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/widget_background" />
+    <corners android:radius="20dp" />
+</shape>

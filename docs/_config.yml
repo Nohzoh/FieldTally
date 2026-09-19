@@ -7,7 +7,10 @@ description: >-
   Ingress stats tracking, mobile-first and fully local.
   An unofficial tool, not affiliated with Niantic.
 lang: fr
-theme: jekyll-theme-minimal
+
+# No Jekyll theme: docs/_layouts/default.html and
+# docs/assets/css/site.css are the whole of it (#139). Two files, no
+# toolchain — the deploy stays a plain Jekyll build.
 
 # Directory-style URLs, so the two language trees read as /installer/ and
 # /en/install/ rather than carrying .html around.
