@@ -16,8 +16,8 @@ class FakeHomeWidgetGateway implements HomeWidgetGateway {
   /// `appWidgetId`s [finishConfiguring] was called with, in order.
   final finishedConfiguring = <int>[];
 
-  /// `exportHeader`s [requestPinWidget] was called with, in order.
-  final pinRequests = <String>[];
+  /// Number of times [requestPinWidget] was called.
+  int pinRequests = 0;
 
   /// Set by a test to stand in for a launcher that cannot pin widgets this
   /// way (#181).
@@ -40,8 +40,8 @@ class FakeHomeWidgetGateway implements HomeWidgetGateway {
   }
 
   @override
-  Future<bool> requestPinWidget(String exportHeader) async {
-    pinRequests.add(exportHeader);
+  Future<bool> requestPinWidget() async {
+    pinRequests++;
     return pinWidgetSupported;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import '../../domain/chart_target.dart';
 import '../../domain/counter_series.dart';
 import '../../domain/goal.dart';
 import '../../l10n/app_localizations.dart';
+import '../home_widget_sync.dart';
 import '../providers/providers.dart';
 import '../widgets/badge_projection_card.dart';
 import '../widgets/counter_chart.dart';
@@ -243,22 +246,80 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
   }
 
   /// Places a new widget instance pre-selected to this counter (#181, path
-  /// B). `ScaffoldMessenger` is captured before the `await` rather than read
-  /// from `context` after it, since this widget can be unmounted while the
-  /// platform dialog is up.
+  /// B). Everything needed past the platform dialog — the messenger, the
+  /// language, the `ProviderContainer` itself — is captured before any
+  /// `await`, since this screen can be navigated away from (or unmounted)
+  /// long before the agent finishes that dialog.
   Future<void> _pinWidget(
     BuildContext context,
     String exportHeader,
     AppLocalizations l10n,
   ) async {
     final messenger = ScaffoldMessenger.of(context);
-    final supported = await ref
-        .read(homeWidgetGatewayProvider)
-        .requestPinWidget(exportHeader);
-    if (!supported && mounted) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.counterPinWidgetUnsupported)),
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final container = ProviderScope.containerOf(context, listen: false);
+    final gateway = container.read(homeWidgetGatewayProvider);
+
+    final beforeIds = (await gateway.instanceIds()).toSet();
+    final supported = await gateway.requestPinWidget();
+    if (!supported) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(l10n.counterPinWidgetUnsupported)),
+        );
+      }
+      return;
+    }
+
+    unawaited(
+      _configureNewlyPinnedInstance(
+        container,
+        beforeIds: beforeIds,
+        exportHeader: exportHeader,
+        l10n: l10n,
+        languageCode: languageCode,
+      ),
+    );
+  }
+
+  /// `requestPinAppWidget` places the widget whenever the agent finishes the
+  /// system's own placement dialog — asynchronously, with no direct signal
+  /// for when, or whether, that happens. A native success callback could
+  /// react to it the instant it does, but every shape of that tried here
+  /// (#185) ran into some flavour of Android's background-activity-start
+  /// restrictions on a real device, because firing one means starting an
+  /// activity from outside this app's own foreground. Polling briefly for a
+  /// newly-appeared instance and configuring it the moment one shows up has
+  /// nothing to start at all, only data to write — the same repository call
+  /// `ConfigureWidgetScreen` itself would make.
+  static const _pollInterval = Duration(milliseconds: 500);
+  static const _pollAttempts = 20;
+
+  Future<void> _configureNewlyPinnedInstance(
+    ProviderContainer container, {
+    required Set<int> beforeIds,
+    required String exportHeader,
+    required AppLocalizations l10n,
+    required String languageCode,
+  }) async {
+    final gateway = container.read(homeWidgetGatewayProvider);
+
+    for (var attempt = 0; attempt < _pollAttempts; attempt++) {
+      await Future<void>.delayed(_pollInterval);
+      final ids = await gateway.instanceIds();
+      final newId = ids.where((id) => !beforeIds.contains(id)).firstOrNull;
+      if (newId == null) continue;
+
+      await container
+          .read(widgetInstanceCounterRepositoryProvider)
+          .setPinnedFor(newId, [exportHeader]);
+      await writeHomeWidgetInstance(
+        container,
+        appWidgetId: newId,
+        l10n: l10n,
+        languageCode: languageCode,
       );
+      return;
     }
   }
 }

@@ -21,19 +21,9 @@ import '../providers/providers.dart';
 /// shape (#174), aimed at one instance's own selection instead of the single
 /// shared one every instance used to follow.
 class ConfigureWidgetScreen extends ConsumerStatefulWidget {
-  const ConfigureWidgetScreen({
-    super.key,
-    required this.appWidgetId,
-    this.preselectedCounter,
-  });
+  const ConfigureWidgetScreen({super.key, required this.appWidgetId});
 
   final int appWidgetId;
-
-  /// The counter tapped from `CounterDetailScreen` (#181, path B), if this
-  /// instance was placed that way. Only ever applied to an instance that has
-  /// nothing of its own yet — an instance placed the ordinary way, from the
-  /// launcher, has none.
-  final String? preselectedCounter;
 
   @override
   ConsumerState<ConfigureWidgetScreen> createState() =>
@@ -62,12 +52,7 @@ class _ConfigureWidgetScreenState extends ConsumerState<ConfigureWidgetScreen> {
     if (_selection == null && !pinned.hasValue) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    final ownSelection = pinned.value ?? const [];
-    final preselected = widget.preselectedCounter;
-    final selection = _selection ??= [
-      ...ownSelection,
-      if (ownSelection.isEmpty && preselected != null) preselected,
-    ];
+    final selection = _selection ??= [...?pinned.value];
 
     final builder = CounterListBuilder(registry: registry, language: language);
     final sections = builder.build(
@@ -173,6 +158,7 @@ class _ConfigureWidgetScreenState extends ConsumerState<ConfigureWidgetScreen> {
 
     final l10n = AppLocalizations.of(context);
     final languageCode = Localizations.localeOf(context).languageCode;
+    final container = ProviderScope.containerOf(context, listen: false);
 
     await ref
         .read(widgetInstanceCounterRepositoryProvider)
@@ -181,7 +167,7 @@ class _ConfigureWidgetScreenState extends ConsumerState<ConfigureWidgetScreen> {
     // to trigger: without this the newly-placed widget would show its
     // "unpinned" state until something else happened to touch a snapshot.
     await writeHomeWidgetInstance(
-      ref,
+      container,
       appWidgetId: widget.appWidgetId,
       l10n: l10n,
       languageCode: languageCode,

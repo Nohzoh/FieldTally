@@ -31,17 +31,17 @@ abstract interface class HomeWidgetGateway {
   /// has nothing to report this to.
   Future<void> finishConfiguring(int appWidgetId);
 
-  /// Asks the launcher to place a new widget instance on the home screen,
-  /// pre-selected to [exportHeader] once its configuration activity opens
-  /// (#181, from `CounterDetailScreen`). Returns `false` when the current
-  /// launcher does not support this — a widget can still be placed the
-  /// ordinary way, by long-pressing the home screen.
+  /// Asks the launcher to place a new widget instance on the home screen
+  /// (#181, from `CounterDetailScreen`; #185). Returns `false` when the
+  /// current launcher does not support this — a widget can still be placed
+  /// the ordinary way, by long-pressing the home screen.
   ///
-  /// Bypasses `home_widget`'s own `requestPinWidget()`: that call passes no
-  /// extras, and carrying the counter through to `WidgetConfigureActivity`
-  /// needs Android's own `EXTRA_APPWIDGET_PROVIDER_EXTRAS`, which the plugin
-  /// has no equivalent for.
-  Future<bool> requestPinWidget(String exportHeader);
+  /// The placement itself is asynchronous, whenever the agent finishes the
+  /// launcher's own dialog, with no callback for when — or whether — that
+  /// happens. It is the caller's job to notice the new instance once it
+  /// appears (via [instanceIds]) and configure it, the same way
+  /// `ConfigureWidgetScreen` would.
+  Future<bool> requestPinWidget();
 }
 
 /// Backed by the `home_widget` plugin, plus FieldTally's own small channel
@@ -78,10 +78,8 @@ class PluginHomeWidgetGateway implements HomeWidgetGateway {
       _channel.invokeMethod('finishConfiguring', {'appWidgetId': appWidgetId});
 
   @override
-  Future<bool> requestPinWidget(String exportHeader) async {
-    final supported = await _channel.invokeMethod<bool>('requestPinWidget', {
-      'exportHeader': exportHeader,
-    });
+  Future<bool> requestPinWidget() async {
+    final supported = await _channel.invokeMethod<bool>('requestPinWidget');
     return supported ?? false;
   }
 }

@@ -176,12 +176,13 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
     try {
       final l10n = AppLocalizations.of(context);
       final languageCode = Localizations.localeOf(context).languageCode;
+      final container = ProviderScope.containerOf(context, listen: false);
       final ids = await ref.read(homeWidgetGatewayProvider).instanceIds();
       if (!mounted || ids.isEmpty) return;
 
       for (final id in ids) {
         await writeHomeWidgetInstance(
-          ref,
+          container,
           appWidgetId: id,
           l10n: l10n,
           languageCode: languageCode,

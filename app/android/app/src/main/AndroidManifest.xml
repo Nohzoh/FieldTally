@@ -86,14 +86,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Relays requestPinAppWidget's success callback (#181 path B; #185).
-             Not exported: only ever triggered via the PendingIntent this app
-             creates for it, which carries this app's own identity even when
-             the launcher is what fires it. -->
-        <receiver
-            android:name=".WidgetPinSuccessReceiver"
-            android:exported="false"/>
-
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
