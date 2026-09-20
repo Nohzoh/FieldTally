@@ -74,7 +74,7 @@
         </receiver>
 
         <!-- Picks a widget instance's counters (#181). Exported: the widget
-             host that starts it -- the launcher -- runs in a different app. -->
+             host that starts it, the launcher, runs in a different app. -->
         <activity
             android:name=".WidgetConfigureActivity"
             android:exported="true"
