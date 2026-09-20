@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// Never called from here: WidgetConfigureActivity (native side) looks
+// `configureWidgetMain` up by name at runtime, as a second Dart entry point
+// (#181). Unimported, that file would never reach the AOT compiler's kernel
+// at all, and `@pragma('vm:entry-point')` has nothing to protect from
+// tree-shaking if the code was never compiled in to begin with.
+// ignore: unused_import
+import 'configure_widget_main.dart';
 import 'core/locale_resolution.dart';
 import 'core/router.dart';
 import 'l10n/app_localizations.dart';

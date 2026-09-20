@@ -10,4 +10,5 @@
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/field_tally_widget"
     android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen"
+    android:configure="io.nohzoh.fieldtally.WidgetConfigureActivity" />

@@ -291,4 +291,94 @@ void main() {
       );
     });
   });
+
+  group('cleaning up a removed instance (#181)', () {
+    testWidgets('drops a configuration whose instance is no longer placed', (
+      tester,
+    ) async {
+      final db = FieldTallyDatabase(NativeDatabase.memory());
+      // Only widgetId is reported as still placed -- 99 stands in for one
+      // removed from the home screen before this launch.
+      final gateway = FakeHomeWidgetGateway()..ids = [widgetId];
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          notificationServiceProvider.overrideWithValue(
+            FakeNotificationService(),
+          ),
+          counterRegistryProvider.overrideWith(fixedRegistry),
+          homeWidgetGatewayProvider.overrideWithValue(gateway),
+        ],
+      );
+      addTearDown(db.close);
+      addTearDown(container.dispose);
+
+      const removedId = 99;
+      await container
+          .read(widgetInstanceCounterRepositoryProvider)
+          .setPinnedFor(widgetId, const ['Hacks']);
+      await container
+          .read(widgetInstanceCounterRepositoryProvider)
+          .setPinnedFor(removedId, const ['Recursions']);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const FieldTallyApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        await container
+            .read(widgetInstanceCounterRepositoryProvider)
+            .pinnedFor(widgetId),
+        ['Hacks'],
+      );
+      expect(
+        await container
+            .read(widgetInstanceCounterRepositoryProvider)
+            .pinnedFor(removedId),
+        isEmpty,
+      );
+    });
+
+    testWidgets('never touches an instance still on the home screen', (
+      tester,
+    ) async {
+      final db = FieldTallyDatabase(NativeDatabase.memory());
+      final gateway = FakeHomeWidgetGateway()..ids = [widgetId];
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          notificationServiceProvider.overrideWithValue(
+            FakeNotificationService(),
+          ),
+          counterRegistryProvider.overrideWith(fixedRegistry),
+          homeWidgetGatewayProvider.overrideWithValue(gateway),
+        ],
+      );
+      addTearDown(db.close);
+      addTearDown(container.dispose);
+
+      await container
+          .read(widgetInstanceCounterRepositoryProvider)
+          .setPinnedFor(widgetId, const ['Hacks']);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const FieldTallyApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        await container
+            .read(widgetInstanceCounterRepositoryProvider)
+            .pinnedFor(widgetId),
+        ['Hacks'],
+      );
+    });
+  });
 }

@@ -384,6 +384,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get counterExportHeader => 'Nom de colonne à l\'export';
 
   @override
+  String get counterPinWidget => 'Ajouter à l\'écran d\'accueil';
+
+  @override
+  String get counterPinWidgetUnsupported =>
+      'Ton écran d\'accueil ne permet pas d\'ajouter un widget de cette façon — fais un appui long dessus et ajoute le widget FieldTally manuellement.';
+
+  @override
   String get dashboardTitle => 'FieldTally';
 
   @override

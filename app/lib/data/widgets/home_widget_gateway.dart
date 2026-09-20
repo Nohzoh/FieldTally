@@ -24,6 +24,24 @@ abstract interface class HomeWidgetGateway {
   /// `home_widget` has no equivalent of its own; this is a small channel of
   /// FieldTally's own, registered in `MainActivity`.
   Future<List<int>> instanceIds();
+
+  /// Tells Android the `APPWIDGET_CONFIGURE` flow for [appWidgetId] is done
+  /// (#181), so the widget host finishes placing it. Only meaningful from
+  /// `WidgetConfigureActivity`'s own engine — calling it from the main app
+  /// has nothing to report this to.
+  Future<void> finishConfiguring(int appWidgetId);
+
+  /// Asks the launcher to place a new widget instance on the home screen,
+  /// pre-selected to [exportHeader] once its configuration activity opens
+  /// (#181, from `CounterDetailScreen`). Returns `false` when the current
+  /// launcher does not support this — a widget can still be placed the
+  /// ordinary way, by long-pressing the home screen.
+  ///
+  /// Bypasses `home_widget`'s own `requestPinWidget()`: that call passes no
+  /// extras, and carrying the counter through to `WidgetConfigureActivity`
+  /// needs Android's own `EXTRA_APPWIDGET_PROVIDER_EXTRAS`, which the plugin
+  /// has no equivalent for.
+  Future<bool> requestPinWidget(String exportHeader);
 }
 
 /// Backed by the `home_widget` plugin, plus FieldTally's own small channel
@@ -53,5 +71,17 @@ class PluginHomeWidgetGateway implements HomeWidgetGateway {
   Future<List<int>> instanceIds() async {
     final ids = await _channel.invokeMethod<List<Object?>>('getWidgetIds');
     return [for (final id in ids ?? const []) id as int];
+  }
+
+  @override
+  Future<void> finishConfiguring(int appWidgetId) =>
+      _channel.invokeMethod('finishConfiguring', {'appWidgetId': appWidgetId});
+
+  @override
+  Future<bool> requestPinWidget(String exportHeader) async {
+    final supported = await _channel.invokeMethod<bool>('requestPinWidget', {
+      'exportHeader': exportHeader,
+    });
+    return supported ?? false;
   }
 }

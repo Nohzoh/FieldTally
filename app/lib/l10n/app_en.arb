@@ -291,6 +291,8 @@
     }
   },
   "counterExportHeader": "Export header",
+  "counterPinWidget": "Add to home screen",
+  "counterPinWidgetUnsupported": "Your home screen doesn't support adding a widget this way — long-press it and add FieldTally's widget manually instead.",
   "dashboardTitle": "FieldTally",
   "dashboardEmptyTitle": "Nothing to show yet",
   "dashboardEmptyDetail": "Add a snapshot and your pinned counters will appear here.",

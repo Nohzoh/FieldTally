@@ -4,20 +4,20 @@ import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../domain/home_widget_summary.dart';
 import '../l10n/app_localizations.dart';
+import 'home_widget_sync.dart';
 import 'providers/providers.dart';
 
 /// Work kicked off once when the app starts.
 ///
-/// Four fire-and-forget tasks kicked off once: refreshing the counter
+/// Five fire-and-forget tasks kicked off once: refreshing the counter
 /// registry from GitHub Pages (§3.1.4), asking the same site whether a newer
 /// release exists (#34), re-arming the "nothing recorded lately" reminder
-/// (§3.7), and the one-time widget-selection migration below (#181). Nothing
-/// on screen waits for them, and they fail silently, because none is worth
-/// delaying a frame or showing an error over.
+/// (§3.7), the one-time widget-selection migration, and the removed-instance
+/// cleanup below (#181). Nothing on screen waits for them, and they fail
+/// silently, because none is worth delaying a frame or showing an error over.
 ///
-/// A fifth task is not fire-once but standing: keeping every placed home
+/// A sixth task is not fire-once but standing: keeping every placed home
 /// screen widget instance in step with the history (#154, #181). That one is
 /// a `ref.listen` in [build] rather than a post-frame callback, because it
 /// has to fire again on every later change too, not just at launch.
@@ -45,6 +45,7 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
       unawaited(ref.read(updateCheckServiceProvider).refresh());
       unawaited(_armReminder());
       unawaited(_migrateLegacyWidgetSelection());
+      unawaited(_cleanUpRemovedWidgetInstances());
     });
   }
 
@@ -118,6 +119,39 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
     }
   }
 
+  /// Drops any instance's rows once it is no longer on a home screen (#181)
+  /// — otherwise the per-instance table only ever grows, one orphaned
+  /// configuration per widget ever removed.
+  ///
+  /// Reconciled once per launch against whatever Android currently reports,
+  /// rather than a native `AppWidgetProvider.onDeleted` override reacting to
+  /// the removal itself: that callback runs from a `BroadcastReceiver` with
+  /// no Flutter engine guaranteed alive to reach this database from, and an
+  /// orphaned row is otherwise harmless — nothing reads the table except by
+  /// `appWidgetId`, and `_writeHomeWidget` already only ever writes the
+  /// instances Android currently reports. The trade-off is a removed
+  /// instance's rows outliving it until the app's next launch, which costs
+  /// nothing anyone would notice.
+  Future<void> _cleanUpRemovedWidgetInstances() async {
+    try {
+      final placedIds =
+          (await ref.read(homeWidgetGatewayProvider).instanceIds()).toSet();
+      final db = ref.read(databaseProvider);
+      final configuredIds = {
+        for (final row in await db.select(db.widgetInstanceCounters).get())
+          row.appWidgetId,
+      };
+
+      final repository = ref.read(widgetInstanceCounterRepositoryProvider);
+      for (final id in configuredIds.difference(placedIds)) {
+        await repository.deleteFor(id);
+      }
+    } catch (_) {
+      // Silent by design, like the rest of this file: a cleanup that could
+      // not run just leaves the table exactly as it was, not broken.
+    }
+  }
+
   /// Debounced by nothing but Riverpod itself: `snapshotsProvider` only
   /// emits when the underlying Drift query's result actually changes, so an
   /// edit that leaves every counter's value untouched does not trigger a
@@ -133,10 +167,11 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
   /// (#181) — there is no single shared summary any more.
   ///
   /// Reads each instance's selection with a plain one-shot
-  /// `pinnedFor` rather than watching `widgetInstanceCountersProvider`
-  /// (a `StreamProvider.family`): this runs imperatively, not from a widget's
-  /// `build`, so nothing would ever prompt a second read if the first one
-  /// landed on that family provider's initial `AsyncLoading`.
+  /// `pinnedFor` (inside [writeHomeWidgetInstance]) rather than watching
+  /// `widgetInstanceCountersProvider` (a `StreamProvider.family`): this runs
+  /// imperatively, not from a widget's `build`, so nothing would ever prompt
+  /// a second read if the first one landed on that family provider's initial
+  /// `AsyncLoading`.
   Future<void> _writeHomeWidget() async {
     try {
       final l10n = AppLocalizations.of(context);
@@ -144,24 +179,12 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
       final ids = await ref.read(homeWidgetGatewayProvider).instanceIds();
       if (!mounted || ids.isEmpty) return;
 
-      final snapshots = ref.read(snapshotsProvider).asData?.value ?? const [];
-      final registry = ref.read(counterRegistryProvider).asData?.value;
-      final repository = ref.read(widgetInstanceCounterRepositoryProvider);
-      final coordinator = ref.read(homeWidgetCoordinatorProvider);
-      final builder = HomeWidgetSummaryBuilder(registry: registry);
-
       for (final id in ids) {
-        final pinned = await repository.pinnedFor(id);
-        final summary = builder.build(
-          snapshots: [for (final stored in snapshots) stored.snapshot],
-          pinned: pinned,
-        );
-        await coordinator.sync(
+        await writeHomeWidgetInstance(
+          ref,
           appWidgetId: id,
-          summary: summary,
           l10n: l10n,
           languageCode: languageCode,
-          registry: registry,
         );
       }
     } catch (_) {
