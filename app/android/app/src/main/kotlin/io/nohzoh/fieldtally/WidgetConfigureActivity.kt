@@ -44,17 +44,15 @@ class WidgetConfigureActivity : FlutterActivity() {
     super.onCreate(savedInstanceState)
   }
 
+  // configureWidgetMain lives in lib/main.dart itself (#189) rather than a
+  // separate library: left at its default null, getDartEntrypointLibraryUri()
+  // resolves this name against the *root* library, which is what "Could not
+  // resolve main entrypoint function" turned out to mean when it was declared
+  // in configure_widget_main.dart instead and only imported here -- adding
+  // the override to point at that library's URI was confirmed via adb logcat
+  // to still fail identically against this engine version, so the function
+  // moved rather than the lookup being patched around further.
   override fun getDartEntrypointFunctionName() = "configureWidgetMain"
-
-  // Without this, the engine resolves getDartEntrypointFunctionName() as a
-  // top-level member of the *root* library (lib/main.dart) rather than
-  // searching every imported library -- and configureWidgetMain is only
-  // imported there, not declared there, to let @pragma('vm:entry-point')
-  // protect it from tree-shaking (#189). Left null, `Dart_GetField` on
-  // main.dart's library never finds it: "Could not resolve main entrypoint
-  // function", the engine never starts, and no Dart code -- including any
-  // error handler -- ever runs.
-  override fun getDartEntrypointLibraryUri() = "package:fieldtally/configure_widget_main.dart"
 
   override fun getInitialRoute() = "/configure-widget/$appWidgetId"
 
