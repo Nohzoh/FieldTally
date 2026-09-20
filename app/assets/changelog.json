@@ -251,5 +251,22 @@
         "Correction du texte de progression du widget (« +29 · 1 523 avant Platine ») qui pouvait être coupé en plein milieu d’un mot au lieu de passer à la ligne."
       ]
     }
+  },
+  "13": {
+    "version": "1.11.0",
+    "title": {
+      "en": "One widget per counter you care about",
+      "fr": "Un widget par compteur qui compte pour toi"
+    },
+    "features": {
+      "en": [
+        "You can now place several home screen widgets side by side, each showing its own counters instead of all following one shared selection.",
+        "A counter's own screen has a new \"Add to home screen\" action: it pins a widget there already set to that counter, with no detour through Settings."
+      ],
+      "fr": [
+        "Tu peux maintenant placer plusieurs widgets d’écran d’accueil côte à côte, chacun avec ses propres compteurs au lieu de tous suivre la même sélection.",
+        "L’écran d’un compteur a une nouvelle action « Ajouter à l’écran d’accueil » : elle épingle un widget déjà réglé sur ce compteur, sans détour par les Réglages."
+      ]
+    }
   }
 }
