@@ -115,14 +115,6 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           const Divider(),
-          _SectionHeader(title: l10n.settingsWidgetSection),
-          ListTile(
-            title: Text(l10n.settingsWidgetCounters),
-            subtitle: Text(l10n.settingsWidgetCountersDetail),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.customiseWidgetPins),
-          ),
-          const Divider(),
           _SectionHeader(title: l10n.settingsAppearanceSection),
           ListTile(
             title: Text(l10n.settingsLanguage),

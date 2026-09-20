@@ -12,7 +12,7 @@ import '../../data/repositories/drift_goal_repository.dart';
 import '../../data/repositories/drift_pinned_counter_repository.dart';
 import '../../data/repositories/drift_settings_repository.dart';
 import '../../data/repositories/drift_snapshot_repository.dart';
-import '../../data/repositories/drift_widget_pinned_counter_repository.dart';
+import '../../data/repositories/drift_widget_instance_counter_repository.dart';
 import '../../data/sharing/incoming_share.dart';
 import '../../domain/counter_list.dart';
 import '../../domain/counter_pace.dart';
@@ -27,7 +27,7 @@ import '../../domain/repositories/goal_repository.dart';
 import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
-import '../../domain/repositories/widget_pinned_counter_repository.dart';
+import '../../domain/repositories/widget_instance_counter_repository.dart';
 import '../../data/updates/update_check_service.dart';
 import '../../domain/badges_within_reach.dart';
 import '../../data/widgets/home_widget_gateway.dart';
@@ -155,11 +155,17 @@ final homeWidgetCoordinatorProvider = Provider<HomeWidgetCoordinator>(
   (ref) => HomeWidgetCoordinator(gateway: ref.watch(homeWidgetGatewayProvider)),
 );
 
-/// What the widget would show right now, from its own counter selection and
-/// the history alone — the same builder `sync` reads from before phrasing it.
-final homeWidgetSummaryProvider = Provider<HomeWidgetSummary>((ref) {
+/// What one widget instance would show right now, from its own counter
+/// selection and the history alone (#181) — the same builder `sync` reads
+/// from before phrasing it.
+final homeWidgetSummaryProvider = Provider.family<HomeWidgetSummary, int>((
+  ref,
+  appWidgetId,
+) {
   final snapshots = ref.watch(snapshotsProvider).asData?.value ?? const [];
-  final pinned = ref.watch(widgetPinnedCountersProvider);
+  final pinned =
+      ref.watch(widgetInstanceCountersProvider(appWidgetId)).asData?.value ??
+      const [];
   final registry = ref.watch(counterRegistryProvider).asData?.value;
 
   return HomeWidgetSummaryBuilder(registry: registry).build(
@@ -321,30 +327,20 @@ final pinnedCountersProvider = StreamProvider<List<String>>(
       ),
 );
 
-final widgetPinnedCounterRepositoryProvider =
-    Provider<WidgetPinnedCounterRepository>(
-      (ref) => DriftWidgetPinnedCounterRepository(ref.watch(databaseProvider)),
+final widgetInstanceCounterRepositoryProvider =
+    Provider<WidgetInstanceCounterRepository>(
+      (ref) =>
+          DriftWidgetInstanceCounterRepository(ref.watch(databaseProvider)),
     );
 
-/// The widget's own selection, empty until the agent customises it (#174).
-///
-/// Not private: a test warming [widgetPinnedCountersProvider] needs to await
-/// this stream's own first emission too, the same way it awaits
-/// [pinnedCountersProvider]'s.
-final widgetOwnPinnedCountersProvider = StreamProvider<List<String>>(
-  (ref) => ref.watch(widgetPinnedCounterRepositoryProvider).watchPinned(),
+/// One widget instance's own counter selection (#181), empty until it has
+/// been configured. Family-keyed by `appWidgetId` since each instance is
+/// independent.
+final widgetInstanceCountersProvider = StreamProvider.family<List<String>, int>(
+  (ref, appWidgetId) => ref
+      .watch(widgetInstanceCounterRepositoryProvider)
+      .watchPinnedFor(appWidgetId),
 );
-
-/// Counters shown on the home screen widget (#174): its own selection once
-/// the agent has picked one, otherwise whatever the dashboard currently shows
-/// — live, not a one-time copy, the same way the dashboard itself falls back
-/// to [PinnedCounterRepository.defaults] until it has a selection of its own.
-final widgetPinnedCountersProvider = Provider<List<String>>((ref) {
-  final own = ref.watch(widgetOwnPinnedCountersProvider).asData?.value;
-  if (own != null && own.isNotEmpty) return own;
-  return ref.watch(pinnedCountersProvider).asData?.value ??
-      PinnedCounterRepository.defaults;
-});
 
 /// The dashboard cards, rebuilt whenever the history or the selection changes.
 final dashboardProvider = Provider<AsyncValue<List<DashboardCard>>>((ref) {

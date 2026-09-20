@@ -5,7 +5,6 @@ import '../presentation/screens/compare_screen.dart';
 import '../presentation/screens/counter_detail_screen.dart';
 import '../presentation/screens/counter_list_screen.dart';
 import '../presentation/screens/customise_pins_screen.dart';
-import '../presentation/screens/customise_widget_pins_screen.dart';
 import '../presentation/screens/dashboard_screen.dart';
 import '../presentation/screens/edit_snapshot_screen.dart';
 import '../presentation/screens/import_csv_screen.dart';
@@ -27,11 +26,6 @@ abstract final class Routes {
   static const counters = '/counters';
   static const snapshots = '/snapshots';
   static const customisePins = '/pins';
-
-  /// The widget's own counter selection (#174) — a sibling of
-  /// [customisePins], not nested under it: the two selections are
-  /// independent, and this one is reached from Settings.
-  static const customiseWidgetPins = '/widget-pins';
   static const settings = '/settings';
   static const importCsv = '/import';
 
@@ -107,10 +101,6 @@ GoRouter createRouter() => GoRouter(
         GoRoute(
           path: 'pins',
           builder: (context, state) => const CustomisePinsScreen(),
-        ),
-        GoRoute(
-          path: 'widget-pins',
-          builder: (context, state) => const CustomiseWidgetPinsScreen(),
         ),
         GoRoute(
           path: 'settings',

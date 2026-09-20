@@ -11,12 +11,14 @@ import es.antonborri.home_widget.HomeWidgetPlugin
 import es.antonborri.home_widget.HomeWidgetProvider
 
 /**
- * Home screen widget (#154). Reads the `widget_*` keys `HomeWidgetCoordinator`
- * (Dart side) writes into the same SharedPreferences file and renders one of
- * two mutually exclusive blocks declared in `field_tally_widget.xml`: a
- * one/two-line message, or up to four pinned-counter rows (#177) — how many
- * of those four actually show depends on the widget's current on-screen
- * size, not on how many are pinned.
+ * Home screen widget (#154). Reads the `widget_*_$appWidgetId` keys
+ * `HomeWidgetCoordinator` (Dart side) writes into the same SharedPreferences
+ * file — suffixed per instance since #181, because two placed widgets can
+ * show entirely different counters — and renders one of two mutually
+ * exclusive blocks declared in `field_tally_widget.xml`: a one/two-line
+ * message, or up to four pinned-counter rows (#177) — how many of those four
+ * actually show depends on that instance's current on-screen size, not on how
+ * many are pinned.
  *
  * Class name must stay `FieldTallyWidgetProvider` — it is referenced by
  * string from `PluginHomeWidgetGateway.androidProviderName` on the Dart side
@@ -92,10 +94,10 @@ class FieldTallyWidgetProvider : HomeWidgetProvider() {
     val pendingIntent = HomeWidgetLaunchIntent.getActivity(context, MainActivity::class.java)
     views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
 
-    if (widgetData.getString("widget_state", null) == "data") {
-      showData(views, widgetData, rowsThatFit(appWidgetManager, widgetId))
+    if (widgetData.getString(key("widget_state", widgetId), null) == "data") {
+      showData(views, widgetData, widgetId, rowsThatFit(appWidgetManager, widgetId))
     } else {
-      showMessage(context, views, widgetData)
+      showMessage(context, views, widgetData, widgetId)
     }
 
     appWidgetManager.updateAppWidget(widgetId, views)
@@ -117,24 +119,40 @@ class FieldTallyWidgetProvider : HomeWidgetProvider() {
     return (2 + extraRows).coerceIn(1, rows.size)
   }
 
+  /** Every key `HomeWidgetCoordinator` writes is suffixed with the instance's
+   * `appWidgetId` (#181) — must match `HomeWidgetCoordinator._key` on the
+   * Dart side exactly.
+   */
+  private fun key(root: String, appWidgetId: Int) = "${root}_$appWidgetId"
+
   /** Before the first sync ever runs, both source keys are unset — the
    * layout's own `tools:text`-free defaults never show on a real device, so
    * this falls back to the strings bundled for that moment instead of
    * leaving the TextViews blank.
    */
-  private fun showMessage(context: Context, views: RemoteViews, widgetData: SharedPreferences) {
+  private fun showMessage(
+      context: Context,
+      views: RemoteViews,
+      widgetData: SharedPreferences,
+      widgetId: Int,
+  ) {
     views.setViewVisibility(R.id.widget_message, View.VISIBLE)
     views.setViewVisibility(R.id.widget_data, View.GONE)
 
-    val title = widgetData.getString("widget_title", null)
+    val title = widgetData.getString(key("widget_title", widgetId), null)
         ?: context.getString(R.string.widget_initial_title)
-    val detail = widgetData.getString("widget_detail", null)
+    val detail = widgetData.getString(key("widget_detail", widgetId), null)
         ?: context.getString(R.string.widget_initial_detail)
     views.setTextViewText(R.id.widget_title, title)
     views.setTextViewText(R.id.widget_detail, detail)
   }
 
-  private fun showData(views: RemoteViews, widgetData: SharedPreferences, maxRows: Int) {
+  private fun showData(
+      views: RemoteViews,
+      widgetData: SharedPreferences,
+      widgetId: Int,
+      maxRows: Int,
+  ) {
     views.setViewVisibility(R.id.widget_message, View.GONE)
     views.setViewVisibility(R.id.widget_data, View.VISIBLE)
 
@@ -150,9 +168,9 @@ class FieldTallyWidgetProvider : HomeWidgetProvider() {
       setRow(
           views = views,
           row = row,
-          label = widgetData.getString("widget_label_$index", null),
-          value = widgetData.getString("widget_value_$index", null),
-          line = widgetData.getString("widget_line_$index", null),
+          label = widgetData.getString(key("widget_label_$index", widgetId), null),
+          value = widgetData.getString(key("widget_value_$index", widgetId), null),
+          line = widgetData.getString(key("widget_line_$index", widgetId), null),
           // The first row is always shown once state is "data" — the
           // coordinator never writes "data" with zero lines.
           collapsible = index != 0,

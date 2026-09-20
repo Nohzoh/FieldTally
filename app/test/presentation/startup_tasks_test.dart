@@ -1,7 +1,8 @@
 // The startup-time wiring that has no other test: whether StartupTasks sits
-// where AppLocalizations.of(context) actually resolves, and whether it keeps
-// the home screen widget (#154) in step with later changes, not just the
-// first frame.
+// where AppLocalizations.of(context) actually resolves, whether it keeps
+// every placed home screen widget instance in step with later changes, not
+// just the first frame (#154, #181), and the one-time migration off the old
+// single shared selection (#181).
 //
 // This is the one place the real app shell (FieldTallyApp) gets pumped at
 // all — every other test builds MaterialApp.router directly and never
@@ -13,6 +14,7 @@
 // asserting only "no exception was thrown" would not have, since the
 // swallowed exception throws no test failure either.
 
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:fieldtally/data/db/database.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
@@ -26,6 +28,8 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/fake_home_widget_gateway.dart';
 import '../support/fake_notification_service.dart';
 import '../support/fixed_registry.dart';
+
+const widgetId = 7;
 
 StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
   timeSpan: TimeSpan.allTime,
@@ -41,7 +45,7 @@ void main() {
     tester,
   ) async {
     final db = FieldTallyDatabase(NativeDatabase.memory());
-    final gateway = FakeHomeWidgetGateway();
+    final gateway = FakeHomeWidgetGateway()..ids = [widgetId];
     final container = ProviderContainer(
       overrides: [
         databaseProvider.overrideWithValue(db),
@@ -55,9 +59,10 @@ void main() {
     addTearDown(db.close);
     addTearDown(container.dispose);
 
-    await container.read(pinnedCounterRepositoryProvider).setPinned(const [
-      'Hacks',
-    ]);
+    await container.read(widgetInstanceCounterRepositoryProvider).setPinnedFor(
+      widgetId,
+      const ['Hacks'],
+    );
     await container
         .read(snapshotRepositoryProvider)
         .save(at(DateTime(2026, 1, 1), const {'Hacks': 100}));
@@ -72,9 +77,9 @@ void main() {
 
     // Proves the call site: AppLocalizations.of(context) did not throw and
     // get swallowed. If it had, nothing below would ever have been written.
-    expect(gateway.written['widget_state'], 'data');
-    expect(gateway.written['widget_label_0'], 'Hacks');
-    expect(gateway.written['widget_value_0'], '100');
+    expect(gateway.written['widget_state_$widgetId'], 'data');
+    expect(gateway.written['widget_label_0_$widgetId'], 'Hacks');
+    expect(gateway.written['widget_value_0_$widgetId'], '100');
     expect(gateway.refreshes, greaterThanOrEqualTo(1));
 
     final refreshesAfterLaunch = gateway.refreshes;
@@ -85,8 +90,8 @@ void main() {
         .save(at(DateTime(2026, 1, 2), const {'Hacks': 140}));
     await tester.pumpAndSettle();
 
-    expect(gateway.written['widget_value_0'], '140');
-    expect(gateway.written['widget_line_0'], contains('+40'));
+    expect(gateway.written['widget_value_0_$widgetId'], '140');
+    expect(gateway.written['widget_line_0_$widgetId'], contains('+40'));
     expect(gateway.refreshes, greaterThan(refreshesAfterLaunch));
   });
 
@@ -134,60 +139,156 @@ void main() {
     },
   );
 
-  testWidgets('unpinning falls back to the same defaults the dashboard uses', (
-    tester,
-  ) async {
-    // Checked before writing this test, not assumed: PinnedCounterRepository
-    // enforces a floor of 4 pins in the customise-pins UI, and
-    // pinnedCountersProvider itself substitutes PinnedCounterRepository's
-    // defaults for a genuinely empty repository result. So there is no route
-    // by which this app ever shows an agent nothing pinned at all — the
-    // widget's "unpinned" message exists as a contract HomeWidgetCoordinator
-    // honours (tested directly in home_widget_coordinator_test.dart), not as
-    // a state reachable through this screen. What this app actually does on
-    // "unpin everything" is fall back to the four defaults, same as the
-    // dashboard — which is what this test checks instead.
-    final db = FieldTallyDatabase(NativeDatabase.memory());
-    final gateway = FakeHomeWidgetGateway();
-    final container = ProviderContainer(
-      overrides: [
-        databaseProvider.overrideWithValue(db),
-        notificationServiceProvider.overrideWithValue(
-          FakeNotificationService(),
+  testWidgets(
+    'an unconfigured instance asks to be pinned, rather than borrowing the '
+    'dashboard pins (#181)',
+    (tester) async {
+      // Before #181 an empty widget selection silently followed the
+      // dashboard's own pins. That fallback is gone on purpose: once
+      // instances are independently configurable, an unconfigured one has
+      // nothing sensible to borrow from, so it asks to be set up instead.
+      final db = FieldTallyDatabase(NativeDatabase.memory());
+      final gateway = FakeHomeWidgetGateway()..ids = [widgetId];
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          notificationServiceProvider.overrideWithValue(
+            FakeNotificationService(),
+          ),
+          counterRegistryProvider.overrideWith(fixedRegistry),
+          homeWidgetGatewayProvider.overrideWithValue(gateway),
+        ],
+      );
+      addTearDown(db.close);
+      addTearDown(container.dispose);
+
+      // Dashboard pins deliberately set to something the widget must not
+      // show, so its presence below would prove the fallback still exists.
+      await container.read(pinnedCounterRepositoryProvider).setPinned(const [
+        'Hacks',
+      ]);
+      await container
+          .read(snapshotRepositoryProvider)
+          .save(at(DateTime(2026, 1, 1), const {'Hacks': 100}));
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const FieldTallyApp(),
         ),
-        counterRegistryProvider.overrideWith(fixedRegistry),
-        homeWidgetGatewayProvider.overrideWithValue(gateway),
-      ],
-    );
-    addTearDown(db.close);
-    addTearDown(container.dispose);
+      );
+      await tester.pumpAndSettle();
 
-    // A counter that is not one of the four defaults, so its presence in
-    // the widget afterwards would prove the fallback did not happen.
-    await container.read(pinnedCounterRepositoryProvider).setPinned(const [
-      'Links Created',
-    ]);
-    await container
-        .read(snapshotRepositoryProvider)
-        .save(
-          at(DateTime(2026, 1, 1), const {'Links Created': 3, 'Hacks': 100}),
+      expect(gateway.written['widget_state_$widgetId'], 'unpinned');
+      expect(gateway.written['widget_label_0_$widgetId'], isNull);
+    },
+  );
+
+  group('migrating the old single selection (#181)', () {
+    testWidgets(
+      'copies it into an instance with nothing of its own, and writes at once',
+      (tester) async {
+        final db = FieldTallyDatabase(NativeDatabase.memory());
+        final gateway = FakeHomeWidgetGateway()..ids = [widgetId];
+        final container = ProviderContainer(
+          overrides: [
+            databaseProvider.overrideWithValue(db),
+            notificationServiceProvider.overrideWithValue(
+              FakeNotificationService(),
+            ),
+            counterRegistryProvider.overrideWith(fixedRegistry),
+            homeWidgetGatewayProvider.overrideWithValue(gateway),
+          ],
         );
+        addTearDown(db.close);
+        addTearDown(container.dispose);
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const FieldTallyApp(),
-      ),
+        // Seeded directly: the legacy table has no repository of its own any
+        // more, since nothing should write to it going forward.
+        await db
+            .into(db.widgetPinnedCounters)
+            .insert(
+              const WidgetPinnedCountersCompanion(
+                exportHeader: Value('Hacks'),
+                position: Value(0),
+              ),
+            );
+        await container
+            .read(snapshotRepositoryProvider)
+            .save(at(DateTime(2026, 1, 1), const {'Hacks': 100}));
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const FieldTallyApp(),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          await container
+              .read(widgetInstanceCounterRepositoryProvider)
+              .pinnedFor(widgetId),
+          ['Hacks'],
+        );
+        expect(await db.select(db.widgetPinnedCounters).get(), isEmpty);
+        // Not left for the next history change to happen to trigger: the
+        // migration writes the widget itself once it has copied the
+        // selection across.
+        expect(gateway.written['widget_state_$widgetId'], 'data');
+        expect(gateway.written['widget_label_0_$widgetId'], 'Hacks');
+      },
     );
-    await tester.pumpAndSettle();
-    expect(gateway.written['widget_label_0'], 'Links Created');
 
-    await container.read(pinnedCounterRepositoryProvider).setPinned(const []);
-    await tester.pumpAndSettle();
+    testWidgets('never overwrites an instance already configured on its own', (
+      tester,
+    ) async {
+      final db = FieldTallyDatabase(NativeDatabase.memory());
+      final gateway = FakeHomeWidgetGateway()..ids = [widgetId];
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          notificationServiceProvider.overrideWithValue(
+            FakeNotificationService(),
+          ),
+          counterRegistryProvider.overrideWith(fixedRegistry),
+          homeWidgetGatewayProvider.overrideWithValue(gateway),
+        ],
+      );
+      addTearDown(db.close);
+      addTearDown(container.dispose);
 
-    // Still 'data', not 'unpinned': PinnedCounterRepository.defaults
-    // includes Hacks, which does have a snapshot.
-    expect(gateway.written['widget_state'], 'data');
-    expect(gateway.written['widget_label_0'], isNot('Links Created'));
+      await db
+          .into(db.widgetPinnedCounters)
+          .insert(
+            const WidgetPinnedCountersCompanion(
+              exportHeader: Value('Hacks'),
+              position: Value(0),
+            ),
+          );
+      await container
+          .read(widgetInstanceCounterRepositoryProvider)
+          .setPinnedFor(widgetId, const ['Links Created']);
+      await container
+          .read(snapshotRepositoryProvider)
+          .save(
+            at(DateTime(2026, 1, 1), const {'Hacks': 100, 'Links Created': 3}),
+          );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const FieldTallyApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        await container
+            .read(widgetInstanceCounterRepositoryProvider)
+            .pinnedFor(widgetId),
+        ['Links Created'],
+      );
+    });
   });
 }

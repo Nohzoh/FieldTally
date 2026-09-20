@@ -1,23 +1,26 @@
 import 'dart:async';
 
+import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../domain/home_widget_summary.dart';
 import '../l10n/app_localizations.dart';
 import 'providers/providers.dart';
 
 /// Work kicked off once when the app starts.
 ///
-/// Three fire-and-forget tasks kicked off once: refreshing the counter
+/// Four fire-and-forget tasks kicked off once: refreshing the counter
 /// registry from GitHub Pages (§3.1.4), asking the same site whether a newer
-/// release exists (#34), and re-arming the "nothing recorded lately" reminder
-/// (§3.7). Nothing on screen waits for them, and they fail silently, because
-/// none is worth delaying a frame or showing an error over.
+/// release exists (#34), re-arming the "nothing recorded lately" reminder
+/// (§3.7), and the one-time widget-selection migration below (#181). Nothing
+/// on screen waits for them, and they fail silently, because none is worth
+/// delaying a frame or showing an error over.
 ///
-/// A fourth task is not fire-once but standing: keeping the home screen
-/// widget in step with the history (#154). That one is a `ref.listen` in
-/// [build] rather than a post-frame callback, because it has to fire again
-/// on every later change too, not just at launch.
+/// A fifth task is not fire-once but standing: keeping every placed home
+/// screen widget instance in step with the history (#154, #181). That one is
+/// a `ref.listen` in [build] rather than a post-frame callback, because it
+/// has to fire again on every later change too, not just at launch.
 class StartupTasks extends ConsumerStatefulWidget {
   const StartupTasks({super.key, required this.child});
 
@@ -41,6 +44,7 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
       // to one request a day whatever an agent does with the app.
       unawaited(ref.read(updateCheckServiceProvider).refresh());
       unawaited(_armReminder());
+      unawaited(_migrateLegacyWidgetSelection());
     });
   }
 
@@ -70,33 +74,96 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
     }
   }
 
-  /// Debounced by nothing but Riverpod itself: `snapshotsProvider` and
-  /// `pinnedCountersProvider` only emit when the underlying Drift query's
-  /// result actually changes, so an edit that leaves a pinned counter's value
-  /// untouched does not trigger a rewrite.
+  /// One-time upgrade step (#181). Before #181 the widget had a single
+  /// selection shared by every instance, in what is now the legacy
+  /// `widget_pinned_counters` table. Copies it into any already-placed
+  /// instance that has no per-instance configuration of its own yet, then
+  /// clears the legacy table so this does not run again.
+  ///
+  /// A schema migration cannot do this itself: knowing which `appWidgetId`s
+  /// currently exist means asking Android, and a `MigrationStrategy` callback
+  /// has no platform channel to ask it with.
+  Future<void> _migrateLegacyWidgetSelection() async {
+    try {
+      final db = ref.read(databaseProvider);
+      final legacyRows = await (db.select(
+        db.widgetPinnedCounters,
+      )..orderBy([(t) => OrderingTerm.asc(t.position)])).get();
+      if (legacyRows.isEmpty) return;
+
+      final legacy = [for (final row in legacyRows) row.exportHeader];
+      final ids = await ref.read(homeWidgetGatewayProvider).instanceIds();
+      final perInstance = ref.read(widgetInstanceCounterRepositoryProvider);
+
+      var migratedAny = false;
+      for (final id in ids) {
+        if ((await perInstance.pinnedFor(id)).isEmpty) {
+          await perInstance.setPinnedFor(id, legacy);
+          migratedAny = true;
+        }
+      }
+
+      await db.delete(db.widgetPinnedCounters).go();
+
+      // The per-instance change above is not itself observed by anything
+      // that would trigger a widget refresh — `_syncHomeWidget` only reacts
+      // to the history, not to the selection — so without this an instance
+      // that just inherited the old selection would show it only once the
+      // history next changes.
+      if (migratedAny && mounted) await _writeHomeWidget();
+    } catch (_) {
+      // Silent by design, like the rest of this file: a migration that could
+      // not run leaves an upgrading install exactly as unconfigured as a
+      // fresh one, rather than broken.
+    }
+  }
+
+  /// Debounced by nothing but Riverpod itself: `snapshotsProvider` only
+  /// emits when the underlying Drift query's result actually changes, so an
+  /// edit that leaves every counter's value untouched does not trigger a
+  /// rewrite.
   void _syncHomeWidget() {
     final snapshots = ref.read(snapshotsProvider);
-    final pinned = ref.read(pinnedCountersProvider);
-    if (!snapshots.hasValue || !pinned.hasValue) return;
+    if (!snapshots.hasValue) return;
 
     unawaited(_writeHomeWidget());
   }
 
+  /// Writes every currently-placed widget instance from its own selection
+  /// (#181) — there is no single shared summary any more.
+  ///
+  /// Reads each instance's selection with a plain one-shot
+  /// `pinnedFor` rather than watching `widgetInstanceCountersProvider`
+  /// (a `StreamProvider.family`): this runs imperatively, not from a widget's
+  /// `build`, so nothing would ever prompt a second read if the first one
+  /// landed on that family provider's initial `AsyncLoading`.
   Future<void> _writeHomeWidget() async {
     try {
       final l10n = AppLocalizations.of(context);
-      final locale = Localizations.localeOf(context);
-      final summary = ref.read(homeWidgetSummaryProvider);
-      final registry = ref.read(counterRegistryProvider).asData?.value;
+      final languageCode = Localizations.localeOf(context).languageCode;
+      final ids = await ref.read(homeWidgetGatewayProvider).instanceIds();
+      if (!mounted || ids.isEmpty) return;
 
-      await ref
-          .read(homeWidgetCoordinatorProvider)
-          .sync(
-            summary: summary,
-            l10n: l10n,
-            languageCode: locale.languageCode,
-            registry: registry,
-          );
+      final snapshots = ref.read(snapshotsProvider).asData?.value ?? const [];
+      final registry = ref.read(counterRegistryProvider).asData?.value;
+      final repository = ref.read(widgetInstanceCounterRepositoryProvider);
+      final coordinator = ref.read(homeWidgetCoordinatorProvider);
+      final builder = HomeWidgetSummaryBuilder(registry: registry);
+
+      for (final id in ids) {
+        final pinned = await repository.pinnedFor(id);
+        final summary = builder.build(
+          snapshots: [for (final stored in snapshots) stored.snapshot],
+          pinned: pinned,
+        );
+        await coordinator.sync(
+          appWidgetId: id,
+          summary: summary,
+          l10n: l10n,
+          languageCode: languageCode,
+          registry: registry,
+        );
+      }
     } catch (_) {
       // Silent by design, like everything else here: a widget one refresh
       // behind is a stale home screen, not a broken app.
@@ -106,7 +173,6 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
   @override
   Widget build(BuildContext context) {
     ref.listen(snapshotsProvider, (_, _) => _syncHomeWidget());
-    ref.listen(pinnedCountersProvider, (_, _) => _syncHomeWidget());
     return widget.child;
   }
 }
