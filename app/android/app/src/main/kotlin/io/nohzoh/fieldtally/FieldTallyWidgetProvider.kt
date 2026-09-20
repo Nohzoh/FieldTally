@@ -42,17 +42,17 @@ class FieldTallyWidgetProvider : HomeWidgetProvider() {
           RowIds(R.id.widget_row_3, R.id.widget_label_3, R.id.widget_value_3, R.id.widget_line_3),
       )
 
-  /** `field_tally_widget_info.xml`'s own `minHeight`, sized for exactly two
-   * rows — the fixed cost (title/padding) that a rows-that-fit estimate has
-   * to subtract before dividing by a single row's height.
+  /** `field_tally_widget_info.xml`'s own `minHeight`, sized for exactly one
+   * row (#187) — the fixed cost (title/padding) that a rows-that-fit
+   * estimate has to subtract before dividing by a single row's height.
    */
-  private val baseHeightDp = 110
+  private val baseHeightDp = 70
 
-  /** A row beyond the second adds roughly this much height, from the same
-   * two-rows-at-110dp calibration above. Unverified on a real device (no
-   * Android SDK in the sandbox that wrote this) — worth confirming against
-   * a few real launcher sizes before trusting it far from that calibration
-   * point.
+  /** A row beyond the first adds roughly this much height, derived from the
+   * layout's own per-row margin and content — like [baseHeightDp], estimated
+   * rather than measured. Unverified on a real device (no Android SDK in the
+   * sandbox that wrote this) — worth confirming against a few real launcher
+   * sizes before trusting it far from that calibration point.
    */
   private val extraRowHeightDp = 60
 
@@ -104,19 +104,19 @@ class FieldTallyWidgetProvider : HomeWidgetProvider() {
   }
 
   /** How many of [rows] the widget's current on-screen size can show, from
-   * its reported minimum height. Falls back to two — the size the widget
-   * ships at and the layout's own declared minimum — when the launcher has
-   * not reported a height yet.
+   * its reported minimum height. Falls back to one (#187) — the size the
+   * widget ships at and the layout's own declared minimum — when the
+   * launcher has not reported a height yet.
    */
   private fun rowsThatFit(appWidgetManager: AppWidgetManager, widgetId: Int): Int {
     val heightDp =
         appWidgetManager
             .getAppWidgetOptions(widgetId)
             .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
-    if (heightDp <= 0) return 2
+    if (heightDp <= 0) return 1
 
     val extraRows = (heightDp - baseHeightDp) / extraRowHeightDp
-    return (2 + extraRows).coerceIn(1, rows.size)
+    return (1 + extraRows).coerceIn(1, rows.size)
   }
 
   /** Every key `HomeWidgetCoordinator` writes is suffixed with the instance's
