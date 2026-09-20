@@ -226,5 +226,30 @@
       "en": [],
       "fr": []
     }
+  },
+  "12": {
+    "version": "1.10.0",
+    "title": {
+      "en": "Your own counters on the home screen widget, and room for more of them",
+      "fr": "Tes propres compteurs sur le widget d’écran d’accueil, et de la place pour en voir plus"
+    },
+    "features": {
+      "en": [
+        "The home screen widget now has its own counter selection, separate from your dashboard pins — pick them from a new \"Home screen widget\" section in Settings.",
+        "The widget also grows with you: resize it larger and it shows more of your chosen counters, up to four."
+      ],
+      "fr": [
+        "Le widget d’écran d’accueil a maintenant sa propre sélection de compteurs, indépendante de tes épingles du tableau de bord — choisis-les depuis une nouvelle section « Widget de l’écran d’accueil » dans les Réglages.",
+        "Le widget s’adapte aussi à sa taille : agrandis-le et il affiche plus des compteurs choisis, jusqu’à quatre."
+      ]
+    },
+    "fixes": {
+      "en": [
+        "Fixed the widget's progress text (\"+29 · 1,523 to Platinum\") sometimes being cut off mid-word instead of wrapping onto a second line."
+      ],
+      "fr": [
+        "Correction du texte de progression du widget (« +29 · 1 523 avant Platine ») qui pouvait être coupé en plein milieu d’un mot au lieu de passer à la ligne."
+      ]
+    }
   }
 }
