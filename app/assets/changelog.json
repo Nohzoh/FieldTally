@@ -268,5 +268,24 @@
         "L’écran d’un compteur a une nouvelle action « Ajouter à l’écran d’accueil » : elle épingle un widget déjà réglé sur ce compteur, sans détour par les Réglages."
       ]
     }
+  },
+  "14": {
+    "version": "1.11.1",
+    "title": {
+      "en": "The home screen widget, fixed for real this time",
+      "fr": "Le widget d’écran d’accueil, réparé pour de bon cette fois"
+    },
+    "fixes": {
+      "en": [
+        "Pinning a widget from a counter's own screen now actually configures it to that counter, instead of leaving it blank until you set it up by hand.",
+        "Placing the widget the ordinary way, by long-pressing the home screen, no longer shows a black screen and removes itself — it opens the counter picker like it always should have.",
+        "A widget pinned to a single counter can now shrink to one row instead of always reserving space for two."
+      ],
+      "fr": [
+        "Épingler un widget depuis l’écran d’un compteur le configure maintenant vraiment sur ce compteur, au lieu de le laisser vide jusqu’à ce que tu le règles toi-même.",
+        "Placer le widget de la façon habituelle, en restant appuyé sur l’écran d’accueil, n’affiche plus un écran noir avant de se supprimer tout seul — il ouvre le sélecteur de compteur comme il aurait toujours dû le faire.",
+        "Un widget épinglé sur un seul compteur peut désormais se réduire à une seule ligne au lieu de toujours réserver la place pour deux."
+      ]
+    }
   }
 }
