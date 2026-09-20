@@ -4,8 +4,8 @@ import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../domain/home_widget_summary.dart';
 import '../l10n/app_localizations.dart';
+import 'home_widget_sync.dart';
 import 'providers/providers.dart';
 
 /// Work kicked off once when the app starts.
@@ -133,10 +133,11 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
   /// (#181) — there is no single shared summary any more.
   ///
   /// Reads each instance's selection with a plain one-shot
-  /// `pinnedFor` rather than watching `widgetInstanceCountersProvider`
-  /// (a `StreamProvider.family`): this runs imperatively, not from a widget's
-  /// `build`, so nothing would ever prompt a second read if the first one
-  /// landed on that family provider's initial `AsyncLoading`.
+  /// `pinnedFor` (inside [writeHomeWidgetInstance]) rather than watching
+  /// `widgetInstanceCountersProvider` (a `StreamProvider.family`): this runs
+  /// imperatively, not from a widget's `build`, so nothing would ever prompt
+  /// a second read if the first one landed on that family provider's initial
+  /// `AsyncLoading`.
   Future<void> _writeHomeWidget() async {
     try {
       final l10n = AppLocalizations.of(context);
@@ -144,24 +145,12 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
       final ids = await ref.read(homeWidgetGatewayProvider).instanceIds();
       if (!mounted || ids.isEmpty) return;
 
-      final snapshots = ref.read(snapshotsProvider).asData?.value ?? const [];
-      final registry = ref.read(counterRegistryProvider).asData?.value;
-      final repository = ref.read(widgetInstanceCounterRepositoryProvider);
-      final coordinator = ref.read(homeWidgetCoordinatorProvider);
-      final builder = HomeWidgetSummaryBuilder(registry: registry);
-
       for (final id in ids) {
-        final pinned = await repository.pinnedFor(id);
-        final summary = builder.build(
-          snapshots: [for (final stored in snapshots) stored.snapshot],
-          pinned: pinned,
-        );
-        await coordinator.sync(
+        await writeHomeWidgetInstance(
+          ref,
           appWidgetId: id,
-          summary: summary,
           l10n: l10n,
           languageCode: languageCode,
-          registry: registry,
         );
       }
     } catch (_) {

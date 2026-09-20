@@ -24,6 +24,12 @@ abstract interface class HomeWidgetGateway {
   /// `home_widget` has no equivalent of its own; this is a small channel of
   /// FieldTally's own, registered in `MainActivity`.
   Future<List<int>> instanceIds();
+
+  /// Tells Android the `APPWIDGET_CONFIGURE` flow for [appWidgetId] is done
+  /// (#181), so the widget host finishes placing it. Only meaningful from
+  /// `WidgetConfigureActivity`'s own engine — calling it from the main app
+  /// has nothing to report this to.
+  Future<void> finishConfiguring(int appWidgetId);
 }
 
 /// Backed by the `home_widget` plugin, plus FieldTally's own small channel
@@ -54,4 +60,8 @@ class PluginHomeWidgetGateway implements HomeWidgetGateway {
     final ids = await _channel.invokeMethod<List<Object?>>('getWidgetIds');
     return [for (final id in ids ?? const []) id as int];
   }
+
+  @override
+  Future<void> finishConfiguring(int appWidgetId) =>
+      _channel.invokeMethod('finishConfiguring', {'appWidgetId': appWidgetId});
 }

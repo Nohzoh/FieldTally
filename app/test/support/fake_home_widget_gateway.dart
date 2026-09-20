@@ -13,6 +13,9 @@ class FakeHomeWidgetGateway implements HomeWidgetGateway {
   /// placed (#181). Empty until told otherwise, same as a fresh install.
   List<int> ids = const [];
 
+  /// `appWidgetId`s [finishConfiguring] was called with, in order.
+  final finishedConfiguring = <int>[];
+
   @override
   Future<void> write(String key, String? value) async {
     written[key] = value;
@@ -23,4 +26,9 @@ class FakeHomeWidgetGateway implements HomeWidgetGateway {
 
   @override
   Future<List<int>> instanceIds() async => ids;
+
+  @override
+  Future<void> finishConfiguring(int appWidgetId) async {
+    finishedConfiguring.add(appWidgetId);
+  }
 }
