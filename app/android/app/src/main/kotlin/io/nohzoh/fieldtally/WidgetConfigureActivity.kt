@@ -2,7 +2,6 @@ package io.nohzoh.fieldtally
 
 import android.appwidget.AppWidgetManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -18,21 +17,9 @@ import io.flutter.plugin.common.MethodChannel
 class WidgetConfigureActivity : FlutterActivity() {
   companion object {
     private const val CHANNEL = "io.nohzoh.fieldtally/widget"
-
-    /** Key `MainActivity`'s `requestPinWidget` puts the tapped counter under,
-     * on the intent it targets this activity with directly as
-     * `requestPinAppWidget`'s `successCallback` (#181, path B) --
-     * `requestPinAppWidget`'s own `extras` param never reaches a
-     * configuration activity, so this is carried on our own intent instead,
-     * not through anything the platform forwards. Its own constant rather
-     * than a literal at each end, since nothing else checks the two stay in
-     * step.
-     */
-    const val EXTRA_PRESELECTED_COUNTER = "io.nohzoh.fieldtally.PRESELECTED_COUNTER"
   }
 
   private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-  private var preselectedCounter: String? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     // Android convention: back-pressed without saving must cancel the
@@ -42,13 +29,12 @@ class WidgetConfigureActivity : FlutterActivity() {
     setResult(RESULT_CANCELED)
 
     // Read before super.onCreate(): that call is what creates the Flutter
-    // engine and asks getInitialRoute() for its route, so both have to be
+    // engine and asks getInitialRoute() for its route, so it has to be
     // known before it runs, not after.
     appWidgetId =
         intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
             ?: AppWidgetManager.INVALID_APPWIDGET_ID
-    preselectedCounter = intent?.getStringExtra(EXTRA_PRESELECTED_COUNTER)
 
     if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
       finish()
@@ -58,16 +44,17 @@ class WidgetConfigureActivity : FlutterActivity() {
     super.onCreate(savedInstanceState)
   }
 
+  // configureWidgetMain lives in lib/main.dart itself (#189) rather than a
+  // separate library: left at its default null, getDartEntrypointLibraryUri()
+  // resolves this name against the *root* library, which is what "Could not
+  // resolve main entrypoint function" turned out to mean when it was declared
+  // in configure_widget_main.dart instead and only imported here -- adding
+  // the override to point at that library's URI was confirmed via adb logcat
+  // to still fail identically against this engine version, so the function
+  // moved rather than the lookup being patched around further.
   override fun getDartEntrypointFunctionName() = "configureWidgetMain"
 
-  override fun getInitialRoute(): String {
-    val counter = preselectedCounter
-    return if (counter == null) {
-      "/configure-widget/$appWidgetId"
-    } else {
-      "/configure-widget/$appWidgetId?preselect=${Uri.encode(counter)}"
-    }
-  }
+  override fun getInitialRoute() = "/configure-widget/$appWidgetId"
 
   override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
     super.configureFlutterEngine(flutterEngine)

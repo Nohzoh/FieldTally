@@ -6,22 +6,26 @@ import 'providers/providers.dart';
 
 /// Writes one home screen widget instance from its own selection (#181).
 ///
-/// Shared by [StartupTasks] (which calls this for every placed instance, on
-/// launch and again on every later history change) and
-/// [ConfigureWidgetScreen] (which calls it for just the one instance being
-/// configured, so it shows real data the moment it lands on the home screen
-/// rather than waiting for the next history change to happen to trigger a
-/// sync).
+/// Takes a [ProviderContainer] rather than a `WidgetRef`: [StartupTasks]
+/// obtains its own via `ProviderScope.containerOf`, and the
+/// pin-from-a-counter's-screen flow on `CounterDetailScreen` (#185) needs
+/// one that outlives the screen itself, since its poll for a newly-placed
+/// instance has to keep running even if the agent has since navigated away.
+///
+/// Shared by [StartupTasks] (every placed instance, on launch and on every
+/// later history change) and that poll (just the one instance it placed, the
+/// moment it appears, so it shows real data immediately rather than waiting
+/// for the next history change to happen to trigger a sync).
 Future<void> writeHomeWidgetInstance(
-  WidgetRef ref, {
+  ProviderContainer container, {
   required int appWidgetId,
   required AppLocalizations l10n,
   required String languageCode,
 }) async {
-  final snapshots = ref.read(snapshotsProvider).asData?.value ?? const [];
-  final registry = ref.read(counterRegistryProvider).asData?.value;
-  final repository = ref.read(widgetInstanceCounterRepositoryProvider);
-  final coordinator = ref.read(homeWidgetCoordinatorProvider);
+  final snapshots = container.read(snapshotsProvider).asData?.value ?? const [];
+  final registry = container.read(counterRegistryProvider).asData?.value;
+  final repository = container.read(widgetInstanceCounterRepositoryProvider);
+  final coordinator = container.read(homeWidgetCoordinatorProvider);
   final builder = HomeWidgetSummaryBuilder(registry: registry);
 
   final pinned = await repository.pinnedFor(appWidgetId);

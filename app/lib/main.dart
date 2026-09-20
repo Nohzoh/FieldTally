@@ -2,12 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Never called from here: WidgetConfigureActivity (native side) looks
-// `configureWidgetMain` up by name at runtime, as a second Dart entry point
-// (#181). Unimported, that file would never reach the AOT compiler's kernel
-// at all, and `@pragma('vm:entry-point')` has nothing to protect from
-// tree-shaking if the code was never compiled in to begin with.
-// ignore: unused_import
 import 'configure_widget_main.dart';
 import 'core/locale_resolution.dart';
 import 'core/router.dart';
@@ -18,6 +12,26 @@ import 'presentation/startup_tasks.dart';
 
 void main() {
   runApp(const ProviderScope(child: FieldTallyApp()));
+}
+
+/// Entry point for the small, separate Flutter engine Android starts to run
+/// `WidgetConfigureActivity` (#181, #189) -- the `APPWIDGET_CONFIGURE` flow
+/// the launcher drives when a widget instance is first placed, or reopened
+/// later from its own long-press → Configure.
+///
+/// Declared here, in `main.dart`'s own library, rather than in
+/// `configure_widget_main.dart` where [ConfigureWidgetApp] lives: Android
+/// only sets `getDartEntrypointFunctionName()`, not
+/// `getDartEntrypointLibraryUri()` (#189 first tried adding that override,
+/// confirmed via `adb logcat` to still fail identically -- "Could not
+/// resolve main entrypoint function" -- against this exact engine version),
+/// so the entrypoint is looked up as a top-level member of the *root*
+/// library. `@pragma('vm:entry-point')` is what keeps the AOT compiler from
+/// tree-shaking a function `main()` itself never calls -- it is only ever
+/// looked up by name, from the native side.
+@pragma('vm:entry-point')
+void configureWidgetMain() {
+  runApp(const ProviderScope(child: ConfigureWidgetApp()));
 }
 
 class FieldTallyApp extends ConsumerWidget {
