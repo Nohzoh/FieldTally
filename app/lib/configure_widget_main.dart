@@ -36,9 +36,11 @@ class ConfigureWidgetApp extends StatelessWidget {
     // it for us.
     final route = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
     final uri = Uri.parse(route);
-    final appWidgetId =
-        int.tryParse(uri.pathSegments.lastOrNull ?? '') ??
-        -1; // AppWidgetManager.INVALID_APPWIDGET_ID
+    // 0, not -1: that is AppWidgetManager.INVALID_APPWIDGET_ID's real value.
+    // Unreachable in practice — WidgetConfigureActivity never starts this
+    // engine at all once it has read an invalid id from its own intent — but
+    // worth naming correctly rather than inventing a sentinel of its own.
+    final appWidgetId = int.tryParse(uri.pathSegments.lastOrNull ?? '') ?? 0;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,

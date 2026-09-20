@@ -49,16 +49,18 @@ class MainActivity : FlutterActivity() {
             // documented way to still show one is `successCallback`: fired
             // once the pin succeeds, with the system's own
             // EXTRA_APPWIDGET_ID merged onto whatever intent it targets.
-            // Pointed straight at WidgetConfigureActivity, carrying the
-            // tapped counter as a plain extra of our own.
+            // Targets WidgetPinSuccessReceiver rather than
+            // WidgetConfigureActivity directly (#185) -- a cross-process
+            // activity start via that callback placed the widget without
+            // ever opening the configuration screen on a real device; the
+            // receiver relays into an ordinary same-process activity start
+            // instead.
             val successIntent =
-                Intent(this, WidgetConfigureActivity::class.java).apply {
+                Intent(this, WidgetPinSuccessReceiver::class.java).apply {
                   putExtra(WidgetConfigureActivity.EXTRA_PRESELECTED_COUNTER, exportHeader)
-                  // The launcher fires this from outside any Activity context.
-                  addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
             val successCallback =
-                PendingIntent.getActivity(
+                PendingIntent.getBroadcast(
                     this,
                     0,
                     successIntent,
