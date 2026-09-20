@@ -1,8 +1,9 @@
 package io.nohzoh.fieldtally
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
-import android.os.Bundle
+import android.content.Intent
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -41,20 +42,28 @@ class MainActivity : FlutterActivity() {
             result.success(false)
           } else {
             val provider = ComponentName(this, FieldTallyWidgetProvider::class.java)
-            // Forwarded verbatim into WidgetConfigureActivity's own launch
-            // intent by the widget host, under the same
-            // EXTRA_APPWIDGET_PROVIDER_EXTRAS key -- that is what lets the
-            // configuration screen pre-select this counter rather than
-            // opening empty.
-            val providerExtras =
-                Bundle().apply {
-                  putString(WidgetConfigureActivity.EXTRA_PRESELECTED_COUNTER, exportHeader)
+            // requestPinAppWidget's own `extras` param is for launcher-level
+            // customisation only (e.g. EXTRA_APPWIDGET_PREVIEW) -- it does
+            // NOT reach a configuration activity, and pinning this way skips
+            // that activity entirely rather than launching it. The
+            // documented way to still show one is `successCallback`: fired
+            // once the pin succeeds, with the system's own
+            // EXTRA_APPWIDGET_ID merged onto whatever intent it targets.
+            // Pointed straight at WidgetConfigureActivity, carrying the
+            // tapped counter as a plain extra of our own.
+            val successIntent =
+                Intent(this, WidgetConfigureActivity::class.java).apply {
+                  putExtra(WidgetConfigureActivity.EXTRA_PRESELECTED_COUNTER, exportHeader)
+                  // The launcher fires this from outside any Activity context.
+                  addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-            val extras =
-                Bundle().apply {
-                  putBundle(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_EXTRAS, providerExtras)
-                }
-            result.success(appWidgetManager.requestPinAppWidget(provider, extras, null))
+            val successCallback =
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    successIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
+            result.success(appWidgetManager.requestPinAppWidget(provider, null, successCallback))
           }
         }
         else -> result.notImplemented()

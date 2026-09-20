@@ -20,10 +20,13 @@ class WidgetConfigureActivity : FlutterActivity() {
     private const val CHANNEL = "io.nohzoh.fieldtally/widget"
 
     /** Key `MainActivity`'s `requestPinWidget` puts the tapped counter under,
-     * inside the extras `AppWidgetManager.requestPinAppWidget` forwards into
-     * this activity's own launch intent (#181, path B). Its own constant
-     * rather than a literal at each end, since nothing else checks the two
-     * stay in step.
+     * on the intent it targets this activity with directly as
+     * `requestPinAppWidget`'s `successCallback` (#181, path B) --
+     * `requestPinAppWidget`'s own `extras` param never reaches a
+     * configuration activity, so this is carried on our own intent instead,
+     * not through anything the platform forwards. Its own constant rather
+     * than a literal at each end, since nothing else checks the two stay in
+     * step.
      */
     const val EXTRA_PRESELECTED_COUNTER = "io.nohzoh.fieldtally.PRESELECTED_COUNTER"
   }
@@ -45,11 +48,7 @@ class WidgetConfigureActivity : FlutterActivity() {
         intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
             ?: AppWidgetManager.INVALID_APPWIDGET_ID
-    preselectedCounter =
-        intent
-            ?.extras
-            ?.getBundle(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_EXTRAS)
-            ?.getString(EXTRA_PRESELECTED_COUNTER)
+    preselectedCounter = intent?.getStringExtra(EXTRA_PRESELECTED_COUNTER)
 
     if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
       finish()
