@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart' as plugin;
 
 /// The Android home screen widget, at arm's length from the app (#154).
@@ -16,9 +17,17 @@ abstract interface class HomeWidgetGateway {
   /// been written. Writing without calling this leaves a stale widget on the
   /// home screen until the next scheduled update, hours away.
   Future<void> refresh();
+
+  /// The `appWidgetId`s of every instance currently placed on a home screen
+  /// (#181) — each has its own counter selection, so anything that syncs the
+  /// widget's content needs to know how many there are and which they are.
+  /// `home_widget` has no equivalent of its own; this is a small channel of
+  /// FieldTally's own, registered in `MainActivity`.
+  Future<List<int>> instanceIds();
 }
 
-/// Backed by the `home_widget` plugin.
+/// Backed by the `home_widget` plugin, plus FieldTally's own small channel
+/// for [instanceIds].
 class PluginHomeWidgetGateway implements HomeWidgetGateway {
   const PluginHomeWidgetGateway();
 
@@ -29,6 +38,9 @@ class PluginHomeWidgetGateway implements HomeWidgetGateway {
   /// string typed out at each call site.
   static const androidProviderName = 'FieldTallyWidgetProvider';
 
+  /// Must match the channel name registered in `MainActivity.kt`.
+  static const _channel = MethodChannel('io.nohzoh.fieldtally/widget');
+
   @override
   Future<void> write(String key, String? value) =>
       plugin.HomeWidget.saveWidgetData<String>(key, value);
@@ -36,4 +48,10 @@ class PluginHomeWidgetGateway implements HomeWidgetGateway {
   @override
   Future<void> refresh() =>
       plugin.HomeWidget.updateWidget(androidName: androidProviderName);
+
+  @override
+  Future<List<int>> instanceIds() async {
+    final ids = await _channel.invokeMethod<List<Object?>>('getWidgetIds');
+    return [for (final id in ids ?? const []) id as int];
+  }
 }

@@ -9,6 +9,10 @@ class FakeHomeWidgetGateway implements HomeWidgetGateway {
   final written = <String, String?>{};
   int refreshes = 0;
 
+  /// Set by a test to stand in for whatever the launcher currently has
+  /// placed (#181). Empty until told otherwise, same as a fresh install.
+  List<int> ids = const [];
+
   @override
   Future<void> write(String key, String? value) async {
     written[key] = value;
@@ -16,4 +20,7 @@ class FakeHomeWidgetGateway implements HomeWidgetGateway {
 
   @override
   Future<void> refresh() async => refreshes++;
+
+  @override
+  Future<List<int>> instanceIds() async => ids;
 }

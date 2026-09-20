@@ -65,12 +65,14 @@ class PinnedCounters extends Table {
   Set<Column> get primaryKey => {exportHeader};
 }
 
-/// Counters the user chose to show on the home screen widget (#174),
-/// independently of [PinnedCounters].
+/// The widget's counter selection from before #181 — a single selection
+/// shared by every placed instance.
 ///
-/// Its own table rather than a flag on `PinnedCounters`: the two selections
-/// are allowed to diverge, and an empty table means "follow the dashboard
-/// pins" rather than "nothing", so it cannot simply reuse those rows either.
+/// Superseded by [WidgetInstanceCounters]: once more than one widget can
+/// exist, "the" selection stops meaning anything. Kept only so the one-time
+/// startup migration (`migrateLegacyWidgetSelection`) has somewhere to read
+/// an upgrading install's old choice from; nothing writes to this table any
+/// more, and the migration clears it once it has copied what it found.
 class WidgetPinnedCounters extends Table {
   /// Export header, the stable identity of a counter (§3.1.2).
   TextColumn get exportHeader => text()();
@@ -79,6 +81,23 @@ class WidgetPinnedCounters extends Table {
 
   @override
   Set<Column> get primaryKey => {exportHeader};
+}
+
+/// Counters shown by one particular widget instance (#181).
+///
+/// Keyed by `appWidgetId` — Android's own identifier for a placed widget —
+/// rather than the app assuming there is only one. [position] keeps the
+/// order chosen for that instance.
+class WidgetInstanceCounters extends Table {
+  IntColumn get appWidgetId => integer()();
+
+  /// Export header, the stable identity of a counter (§3.1.2).
+  TextColumn get exportHeader => text()();
+
+  IntColumn get position => integer()();
+
+  @override
+  Set<Column> get primaryKey => {appWidgetId, exportHeader};
 }
 
 /// Small key/value store for preferences and cached remote content.
@@ -126,6 +145,7 @@ class Goals extends Table {
     AppSettings,
     Goals,
     WidgetPinnedCounters,
+    WidgetInstanceCounters,
   ],
 )
 class FieldTallyDatabase extends _$FieldTallyDatabase {
@@ -133,7 +153,7 @@ class FieldTallyDatabase extends _$FieldTallyDatabase {
     : super(executor ?? driftDatabase(name: 'fieldtally'));
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -157,6 +177,12 @@ class FieldTallyDatabase extends _$FieldTallyDatabase {
       // dashboard's pins. Empty means "follow the dashboard pins", which is
       // exactly the state a table with nothing backfilled is in.
       if (from < 6) await m.createTable(widgetPinnedCounters);
+      // v7 replaces that single selection with one per widget instance
+      // (#181) -- see `WidgetInstanceCounters`. The one-time copy from the
+      // old table is a startup task, not part of this migration: it needs
+      // Android's list of currently-placed `appWidgetId`s, which a schema
+      // migration has no way to ask for.
+      if (from < 7) await m.createTable(widgetInstanceCounters);
     },
     beforeOpen: (details) async {
       // Without this, SQLite ignores `onDelete: cascade`: deleting a

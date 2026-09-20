@@ -995,16 +995,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareCardFailed => 'The image could not be produced.';
 
   @override
-  String get settingsWidgetSection => 'Home screen widget';
-
-  @override
-  String get settingsWidgetCounters => 'Widget counters';
-
-  @override
-  String get settingsWidgetCountersDetail =>
-      'Choose which counters the home screen widget shows.';
-
-  @override
   String get settingsAppearanceSection => 'Appearance';
 
   @override

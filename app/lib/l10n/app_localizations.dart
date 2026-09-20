@@ -1672,24 +1672,6 @@ abstract class AppLocalizations {
   /// **'The image could not be produced.'**
   String get shareCardFailed;
 
-  /// No description provided for @settingsWidgetSection.
-  ///
-  /// In en, this message translates to:
-  /// **'Home screen widget'**
-  String get settingsWidgetSection;
-
-  /// No description provided for @settingsWidgetCounters.
-  ///
-  /// In en, this message translates to:
-  /// **'Widget counters'**
-  String get settingsWidgetCounters;
-
-  /// No description provided for @settingsWidgetCountersDetail.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose which counters the home screen widget shows.'**
-  String get settingsWidgetCountersDetail;
-
   /// No description provided for @settingsAppearanceSection.
   ///
   /// In en, this message translates to:

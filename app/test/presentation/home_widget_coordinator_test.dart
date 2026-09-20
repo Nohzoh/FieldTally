@@ -1,4 +1,4 @@
-// What the home screen widget's storage ends up holding (#154).
+// What one widget instance's storage ends up holding (#154, #181).
 
 import 'dart:io';
 
@@ -13,6 +13,14 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/fake_home_widget_gateway.dart';
 
 const seedPath = 'assets/counters_registry_seed.json';
+
+/// The instance every test but the multi-instance one below writes to. A
+/// fixed, arbitrary id: what matters is that keys carry *some* id, not which.
+const widgetId = 42;
+
+/// Builds the suffixed key `HomeWidgetCoordinator` actually writes, for
+/// [widgetId] — see `HomeWidgetCoordinator._key`, which this must match.
+String k(String root, [int id = widgetId]) => '${root}_$id';
 
 HomeWidgetSummary summaryOf(List<HomeWidgetLine> lines, {bool pinned = true}) =>
     HomeWidgetSummary(lines: lines, hasAnyPinned: pinned);
@@ -42,35 +50,38 @@ void main() {
       // Seeded, not left absent — see the same note on the "stale second
       // line" test below: an unwritten key and an explicitly cleared one
       // look identical to a bare map lookup.
-      gateway.written['widget_label_0'] = 'Hacks';
-      gateway.written['widget_line_0'] = '+320';
+      gateway.written[k('widget_label_0')] = 'Hacks';
+      gateway.written[k('widget_line_0')] = '+320';
 
       await coordinator.sync(
+        appWidgetId: widgetId,
         summary: summaryOf(const [], pinned: false),
         l10n: en,
         languageCode: 'en',
       );
 
-      expect(gateway.written['widget_state'], 'unpinned');
-      expect(gateway.written['widget_title'], 'Pin a counter');
-      expect(gateway.written['widget_label_0'], isNull);
-      expect(gateway.written['widget_line_0'], isNull);
+      expect(gateway.written[k('widget_state')], 'unpinned');
+      expect(gateway.written[k('widget_title')], 'Pin a counter');
+      expect(gateway.written[k('widget_label_0')], isNull);
+      expect(gateway.written[k('widget_line_0')], isNull);
     });
 
     test('pinned but nothing recorded yet reads differently', () async {
       await coordinator.sync(
+        appWidgetId: widgetId,
         summary: summaryOf(const []),
         l10n: en,
         languageCode: 'en',
       );
 
-      expect(gateway.written['widget_state'], 'empty');
+      expect(gateway.written[k('widget_state')], 'empty');
       // Shares the dashboard's own empty-state copy, not a new sentence.
-      expect(gateway.written['widget_title'], 'No snapshot yet');
+      expect(gateway.written[k('widget_title')], 'No snapshot yet');
     });
 
     test('refreshes the widget on every sync, message or data', () async {
       await coordinator.sync(
+        appWidgetId: widgetId,
         summary: summaryOf(const [], pinned: false),
         l10n: en,
         languageCode: 'en',
@@ -84,6 +95,7 @@ void main() {
       'joins the value, the delta and the distance to the next tier',
       () async {
         await coordinator.sync(
+          appWidgetId: widgetId,
           summary: summaryOf(const [
             (
               exportHeader: 'Hacks',
@@ -98,15 +110,16 @@ void main() {
           registry: registry,
         );
 
-        expect(gateway.written['widget_state'], 'data');
-        expect(gateway.written['widget_label_0'], 'Hacks');
-        expect(gateway.written['widget_value_0'], '12,450');
-        expect(gateway.written['widget_line_0'], '+320 · 1,200 to Silver');
+        expect(gateway.written[k('widget_state')], 'data');
+        expect(gateway.written[k('widget_label_0')], 'Hacks');
+        expect(gateway.written[k('widget_value_0')], '12,450');
+        expect(gateway.written[k('widget_line_0')], '+320 · 1,200 to Silver');
       },
     );
 
     test('a fall is signed, not silently made positive', () async {
       await coordinator.sync(
+        appWidgetId: widgetId,
         summary: summaryOf(const [
           (
             exportHeader: 'Current AP',
@@ -120,11 +133,12 @@ void main() {
         languageCode: 'en',
       );
 
-      expect(gateway.written['widget_line_0'], '−24,800,000');
+      expect(gateway.written[k('widget_line_0')], '−24,800,000');
     });
 
     test('no delta and no tier is a value with nothing else said', () async {
       await coordinator.sync(
+        appWidgetId: widgetId,
         summary: summaryOf(const [
           (
             exportHeader: 'Hacks',
@@ -138,13 +152,14 @@ void main() {
         languageCode: 'en',
       );
 
-      expect(gateway.written['widget_line_0'], '');
+      expect(gateway.written[k('widget_line_0')], '');
     });
 
     test(
       'without a registry the raw export header stands in for the label',
       () async {
         await coordinator.sync(
+          appWidgetId: widgetId,
           summary: summaryOf(const [
             (
               exportHeader: 'Hacks',
@@ -158,7 +173,7 @@ void main() {
           languageCode: 'en',
         );
 
-        expect(gateway.written['widget_label_0'], 'Hacks');
+        expect(gateway.written[k('widget_label_0')], 'Hacks');
       },
     );
 
@@ -170,12 +185,13 @@ void main() {
         // test that never tells the two apart cannot catch the guard going
         // missing — it did, on the first draft of this test, back when the
         // widget only ever had two slots to clear (#177 raised that to four).
-        gateway.written['widget_label_1'] = 'Links Created';
-        gateway.written['widget_value_1'] = '7';
-        gateway.written['widget_label_3'] = 'Resonators Deployed';
-        gateway.written['widget_value_3'] = '12';
+        gateway.written[k('widget_label_1')] = 'Links Created';
+        gateway.written[k('widget_value_1')] = '7';
+        gateway.written[k('widget_label_3')] = 'Resonators Deployed';
+        gateway.written[k('widget_value_3')] = '12';
 
         await coordinator.sync(
+          appWidgetId: widgetId,
           summary: summaryOf(const [
             (
               exportHeader: 'Hacks',
@@ -190,15 +206,16 @@ void main() {
           registry: registry,
         );
 
-        expect(gateway.written['widget_label_1'], isNull);
-        expect(gateway.written['widget_value_1'], isNull);
-        expect(gateway.written['widget_label_3'], isNull);
-        expect(gateway.written['widget_value_3'], isNull);
+        expect(gateway.written[k('widget_label_1')], isNull);
+        expect(gateway.written[k('widget_value_1')], isNull);
+        expect(gateway.written[k('widget_label_3')], isNull);
+        expect(gateway.written[k('widget_value_3')], isNull);
       },
     );
 
     test('four pinned counters write all four rows', () async {
       await coordinator.sync(
+        appWidgetId: widgetId,
         summary: summaryOf(const [
           (
             exportHeader: 'Hacks',
@@ -233,14 +250,15 @@ void main() {
         languageCode: 'en',
       );
 
-      expect(gateway.written['widget_value_0'], '1');
-      expect(gateway.written['widget_value_1'], '2');
-      expect(gateway.written['widget_value_2'], '3');
-      expect(gateway.written['widget_value_3'], '4');
+      expect(gateway.written[k('widget_value_0')], '1');
+      expect(gateway.written[k('widget_value_1')], '2');
+      expect(gateway.written[k('widget_value_2')], '3');
+      expect(gateway.written[k('widget_value_3')], '4');
     });
 
     test('numbers and the tier name follow the language asked for', () async {
       await coordinator.sync(
+        appWidgetId: widgetId,
         summary: summaryOf(const [
           (
             exportHeader: 'Hacks',
@@ -260,9 +278,52 @@ void main() {
       // actual output, not assumed), reproduced here rather than typed by
       // eye so the test does not silently compare two characters that merely
       // look alike.
-      const nnbsp = '\u202F';
-      expect(gateway.written['widget_value_0'], '12${nnbsp}450');
-      expect(gateway.written['widget_line_0'], '1${nnbsp}200 avant Argent');
+      const nnbsp = ' ';
+      expect(gateway.written[k('widget_value_0')], '12${nnbsp}450');
+      expect(gateway.written[k('widget_line_0')], '1${nnbsp}200 avant Argent');
+    });
+  });
+
+  group('more than one instance (#181)', () {
+    test('two instances keep entirely separate keys', () async {
+      const otherId = 99;
+
+      await coordinator.sync(
+        appWidgetId: widgetId,
+        summary: summaryOf(const [
+          (
+            exportHeader: 'Hacks',
+            value: 1,
+            delta: null,
+            nextTier: null,
+            remainingToNextTier: null,
+          ),
+        ]),
+        l10n: en,
+        languageCode: 'en',
+      );
+      await coordinator.sync(
+        appWidgetId: otherId,
+        summary: summaryOf(const [
+          (
+            exportHeader: 'Unique Portals Visited',
+            value: 2,
+            delta: null,
+            nextTier: null,
+            remainingToNextTier: null,
+          ),
+        ]),
+        l10n: en,
+        languageCode: 'en',
+      );
+
+      expect(gateway.written[k('widget_label_0')], 'Hacks');
+      expect(gateway.written[k('widget_value_0')], '1');
+      expect(
+        gateway.written[k('widget_label_0', otherId)],
+        'Unique Portals Visited',
+      );
+      expect(gateway.written[k('widget_value_0', otherId)], '2');
     });
   });
 }

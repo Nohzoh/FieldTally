@@ -1745,6 +1745,291 @@ class WidgetPinnedCountersCompanion
   }
 }
 
+class $WidgetInstanceCountersTable extends WidgetInstanceCounters
+    with TableInfo<$WidgetInstanceCountersTable, WidgetInstanceCounter> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WidgetInstanceCountersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _appWidgetIdMeta = const VerificationMeta(
+    'appWidgetId',
+  );
+  @override
+  late final GeneratedColumn<int> appWidgetId = GeneratedColumn<int>(
+    'app_widget_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exportHeaderMeta = const VerificationMeta(
+    'exportHeader',
+  );
+  @override
+  late final GeneratedColumn<String> exportHeader = GeneratedColumn<String>(
+    'export_header',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [appWidgetId, exportHeader, position];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'widget_instance_counters';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WidgetInstanceCounter> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('app_widget_id')) {
+      context.handle(
+        _appWidgetIdMeta,
+        appWidgetId.isAcceptableOrUnknown(
+          data['app_widget_id']!,
+          _appWidgetIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_appWidgetIdMeta);
+    }
+    if (data.containsKey('export_header')) {
+      context.handle(
+        _exportHeaderMeta,
+        exportHeader.isAcceptableOrUnknown(
+          data['export_header']!,
+          _exportHeaderMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_exportHeaderMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {appWidgetId, exportHeader};
+  @override
+  WidgetInstanceCounter map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WidgetInstanceCounter(
+      appWidgetId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}app_widget_id'],
+      )!,
+      exportHeader: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}export_header'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+    );
+  }
+
+  @override
+  $WidgetInstanceCountersTable createAlias(String alias) {
+    return $WidgetInstanceCountersTable(attachedDatabase, alias);
+  }
+}
+
+class WidgetInstanceCounter extends DataClass
+    implements Insertable<WidgetInstanceCounter> {
+  final int appWidgetId;
+
+  /// Export header, the stable identity of a counter (§3.1.2).
+  final String exportHeader;
+  final int position;
+  const WidgetInstanceCounter({
+    required this.appWidgetId,
+    required this.exportHeader,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['app_widget_id'] = Variable<int>(appWidgetId);
+    map['export_header'] = Variable<String>(exportHeader);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  WidgetInstanceCountersCompanion toCompanion(bool nullToAbsent) {
+    return WidgetInstanceCountersCompanion(
+      appWidgetId: Value(appWidgetId),
+      exportHeader: Value(exportHeader),
+      position: Value(position),
+    );
+  }
+
+  factory WidgetInstanceCounter.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WidgetInstanceCounter(
+      appWidgetId: serializer.fromJson<int>(json['appWidgetId']),
+      exportHeader: serializer.fromJson<String>(json['exportHeader']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'appWidgetId': serializer.toJson<int>(appWidgetId),
+      'exportHeader': serializer.toJson<String>(exportHeader),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  WidgetInstanceCounter copyWith({
+    int? appWidgetId,
+    String? exportHeader,
+    int? position,
+  }) => WidgetInstanceCounter(
+    appWidgetId: appWidgetId ?? this.appWidgetId,
+    exportHeader: exportHeader ?? this.exportHeader,
+    position: position ?? this.position,
+  );
+  WidgetInstanceCounter copyWithCompanion(
+    WidgetInstanceCountersCompanion data,
+  ) {
+    return WidgetInstanceCounter(
+      appWidgetId: data.appWidgetId.present
+          ? data.appWidgetId.value
+          : this.appWidgetId,
+      exportHeader: data.exportHeader.present
+          ? data.exportHeader.value
+          : this.exportHeader,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WidgetInstanceCounter(')
+          ..write('appWidgetId: $appWidgetId, ')
+          ..write('exportHeader: $exportHeader, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(appWidgetId, exportHeader, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WidgetInstanceCounter &&
+          other.appWidgetId == this.appWidgetId &&
+          other.exportHeader == this.exportHeader &&
+          other.position == this.position);
+}
+
+class WidgetInstanceCountersCompanion
+    extends UpdateCompanion<WidgetInstanceCounter> {
+  final Value<int> appWidgetId;
+  final Value<String> exportHeader;
+  final Value<int> position;
+  final Value<int> rowid;
+  const WidgetInstanceCountersCompanion({
+    this.appWidgetId = const Value.absent(),
+    this.exportHeader = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WidgetInstanceCountersCompanion.insert({
+    required int appWidgetId,
+    required String exportHeader,
+    required int position,
+    this.rowid = const Value.absent(),
+  }) : appWidgetId = Value(appWidgetId),
+       exportHeader = Value(exportHeader),
+       position = Value(position);
+  static Insertable<WidgetInstanceCounter> custom({
+    Expression<int>? appWidgetId,
+    Expression<String>? exportHeader,
+    Expression<int>? position,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (appWidgetId != null) 'app_widget_id': appWidgetId,
+      if (exportHeader != null) 'export_header': exportHeader,
+      if (position != null) 'position': position,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WidgetInstanceCountersCompanion copyWith({
+    Value<int>? appWidgetId,
+    Value<String>? exportHeader,
+    Value<int>? position,
+    Value<int>? rowid,
+  }) {
+    return WidgetInstanceCountersCompanion(
+      appWidgetId: appWidgetId ?? this.appWidgetId,
+      exportHeader: exportHeader ?? this.exportHeader,
+      position: position ?? this.position,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (appWidgetId.present) {
+      map['app_widget_id'] = Variable<int>(appWidgetId.value);
+    }
+    if (exportHeader.present) {
+      map['export_header'] = Variable<String>(exportHeader.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WidgetInstanceCountersCompanion(')
+          ..write('appWidgetId: $appWidgetId, ')
+          ..write('exportHeader: $exportHeader, ')
+          ..write('position: $position, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$FieldTallyDatabase extends GeneratedDatabase {
   _$FieldTallyDatabase(QueryExecutor e) : super(e);
   $FieldTallyDatabaseManager get managers => $FieldTallyDatabaseManager(this);
@@ -1755,6 +2040,8 @@ abstract class _$FieldTallyDatabase extends GeneratedDatabase {
   late final $GoalsTable goals = $GoalsTable(this);
   late final $WidgetPinnedCountersTable widgetPinnedCounters =
       $WidgetPinnedCountersTable(this);
+  late final $WidgetInstanceCountersTable widgetInstanceCounters =
+      $WidgetInstanceCountersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1766,6 +2053,7 @@ abstract class _$FieldTallyDatabase extends GeneratedDatabase {
     appSettings,
     goals,
     widgetPinnedCounters,
+    widgetInstanceCounters,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -3089,6 +3377,203 @@ typedef $$WidgetPinnedCountersTableProcessedTableManager =
       WidgetPinnedCounter,
       PrefetchHooks Function()
     >;
+typedef $$WidgetInstanceCountersTableCreateCompanionBuilder =
+    WidgetInstanceCountersCompanion Function({
+      required int appWidgetId,
+      required String exportHeader,
+      required int position,
+      Value<int> rowid,
+    });
+typedef $$WidgetInstanceCountersTableUpdateCompanionBuilder =
+    WidgetInstanceCountersCompanion Function({
+      Value<int> appWidgetId,
+      Value<String> exportHeader,
+      Value<int> position,
+      Value<int> rowid,
+    });
+
+class $$WidgetInstanceCountersTableFilterComposer
+    extends Composer<_$FieldTallyDatabase, $WidgetInstanceCountersTable> {
+  $$WidgetInstanceCountersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get appWidgetId => $composableBuilder(
+    column: $table.appWidgetId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exportHeader => $composableBuilder(
+    column: $table.exportHeader,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WidgetInstanceCountersTableOrderingComposer
+    extends Composer<_$FieldTallyDatabase, $WidgetInstanceCountersTable> {
+  $$WidgetInstanceCountersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get appWidgetId => $composableBuilder(
+    column: $table.appWidgetId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exportHeader => $composableBuilder(
+    column: $table.exportHeader,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WidgetInstanceCountersTableAnnotationComposer
+    extends Composer<_$FieldTallyDatabase, $WidgetInstanceCountersTable> {
+  $$WidgetInstanceCountersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get appWidgetId => $composableBuilder(
+    column: $table.appWidgetId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get exportHeader => $composableBuilder(
+    column: $table.exportHeader,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+}
+
+class $$WidgetInstanceCountersTableTableManager
+    extends
+        RootTableManager<
+          _$FieldTallyDatabase,
+          $WidgetInstanceCountersTable,
+          WidgetInstanceCounter,
+          $$WidgetInstanceCountersTableFilterComposer,
+          $$WidgetInstanceCountersTableOrderingComposer,
+          $$WidgetInstanceCountersTableAnnotationComposer,
+          $$WidgetInstanceCountersTableCreateCompanionBuilder,
+          $$WidgetInstanceCountersTableUpdateCompanionBuilder,
+          (
+            WidgetInstanceCounter,
+            BaseReferences<
+              _$FieldTallyDatabase,
+              $WidgetInstanceCountersTable,
+              WidgetInstanceCounter
+            >,
+          ),
+          WidgetInstanceCounter,
+          PrefetchHooks Function()
+        > {
+  $$WidgetInstanceCountersTableTableManager(
+    _$FieldTallyDatabase db,
+    $WidgetInstanceCountersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WidgetInstanceCountersTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$WidgetInstanceCountersTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$WidgetInstanceCountersTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> appWidgetId = const Value.absent(),
+                Value<String> exportHeader = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WidgetInstanceCountersCompanion(
+                appWidgetId: appWidgetId,
+                exportHeader: exportHeader,
+                position: position,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int appWidgetId,
+                required String exportHeader,
+                required int position,
+                Value<int> rowid = const Value.absent(),
+              }) => WidgetInstanceCountersCompanion.insert(
+                appWidgetId: appWidgetId,
+                exportHeader: exportHeader,
+                position: position,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $WidgetInstanceCountersTable,
+                    WidgetInstanceCounter
+                  >(table),
+                  BaseReferences<
+                    _$FieldTallyDatabase,
+                    $WidgetInstanceCountersTable,
+                    WidgetInstanceCounter
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WidgetInstanceCountersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$FieldTallyDatabase,
+      $WidgetInstanceCountersTable,
+      WidgetInstanceCounter,
+      $$WidgetInstanceCountersTableFilterComposer,
+      $$WidgetInstanceCountersTableOrderingComposer,
+      $$WidgetInstanceCountersTableAnnotationComposer,
+      $$WidgetInstanceCountersTableCreateCompanionBuilder,
+      $$WidgetInstanceCountersTableUpdateCompanionBuilder,
+      (
+        WidgetInstanceCounter,
+        BaseReferences<
+          _$FieldTallyDatabase,
+          $WidgetInstanceCountersTable,
+          WidgetInstanceCounter
+        >,
+      ),
+      WidgetInstanceCounter,
+      PrefetchHooks Function()
+    >;
 
 class $FieldTallyDatabaseManager {
   final _$FieldTallyDatabase _db;
@@ -3105,4 +3590,9 @@ class $FieldTallyDatabaseManager {
       $$GoalsTableTableManager(_db, _db.goals);
   $$WidgetPinnedCountersTableTableManager get widgetPinnedCounters =>
       $$WidgetPinnedCountersTableTableManager(_db, _db.widgetPinnedCounters);
+  $$WidgetInstanceCountersTableTableManager get widgetInstanceCounters =>
+      $$WidgetInstanceCountersTableTableManager(
+        _db,
+        _db.widgetInstanceCounters,
+      );
 }

@@ -1002,16 +1002,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareCardFailed => 'L\'image n\'a pas pu être produite.';
 
   @override
-  String get settingsWidgetSection => 'Widget de l\'écran d\'accueil';
-
-  @override
-  String get settingsWidgetCounters => 'Compteurs du widget';
-
-  @override
-  String get settingsWidgetCountersDetail =>
-      'Choisis les compteurs affichés par le widget de l\'écran d\'accueil.';
-
-  @override
   String get settingsAppearanceSection => 'Apparence';
 
   @override
