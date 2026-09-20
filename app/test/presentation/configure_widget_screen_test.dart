@@ -20,8 +20,9 @@ const widgetId = 3;
 
 Future<void> pumpScreen(
   WidgetTester tester,
-  ProviderContainer container,
-) async {
+  ProviderContainer container, {
+  String? preselectedCounter,
+}) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
@@ -34,7 +35,10 @@ Future<void> pumpScreen(
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: const ConfigureWidgetScreen(appWidgetId: widgetId),
+        home: ConfigureWidgetScreen(
+          appWidgetId: widgetId,
+          preselectedCounter: preselectedCounter,
+        ),
       ),
     ),
   );
@@ -122,4 +126,37 @@ void main() {
       expect(gateway.finishedConfiguring, [widgetId]);
     },
   );
+
+  group('pinned from a counter\'s own screen (#181, path B)', () {
+    testWidgets('a fresh instance starts pre-selected to that counter', (
+      tester,
+    ) async {
+      await pumpScreen(tester, container, preselectedCounter: 'Recursions');
+
+      final recursionsTile = tester.widget<CheckboxListTile>(
+        find.widgetWithText(CheckboxListTile, 'Recursions'),
+      );
+      expect(recursionsTile.value, isTrue);
+    });
+
+    testWidgets(
+      'an instance already configured on its own ignores the preselection',
+      (tester) async {
+        await container
+            .read(widgetInstanceCounterRepositoryProvider)
+            .setPinnedFor(widgetId, const ['Hacks']);
+
+        await pumpScreen(tester, container, preselectedCounter: 'Recursions');
+
+        final hacksTile = tester.widget<CheckboxListTile>(
+          find.widgetWithText(CheckboxListTile, 'Hacks'),
+        );
+        final recursionsTile = tester.widget<CheckboxListTile>(
+          find.widgetWithText(CheckboxListTile, 'Recursions'),
+        );
+        expect(hacksTile.value, isTrue);
+        expect(recursionsTile.value, isFalse);
+      },
+    );
+  });
 }

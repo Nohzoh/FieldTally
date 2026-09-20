@@ -709,6 +709,18 @@ abstract class AppLocalizations {
   /// **'Export header'**
   String get counterExportHeader;
 
+  /// No description provided for @counterPinWidget.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to home screen'**
+  String get counterPinWidget;
+
+  /// No description provided for @counterPinWidgetUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Your home screen doesn\'t support adding a widget this way — long-press it and add FieldTally\'s widget manually instead.'**
+  String get counterPinWidgetUnsupported;
+
   /// No description provided for @dashboardTitle.
   ///
   /// In en, this message translates to:

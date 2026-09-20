@@ -30,11 +30,14 @@ class ConfigureWidgetApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // WidgetConfigureActivity.getInitialRoute() hands this engine
-    // "/configure-widget/<appWidgetId>" before any Dart code runs — read
-    // directly, since there is no router here to parse it for us.
+    // "/configure-widget/<appWidgetId>", optionally with a
+    // "?preselect=<counter>" query when placed from CounterDetailScreen
+    // (#181, path B) — read directly, since there is no router here to parse
+    // it for us.
     final route = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+    final uri = Uri.parse(route);
     final appWidgetId =
-        int.tryParse(route.split('/').last) ??
+        int.tryParse(uri.pathSegments.lastOrNull ?? '') ??
         -1; // AppWidgetManager.INVALID_APPWIDGET_ID
 
     return MaterialApp(
@@ -46,7 +49,10 @@ class ConfigureWidgetApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: ConfigureWidgetScreen(appWidgetId: appWidgetId),
+      home: ConfigureWidgetScreen(
+        appWidgetId: appWidgetId,
+        preselectedCounter: uri.queryParameters['preselect'],
+      ),
     );
   }
 }

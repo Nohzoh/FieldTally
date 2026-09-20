@@ -104,6 +104,13 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go(Routes.counters),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_to_home_screen),
+            tooltip: l10n.counterPinWidget,
+            onPressed: () => _pinWidget(context, exportHeader, l10n),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -233,6 +240,26 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
   String _delta(NumberFormat numbers, int delta) {
     final formatted = numbers.format(delta.abs());
     return delta >= 0 ? '+$formatted' : '−$formatted';
+  }
+
+  /// Places a new widget instance pre-selected to this counter (#181, path
+  /// B). `ScaffoldMessenger` is captured before the `await` rather than read
+  /// from `context` after it, since this widget can be unmounted while the
+  /// platform dialog is up.
+  Future<void> _pinWidget(
+    BuildContext context,
+    String exportHeader,
+    AppLocalizations l10n,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final supported = await ref
+        .read(homeWidgetGatewayProvider)
+        .requestPinWidget(exportHeader);
+    if (!supported && mounted) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.counterPinWidgetUnsupported)),
+      );
+    }
   }
 }
 

@@ -380,6 +380,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get counterExportHeader => 'Export header';
 
   @override
+  String get counterPinWidget => 'Add to home screen';
+
+  @override
+  String get counterPinWidgetUnsupported =>
+      'Your home screen doesn\'t support adding a widget this way — long-press it and add FieldTally\'s widget manually instead.';
+
+  @override
   String get dashboardTitle => 'FieldTally';
 
   @override

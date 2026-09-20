@@ -21,9 +21,19 @@ import '../providers/providers.dart';
 /// shape (#174), aimed at one instance's own selection instead of the single
 /// shared one every instance used to follow.
 class ConfigureWidgetScreen extends ConsumerStatefulWidget {
-  const ConfigureWidgetScreen({super.key, required this.appWidgetId});
+  const ConfigureWidgetScreen({
+    super.key,
+    required this.appWidgetId,
+    this.preselectedCounter,
+  });
 
   final int appWidgetId;
+
+  /// The counter tapped from `CounterDetailScreen` (#181, path B), if this
+  /// instance was placed that way. Only ever applied to an instance that has
+  /// nothing of its own yet — an instance placed the ordinary way, from the
+  /// launcher, has none.
+  final String? preselectedCounter;
 
   @override
   ConsumerState<ConfigureWidgetScreen> createState() =>
@@ -52,7 +62,12 @@ class _ConfigureWidgetScreenState extends ConsumerState<ConfigureWidgetScreen> {
     if (_selection == null && !pinned.hasValue) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    final selection = _selection ??= [...?pinned.value];
+    final ownSelection = pinned.value ?? const [];
+    final preselected = widget.preselectedCounter;
+    final selection = _selection ??= [
+      ...ownSelection,
+      if (ownSelection.isEmpty && preselected != null) preselected,
+    ];
 
     final builder = CounterListBuilder(registry: registry, language: language);
     final sections = builder.build(
