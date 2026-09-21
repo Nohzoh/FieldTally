@@ -72,6 +72,20 @@ only then creates the tag and publishes a release whose notes are generated
 from the pull requests merged since the previous one. Tagging last is
 deliberate: a tag naming a version is a promise that the version shipped.
 
+## The App Bundle, for the Play Store
+
+The same run also builds an **App Bundle** and checks its signature the same
+way, because Play takes an `.aab` and never an APK. It is attached to the run
+as the `fieldtally-release-aab` artifact rather than to the release: the
+release page is read by people sideloading, and a second file there is a file
+someone can download by mistake.
+
+Download it from the run's **Artifacts** section and upload it in the Play
+Console yourself; nothing here talks to Play. A **dry run** produces the bundle
+too, so a version can be sent to Play without cutting a GitHub release for it
+— but the `versionCode` still has to have increased, or the Play build will not
+install over an APK a tester already has.
+
 The tag is annotated but unsigned, created by `github-actions[bot]`. Only the
 Android signing key lives in the workflow, so what proves a release genuine is
 the APK's certificate below — not the tag. Pushing a signed tag by hand still
