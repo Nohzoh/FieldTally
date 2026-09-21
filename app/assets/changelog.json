@@ -287,5 +287,22 @@
         "Un widget épinglé sur un seul compteur peut désormais se réduire à une seule ligne au lieu de toujours réserver la place pour deux."
       ]
     }
+  },
+  "15": {
+    "version": "1.11.2",
+    "title": {
+      "en": "FieldTally is coming to the Play Store",
+      "fr": "FieldTally arrive sur le Play Store"
+    },
+    "features": {
+      "en": [
+        "FieldTally is now distributed through the Play Store as well, signed with the same key as the APKs published here. You can move to the Play Store version without uninstalling, and without losing your history.",
+        "Nothing changed inside the app itself: this release exists so the Play Store has an update it can offer you."
+      ],
+      "fr": [
+        "FieldTally est maintenant distribué aussi par le Play Store, signé avec la même clé que les APK publiés ici. Tu peux donc passer à la version du Play Store sans désinstaller, et sans perdre ton historique.",
+        "Rien n’a changé dans l’app elle-même : cette version existe pour que le Play Store ait une mise à jour à te proposer."
+      ]
+    }
   }
 }
