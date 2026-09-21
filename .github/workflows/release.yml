@@ -38,7 +38,7 @@ env:
 
 jobs:
   release:
-    name: Build and publish a signed APK
+    name: Build a signed APK and App Bundle, publish the APK
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -167,6 +167,41 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # The Play Store takes an App Bundle, never an APK: Google repackages it
+      # per device and signs what it delivers itself. The APK above stays the
+      # way this app is installed outside Play, so the two are built from the
+      # same commit and the same keystore rather than one replacing the other.
+      - name: Build the signed App Bundle
+        working-directory: app
+        run: flutter build appbundle --release --dart-define=GIT_COMMIT=${GITHUB_SHA::7}
+
+      # keytool here where the APK needed apksigner, and the reversal is the
+      # point: a bundle carries a v1 JAR signature and nothing else, which is
+      # the one thing keytool can read. The v2/v3 schemes that make it useless
+      # against the APK (docs/release.md) do not apply to an .aab.
+      #
+      # `Owner:` is checked for rather than trusting the exit status, so an
+      # unsigned bundle fails here and not three steps later.
+      - name: Verify the bundle is not debug-signed
+        run: |
+          aab=app/build/app/outputs/bundle/release/app-release.aab
+          keytool -printcert -jarfile "$aab" > bundle-certificate.txt
+          cat bundle-certificate.txt
+          if ! grep -q '^Owner:' bundle-certificate.txt; then
+            echo "::error::The App Bundle carries no signature at all."
+            exit 1
+          fi
+          if grep -q "CN=Android Debug" bundle-certificate.txt; then
+            echo "::error::The App Bundle is signed with the Android debug key."
+            exit 1
+          fi
+          {
+            echo '### App Bundle signing certificate'
+            echo '```'
+            grep -i 'SHA256' bundle-certificate.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Remove the signing material
         if: always()
         run: rm -f app/android/key.properties "$RUNNER_TEMP/fieldtally-release.jks"
@@ -179,6 +214,29 @@ jobs:
         with:
           name: fieldtally-release-apk
           path: app/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      # Named for the person who will upload it, same reasoning as the APK
+      # below: `app-release.aab` says nothing about which version it holds.
+      - name: Name the bundle after the release
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          mv app/build/app/outputs/bundle/release/app-release.aab \
+             "fieldtally-$VERSION.aab"
+
+      # Uploaded on every run, dry or not, and deliberately not attached to the
+      # GitHub Release: that page is read by people sideloading, and a second
+      # file on it is a file someone can download by mistake — the whole reason
+      # only one APK is published. The bundle has exactly one reader, whoever
+      # uploads it to the Play Console, and an artifact is where they can fetch
+      # it without anything else changing. A dry run is therefore enough to
+      # produce a bundle for Play, with no tag and no release.
+      - name: Upload the App Bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: fieldtally-release-aab
+          path: fieldtally-*.aab
           if-no-files-found: error
 
       # Only now, once the APK exists and carries the real key. Tagging first
