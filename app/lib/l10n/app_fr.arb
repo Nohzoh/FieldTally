@@ -320,5 +320,8 @@
   "yearInReviewMenu": "L'année en revue",
   "homeWidgetUnpinnedTitle": "Épingle un compteur",
   "homeWidgetUnpinnedDetail": "Ouvre FieldTally et épingles-en un depuis le tableau de bord.",
-  "homeWidgetRemaining": "{remaining} avant {tier}"
+  "homeWidgetRemaining": "{remaining} avant {tier}",
+  "updateDownloaded": "Une nouvelle version est téléchargée.",
+  "updateRestart": "Redémarrer",
+  "updateLater": "Plus tard"
 }

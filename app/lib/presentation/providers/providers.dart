@@ -8,6 +8,7 @@ import '../../data/db/database.dart';
 import '../../data/notifications/notification_service.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
 import '../../data/registry/counter_registry_service.dart';
+import '../../data/updates/play_update_service.dart';
 import '../../data/repositories/drift_goal_repository.dart';
 import '../../data/repositories/drift_pinned_counter_repository.dart';
 import '../../data/repositories/drift_settings_repository.dart';
@@ -187,6 +188,11 @@ final paceChangesProvider = Provider<List<CounterShift>>((ref) {
     pinned: pinned,
   );
 });
+
+/// Asks Play whether it is holding a newer version (#195).
+final playUpdateServiceProvider = Provider<PlayUpdateService>(
+  (ref) => const PlayUpdateService(),
+);
 
 /// Badges the recent pace puts within reach, soonest first (#148).
 ///
