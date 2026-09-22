@@ -1106,5 +1106,17 @@
         "type": "String"
       }
     }
+  },
+  "updateDownloaded": "A new version has been downloaded.",
+  "@updateDownloaded": {
+    "description": "Banner shown once Play has finished downloading a newer version in the background (#195). Play does the asking and the downloading; installing is the one step Android will not take unasked, which is all this line is for."
+  },
+  "updateRestart": "Restart",
+  "@updateRestart": {
+    "description": "Action on the update banner: installs what was downloaded, which restarts the app."
+  },
+  "updateLater": "Later",
+  "@updateLater": {
+    "description": "Action on the update banner: dismisses it. Play installs the update on its own schedule anyway, so nothing is lost by saying no."
   }
 }

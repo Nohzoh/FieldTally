@@ -1279,4 +1279,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String homeWidgetRemaining(String remaining, String tier) {
     return '$remaining to $tier';
   }
+
+  @override
+  String get updateDownloaded => 'A new version has been downloaded.';
+
+  @override
+  String get updateRestart => 'Restart';
+
+  @override
+  String get updateLater => 'Later';
 }

@@ -1,8 +1,9 @@
 // The startup-time wiring that has no other test: whether StartupTasks sits
 // where AppLocalizations.of(context) actually resolves, whether it keeps
 // every placed home screen widget instance in step with later changes, not
-// just the first frame (#154, #181), and the one-time migration off the old
-// single shared selection (#181).
+// just the first frame (#154, #181), the one-time migration off the old
+// single shared selection (#181), and the update banner (#195), whose whole
+// mechanism lives in this widget.
 //
 // This is the one place the real app shell (FieldTallyApp) gets pumped at
 // all — every other test builds MaterialApp.router directly and never
@@ -19,6 +20,7 @@ import 'package:drift/native.dart';
 import 'package:fieldtally/data/db/database.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
+import 'package:fieldtally/data/updates/play_update_service.dart';
 import 'package:fieldtally/domain/repositories/settings_repository.dart';
 import 'package:fieldtally/main.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
@@ -27,6 +29,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/fake_home_widget_gateway.dart';
 import '../support/fake_notification_service.dart';
+import '../support/fake_play_update_service.dart';
 import '../support/fixed_registry.dart';
 
 const widgetId = 7;
@@ -379,6 +382,111 @@ void main() {
             .pinnedFor(widgetId),
         ['Hacks'],
       );
+    });
+  });
+
+  group('the update Play is holding (#195)', () {
+    /// Pumps the real shell with Play answering [state].
+    ///
+    /// The real shell, not a bare MaterialApp: the banner is shown through
+    /// `ScaffoldMessenger.of(context)` from StartupTasks' own context, which
+    /// is exactly the lookup that already went wrong once here for
+    /// AppLocalizations (see main.dart's comment on `builder`). Asserting the
+    /// banner is on screen is what proves that context resolves — a test
+    /// against a hand-built tree would prove nothing about the app.
+    Future<FakePlayUpdateService> pumpWith(
+      WidgetTester tester,
+      PlayUpdate state, {
+      bool downloadSucceeds = true,
+    }) async {
+      final db = FieldTallyDatabase(NativeDatabase.memory());
+      final play = FakePlayUpdateService()
+        ..state = state
+        ..downloadSucceeds = downloadSucceeds;
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          notificationServiceProvider.overrideWithValue(
+            FakeNotificationService(),
+          ),
+          counterRegistryProvider.overrideWith(fixedRegistry),
+          homeWidgetGatewayProvider.overrideWithValue(FakeHomeWidgetGateway()),
+          playUpdateServiceProvider.overrideWithValue(play),
+        ],
+      );
+      addTearDown(db.close);
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const FieldTallyApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return play;
+    }
+
+    testWidgets('is downloaded, then offered as a restart', (tester) async {
+      final play = await pumpWith(tester, PlayUpdate.available);
+
+      expect(play.downloads, 1);
+      expect(find.text('A new version has been downloaded.'), findsOneWidget);
+      expect(play.installs, 0);
+
+      await tester.tap(find.text('Restart'));
+      await tester.pumpAndSettle();
+
+      expect(play.installs, 1);
+      expect(find.text('A new version has been downloaded.'), findsNothing);
+    });
+
+    testWidgets('is offered straight away when it is already there', (
+      tester,
+    ) async {
+      // A download accepted on an earlier launch, never installed because the
+      // app was killed first. Asking Play to download it again would be the
+      // wrong move, and the banner is the only thing still owed.
+      final play = await pumpWith(tester, PlayUpdate.downloaded);
+
+      expect(play.downloads, 0);
+      expect(find.text('A new version has been downloaded.'), findsOneWidget);
+    });
+
+    testWidgets('says nothing when there is nothing to say', (tester) async {
+      // The ordinary case, by a wide margin: the running version is the
+      // newest one, or Play cannot answer at all.
+      final play = await pumpWith(tester, PlayUpdate.none);
+
+      expect(play.downloads, 0);
+      expect(find.textContaining('has been downloaded'), findsNothing);
+    });
+
+    testWidgets('says nothing when the download does not happen', (
+      tester,
+    ) async {
+      // Declined on Play's own sheet, or a download that failed. The app
+      // cannot tell those apart and owes the same silence to both.
+      final play = await pumpWith(
+        tester,
+        PlayUpdate.available,
+        downloadSucceeds: false,
+      );
+
+      expect(play.downloads, 1);
+      expect(find.textContaining('has been downloaded'), findsNothing);
+    });
+
+    testWidgets('can be dismissed, and installs nothing if it is', (
+      tester,
+    ) async {
+      final play = await pumpWith(tester, PlayUpdate.downloaded);
+
+      await tester.tap(find.text('Later'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('A new version has been downloaded.'), findsNothing);
+      expect(play.installs, 0);
     });
   });
 }

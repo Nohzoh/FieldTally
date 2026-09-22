@@ -1,23 +1,24 @@
 import 'dart:async';
 
 import 'package:drift/drift.dart' show OrderingTerm;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/updates/play_update_service.dart';
 import '../l10n/app_localizations.dart';
 import 'home_widget_sync.dart';
 import 'providers/providers.dart';
 
 /// Work kicked off once when the app starts.
 ///
-/// Four fire-and-forget tasks kicked off once: refreshing the counter
-/// registry from GitHub Pages (§3.1.4), re-arming the "nothing recorded
-/// lately" reminder (§3.7), the one-time widget-selection migration, and the
-/// removed-instance cleanup below (#181). Nothing on screen waits for them,
-/// and they fail silently, because none is worth delaying a frame or showing
-/// an error over.
+/// Five fire-and-forget tasks kicked off once: refreshing the counter
+/// registry from GitHub Pages (§3.1.4), offering the newer version Play is
+/// holding (#195), re-arming the "nothing recorded lately" reminder (§3.7),
+/// the one-time widget-selection migration, and the removed-instance cleanup
+/// below (#181). Nothing on screen waits for them, and they fail silently,
+/// because none is worth delaying a frame or showing an error over.
 ///
-/// A fifth task is not fire-once but standing: keeping every placed home
+/// A sixth task is not fire-once but standing: keeping every placed home
 /// screen widget instance in step with the history (#154, #181). That one is
 /// a `ref.listen` in [build] rather than a post-frame callback, because it
 /// has to fire again on every later change too, not just at launch.
@@ -40,10 +41,57 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
       unawaited(
         ref.read(counterRegistryProvider.notifier).refreshFromNetwork(),
       );
+      unawaited(_offerPlayUpdate());
       unawaited(_armReminder());
       unawaited(_migrateLegacyWidgetSelection());
       unawaited(_cleanUpRemovedWidgetInstances());
     });
+  }
+
+  /// Offers the newer version Play already has (#195).
+  ///
+  /// Three steps, and the app owns only the last one: Play asks, Play
+  /// downloads in the background, and the app says one line when the file is
+  /// there, because installing is the single step Android will not take
+  /// unasked. Nothing is shown at any other moment, and nothing is shown at
+  /// all in the ordinary case, which is that the running version is the
+  /// newest one.
+  ///
+  /// Asked again on the next launch if it is declined, and not remembered in
+  /// between: a preference row for something Play already re-asks in its own
+  /// way would be a second switch governing the same decision.
+  Future<void> _offerPlayUpdate() async {
+    final service = ref.read(playUpdateServiceProvider);
+
+    final update = await service.check();
+    if (update == PlayUpdate.none) return;
+    if (update == PlayUpdate.available && !await service.download()) return;
+    if (!mounted) return;
+
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    // A banner rather than a snack bar: this one waits for an answer, and a
+    // line that vanishes after four seconds is one nobody reading their
+    // dashboard would catch.
+    messenger.showMaterialBanner(
+      MaterialBanner(
+        content: Text(l10n.updateDownloaded),
+        actions: [
+          TextButton(
+            onPressed: messenger.hideCurrentMaterialBanner,
+            child: Text(l10n.updateLater),
+          ),
+          TextButton(
+            onPressed: () {
+              messenger.hideCurrentMaterialBanner();
+              unawaited(service.install());
+            },
+            child: Text(l10n.updateRestart),
+          ),
+        ],
+      ),
+    );
   }
 
   /// The reminder is relative to the newest snapshot, so it is re-armed on

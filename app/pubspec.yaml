@@ -63,6 +63,9 @@ dependencies:
   # two outgoing links. Reading the version rather than compiling it in means
   # it cannot drift from the APK someone is reporting a bug about.
   package_info_plus: ^10.2.1
+  # Play's in-app update API (#195). Android only, and inert anywhere Play did
+  # not install the app — which is every test, emulator and local build.
+  in_app_update: ^5.0.0
   url_launcher: ^6.3.2
   home_widget: ^0.10.0
 

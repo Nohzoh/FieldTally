@@ -2037,6 +2037,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{remaining} to {tier}'**
   String homeWidgetRemaining(String remaining, String tier);
+
+  /// Banner shown once Play has finished downloading a newer version in the background (#195). Play does the asking and the downloading; installing is the one step Android will not take unasked, which is all this line is for.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version has been downloaded.'**
+  String get updateDownloaded;
+
+  /// Action on the update banner: installs what was downloaded, which restarts the app.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get updateRestart;
+
+  /// Action on the update banner: dismisses it. Play installs the update on its own schedule anyway, so nothing is lost by saying no.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get updateLater;
 }
 
 class _AppLocalizationsDelegate
