@@ -5,14 +5,23 @@ lang_alt: /en/faq
 ---
 # Questions fréquentes
 
-## Pourquoi l'app n'est-elle pas sur le Play Store ?
+## L'app est-elle sur le Play Store ?
 
-Publier sur le Play Store demande un compte développeur payant, une fiche à
-maintenir et des délais de validation à chaque mise à jour. Pour une v1 écrite
-sur du temps libre, ça n'en valait pas la peine. Ce n'est pas exclu plus tard.
+Oui, en **test fermé** : la fiche n'est visible que par les personnes inscrites
+comme testeurs. Il faut d'abord rejoindre le
+[groupe FieldTally](https://groups.google.com/g/fieldtally) avec le compte
+Google du téléphone, puis
+[s'inscrire comme testeur](https://play.google.com/apps/testing/io.nohzoh.fieldtally).
+La [page d'installation]({{ '/installer' | relative_url }}) donne les trois
+étapes dans l'ordre.
 
-En attendant, [l'installation manuelle]({{ '/installer' | relative_url }}) prend deux minutes, et la
-page explique les avertissements d'Android au fur et à mesure.
+Ça n'a pas toujours été le cas : pour une v1 écrite sur du temps libre, un
+compte développeur payant, une fiche à maintenir et des délais de validation à
+chaque mise à jour n'en valaient pas la peine.
+
+[L'installation manuelle]({{ '/installer' | relative_url }}) du fichier APK
+reste possible, sans compte Google, et la même page explique les avertissements
+d'Android au fur et à mesure.
 
 ## Mes données sont-elles envoyées quelque part ?
 
