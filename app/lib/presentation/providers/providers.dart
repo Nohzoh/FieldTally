@@ -28,7 +28,6 @@ import '../../domain/repositories/pinned_counter_repository.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../domain/repositories/snapshot_repository.dart';
 import '../../domain/repositories/widget_instance_counter_repository.dart';
-import '../../data/updates/update_check_service.dart';
 import '../../domain/badges_within_reach.dart';
 import '../../data/widgets/home_widget_gateway.dart';
 import '../../domain/home_widget_summary.dart';
@@ -188,37 +187,6 @@ final paceChangesProvider = Provider<List<CounterShift>>((ref) {
     pinned: pinned,
   );
 });
-
-/// Asks the project site whether a newer release exists (#34).
-final updateCheckServiceProvider = Provider<UpdateCheckService>(
-  (ref) => UpdateCheckService(settings: ref.watch(settingsRepositoryProvider)),
-);
-
-/// The newer release to offer, or null — which is the normal case.
-///
-/// Reads the cache rather than the network, so Settings answers instantly and
-/// answers the same offline. The refresh that fills that cache runs at startup
-/// and at most once a day.
-///
-/// Watched rather than read once: the startup check can land while Settings is
-/// already open, and a line that only appears after a restart would be a worse
-/// answer than no line at all.
-final availableUpdateProvider = FutureProvider<LatestRelease?>((ref) async {
-  ref.watch(_cachedLatestReleaseProvider);
-
-  final build = await ref.watch(buildInfoProvider.future);
-  final installed = int.tryParse(build.build);
-  if (installed == null) return null;
-
-  return ref.watch(updateCheckServiceProvider).newerThan(installed);
-});
-
-/// Only there to make [availableUpdateProvider] recompute when the cached file
-/// changes. Its value is deliberately unused — the service reads the row.
-final _cachedLatestReleaseProvider = StreamProvider<String?>(
-  (ref) =>
-      ref.watch(settingsRepositoryProvider).watch(SettingKeys.latestRelease),
-);
 
 /// Badges the recent pace puts within reach, soonest first (#148).
 ///

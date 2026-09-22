@@ -303,8 +303,6 @@
   "withinReachEmpty": "Aucune médaille n'est à portée à ton rythme récent.",
   "withinReachEmptyDetail": "Une médaille apparaît ici quand un compteur a assez bougé récemment pour permettre une estimation honnête — et reste dehors quand cette estimation ne serait qu'une supposition.",
   "withinReachNeedsHistory": "Il faut deux relevés pour mesurer un rythme.",
-  "settingsUpdateAvailable": "La version {version} est disponible",
-  "settingsUpdateAvailableDetail": "Ouvre la page de la version, où tu la télécharges toi-même. L'app n'installe jamais rien d'elle-même : il faudrait pour cela demander à Android le droit d'installer des applications, et elle n'en veut pas.",
   "paceStopped": "{counter} n'a pas bougé le mois dernier",
   "paceResumed": "{counter} repart",
   "paceChangesTitle": "Depuis le mois dernier",

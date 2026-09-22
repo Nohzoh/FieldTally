@@ -18,9 +18,8 @@ order.
 It was not always so: for a v1 written in spare time, a paid developer account,
 a listing to maintain and a review delay on every update were not worth it.
 
-[Installing the APK by hand]({{ '/en/install' | relative_url }}) is still
-possible, with no Google account, and the same page explains each of Android's
-warnings as it comes.
+It is also the only way to install it now: the versions handed out by hand, as
+an `.apk` file, belong to the time before the Play Store.
 
 ## Is my data sent anywhere?
 

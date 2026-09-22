@@ -19,9 +19,8 @@ La [page d'installation]({{ '/installer' | relative_url }}) donne les trois
 compte développeur payant, une fiche à maintenir et des délais de validation à
 chaque mise à jour n'en valaient pas la peine.
 
-[L'installation manuelle]({{ '/installer' | relative_url }}) du fichier APK
-reste possible, sans compte Google, et la même page explique les avertissements
-d'Android au fur et à mesure.
+C'est aussi devenu la seule façon de l'installer : les versions distribuées à
+la main, en fichier `.apk`, appartiennent à l'avant-Play Store.
 
 ## Mes données sont-elles envoyées quelque part ?
 

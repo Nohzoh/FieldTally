@@ -36,24 +36,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          # Tags, because the file written two steps down is derived from the
-          # newest release tag. The default checkout fetches none.
-          fetch-depth: 0
 
       # Step 1 of §7.3: the only thing standing between a malformed pull
       # request and broken counter categorisation for every user at once.
       - name: Validate docs/registry/counters.json
         run: python3 tool/validate_registry.py
-
-      # What the app reads to learn that a newer release exists (#34).
-      # Generated here rather than committed, like the coverage files below:
-      # the source of truth is the tag, and nothing has to push to main.
-      #
-      # It therefore only catches up when Pages rebuilds, which is why
-      # release.yml dispatches this workflow once a tag exists.
-      - name: Write what the newest release is
-        run: python3 tool/latest_release.py docs/latest.json
 
       # The coverage report is produced here rather than carried over from CI:
       # the site then always describes the commit it was built from, with no

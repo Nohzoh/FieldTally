@@ -23,15 +23,6 @@ abstract final class SettingKeys {
   static const cachedRegistry = 'registry.json';
   static const cachedRegistryUpdatedAt = 'registry.updated_at';
 
-  /// What the project site last said the newest release is, and when it was
-  /// last asked (#34).
-  ///
-  /// Under `registry.online_updates` rather than a switch of its own: one
-  /// preference governs everything this app fetches, which is easier to state
-  /// than it is to keep two.
-  static const latestRelease = 'updates.latest_release';
-  static const lastUpdateCheck = 'updates.last_check';
-
   /// Whether local reminders and milestone alerts may be posted (§3.7).
   /// Absent means disabled: it is switched on from Settings, which is also
   /// where Android is asked for the permission.

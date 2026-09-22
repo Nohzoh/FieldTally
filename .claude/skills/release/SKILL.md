@@ -1,6 +1,6 @@
 ---
 name: release
-description: Cut a FieldTally release — close the milestone, bump the version, tag, watch the workflow, and verify the published APK. Use when asked to release, to tag a version, or to prepare the next release.
+description: Cut a FieldTally release — close the milestone, bump the version, tag, watch the workflow, and verify the signed App Bundle it produces for the Play Store. Use when asked to release, to tag a version, or to prepare the next release.
 ---
 
 # Cutting a release
@@ -105,21 +105,24 @@ gh workflow run release.yml -f version=X.Y.Z
 
 It refuses immediately if that version disagrees with `app/pubspec.yaml` —
 which is what catches a dispatch fired before the bump was merged. It then
-builds, proves the APK carries the real signing key, and only then creates
-the tag and publishes. Nothing is tagged for a release that failed to build.
+builds the App Bundle, proves it carries the real signing key, and only then
+creates the tag. Nothing is tagged for a release that failed to build, and
+nothing is published to GitHub: the app reaches people through the Play Store
+(#198).
 
-`-f dry_run=true` stops after the signing check, at a downloadable artifact:
-no tag, no release. Use it when the question is whether signing works.
+`-f dry_run=true` stops after the signing check, at the same artifact, with no
+tag. Use it when the question is whether signing works — or to produce a bundle
+for Play without tagging.
 
 Dispatching without `dry_run` is the irreversible step: it produces a public
-tag and a public signed APK. Confirm with the user before firing it unless
-they have already said to go ahead.
+tag. Confirm with the user before firing it unless they have already said to go
+ahead.
 
 The tag is annotated but unsigned, created by `github-actions[bot]`. Only the
-Android signing key lives in the workflow, deliberately, so what proves a
-release genuine is the APK's certificate — printed in the job summary and
-published on the install page — rather than the tag. A tag pushed by hand
-still works and can be signed the usual way:
+Android signing key lives in the workflow, deliberately, so what proves a build
+genuine is its certificate — printed in the job summary and published on the
+install page — rather than the tag. A tag pushed by hand still works and can be
+signed the usual way:
 
 ```sh
 git tag -s vX.Y.Z -m "FieldTally X.Y.Z" && git push origin vX.Y.Z
@@ -128,39 +131,29 @@ git tag -s vX.Y.Z -m "FieldTally X.Y.Z" && git push origin vX.Y.Z
 ## 6. Watch the workflow
 
 Use a Monitor on the run rather than polling. The workflow refuses to continue
-if the secrets are missing or if the APK turns out to be debug-signed — both
+if the secrets are missing or if the bundle turns out to be debug-signed — both
 failures are loud by design.
 
-## 7. Verify the published artefact
+## 7. Verify what was built, then what shipped
 
-Never report a release as done on the strength of a green workflow. Download
-what the public downloads and check it:
+Never report a release as done on the strength of a green workflow.
 
-```sh
-curl -sL -o /tmp/published.apk \
-  "https://github.com/Nohzoh/FieldTally/releases/download/vX.Y.Z/fieldtally-X.Y.Z.apk"
-"$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs /tmp/published.apk
-```
-
-Expect exactly:
+The certificate is printed in full by the "Verify the bundle is not
+debug-signed" step, and summarised in the job summary. Expect
+`CN=FieldTally` and:
 
 ```
-certificate DN: CN=FieldTally, ...
-certificate SHA-256 digest: 9be340de759dde7f92fcace5f9453a47ee910fa7779ad43912bdda351172ca85
+9be340de759dde7f92fcace5f9453a47ee910fa7779ad43912bdda351172ca85
 ```
 
 That fingerprint is published on the install page, so a mismatch is a broken
-promise to every user, not a detail. Then install that APK and open
-Settings → About: it must name the version and the release commit.
+promise to every user, not a detail. On a machine with the bundle downloaded,
+`keytool -printcert -jarfile fieldtally-X.Y.Z.aab` says the same thing — a
+bundle carries the v1 JAR signature `keytool` reads.
 
-With no Android SDK and no device — the sandbox's case — both of those become
-something else: parse the APK Signing Block in Python, and read the version,
-commit and bundled assets straight out of the archive. `CLAUDE.md` has the
-procedure.
-
-`keytool -printcert -jarfile` is useless either way — `minSdk` is 26, so the APK
-carries a v2/v3 signature and no v1 JAR signature, and keytool reports a
-correctly signed APK as unsigned.
+Then the part no workflow can answer: what people install is what the Play
+Console rolled out. Until that is automated (#196) the upload is manual, so ask
+the user to confirm the version is live before calling the release done.
 
 ## 8. Afterwards
 
@@ -188,8 +181,9 @@ correctly signed APK as unsigned.
   `keytool` warns and drops it. Two different passwords fail much later, at
   packaging, with `Given final block not properly padded`.
 - **Gradle falls back to the debug key** when `android/key.properties` is
-  absent, silently. A debug-signed APK installs perfectly well and can never be
-  replaced by a later update — which is why step 6 is not optional.
+  absent, silently. A debug-signed build installs perfectly well and can never
+  be replaced by a later update, and Play rejects it against the app signing
+  key — which is why step 6 is not optional.
 - **A different signing key means no update path.** Anyone who installed a
   debug build must uninstall before installing a release, losing their local
   database. Tell them to export their CSV first.

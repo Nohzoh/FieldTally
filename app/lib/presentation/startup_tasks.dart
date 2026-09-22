@@ -10,14 +10,14 @@ import 'providers/providers.dart';
 
 /// Work kicked off once when the app starts.
 ///
-/// Five fire-and-forget tasks kicked off once: refreshing the counter
-/// registry from GitHub Pages (§3.1.4), asking the same site whether a newer
-/// release exists (#34), re-arming the "nothing recorded lately" reminder
-/// (§3.7), the one-time widget-selection migration, and the removed-instance
-/// cleanup below (#181). Nothing on screen waits for them, and they fail
-/// silently, because none is worth delaying a frame or showing an error over.
+/// Four fire-and-forget tasks kicked off once: refreshing the counter
+/// registry from GitHub Pages (§3.1.4), re-arming the "nothing recorded
+/// lately" reminder (§3.7), the one-time widget-selection migration, and the
+/// removed-instance cleanup below (#181). Nothing on screen waits for them,
+/// and they fail silently, because none is worth delaying a frame or showing
+/// an error over.
 ///
-/// A sixth task is not fire-once but standing: keeping every placed home
+/// A fifth task is not fire-once but standing: keeping every placed home
 /// screen widget instance in step with the history (#154, #181). That one is
 /// a `ref.listen` in [build] rather than a post-frame callback, because it
 /// has to fire again on every later change too, not just at launch.
@@ -40,9 +40,6 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
       unawaited(
         ref.read(counterRegistryProvider.notifier).refreshFromNetwork(),
       );
-      // Its own preference is the registry's, and its own interval keeps this
-      // to one request a day whatever an agent does with the app.
-      unawaited(ref.read(updateCheckServiceProvider).refresh());
       unawaited(_armReminder());
       unawaited(_migrateLegacyWidgetSelection());
       unawaited(_cleanUpRemovedWidgetInstances());

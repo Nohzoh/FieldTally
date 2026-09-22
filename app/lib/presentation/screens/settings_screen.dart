@@ -56,7 +56,6 @@ class SettingsScreen extends ConsumerWidget {
     final faction = ref.watch(currentFactionProvider);
     final locale = ref.watch(localeProvider).asData?.value;
     final build = ref.watch(buildInfoProvider).asData?.value;
-    final update = ref.watch(availableUpdateProvider).asData?.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -174,18 +173,6 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           _SectionHeader(title: l10n.settingsAboutSection),
-          // Only when there is one, and never as an interruption elsewhere in
-          // the app (#34). An agent who sideloaded this has no store to tell
-          // them, so the app does — once, here, where they came to look.
-          if (update != null)
-            ListTile(
-              leading: const Icon(Icons.system_update_outlined),
-              title: Text(l10n.settingsUpdateAvailable(update.version)),
-              subtitle: Text(l10n.settingsUpdateAvailableDetail),
-              isThreeLine: true,
-              trailing: const Icon(Icons.open_in_new),
-              onTap: () => _open(context, Uri.parse(update.url)),
-            ),
           // The first question on any bug report is "which version?", so the
           // answer is one tap away and lands in the clipboard ready to paste.
           ListTile(

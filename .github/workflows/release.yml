@@ -6,8 +6,8 @@
 name: Release
 
 # Two ways in, and the dispatch is now the normal one: the tag is created here,
-# once the APK has been built and proved to carry the real signing key. A tag
-# pushed by hand still works, for a release cut from a laptop.
+# once the App Bundle has been built and proved to carry the real signing key.
+# A tag pushed by hand still works, for a release cut from a laptop.
 on:
   push:
     tags: ['v*']
@@ -17,16 +17,14 @@ on:
         description: 'Version to release, without the leading v (e.g. 1.1.0). Must match app/pubspec.yaml.'
         required: true
       dry_run:
-        description: 'Build and check the signing, then stop at an artifact — no tag, no release.'
+        description: 'Build and check the signing, then stop at an artifact — no tag.'
         type: boolean
         default: false
 
-# Writes three things now: the tag, the release, and a dispatch of pages.yml.
+# Writes one thing: the tag. FieldTally is distributed through the Play Store,
+# so this workflow publishes nothing to GitHub (#198).
 permissions:
   contents: write
-  # To dispatch pages.yml once the tag exists, so docs/latest.json
-  # catches up with the release it is meant to advertise (#34).
-  actions: write
 
 concurrency:
   group: release-${{ github.ref }}
@@ -38,19 +36,19 @@ env:
 
 jobs:
   release:
-    name: Build a signed APK and App Bundle, publish the APK
+    name: Build and sign the App Bundle, then tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
-          # The generated changelog needs the history back to the previous tag.
+          # Tags, so a re-run cannot quietly recreate one that already exists.
           fetch-depth: 0
 
-      # The version is settled once, here, and checked against the file the APK
-      # is actually built from. A tag that disagrees with pubspec.yaml would
-      # publish "v1.1.0" holding an APK whose About screen says 1.0.0 — and
-      # whose versionCode may not have increased, which Android refuses to
-      # install over the previous one.
+      # The version is settled once, here, and checked against the file the
+      # bundle is actually built from. A tag that disagrees with pubspec.yaml
+      # would name "v1.1.0" over a build whose About screen says 1.0.0 — and
+      # whose versionCode may not have increased, which Play refuses outright
+      # and Android refuses to install over the previous one.
       - name: Work out what is being released
         id: release
         run: |
@@ -71,9 +69,10 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      # Fails here rather than producing a debug-signed APK further down. An
-      # APK signed with the debug key installs perfectly well and is the worst
-      # possible artifact to publish: no later update could ever replace it.
+      # Fails here rather than producing a debug-signed bundle further down. A
+      # build signed with the debug key installs perfectly well and is the
+      # worst possible artifact to ship: no later update could ever replace it,
+      # and Play would refuse it against the app signing key.
       - name: Check the signing secrets are present
         env:
           KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -131,54 +130,21 @@ jobs:
           keyPassword=$KEY_PASSWORD
           EOF
 
-      # One APK holding every ABI rather than three per-ABI ones: this app is
-      # sideloaded, so the file is chosen by a person reading a release page,
-      # and a person cannot pick the wrong one if there is only one. The cost
-      # is download size, which is the right thing to trade here.
+      # An App Bundle and nothing else: the Play Store is how FieldTally is
+      # distributed (#198), and it takes an .aab. Play repackages it per device
+      # and signs what it delivers with the app signing key, which is this same
+      # keystore, imported rather than generated — so what a phone installs
+      # carries the certificate this job verifies below.
+      #
       # The commit is compiled in so the About screen can name the exact source
       # of a build someone is reporting a bug about. A build made from a
       # working copy has none and says so instead.
-      - name: Build the signed APK
-        working-directory: app
-        run: flutter build apk --release --dart-define=GIT_COMMIT=${GITHUB_SHA::7}
-
-      # Proves the artifact carries the real key. Without this the whole
-      # workflow could succeed and still publish something debug-signed, since
-      # Gradle falls back silently when the keystore is missing.
-      #
-      # apksigner rather than `keytool -printcert -jarfile`: minSdk is 26, so
-      # AGP signs with v2/v3 only, and keytool reads nothing but the v1 JAR
-      # signature — it calls a correctly signed APK unsigned.
-      - name: Verify it is not debug-signed
-        run: |
-          apk=app/build/app/outputs/flutter-apk/app-release.apk
-          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
-          "$apksigner" verify --print-certs "$apk" | tee certificate.txt
-          if grep -q "CN=Android Debug" certificate.txt; then
-            echo "::error::The APK is signed with the Android debug key."
-            exit 1
-          fi
-          # Published in the job log so anyone can check that an APK they
-          # downloaded carries the same certificate as the one built here.
-          {
-            echo '### Signing certificate'
-            echo '```'
-            grep -i 'SHA-256 digest' certificate.txt
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      # The Play Store takes an App Bundle, never an APK: Google repackages it
-      # per device and signs what it delivers itself. The APK above stays the
-      # way this app is installed outside Play, so the two are built from the
-      # same commit and the same keystore rather than one replacing the other.
       - name: Build the signed App Bundle
         working-directory: app
         run: flutter build appbundle --release --dart-define=GIT_COMMIT=${GITHUB_SHA::7}
 
-      # keytool here where the APK needed apksigner, and the reversal is the
-      # point: a bundle carries a v1 JAR signature and nothing else, which is
-      # the one thing keytool can read. The v2/v3 schemes that make it useless
-      # against the APK (docs/release.md) do not apply to an .aab.
+      # keytool, not apksigner: a bundle carries a v1 JAR signature and nothing
+      # else, which is the one thing keytool can read.
       #
       # `Owner:` is checked for rather than trusting the exit status, so an
       # unsigned bundle fails here and not three steps later.
@@ -206,18 +172,8 @@ jobs:
         if: always()
         run: rm -f app/android/key.properties "$RUNNER_TEMP/fieldtally-release.jks"
 
-      # A dry run is for checking that signing works, so it stops here, at an
-      # artifact, having created no tag and published nothing.
-      - name: Upload the APK
-        if: github.ref_type != 'tag' && inputs.dry_run
-        uses: actions/upload-artifact@v7
-        with:
-          name: fieldtally-release-apk
-          path: app/build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
-
-      # Named for the person who will upload it, same reasoning as the APK
-      # below: `app-release.aab` says nothing about which version it holds.
+      # Named for the person who will upload it: `app-release.aab` says nothing
+      # about which version it holds, and a Downloads folder is already a pile.
       - name: Name the bundle after the release
         env:
           VERSION: ${{ steps.release.outputs.version }}
@@ -225,13 +181,10 @@ jobs:
           mv app/build/app/outputs/bundle/release/app-release.aab \
              "fieldtally-$VERSION.aab"
 
-      # Uploaded on every run, dry or not, and deliberately not attached to the
-      # GitHub Release: that page is read by people sideloading, and a second
-      # file on it is a file someone can download by mistake — the whole reason
-      # only one APK is published. The bundle has exactly one reader, whoever
-      # uploads it to the Play Console, and an artifact is where they can fetch
-      # it without anything else changing. A dry run is therefore enough to
-      # produce a bundle for Play, with no tag and no release.
+      # Uploaded on every run, dry or not. The bundle has exactly one reader,
+      # whoever uploads it to the Play Console, and an artifact is where they
+      # fetch it. A dry run is therefore enough to produce a bundle for Play,
+      # with no tag created — which is also what makes it a safe rehearsal.
       - name: Upload the App Bundle
         uses: actions/upload-artifact@v7
         with:
@@ -239,14 +192,14 @@ jobs:
           path: fieldtally-*.aab
           if-no-files-found: error
 
-      # Only now, once the APK exists and carries the real key. Tagging first
-      # would leave a tag on a release that never shipped, and a tag naming a
-      # version is a promise that it did.
+      # Only now, once the bundle exists and carries the real key. Tagging
+      # first would leave a tag on a release that never shipped, and a tag
+      # naming a version is a promise that it did.
       #
       # The tag is annotated but not signed: the workflow holds the Android
-      # signing key, deliberately, and nothing else. What proves a release
-      # genuine is the APK's certificate, published in the job summary and on
-      # the install page — not the tag.
+      # signing key, deliberately, and nothing else. What proves a build
+      # genuine is its certificate, published in the job summary and on the
+      # install page — not the tag.
       - name: Tag the release
         if: github.ref_type != 'tag' && !inputs.dry_run
         env:
@@ -258,36 +211,3 @@ jobs:
           git tag -a "$TAG" -m "FieldTally $VERSION"
           git push origin "$TAG"
 
-      # Named for the person downloading it, not for the build system that
-      # produced it. `gh release create` takes the asset name from the file, and
-      # Flutter's default `app-release.apk` collides with itself: a second
-      # version lands as `app-release(1).apk`, in a Downloads folder that is
-      # already a pile, with nothing to tell the two apart.
-      - name: Publish the release
-        if: github.ref_type == 'tag' || !inputs.dry_run
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.release.outputs.tag }}
-          VERSION: ${{ steps.release.outputs.version }}
-        run: |
-          apk="fieldtally-$VERSION.apk"
-          mv app/build/app/outputs/flutter-apk/app-release.apk "$apk"
-
-          gh release create "$TAG" "$apk" \
-            --title "$TAG" \
-            --generate-notes \
-            --verify-tag
-
-      # docs/latest.json is generated from the newest tag when Pages builds,
-      # never committed (#34). The tag exists only as of the step above, so
-      # nothing has rebuilt the site since — and until it does, every
-      # installed app is still being told the previous release is the newest
-      # one.
-      #
-      # Dispatched rather than left to the next push to main: the whole point
-      # of the file is that it is right the moment a release is published.
-      - name: Rebuild the site, so it advertises this release
-        if: github.ref_type == 'tag' || !inputs.dry_run
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run pages.yml --ref main
