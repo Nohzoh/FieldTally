@@ -4,7 +4,6 @@ Ingress stats tracking, mobile-first and **fully local**: no account, no
 server, nothing leaving your phone unless you send it yourself.
 
 [![CI](https://github.com/Nohzoh/FieldTally/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Nohzoh/FieldTally/actions/workflows/ci.yml)
-[![Latest release](https://img.shields.io/github/v/release/Nohzoh/FieldTally?label=release)](https://github.com/Nohzoh/FieldTally/releases/latest)
 [![Licence: AGPL v3](https://img.shields.io/badge/licence-AGPL%20v3-blue)](LICENSE)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fnohzoh.github.io%2FFieldTally%2Fcoverage.json)](https://nohzoh.github.io/FieldTally/coverage/)
 
@@ -61,8 +60,6 @@ of Niantic, Inc. This project uses no protected asset.
 - Puts your totals next to another agent's, phone to phone, through the
   share sheet — no server, and what they send you is never written to your
   history.
-- Checks on its own for a newer release — the app is sideloaded, so no store
-  does that for it.
 - Light and dark themes, optional faction colouring, French and English.
 
 The full picture is in [`docs/spec/SPECIFICATION-v1.md`](docs/spec/SPECIFICATION-v1.md)
@@ -118,7 +115,11 @@ python3 tool/validate_registry.py   # from the repository root
 
 ## Releases
 
-Every release is built by GitHub Actions from this source and signed with the
+FieldTally is distributed through the Play Store, in closed testing; the
+[install page](https://nohzoh.github.io/FieldTally/en/install) says how to get
+in. No APK is published here.
+
+Every version is built by GitHub Actions from this source and signed with the
 same key, whose SHA-256 fingerprint is printed in each build log:
 
 ```
@@ -129,12 +130,11 @@ The procedure is in [`docs/release.md`](docs/release.md).
 
 ## Privacy
 
-No collection, no telemetry, no account. Two network requests in the whole of
-v1, both `GET`s on public files served from GitHub Pages, both sending no
-personal data and both switched off by the same setting: `counters.json` for
-counter names and thresholds, and `latest.json` to say which release is the
-newest — the app is sideloaded, so nothing else would. The full statement is on
-the [privacy page](https://nohzoh.github.io/FieldTally/en/privacy).
+No collection, no telemetry, no account. One network request in the whole of
+the app, a `GET` on a public file served from GitHub Pages — `counters.json`,
+for counter names and thresholds — sending no personal data and switched off by
+one setting. The full statement is on the
+[privacy page](https://nohzoh.github.io/FieldTally/en/privacy).
 
 ## Licence
 

@@ -29,24 +29,20 @@ it and keeps no copy.
 The other way round: numbers another agent sends you for comparison are **never**
 stored. They live as long as the screen does and never enter your history.
 
-## The only network requests
+## The only network request
 
-On startup, and at most once a day, the app downloads two public files hosted
-on GitHub Pages:
+On startup, and at most once a day, the app downloads one public file hosted on
+GitHub Pages:
 
 ```
 https://nohzoh.github.io/FieldTally/registry/counters.json
-https://nohzoh.github.io/FieldTally/latest.json
 ```
 
-The first holds counter names, categories and badge thresholds, so a new counter
-can be named correctly without waiting for an app update.
+It holds counter names, categories and badge thresholds, so a new counter can
+be named correctly without waiting for an app update.
 
-The second says which release is the newest — three lines, nothing else. The app
-is installed by hand, so nothing else would tell you a new version exists. It
-says so in Settings and opens the release page; **it never installs anything
-itself**, which would mean asking Android for the right to install
-applications. It does not want that right.
+That is all. The app fetches nothing else: new versions are announced by the
+Play Store, not by the app, and **it never installs anything itself**.
 
 In detail, so it is verifiable rather than promised:
 
@@ -55,11 +51,10 @@ In detail, so it is verifiable rather than promised:
 - GitHub, which hosts the file, sees that request the way any web server sees a
   visit: IP address and client type. That is unavoidable once a download
   happens, and it is why the whole thing can be switched off.
-- **You can turn them off**: Settings → *Update online*. One setting governs
-  both — the app then runs fully offline on the registry copy bundled in the
-  APK. No feature is lost; only counters added after the version you installed
-  will keep their original names, and the app will stop telling you about new
-  releases.
+- **You can turn it off**: Settings → *Update online*. The app then runs fully
+  offline on the registry copy bundled in the app. No feature is lost; only
+  counters added after the version you installed will keep their original
+  names.
 
 ## Notifications
 

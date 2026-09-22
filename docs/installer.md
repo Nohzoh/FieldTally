@@ -5,72 +5,54 @@ lang_alt: /en/install
 ---
 # Installer FieldTally
 
-FieldTally n'est pas sur le Play Store. Tu installes un fichier `.apk`
-directement, ce qu'Android appelle du « sideload ». C'est normal et sans
-danger, mais le téléphone va te poser deux questions inhabituelles. Les voici
-dans l'ordre, avec ce qu'il faut répondre.
+FieldTally s'installe depuis le **Play Store**. L'app y est en **test fermé** :
+la fiche n'est visible que par les personnes inscrites comme testeurs, et s'y
+inscrire prend trois étapes, dans cet ordre.
 
-**Il te faut :** un téléphone Android 8.0 ou plus récent. Il n'y a pas encore
-de version iOS.
+**Il te faut :** un téléphone Android 8.0 ou plus récent, et le compte Google
+que tu utilises dessus. Il n'y a pas encore de version iOS.
 
-## 1. Télécharger le fichier
+## 1. Rejoindre le groupe
 
-Ouvre la [page des versions](https://github.com/Nohzoh/FieldTally/releases/latest)
-et appuie sur le fichier qui se termine par **`.apk`**.
+Ouvre le [groupe FieldTally](https://groups.google.com/g/fieldtally) avec le
+compte Google de ton téléphone. La page te propose de le rejoindre, un clic
+suffit, il n'y a personne à attendre.
 
-Le navigateur peut afficher « Ce type de fichier peut endommager votre
-appareil ». C'est un message générique qu'Android affiche pour **tout** fichier
-APK, quel qu'il soit. Appuie sur **Télécharger quand même**.
+C'est l'étape que personne ne devine, et Play ne te montrera rien tant qu'elle
+n'est pas faite. Le groupe sert aussi à annoncer ce qui change et à recevoir
+tes retours.
 
-## 2. Autoriser l'installation
+## 2. S'inscrire comme testeur
 
-Ouvre le fichier téléchargé. Android affiche :
+Ouvre la [page d'inscription](https://play.google.com/apps/testing/io.nohzoh.fieldtally)
+et accepte le test. Les mêmes liens sont republiés dans les messages du groupe
+une fois que tu l'as rejoint.
 
-> Pour votre sécurité, votre téléphone n'est pas autorisé à installer des
-> applications inconnues provenant de cette source.
+## 3. Installer
 
-Appuie sur **Paramètres**, active **Autoriser depuis cette source**, puis
-reviens en arrière. Cette autorisation ne concerne que l'application depuis
-laquelle tu as téléchargé le fichier (ton navigateur), et tu peux la retirer
-ensuite.
+La fiche Play s'ouvre depuis cette même page, et l'installation se passe comme
+pour n'importe quelle application.
 
-## 3. L'avertissement Play Protect
+**Si la fiche s'affiche comme indisponible**, c'est presque toujours l'étape 1
+qui manque, ou un compte Google différent de celui utilisé sur le téléphone.
+Play met parfois quelques minutes à prendre l'inscription en compte.
 
-C'est l'écran qui fait peur, et le seul où l'on risque d'abandonner :
+## Mettre à jour
 
-> **Appli bloquée pour protéger votre appareil**
->
-> Play Protect n'a jamais vu d'appli de ce développeur auparavant. Elle n'est
-> peut-être pas sûre.
+Rien à faire : Play s'en occupe comme pour tes autres applications. L'app ne va
+rien chercher de son côté et ne te réclame aucune manipulation.
 
-**Ce message ne signifie pas qu'un problème a été détecté.** Ce que Play Protect
-ne connaît pas, c'est la **clé de signature** : il regroupe les applications par
-clé, et celle de FieldTally est récente, donc jamais vue sur beaucoup
-d'appareils. Une application malveillante et une application parfaitement saine
-déclenchent exactement le même écran. Le verdict s'atténuera de lui-même à
-mesure que l'app sera installée.
+## Tu avais installé le fichier APK ?
 
-**Le seul bouton visible est « OK », et il annule l'installation.** Pour
-continuer, appuie d'abord sur **« Plus de détails »** : l'option permettant
-d'installer quand même apparaît en dessous. Son libellé exact varie selon la
-version d'Android.
+Les versions distribuées à la main avant l'arrivée sur le Play Store portent le
+même certificat de signature que celles que Play installe. L'installation depuis
+Play se fait donc par-dessus la tienne, et ton historique est conservé.
 
-Ce que tu peux vérifier par toi-même, et qui vaut mieux qu'une promesse :
+Si Play refuse malgré tout de reprendre l'installation existante, il faut
+désinstaller d'abord — pense alors à faire un export CSV avant, puisque tout
+part avec l'application.
 
-- **Le code source est public**, en entier, sous licence AGPL v3.
-- **L'APK est construit par GitHub Actions** à partir de ce code, pas sur une
-  machine privée. Le journal de construction de chaque version est consultable.
-- **Chaque version est signée** avec la même clé. Son empreinte SHA-256 est :
-
-  ```
-  9be340de759dde7f92fcace5f9453a47ee910fa7779ad43912bdda351172ca85
-  ```
-
-  Elle est affichée dans le journal de construction de chaque version. Si un
-  jour un APK prétendument FieldTally porte une autre empreinte, il ne vient
-  pas d'ici.
-
-## 4. Premier lancement
+## Premier lancement
 
 Ouvre FieldTally, puis dans Ingress : écran de stats → **Partager** →
 **FieldTally**. Ton premier relevé est enregistré, et l'app commence à
@@ -80,26 +62,18 @@ Tu arrives d'Agent Stats ? Copie le tableau de sa page d'export et colle-le
 dans menu → **Relevés** → **Importer depuis Agent Stats**. Le bandeau et la
 pagination peuvent venir avec, ils sont ignorés.
 
-## Mettre à jour
+## Ce que tu peux vérifier
 
-Télécharge le nouvel APK depuis la même page et installe-le par-dessus. Tes
-données sont conservées. **N'utilise que les APK publiés ici** : une mise à jour
-signée avec une autre clé sera refusée par Android, ce qui est précisément le
-but de la signature.
+- **Le code source est public**, en entier, sous licence AGPL v3.
+- **L'application est construite par GitHub Actions** à partir de ce code, pas
+  sur une machine privée. Le journal de construction de chaque version est
+  consultable, et il refuse de continuer si la signature n'est pas la bonne.
+- **La clé de signature est celle du projet**, la même depuis la première
+  version. Son empreinte SHA-256 est :
 
-L'app te dit maintenant quand une version est sortie : les Réglages la nomment
-et ouvrent sa page. Elle l'apprend en lisant un petit fichier public sur le site
-du projet, sous le même réglage *Mettre à jour en ligne* que le registre des
-compteurs, et n'envoie rien.
-
-**Elle n'installe jamais rien d'elle-même.** Il faudrait pour cela demander à
-Android le droit d'installer des applications, et une app dont tout l'argument
-est qu'elle ne fait presque rien n'a pas à élargir ce qu'elle peut faire pour
-t'épargner deux gestes. Tu télécharges et installes comme la première fois.
-
-Si tu veux une vraie automatisation,
-[Obtainium](https://github.com/ImranR98/Obtainium) suit les releases GitHub et
-s'occupe de la détection, du téléchargement et de l'installation.
+  ```
+  9be340de759dde7f92fcace5f9453a47ee910fa7779ad43912bdda351172ca85
+  ```
 
 ## Désinstaller
 

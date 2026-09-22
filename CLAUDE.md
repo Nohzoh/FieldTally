@@ -211,24 +211,22 @@ they are environment facts rather than procedure.
 
 ### Verifying a release
 
-The skill's `apksigner` invocation cannot run here. Parse the APK Signing Block
-directly instead — it needs nothing but Python:
+Nothing is published to GitHub any more (#198): the release produces a tag and
+an App Bundle attached to the run as an artifact, and the app reaches people
+through the Play Store. Two consequences for an agent here.
 
-1. find the magic `APK Sig Block 42` before the central directory;
-2. read the v2 block, id `0x7109871a`;
-3. SHA-256 the X.509 certificate in DER.
-
-Expect `CN=FieldTally` and
+**The artifact cannot be downloaded from this container.** The signed URL
+points at Azure blob storage, which the proxy refuses. What can be read is the
+job log: the "Verify the bundle is not debug-signed" step prints the whole
+certificate, fingerprint included. Expect `CN=FieldTally` and
 `9be340de759dde7f92fcace5f9453a47ee910fa7779ad43912bdda351172ca85`. That
 fingerprint is published on the install page, so a mismatch is a broken promise
 to every user.
 
-With no emulator, "install it and open About" becomes: read `versionName` from
-the manifest, grep the release commit out of `libapp.so`, read the bundled
-`changelog.json` and `counters_registry_seed.json` out of the APK, and
-cross-check the whole thing against the asset digest GitHub publishes. Download
-what the public downloads — never report a release done on a green workflow
-alone.
+**A green workflow is not a shipped release.** It means a bundle exists and
+carries the right key. What people install is what the Play Console rolled out,
+which only the maintainer can confirm today — so report the build as built, and
+the release as done only once they say it is live.
 
 ### The changelog and the build number
 
