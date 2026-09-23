@@ -176,6 +176,14 @@ memory may no longer match the file — the assert is what tells you.
   widget.
 - Conventional Commits. Squash-merging means the **pull request title** becomes
   the commit message, so the title follows the convention too.
+- **No history and no issue numbers in comments.** A comment says what is true
+  now; why it changed is the commit message, which is already written. The test
+  is that the reference carries no load: if cutting `(#123)` loses something,
+  write the reason out in full instead; if it loses nothing, it was
+  decoration. `§` references to the spec stay — they point at a live rule, not
+  at an event. `CONTRIBUTING.md` has the worked example. This one is easy to
+  get wrong by imitation, because most of the existing comments predate the
+  rule.
 - Commits are signed, and pull requests are the only way into `main`.
 - **Every change to the app answers to an issue** (#125, narrowed by #144).
   The app is `app/` — code, assets, l10n — plus the release workflow. The pull
