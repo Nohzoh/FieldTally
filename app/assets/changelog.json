@@ -304,5 +304,22 @@
         "Rien n’a changé dans l’app elle-même : cette version existe pour que le Play Store ait une mise à jour à te proposer."
       ]
     }
+  },
+  "16": {
+    "version": "1.12.0",
+    "title": {
+      "en": "Bring a whole history back, and updates from the Play Store",
+      "fr": "Récupérer tout un historique, et les mises à jour par le Play Store"
+    },
+    "features": {
+      "en": [
+        "An export you made can finally be read back in: Snapshots → Import → Restore a FieldTally export brings the lot back, agent name, faction and level included.",
+        "Updates come from the Play Store now, and are offered inside the app as soon as one is waiting. There is nothing to go and check."
+      ],
+      "fr": [
+        "Un export que tu as fait peut enfin être relu : Relevés → Importer → Restaurer un export FieldTally ramène tout, nom d’agent, faction et niveau compris.",
+        "Les mises à jour viennent du Play Store, et te sont proposées dans l’app dès qu’il y en a une. Tu n’as plus rien à aller vérifier."
+      ]
+    }
   }
 }
