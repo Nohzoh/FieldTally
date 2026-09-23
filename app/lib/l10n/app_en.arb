@@ -550,9 +550,9 @@
     }
   },
   "medalNone": "No medal yet",
-  "medalTierMultiple": "{tier} medal \u00d7{count}",
+  "medalTierMultiple": "{tier} medal ×{count}",
   "@medalTierMultiple": {
-    "description": "Names the medal once every tier is behind, with the multiplier the game shows: how many whole times the top threshold has been reached (#87). Shown from 2 upwards \u2014 a 1 would only repeat what the medal already says.",
+    "description": "Names the medal once every tier is behind, with the multiplier the game shows: how many whole times the top threshold has been reached (#87). Shown from 2 upwards — a 1 would only repeat what the medal already says.",
     "placeholders": {
       "tier": {
         "type": "String"
@@ -564,7 +564,7 @@
   },
   "medalTierMultipleSemantics": "{tier} medal, reached {count} times over",
   "@medalTierMultipleSemantics": {
-    "description": "Spoken form of medalTierMultiple. The \u00d7 sign is read out inconsistently by screen readers, or skipped entirely, so the multiplier is spelt out in words here (\u00a73.9).",
+    "description": "Spoken form of medalTierMultiple. The × sign is read out inconsistently by screen readers, or skipped entirely, so the multiplier is spelt out in words here (§3.9).",
     "placeholders": {
       "tier": {
         "type": "String"
@@ -590,7 +590,7 @@
       }
     }
   },
-  "projectionRemainingMultiple": "{remaining} to go for \u00d7{count}",
+  "projectionRemainingMultiple": "{remaining} to go for ×{count}",
   "@projectionRemainingMultiple": {
     "description": "Replaces projectionRemaining once every tier is behind: the target is the next whole multiple of the top threshold rather than a tier (#87).",
     "placeholders": {
@@ -870,7 +870,7 @@
   },
   "notificationMultipleTitle": "{tier} {count} times over — {counter}",
   "@notificationMultipleTitle": {
-    "description": "A further whole multiple of a top tier the game keeps counting past (#87). Spelled out in words rather than as \u00d7{count}: a notification is read aloud by the system, and the multiplication sign is read out inconsistently or skipped.",
+    "description": "A further whole multiple of a top tier the game keeps counting past (#87). Spelled out in words rather than as ×{count}: a notification is read aloud by the system, and the multiplication sign is read out inconsistently or skipped.",
     "placeholders": {
       "tier": {
         "type": "String"
@@ -1118,5 +1118,38 @@
   "updateLater": "Later",
   "@updateLater": {
     "description": "Action on the update banner: dismisses it. Play installs the update on its own schedule anyway, so nothing is lost by saying no."
+  },
+  "importMenu": "Import",
+  "@importMenu": {
+    "description": "Tooltip on the history screen's import menu, which offers the two formats the app can read (#191)."
+  },
+  "importFieldTallyTitle": "Restore a FieldTally export",
+  "@importFieldTallyTitle": {
+    "description": "Title of the screen that reads back the CSV this app exports (#191)."
+  },
+  "importFieldTallyAction": "Restore a FieldTally export",
+  "@importFieldTallyAction": {
+    "description": "Menu entry opening that screen. Same words as the title on purpose: the menu is how anyone reaches it."
+  },
+  "importFieldTallyInstructions": "Pick the CSV this app exported. Your whole history comes back at once — nothing is saved until you confirm.",
+  "@importFieldTallyInstructions": {
+    "description": "Shown above the file button on the FieldTally import screen (#191)."
+  },
+  "importFieldTallyChoose": "Choose a file",
+  "@importFieldTallyChoose": {
+    "description": "Opens the system file picker."
+  },
+  "importFieldTallySnapshotsOnly": "The export carries your snapshots. Goals, pinned counters, settings and home screen widgets are not in it and stay as they are on this phone.",
+  "@importFieldTallySnapshotsOnly": {
+    "description": "Said before confirming, because someone restoring a phone would otherwise assume the file carried everything (#191)."
+  },
+  "importPartialPeriod": "{count, plural, =1{1 row declares a period other than all time} other{{count} rows declare a period other than all time}}. Importing it would mix a partial total into your history.",
+  "@importPartialPeriod": {
+    "description": "The declarative guard of §3.1.3, on the FieldTally import path where the file does carry a period column (#191).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

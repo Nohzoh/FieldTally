@@ -3,8 +3,12 @@ import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
-  timeSpan: TimeSpan.unknown,
+StatSnapshot at(
+  DateTime date,
+  Map<String, int> counters, {
+  TimeSpan timeSpan = TimeSpan.unknown,
+}) => StatSnapshot(
+  timeSpan: timeSpan,
   agentName: '',
   faction: '',
   recordedAt: date,
@@ -95,5 +99,42 @@ void main() {
       DateTime(2024, 2, 1),
       DateTime(2024, 4, 1),
     ]);
+  });
+
+  group('the period each row declares (#191)', () {
+    // A migration file has none, so this guard slept until an import could
+    // read a format that carries one. A FieldTally export does.
+    test('a partial period blocks the import on its own', () {
+      final plan = planner.plan([
+        at(DateTime(2026, 1, 1), const {'Hacks': 10}, timeSpan: TimeSpan.week),
+      ]);
+
+      expect(plan.hasRegressions, isFalse);
+      expect(plan.partialPeriods, [DateTime(2026, 1, 1)]);
+      expect(plan.isBlocked, isTrue);
+    });
+
+    test('the first row is checked although nothing precedes it', () {
+      // It is compared against no earlier snapshot, so the behavioural guard
+      // says nothing about it — which is exactly when this one has to.
+      final plan = planner.plan([
+        at(DateTime(2024, 1, 1), const {'Hacks': 10}, timeSpan: TimeSpan.month),
+        at(DateTime(2025, 1, 1), const {'Hacks': 20}),
+      ]);
+
+      expect(plan.partialPeriods, [DateTime(2024, 1, 1)]);
+    });
+
+    test('an all-time row passes, and so does one declaring nothing', () {
+      final plan = planner.plan([
+        at(DateTime(2024, 1, 1), const {
+          'Hacks': 10,
+        }, timeSpan: TimeSpan.allTime),
+        at(DateTime(2025, 1, 1), const {'Hacks': 20}),
+      ]);
+
+      expect(plan.partialPeriods, isEmpty);
+      expect(plan.isBlocked, isFalse);
+    });
   });
 }

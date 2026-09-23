@@ -323,5 +323,12 @@
   "homeWidgetRemaining": "{remaining} avant {tier}",
   "updateDownloaded": "Une nouvelle version est téléchargée.",
   "updateRestart": "Redémarrer",
-  "updateLater": "Plus tard"
+  "updateLater": "Plus tard",
+  "importMenu": "Importer",
+  "importFieldTallyTitle": "Restaurer un export FieldTally",
+  "importFieldTallyAction": "Restaurer un export FieldTally",
+  "importFieldTallyInstructions": "Choisis le CSV exporté par l'application. Tout ton historique revient d'un coup — rien n'est enregistré avant que tu confirmes.",
+  "importFieldTallyChoose": "Choisir un fichier",
+  "importFieldTallySnapshotsOnly": "L'export contient tes relevés. Les objectifs, les compteurs épinglés, les réglages et les widgets n'y sont pas et restent tels quels sur ce téléphone.",
+  "importPartialPeriod": "{count, plural, =1{1 ligne déclare une période autre que « all time »} other{{count} lignes déclarent une période autre que « all time »}}. L’importer mêlerait un total partiel à ton historique."
 }

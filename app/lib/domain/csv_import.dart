@@ -18,6 +18,7 @@ class CsvImportPlan {
     required this.snapshots,
     required this.regressions,
     required this.counterCount,
+    this.partialPeriods = const [],
     this.ignoredLines = 0,
     this.headerIgnored = false,
   });
@@ -27,6 +28,14 @@ class CsvImportPlan {
 
   /// Every backwards step found, wherever it sits in the file.
   final List<CsvRegression> regressions;
+
+  /// Rows declaring a period other than `ALL TIME` (§3.1.3).
+  ///
+  /// Always empty on the migration path, which carries no period column at
+  /// all. A FieldTally export does carry one, so the declarative guard is
+  /// awake here — and a file that has been through a spreadsheet is exactly
+  /// where a `week` row would come from.
+  final List<DateTime> partialPeriods;
 
   /// Distinct counters across the whole file.
   final int counterCount;
@@ -47,10 +56,11 @@ class CsvImportPlan {
 
   bool get isEmpty => snapshots.isEmpty;
   bool get hasRegressions => regressions.isNotEmpty;
+  bool get hasPartialPeriods => partialPeriods.isNotEmpty;
 
-  /// The import is refused by default when anything went backwards, exactly as
-  /// a single paste would be (§3.1.3).
-  bool get isBlocked => hasRegressions;
+  /// The import is refused by default when anything went backwards or any row
+  /// declares a partial period, exactly as a single paste would be (§3.1.3).
+  bool get isBlocked => hasRegressions || hasPartialPeriods;
 
   DateTime? get from => snapshots.isEmpty ? null : snapshots.first.recordedAt;
   DateTime? get to => snapshots.isEmpty ? null : snapshots.last.recordedAt;
@@ -87,6 +97,15 @@ class CsvImportPlanner {
 
     final regressions = <CsvRegression>[];
 
+    // Every row, not only the pairs below: the declarative guard is about one
+    // row's own claim, so the first row of a backfill — which is compared
+    // against nothing — is as much in scope as any other.
+    final partialPeriods = [
+      for (final snapshot in snapshots)
+        if (guards.check(snapshot, registry: registry).isPartialPeriod)
+          snapshot.recordedAt,
+    ];
+
     void collect(StatSnapshot candidate, StatSnapshot? previous) {
       final check = guards.check(
         candidate,
@@ -121,6 +140,7 @@ class CsvImportPlanner {
       snapshots: snapshots,
       regressions: regressions,
       counterCount: counters.length,
+      partialPeriods: partialPeriods,
       ignoredLines: ignoredLines,
       headerIgnored: headerIgnored,
     );

@@ -2055,6 +2055,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Later'**
   String get updateLater;
+
+  /// Tooltip on the history screen's import menu, which offers the two formats the app can read (#191).
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get importMenu;
+
+  /// Title of the screen that reads back the CSV this app exports (#191).
+  ///
+  /// In en, this message translates to:
+  /// **'Restore a FieldTally export'**
+  String get importFieldTallyTitle;
+
+  /// Menu entry opening that screen. Same words as the title on purpose: the menu is how anyone reaches it.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore a FieldTally export'**
+  String get importFieldTallyAction;
+
+  /// Shown above the file button on the FieldTally import screen (#191).
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the CSV this app exported. Your whole history comes back at once — nothing is saved until you confirm.'**
+  String get importFieldTallyInstructions;
+
+  /// Opens the system file picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a file'**
+  String get importFieldTallyChoose;
+
+  /// Said before confirming, because someone restoring a phone would otherwise assume the file carried everything (#191).
+  ///
+  /// In en, this message translates to:
+  /// **'The export carries your snapshots. Goals, pinned counters, settings and home screen widgets are not in it and stay as they are on this phone.'**
+  String get importFieldTallySnapshotsOnly;
+
+  /// The declarative guard of §3.1.3, on the FieldTally import path where the file does carry a period column (#191).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 row declares a period other than all time} other{{count} rows declare a period other than all time}}. Importing it would mix a partial total into your history.'**
+  String importPartialPeriod(int count);
 }
 
 class _AppLocalizationsDelegate

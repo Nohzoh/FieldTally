@@ -71,8 +71,14 @@ wording.
 
 ## I am changing phones, do I lose everything?
 
-Export your CSV first (menu → **Snapshots** → export). On the new phone, the
-import reads that file. There is no automatic sync: there is no server to do it.
+Export your CSV first (menu → **Snapshots** → export) and put the file
+somewhere you will find it again. On the new phone, open menu → **Snapshots** →
+**Restore a FieldTally export** and pick that file: the app shows you what
+would land before anything is saved.
+
+That file carries your snapshots and nothing else. Goals, pinned counters,
+settings and widget configuration are not in it and will have to be set up
+again. There is no automatic sync either: there is no server to do it.
 
 ## Can I bring my Agent Stats history over?
 
