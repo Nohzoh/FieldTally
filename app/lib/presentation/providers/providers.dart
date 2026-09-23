@@ -5,16 +5,17 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../core/build_info.dart';
 import '../../data/changelog/changelog_service.dart';
 import '../../data/db/database.dart';
+import '../../data/files/export_file_picker.dart';
 import '../../data/notifications/notification_service.dart';
 import '../../data/parsing/ingress_tsv_parser.dart';
 import '../../data/registry/counter_registry_service.dart';
-import '../../data/updates/play_update_service.dart';
 import '../../data/repositories/drift_goal_repository.dart';
 import '../../data/repositories/drift_pinned_counter_repository.dart';
 import '../../data/repositories/drift_settings_repository.dart';
 import '../../data/repositories/drift_snapshot_repository.dart';
 import '../../data/repositories/drift_widget_instance_counter_repository.dart';
 import '../../data/sharing/incoming_share.dart';
+import '../../data/updates/play_update_service.dart';
 import '../../domain/counter_list.dart';
 import '../../domain/counter_pace.dart';
 import '../../domain/counter_series.dart';
@@ -192,6 +193,14 @@ final paceChangesProvider = Provider<List<CounterShift>>((ref) {
 /// Asks Play whether it is holding a newer version (#195).
 final playUpdateServiceProvider = Provider<PlayUpdateService>(
   (ref) => const PlayUpdateService(),
+);
+
+/// Asks the system for the export file to read back (#191).
+///
+/// Behind a provider so a widget test can answer with a file of its own: the
+/// real picker needs a platform channel, which no test has.
+final exportFilePickerProvider = Provider<ExportFilePicker>(
+  (ref) => const ExportFilePicker(),
 );
 
 /// Badges the recent pace puts within reach, soonest first (#148).

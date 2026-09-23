@@ -66,6 +66,10 @@ dependencies:
   # Play's in-app update API (#195). Android only, and inert anywhere Play did
   # not install the app — which is every test, emulator and local build.
   in_app_update: ^5.0.0
+  # Picking the export back off the phone (#191). flutter.dev's own picker,
+  # and the whole reason this import takes a file: a multi-year history is not
+  # something anyone pastes.
+  file_selector: ^1.1.0
   url_launcher: ^6.3.2
   home_widget: ^0.10.0
 

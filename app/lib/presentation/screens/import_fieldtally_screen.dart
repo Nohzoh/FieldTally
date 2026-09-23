@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/router.dart';
-import '../../data/parsing/agent_stats_csv_parser.dart';
+import '../../data/parsing/fieldtally_csv_parser.dart';
 import '../../data/parsing/parse_exception.dart';
 import '../../domain/csv_import.dart';
 import '../../l10n/app_localizations.dart';
@@ -12,57 +12,54 @@ import '../import_commit.dart';
 import '../providers/providers.dart';
 import '../widgets/import_feedback.dart';
 
-/// Bulk import of an Agent Stats history (§3.1, Appendix B).
+/// Reading a FieldTally export back in (#191).
 ///
-/// The on-ramp for the second target user of §2: someone who already has years
-/// of history elsewhere and would otherwise have to start from zero.
+/// The other half of §3.8: the app has always been able to write the file and
+/// never able to read it, while the FAQ told agents changing phone that it
+/// could. This is that promise made true.
 ///
-/// Same principle as a single paste — nothing is written before the agent has
-/// seen what would land — but the checking is heavier, because a file spanning
-/// years can hold a bad row anywhere in the middle.
-class ImportCsvScreen extends ConsumerStatefulWidget {
-  const ImportCsvScreen({super.key});
+/// A file, not a paste, unlike the Agent Stats screen next door — the export
+/// arrives as a file and a history spanning years does not fit a text field.
+/// Same principle otherwise: nothing is written before the agent has seen
+/// what would land.
+class ImportFieldTallyScreen extends ConsumerStatefulWidget {
+  const ImportFieldTallyScreen({super.key});
 
   @override
-  ConsumerState<ImportCsvScreen> createState() => _ImportCsvScreenState();
+  ConsumerState<ImportFieldTallyScreen> createState() =>
+      _ImportFieldTallyScreenState();
 }
 
-class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
-  final _controller = TextEditingController();
-
+class _ImportFieldTallyScreenState
+    extends ConsumerState<ImportFieldTallyScreen> {
+  String? _fileName;
   CsvImportPlan? _plan;
   ExportParseException? _error;
   bool _saving = false;
 
-  bool get _hasResult => _plan != null || _error != null;
+  Future<void> _choose() async {
+    final picked = await ref.read(exportFilePickerProvider).pick();
+    // Null is the agent backing out of the system picker, which is not a
+    // failure and should leave whatever they were looking at alone.
+    if (picked == null || !mounted) return;
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _analyze() async {
     setState(() {
+      _fileName = picked.name;
       _plan = null;
       _error = null;
     });
 
     try {
+      final snapshots = const FieldTallyCsvParser().parse(picked.content);
       final registry = await ref.read(counterRegistryProvider.future);
-      final read = AgentStatsCsvParser(
-        registry: registry,
-      ).parse(_controller.text);
       final existing = await ref.read(snapshotRepositoryProvider).latest();
 
       if (!mounted) return;
       setState(() {
         _plan = const CsvImportPlanner().plan(
-          read.snapshots,
+          snapshots,
           existingLatest: existing?.snapshot,
           registry: registry,
-          ignoredLines: read.ignoredLines,
-          headerIgnored: read.headerIgnored,
         );
       });
     } on ExportParseException catch (e) {
@@ -94,10 +91,11 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
     final theme = Theme.of(context);
     final dates = DateFormat(l10n.shortDateFormat, locale);
     final plan = _plan;
+    final fileName = _fileName;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.importCsvTitle),
+        title: Text(l10n.importFieldTallyTitle),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => context.go(Routes.snapshots),
@@ -109,25 +107,22 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                if (!_hasResult) ...[
-                  Text(l10n.importCsvInstructions),
-                  const SizedBox(height: 16),
-                ],
-                TextField(
-                  controller: _controller,
-                  maxLines: _hasResult ? 2 : 8,
-                  minLines: _hasResult ? 1 : 4,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: l10n.importCsvField,
-                  ),
-                ),
-                const SizedBox(height: 12),
+                Text(l10n.importFieldTallyInstructions),
+                const SizedBox(height: 16),
                 FilledButton.icon(
-                  onPressed: _analyze,
-                  icon: const Icon(Icons.search),
-                  label: Text(l10n.analyze),
+                  onPressed: _choose,
+                  icon: const Icon(Icons.folder_open),
+                  label: Text(l10n.importFieldTallyChoose),
                 ),
+                if (fileName != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    fileName,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
+                ],
                 if (_error != null) ...[
                   const SizedBox(height: 16),
                   ImportErrorCard(error: _error!),
@@ -153,32 +148,12 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
                     ),
                     style: theme.textTheme.bodyMedium,
                   ),
-                  // Tolerating a paste off a web page is only honest if what
-                  // was passed over is named: the banner and the pagination
-                  // are skipped by the same rule a damaged row would be (#133).
-                  if (plan.ignoredLines > 0) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.importCsvIgnored(plan.ignoredLines),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.outline,
-                      ),
-                    ),
-                  ],
-                  if (plan.headerIgnored) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.importCsvHeaderIgnored,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.outline,
-                      ),
-                    ),
-                  ],
                   const SizedBox(height: 12),
-                  // Said out loud rather than left implicit: on this path the
-                  // declarative guard simply does not exist.
+                  // The export carries the snapshots and nothing else, and
+                  // someone restoring a phone is exactly the person who would
+                  // otherwise assume it carried everything.
                   Text(
-                    l10n.importCsvNoTimeSpan,
+                    l10n.importFieldTallySnapshotsOnly,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.outline,
                     ),
@@ -229,7 +204,7 @@ class _ImportCsvScreenState extends ConsumerState<ImportCsvScreen> {
     );
   }
 
-  /// Same rule as a single import (§3.1.3): overriding takes a separate action
+  /// Same rule as everywhere else (§3.1.3): overriding takes a separate action
   /// and a confirmation, never a button beside the message.
   Future<void> _confirmOverride() async {
     final l10n = AppLocalizations.of(context);

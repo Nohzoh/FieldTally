@@ -8,6 +8,7 @@ import '../presentation/screens/customise_pins_screen.dart';
 import '../presentation/screens/dashboard_screen.dart';
 import '../presentation/screens/edit_snapshot_screen.dart';
 import '../presentation/screens/import_csv_screen.dart';
+import '../presentation/screens/import_fieldtally_screen.dart';
 import '../presentation/screens/settings_screen.dart';
 import '../presentation/screens/snapshot_changes_screen.dart';
 import '../presentation/screens/share_card_screen.dart';
@@ -27,7 +28,14 @@ abstract final class Routes {
   static const snapshots = '/snapshots';
   static const customisePins = '/pins';
   static const settings = '/settings';
+
+  /// Bringing a history in from Agent Stats (Appendix B).
   static const importCsv = '/import';
+
+  /// Reading a FieldTally export back in (#191). A sibling of [importCsv]
+  /// rather than a mode of it: each screen names the format it reads, so
+  /// neither has to guess which one it was handed.
+  static const importFieldTally = '/import-fieldtally';
 
   /// Badges ranked by how long each would take (#148).
   static const withinReach = '/reach';
@@ -109,6 +117,10 @@ GoRouter createRouter() => GoRouter(
         GoRoute(
           path: 'import',
           builder: (context, state) => const ImportCsvScreen(),
+        ),
+        GoRoute(
+          path: 'import-fieldtally',
+          builder: (context, state) => const ImportFieldTallyScreen(),
         ),
         GoRoute(
           path: 'reach',

@@ -74,9 +74,15 @@ le nom exact du jeu.
 
 ## Je change de téléphone, je perds tout ?
 
-Fais un export CSV avant (menu → **Relevés** → export). Sur le nouveau
-téléphone, l'import lit ce fichier. Il n'y a pas de synchronisation automatique :
-il n'y a pas de serveur pour la faire.
+Fais un export CSV avant (menu → **Relevés** → export) et mets le fichier
+quelque part que tu retrouveras. Sur le nouveau téléphone, ouvre menu →
+**Relevés** → **Restaurer un export FieldTally** et choisis ce fichier : l'app
+te montre ce qui va être écrit avant d'enregistrer quoi que ce soit.
+
+Ce fichier contient tes relevés, et eux seuls. Les objectifs, les compteurs
+épinglés, les réglages et la configuration des widgets ne sont pas dedans : ils
+seront à refaire. Il n'y a pas de synchronisation automatique non plus, parce
+qu'il n'y a pas de serveur pour la faire.
 
 ## Puis-je récupérer mon historique Agent Stats ?
 

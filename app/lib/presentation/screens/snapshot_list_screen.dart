@@ -38,10 +38,24 @@ class SnapshotListScreen extends ConsumerWidget {
         actions: [
           // Import and export both live here rather than on the dashboard:
           // this is the screen about the history itself.
-          IconButton(
+          //
+          // A menu rather than a third icon: there are two formats now (#191)
+          // and each names itself, so nothing has to guess which one a file
+          // is.
+          PopupMenuButton<String>(
             icon: const Icon(Icons.file_download_outlined),
-            tooltip: l10n.importCsvAction,
-            onPressed: () => context.go(Routes.importCsv),
+            tooltip: l10n.importMenu,
+            onSelected: context.go,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: Routes.importFieldTally,
+                child: Text(l10n.importFieldTallyAction),
+              ),
+              PopupMenuItem(
+                value: Routes.importCsv,
+                child: Text(l10n.importCsvAction),
+              ),
+            ],
           ),
           IconButton(
             icon: const Icon(Icons.ios_share),

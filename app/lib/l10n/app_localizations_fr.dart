@@ -1294,4 +1294,35 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get updateLater => 'Plus tard';
+
+  @override
+  String get importMenu => 'Importer';
+
+  @override
+  String get importFieldTallyTitle => 'Restaurer un export FieldTally';
+
+  @override
+  String get importFieldTallyAction => 'Restaurer un export FieldTally';
+
+  @override
+  String get importFieldTallyInstructions =>
+      'Choisis le CSV exporté par l\'application. Tout ton historique revient d\'un coup — rien n\'est enregistré avant que tu confirmes.';
+
+  @override
+  String get importFieldTallyChoose => 'Choisir un fichier';
+
+  @override
+  String get importFieldTallySnapshotsOnly =>
+      'L\'export contient tes relevés. Les objectifs, les compteurs épinglés, les réglages et les widgets n\'y sont pas et restent tels quels sur ce téléphone.';
+
+  @override
+  String importPartialPeriod(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lignes déclarent une période autre que « all time »',
+      one: '1 ligne déclare une période autre que « all time »',
+    );
+    return '$_temp0. L’importer mêlerait un total partiel à ton historique.';
+  }
 }
