@@ -20,6 +20,10 @@ on:
         description: 'Build and check the signing, then stop at an artifact — no tag.'
         type: boolean
         default: false
+      publish_to_play:
+        description: 'Send the bundle to the Play closed-testing track as a draft.'
+        type: boolean
+        default: true
 
 # Writes one thing: the tag. FieldTally is distributed through the Play Store,
 # so this workflow publishes nothing to GitHub (#198).
@@ -51,6 +55,9 @@ jobs:
       # and Android refuses to install over the previous one.
       - name: Work out what is being released
         id: release
+        env:
+          DRY_RUN: ${{ inputs.dry_run }}
+          PUBLISH: ${{ inputs.publish_to_play }}
         run: |
           if [ "$GITHUB_REF_TYPE" = tag ]; then
             tag="$GITHUB_REF_NAME"
@@ -65,9 +72,28 @@ jobs:
             exit 1
           fi
 
-          echo "Releasing $tag"
+          code=$(sed -n 's/^version: *[^+]*+\([0-9]*\).*/\1/p' app/pubspec.yaml)
+          if [ -z "$code" ]; then
+            echo "::error::app/pubspec.yaml carries no build number after the +."
+            exit 1
+          fi
+
+          # Whether Play is reached is settled here rather than in each step's
+          # own condition: it is the one thing this workflow does that cannot
+          # be undone, because a versionCode Play has accepted is never
+          # accepted again.
+          publish=true
+          if [ "$DRY_RUN" = true ]; then
+            publish=false
+          elif [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] && [ "$PUBLISH" != true ]; then
+            publish=false
+          fi
+
+          echo "Releasing $tag ($code), to Play: $publish"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "publish_to_play=$publish" >> "$GITHUB_OUTPUT"
 
       # Fails here rather than producing a debug-signed bundle further down. A
       # build signed with the debug key installs perfectly well and is the
@@ -89,6 +115,26 @@ jobs:
             echo "::error::Missing repository secrets:$missing — see docs/release.md"
             exit 1
           fi
+
+      - name: Check the Play credential is present
+        if: steps.release.outputs.publish_to_play == 'true'
+        env:
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$PLAY_JSON" ]; then
+            echo "::error::Missing repository secret: PLAY_SERVICE_ACCOUNT_JSON — see docs/release.md"
+            exit 1
+          fi
+
+      # Play refuses a note over 500 characters per locale, so the notes are
+      # written and measured here rather than discovered by a failing upload
+      # after the tag exists. The file they come from is the one the app reads
+      # after an update, so the store and the app say the same thing.
+      - name: Write the Play release notes
+        if: steps.release.outputs.publish_to_play == 'true'
+        env:
+          CODE: ${{ steps.release.outputs.code }}
+        run: python3 tool/play_release_notes.py "$CODE" whatsnew
 
       - uses: actions/setup-java@v6
         with:
@@ -211,3 +257,25 @@ jobs:
           git tag -a "$TAG" -m "FieldTally $VERSION"
           git push origin "$TAG"
 
+      # Last, because it is the only step that cannot be taken back: Play never
+      # accepts a versionCode twice. Everything before this can be re-run, so a
+      # failure here leaves a tagged release to finish by hand in the console
+      # rather than a half-made one to unpick.
+      #
+      # The release lands as a draft: the bundle, its notes and its track are
+      # all in place, and rolling it out to testers stays a deliberate click.
+      #
+      # Pinned to a commit rather than a tag. The step is handed a credential
+      # that can publish to the store, which is not something a moving tag
+      # should decide the code for.
+      - name: Send the App Bundle to Play
+        if: steps.release.outputs.publish_to_play == 'true'
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: io.nohzoh.fieldtally
+          releaseFiles: fieldtally-*.aab
+          tracks: alpha
+          status: draft
+          releaseName: ${{ steps.release.outputs.tag }}
+          whatsNewDirectory: whatsnew

@@ -54,7 +54,33 @@ Under **Settings → Secrets and variables → Actions**, add four secrets:
 
 The workflow fails on its first step, naming the missing ones, if any is absent.
 
-### 3. Check it before tagging anything
+### 3. Let the workflow reach Play
+
+The release job sends the bundle to the closed-testing track itself. That takes
+a Google Cloud service account, and the part that catches everyone is that
+Google Cloud and the Play Console keep separate lists: widening the account's
+IAM roles gives it nothing on Play.
+
+1. In the Google Cloud project linked to the Play Console, enable the **Google
+   Play Android Developer API** and create a service account with a JSON key.
+   Play Console shows the link under **Setup → API access**.
+2. In the Play Console, under **Users and permissions → Invite new users**,
+   invite the service account by the address in its JSON key
+   (`…@….iam.gserviceaccount.com`) and give it, on FieldTally, permission to
+   release to testing tracks. Without this invitation the API answers 403
+   however wide its Cloud roles are.
+3. Add the whole JSON file as one more repository secret:
+
+| Secret | Value |
+| --- | --- |
+| `PLAY_SERVICE_ACCOUNT_JSON` | the contents of the JSON key file |
+
+The key is a credential that can publish to the store. It belongs in the secret
+and nowhere else — not in the repository, not in an issue, not in a pull
+request. Deleting the key in Google Cloud revokes it; rotating it means adding
+the new one to the secret and deleting the old one there.
+
+### 4. Check it before tagging anything
 
 Run the **Release** workflow from the Actions tab with **dry run** ticked. It
 stops at the artifact without creating a tag, so it proves the signing works
@@ -76,13 +102,34 @@ naming a version is a promise that the version shipped.
 
 ## Sending it to Play
 
-The bundle is attached to the run as the `fieldtally-release-aab` artifact.
-Download it from the run's **Artifacts** section and upload it in the Play
-Console yourself; nothing here talks to Play yet (#196).
+The last step of the job sends the bundle to the **closed-testing track** as a
+**draft** release, with its notes in both languages. Rolling it out to testers
+stays a deliberate click in the console — nothing reaches a phone until you
+make it.
 
-A **dry run** produces the bundle too, so a version can be sent to Play without
-tagging — but the `versionCode` still has to have increased, or Play refuses
-the upload outright, and it never accepts a code it has already seen.
+It runs last because it is the one thing here that cannot be taken back: Play
+never accepts a `versionCode` twice. If it fails, the tag and the bundle still
+exist, and the run's `fieldtally-release-aab` artifact is there to upload by
+hand. Re-running the whole workflow is not the way out.
+
+Untick **publish to play** on the dispatch to cut a release without touching
+the store. A **dry run** never reaches Play either, and still produces the
+bundle as an artifact.
+
+### The notes
+
+They are generated from `app/assets/changelog.json`, keyed by `versionCode` —
+the same entry the app shows after an update, so the store and the app cannot
+drift apart. The section headings come from the app's own translations.
+
+Play refuses a note over **500 characters per locale**, and the job measures
+them before it builds anything, so a note that is too long stops the release in
+its first half-minute rather than after the tag exists. Most entries written
+before this existed would not fit: 500 characters is about three short
+sentences, and the fix is to shorten the entry, in both languages.
+
+Writing the entry is part of the version bump, not of the release. A build
+whose `versionCode` has no entry fails the same way.
 
 The tag is annotated but unsigned, created by `github-actions[bot]`. Only the
 Android signing key lives in the workflow, so what proves a build genuine is
