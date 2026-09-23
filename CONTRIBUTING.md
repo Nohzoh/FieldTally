@@ -209,6 +209,38 @@ line to the one it came from. The file is there for the residue — lines the
 formatter genuinely created by splitting one in two — and for the next commit
 of this kind, should there be one.
 
+### Comments
+
+A comment says what is true now. Not what used to be true, not what changed,
+not why it changed — that is the commit message's job, and it is already
+written.
+
+So: no history in the code, and no issue numbers in it either. The rule that
+settles both is that **the reference must never carry any load**. If removing
+`(#123)` from a comment loses something, the comment was incomplete and the
+reason has to be written out in full. If removing it loses nothing, it was
+decoration. Either way it goes. `git blame` already leads to the commit, and
+the commit to the pull request and the issue, so a number in the source is a
+shortcut to something one keystroke away — paid for by every reader who
+follows it and finds a closed thread about a state of the world that no longer
+exists.
+
+```dart
+// No: the reader has to leave the editor, and learns nothing about the code.
+// Fixes the header collision found in #191.
+if (column.trim() == name) …
+
+// Yes: the constraint is live, and it is stated where it binds.
+// Exactly, never case-insensitively: the registry carries a counter whose
+// export header is `Level`, so an export holds both `level` (the agent's own
+// level, a metadata column) and `Level` (the counter). Case is the only thing
+// that tells them apart.
+if (column.trim() == name) …
+```
+
+References to the specification (`§3.1.2`) are a different matter and stay:
+they point at a rule that is meant to still hold, not at an event.
+
 ### Code layout (§5.2 of the spec)
 
 ```
