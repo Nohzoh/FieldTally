@@ -7,6 +7,9 @@ import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/domain/repositories/pinned_counter_repository.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
+import 'package:fieldtally/presentation/screens/counter_detail_screen.dart';
+import 'package:fieldtally/presentation/screens/counter_list_screen.dart';
+import 'package:fieldtally/presentation/screens/dashboard_screen.dart';
 import 'package:fieldtally/presentation/widgets/sparkline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -218,6 +221,43 @@ void main() {
       final recursions = tester.getTopLeft(find.text('Recursions'));
       final hacks = tester.getTopLeft(find.text('Hacks'));
       expect(recursions.dx <= hacks.dx || recursions.dy < hacks.dy, isTrue);
+    });
+
+    group('backing out of a counter opened from a card', () {
+      Future<void> openHacks(WidgetTester tester) async {
+        await pumpDashboard(
+          tester,
+          pinned: const ['Hacks'],
+          history: [
+            at(DateTime(2026, 1, 1), const {'Hacks': 10}),
+          ],
+        );
+        await tester.tap(find.text('Hacks'));
+        await tester.pumpAndSettle();
+        expect(find.byType(CounterDetailScreen), findsOneWidget);
+      }
+
+      testWidgets('the system back returns to the dashboard', (tester) async {
+        await openHacks(tester);
+
+        await tester.binding.handlePopRoute();
+        await tester.pumpAndSettle();
+
+        expect(find.byType(DashboardScreen), findsOneWidget);
+        expect(find.byType(CounterListScreen), findsNothing);
+        expect(find.byType(CounterDetailScreen), findsNothing);
+      });
+
+      testWidgets('the app bar arrow returns to the dashboard', (tester) async {
+        await openHacks(tester);
+
+        await tester.tap(find.byIcon(Icons.arrow_back));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(DashboardScreen), findsOneWidget);
+        expect(find.byType(CounterListScreen), findsNothing);
+        expect(find.byType(CounterDetailScreen), findsNothing);
+      });
     });
   });
 

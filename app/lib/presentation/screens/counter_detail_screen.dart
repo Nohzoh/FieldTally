@@ -105,7 +105,10 @@ class _CounterDetailScreenState extends ConsumerState<CounterDetailScreen> {
         title: Text(label),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(Routes.counters),
+          // Back to whichever screen opened the counter; the list when
+          // nothing sits below it.
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go(Routes.counters),
         ),
         actions: [
           IconButton(

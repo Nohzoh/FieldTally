@@ -299,8 +299,11 @@ class _Card extends ConsumerWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
+        // Pushed rather than gone to: the counter opens on top of the
+        // dashboard, so backing out returns here instead of passing through
+        // the counter list the agent never opened.
         onTap: () =>
-            context.go(Routes.counterDetail(card.counter.exportHeader)),
+            context.push(Routes.counterDetail(card.counter.exportHeader)),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
