@@ -739,6 +739,18 @@ abstract class AppLocalizations {
   /// **'Add a snapshot and your pinned counters will appear here.'**
   String get dashboardEmptyDetail;
 
+  /// No description provided for @dashboardMoveEarlier.
+  ///
+  /// In en, this message translates to:
+  /// **'Move earlier'**
+  String get dashboardMoveEarlier;
+
+  /// No description provided for @dashboardMoveLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Move later'**
+  String get dashboardMoveLater;
+
   /// No description provided for @customise.
   ///
   /// In en, this message translates to:
@@ -754,7 +766,7 @@ abstract class AppLocalizations {
   /// No description provided for @customiseHint.
   ///
   /// In en, this message translates to:
-  /// **'Pick between {min} and {max} counters to show on the dashboard.'**
+  /// **'Pick between {min} and {max} counters to show on the dashboard. Long-press a card there to move it.'**
   String customiseHint(int min, int max);
 
   /// No description provided for @customiseWidgetTitle.

@@ -397,6 +397,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add a snapshot and your pinned counters will appear here.';
 
   @override
+  String get dashboardMoveEarlier => 'Move earlier';
+
+  @override
+  String get dashboardMoveLater => 'Move later';
+
+  @override
   String get customise => 'Customise';
 
   @override
@@ -404,7 +410,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String customiseHint(int min, int max) {
-    return 'Pick between $min and $max counters to show on the dashboard.';
+    return 'Pick between $min and $max counters to show on the dashboard. Long-press a card there to move it.';
   }
 
   @override

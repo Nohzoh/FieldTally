@@ -401,6 +401,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ajoute un relevé et tes compteurs épinglés apparaîtront ici.';
 
   @override
+  String get dashboardMoveEarlier => 'Déplacer avant';
+
+  @override
+  String get dashboardMoveLater => 'Déplacer après';
+
+  @override
   String get customise => 'Personnaliser';
 
   @override
@@ -408,7 +414,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String customiseHint(int min, int max) {
-    return 'Choisis entre $min et $max compteurs à afficher sur le tableau de bord.';
+    return 'Choisis entre $min et $max compteurs à afficher sur le tableau de bord. Un appui long sur une carte permet de la déplacer.';
   }
 
   @override

@@ -12,6 +12,7 @@ import 'package:fieldtally/presentation/screens/counter_list_screen.dart';
 import 'package:fieldtally/presentation/screens/dashboard_screen.dart';
 import 'package:fieldtally/presentation/widgets/sparkline.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -258,6 +259,127 @@ void main() {
         expect(find.byType(CounterListScreen), findsNothing);
         expect(find.byType(CounterDetailScreen), findsNothing);
       });
+    });
+  });
+
+  group('moving a card (§3.3)', () {
+    const pinned = ['Hacks', 'Recursions', 'Links Created', 'Level'];
+    final history = [
+      at(DateTime(2026, 1, 1), const {
+        'Hacks': 10,
+        'Recursions': 2,
+        'Links Created': 5,
+        'Level': 9,
+      }),
+    ];
+
+    /// The order as saved, once the write a move started has reached the
+    /// database: that write runs on real I/O, which the test clock does not
+    /// wait for.
+    Future<List<String>> stored(WidgetTester tester) async {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pumpAndSettle();
+      return container.read(pinnedCounterRepositoryProvider).pinned();
+    }
+
+    Future<void> drag(WidgetTester tester, String from, String onto) async {
+      // Both points are taken before the drag: once it starts, the lifted
+      // copy of the card is on screen too.
+      final start = tester.getCenter(find.text(from));
+      final end = tester.getCenter(find.text(onto));
+      final gesture = await tester.startGesture(start);
+      await tester.pump(kLongPressTimeout + const Duration(milliseconds: 100));
+      await gesture.moveTo(end);
+      await tester.pump();
+      await gesture.up();
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('a long-pressed card dropped on another takes its place', (
+      tester,
+    ) async {
+      await pumpDashboard(tester, pinned: pinned, history: history);
+
+      await drag(tester, 'Level', 'Recursions');
+
+      expect(await stored(tester), [
+        'Hacks',
+        'Level',
+        'Recursions',
+        'Links Created',
+      ]);
+      final level = tester.getTopLeft(find.text('Level'));
+      final recursions = tester.getTopLeft(find.text('Recursions'));
+      expect(level.dy < recursions.dy || level.dx < recursions.dx, isTrue);
+    });
+
+    testWidgets('dropping a card back where it was changes nothing', (
+      tester,
+    ) async {
+      await pumpDashboard(tester, pinned: pinned, history: history);
+
+      await drag(tester, 'Hacks', 'Hacks');
+
+      expect(await stored(tester), pinned);
+      expect(find.byType(DashboardScreen), findsOneWidget);
+    });
+
+    testWidgets('a pinned counter with no card keeps its place', (
+      tester,
+    ) async {
+      // 'Recursions' has never been imported, so it has no card to drag.
+      await pumpDashboard(
+        tester,
+        pinned: pinned,
+        history: [
+          at(DateTime(2026, 1, 1), const {
+            'Hacks': 10,
+            'Links Created': 5,
+            'Level': 9,
+          }),
+        ],
+      );
+
+      await drag(tester, 'Level', 'Hacks');
+
+      expect(await stored(tester), [
+        'Level',
+        'Hacks',
+        'Recursions',
+        'Links Created',
+      ]);
+    });
+
+    testWidgets('a screen reader can move a card without dragging it', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      await pumpDashboard(tester, pinned: pinned, history: history);
+
+      final node = tester.getSemantics(find.text('Hacks'));
+      final action = node.getSemanticsData().customSemanticsActionIds!.map(
+        CustomSemanticsAction.getAction,
+      );
+      expect(action.map((a) => a!.label), ['Move later']);
+
+      node.owner!.performAction(
+        node.id,
+        SemanticsAction.customAction,
+        CustomSemanticsAction.getIdentifier(
+          const CustomSemanticsAction(label: 'Move later'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(await stored(tester), [
+        'Recursions',
+        'Hacks',
+        'Links Created',
+        'Level',
+      ]);
+      semantics.dispose();
     });
   });
 
