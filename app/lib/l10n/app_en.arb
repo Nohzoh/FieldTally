@@ -296,9 +296,11 @@
   "dashboardTitle": "FieldTally",
   "dashboardEmptyTitle": "Nothing to show yet",
   "dashboardEmptyDetail": "Add a snapshot and your pinned counters will appear here.",
+  "dashboardMoveEarlier": "Move earlier",
+  "dashboardMoveLater": "Move later",
   "customise": "Customise",
   "customiseTitle": "Pinned counters",
-  "customiseHint": "Pick between {min} and {max} counters to show on the dashboard.",
+  "customiseHint": "Pick between {min} and {max} counters to show on the dashboard. Long-press a card there to move it.",
   "@customiseHint": {
     "placeholders": {
       "min": {

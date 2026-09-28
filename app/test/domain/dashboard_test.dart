@@ -129,4 +129,37 @@ void main() {
     expect(cards.single.counter.lastValue, 34);
     expect(cards.single.counter.delta, 24);
   });
+
+  group('movePinned', () {
+    const pinned = ['A', 'B', 'C', 'D'];
+
+    test('a card dragged forward takes the place of the one it lands on', () {
+      expect(movePinned(pinned, moved: 'A', onto: 'C'), ['B', 'C', 'A', 'D']);
+    });
+
+    test('a card dragged backward takes the place of the one it lands on', () {
+      expect(movePinned(pinned, moved: 'D', onto: 'B'), ['A', 'D', 'B', 'C']);
+    });
+
+    test('dropping a card on itself changes nothing', () {
+      expect(movePinned(pinned, moved: 'B', onto: 'B'), pinned);
+    });
+
+    test('an unknown header changes nothing', () {
+      expect(movePinned(pinned, moved: 'X', onto: 'B'), pinned);
+      expect(movePinned(pinned, moved: 'B', onto: 'X'), pinned);
+    });
+
+    test('a pinned counter without a card keeps its slot in the list', () {
+      // 'B' has no card, so the dashboard shows A, C, D; moving D onto A
+      // must not lose B.
+      expect(movePinned(pinned, moved: 'D', onto: 'A'), ['D', 'A', 'B', 'C']);
+    });
+
+    test('the list it was given is left as it was', () {
+      final original = [...pinned];
+      movePinned(original, moved: 'A', onto: 'D');
+      expect(original, pinned);
+    });
+  });
 }

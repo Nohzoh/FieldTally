@@ -71,3 +71,27 @@ class DashboardBuilder {
     return cards;
   }
 }
+
+/// [pinned] with [moved] taken out and put back where [onto] stands.
+///
+/// Dropping a card on another takes that card's place and shifts the ones in
+/// between by one slot, whichever direction the drag went — the same thing a
+/// launcher does with its icons. Counters that are pinned but have no card are
+/// moved with the rest rather than dropped, so they reappear where they were
+/// once an import carries them again.
+///
+/// Returns [pinned] unchanged when either header is not in it, or when both
+/// are the same.
+List<String> movePinned(
+  List<String> pinned, {
+  required String moved,
+  required String onto,
+}) {
+  final from = pinned.indexOf(moved);
+  final to = pinned.indexOf(onto);
+  if (from < 0 || to < 0 || from == to) return pinned;
+
+  return [...pinned]
+    ..removeAt(from)
+    ..insert(to, moved);
+}

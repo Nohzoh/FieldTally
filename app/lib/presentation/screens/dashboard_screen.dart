@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -171,8 +172,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           crossAxisSpacing: 12,
                         ),
                         itemCount: list.length,
-                        itemBuilder: (context, index) =>
-                            _Card(card: list[index]),
+                        itemBuilder: (context, index) => _MovableCard(
+                          card: list[index],
+                          previous: index > 0
+                              ? list[index - 1].counter.exportHeader
+                              : null,
+                          next: index < list.length - 1
+                              ? list[index + 1].counter.exportHeader
+                              : null,
+                        ),
                       ),
                     ),
                     const SliverToBoxAdapter(child: _PaceChanges()),
@@ -278,10 +286,87 @@ int _columnsFor(double width) {
   return 3;
 }
 
-class _Card extends ConsumerWidget {
-  const _Card({required this.card});
+/// A card the agent can long-press and drop onto another to take its place.
+///
+/// The drop takes the target's slot and saves the whole order at once, so the
+/// grid redraws from the stored order rather than from a local copy that could
+/// drift from it. The same moves are offered as accessibility actions, since a
+/// drag is out of reach with a screen reader.
+class _MovableCard extends ConsumerWidget {
+  const _MovableCard({required this.card, this.previous, this.next});
 
   final DashboardCard card;
+
+  /// Export headers of the neighbouring cards, null at either end.
+  final String? previous;
+  final String? next;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final header = card.counter.exportHeader;
+
+    void move(String moved, String onto) => unawaited(_move(ref, moved, onto));
+
+    return LayoutBuilder(
+      builder: (context, constraints) => DragTarget<String>(
+        onWillAcceptWithDetails: (details) => details.data != header,
+        onAcceptWithDetails: (details) => move(details.data, header),
+        builder: (context, candidates, rejected) => LongPressDraggable<String>(
+          data: header,
+          // The card itself, lifted, at the size it has in the grid: the
+          // overlay it is drawn in has no grid to size it.
+          feedback: Transform.scale(
+            scale: 1.04,
+            child: SizedBox.fromSize(
+              size: constraints.biggest,
+              child: _Card(card: card, lifted: true),
+            ),
+          ),
+          childWhenDragging: Opacity(opacity: 0.3, child: _Card(card: card)),
+          // The card under the finger shrinks a little, so it is clear which
+          // slot the dragged one will take.
+          child: AnimatedScale(
+            scale: candidates.isEmpty ? 1 : 0.92,
+            duration: const Duration(milliseconds: 120),
+            child: _Card(
+              card: card,
+              moves: {
+                if (previous case final previous?)
+                  CustomSemanticsAction(label: l10n.dashboardMoveEarlier): () =>
+                      move(header, previous),
+                if (next case final next?)
+                  CustomSemanticsAction(label: l10n.dashboardMoveLater): () =>
+                      move(header, next),
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Reads the stored order rather than the cards on screen: a pinned counter
+  /// with no card is still part of it and must keep its place.
+  Future<void> _move(WidgetRef ref, String moved, String onto) async {
+    final repository = ref.read(pinnedCounterRepositoryProvider);
+    final pinned = await repository.pinned();
+    final reordered = movePinned(pinned, moved: moved, onto: onto);
+    if (!identical(reordered, pinned)) await repository.setPinned(reordered);
+  }
+}
+
+class _Card extends ConsumerWidget {
+  const _Card({required this.card, this.lifted = false, this.moves});
+
+  final DashboardCard card;
+
+  /// Accessibility actions that move the card, on the card's own node so a
+  /// screen reader offers them where the card is focused.
+  final Map<CustomSemanticsAction, VoidCallback>? moves;
+
+  /// Drawn raised while it is being dragged.
+  final bool lifted;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -298,86 +383,90 @@ class _Card extends ConsumerWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        // Pushed rather than gone to: the counter opens on top of the
-        // dashboard, so backing out returns here instead of passing through
-        // the counter list the agent never opened.
-        onTap: () =>
-            context.push(Routes.counterDetail(card.counter.exportHeader)),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Not flexible, and two lines rather than three: the card
-              // reserves exactly this much for the label, so it is ellipsised
-              // when it is too long instead of being sliced mid-line. A
-              // Flexible here competed with the trend area below for the same
-              // free space, and lost half of it even when the trend area held
-              // nothing but a one-line caption.
-              Text(
-                label,
-                style: theme.textTheme.labelLarge,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 6),
-              // The number is the point of the card, so it shrinks to fit
-              // rather than wrapping or being clipped.
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  numbers.format(card.counter.lastValue),
-                  maxLines: 1,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontFeatures: const [FontFeature.tabularFigures()],
+      elevation: lifted ? 8 : null,
+      child: Semantics(
+        customSemanticsActions: moves,
+        child: InkWell(
+          // Pushed rather than gone to: the counter opens on top of the
+          // dashboard, so backing out returns here instead of passing through
+          // the counter list the agent never opened.
+          onTap: () =>
+              context.push(Routes.counterDetail(card.counter.exportHeader)),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Not flexible, and two lines rather than three: the card
+                // reserves exactly this much for the label, so it is ellipsised
+                // when it is too long instead of being sliced mid-line. A
+                // Flexible here competed with the trend area below for the same
+                // free space, and lost half of it even when the trend area held
+                // nothing but a one-line caption.
+                Text(
+                  label,
+                  style: theme.textTheme.labelLarge,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 6),
+                // The number is the point of the card, so it shrinks to fit
+                // rather than wrapping or being clipped.
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    numbers.format(card.counter.lastValue),
+                    maxLines: 1,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ),
-              ),
-              // An em dash rather than a sentence: the card is narrow, and the
-              // line below already says why there is nothing to compare
-              // against. Spelling it out twice truncated both.
-              Text(
-                delta == null
-                    ? '—'
-                    : '${delta >= 0 ? '+' : '−'}${numbers.format(delta.abs())}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.outline,
+                // An em dash rather than a sentence: the card is narrow, and the
+                // line below already says why there is nothing to compare
+                // against. Spelling it out twice truncated both.
+                Text(
+                  delta == null
+                      ? '—'
+                      : '${delta >= 0 ? '+' : '−'}${numbers.format(delta.abs())}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
                 ),
-              ),
-              // A sparkline needs two points; with a single snapshot the card
-              // says so rather than drawing a flat line that means nothing.
-              //
-              // Loose rather than Expanded, so this is what actually gives way
-              // when space runs short — the promise the previous comment made
-              // and the layout did not keep.
-              Flexible(
-                fit: FlexFit.loose,
-                child: card.hasSparkline
-                    ? Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SizedBox(
-                          height: 30,
-                          width: double.infinity,
-                          child: Sparkline(values: card.series),
-                        ),
-                      )
-                    : Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Text(
-                          l10n.notEnoughHistory,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.outline,
+                // A sparkline needs two points; with a single snapshot the card
+                // says so rather than drawing a flat line that means nothing.
+                //
+                // Loose rather than Expanded, so this is what actually gives way
+                // when space runs short — the promise the previous comment made
+                // and the layout did not keep.
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: card.hasSparkline
+                      ? Align(
+                          alignment: Alignment.bottomCenter,
+                          child: SizedBox(
+                            height: 30,
+                            width: double.infinity,
+                            child: Sparkline(values: card.series),
+                          ),
+                        )
+                      : Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Text(
+                            l10n.notEnoughHistory,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.outline,
+                            ),
                           ),
                         ),
-                      ),
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
