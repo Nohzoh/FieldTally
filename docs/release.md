@@ -103,9 +103,15 @@ naming a version is a promise that the version shipped.
 ## Sending it to Play
 
 The last step of the job sends the bundle to the **closed-testing track** as a
-**draft** release, with its notes in both languages. Rolling it out to testers
-stays a deliberate click in the console — nothing reaches a phone until you
-make it.
+**completed** release, with its notes in both languages, and submits it for
+Google's review. Once the review passes it rolls out to every tester on the
+track by itself: dispatching the workflow is the decision to ship.
+
+If **managed publishing** is turned on in the console (**Publishing
+overview**), an approved release waits there until you press **Publish**.
+Play also refuses the upload if the console holds changes that cannot be sent
+for review with it, such as a rejected update still pending: clear those first,
+or the step fails and the release is left to finish by hand.
 
 It runs last because it is the one thing here that cannot be taken back: Play
 never accepts a `versionCode` twice. If it fails, the tag and the bundle still
