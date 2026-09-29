@@ -321,5 +321,28 @@
         "Les mises à jour viennent du Play Store, et te sont proposées dans l’app dès qu’il y en a une. Tu n’as plus rien à aller vérifier."
       ]
     }
+  },
+  "17": {
+    "version": "1.13.0",
+    "title": {
+      "en": "Put the dashboard in the order you want",
+      "fr": "Range le tableau de bord dans l’ordre que tu veux"
+    },
+    "features": {
+      "en": [
+        "Long-press a card on the dashboard and drop it on another to move it. The new order is kept straight away."
+      ],
+      "fr": [
+        "Un appui long sur une carte du tableau de bord permet de la déposer sur une autre pour la déplacer. Le nouvel ordre est gardé tout de suite."
+      ]
+    },
+    "fixes": {
+      "en": [
+        "Going back from a counter opened on the dashboard now returns to the dashboard, instead of passing through the counter list."
+      ],
+      "fr": [
+        "Revenir en arrière depuis un compteur ouvert sur le tableau de bord ramène au tableau de bord, sans passer par la liste des compteurs."
+      ]
+    }
   }
 }
