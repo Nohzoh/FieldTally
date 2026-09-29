@@ -114,8 +114,8 @@ nothing is published to GitHub: the app reaches people through the Play Store
 tag. Use it when the question is whether signing works — or to produce a bundle
 for Play without tagging.
 
-The job's last step sends the bundle to the closed-testing track as a draft
-release, with notes generated from `app/assets/changelog.json`. It is skipped
+The job's last step sends the bundle to the closed-testing track as a
+completed release and submits it for Google's review, with notes generated from `app/assets/changelog.json`. It is skipped
 by a dry run, and by `-f publish_to_play=false` on a real one.
 
 Dispatching without `dry_run` is the irreversible step, and doubly so now: it
@@ -157,8 +157,9 @@ promise to every user, not a detail. On a machine with the bundle downloaded,
 bundle carries the v1 JAR signature `keytool` reads.
 
 Then the part no workflow can answer: what people install is what the Play
-Console rolled out. The upload happens by itself, but it lands as a draft, so
-ask the user to confirm the version is live before calling the release done.
+Console rolled out. The upload goes to Google's review by itself and rolls out
+once approved, which the workflow does not wait for, so ask the user to confirm
+the version is live before calling the release done.
 
 If the Play step failed while the rest went green, say so plainly: the tag is
 real and the store has nothing. The bundle is in the run's artifact and the

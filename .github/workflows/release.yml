@@ -21,7 +21,7 @@ on:
         type: boolean
         default: false
       publish_to_play:
-        description: 'Send the bundle to the Play closed-testing track as a draft.'
+        description: 'Send the bundle to the Play closed-testing track and submit it for review.'
         type: boolean
         default: true
 
@@ -262,8 +262,10 @@ jobs:
       # failure here leaves a tagged release to finish by hand in the console
       # rather than a half-made one to unpick.
       #
-      # The release lands as a draft: the bundle, its notes and its track are
-      # all in place, and rolling it out to testers stays a deliberate click.
+      # The release is completed and the edit committed, which sends it to
+      # Google's review; once approved it rolls out to every tester on the
+      # track with no click in the console. With managed publishing turned on
+      # in the console, an approved release still waits there to be published.
       #
       # Pinned to a commit rather than a tag. The step is handed a credential
       # that can publish to the store, which is not something a moving tag
@@ -276,6 +278,6 @@ jobs:
           packageName: io.nohzoh.fieldtally
           releaseFiles: fieldtally-*.aab
           tracks: alpha
-          status: draft
+          status: completed
           releaseName: ${{ steps.release.outputs.tag }}
           whatsNewDirectory: whatsnew
