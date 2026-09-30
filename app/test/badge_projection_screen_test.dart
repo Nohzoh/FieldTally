@@ -134,6 +134,21 @@ void main() {
       expect(find.textContaining('at your recent pace'), findsNothing);
     });
 
+    testWidgets('a single snapshot asks for another import', (tester) async {
+      // With one snapshot there is no pace to measure, which is not the same
+      // as a pace of zero: the counter may well be moving.
+      await pumpDetail(
+        tester,
+        'Unique Portals Visited',
+        history: [
+          at(DateTime(2026, 1, 1), const {'Unique Portals Visited': 1400}),
+        ],
+      );
+
+      expect(find.textContaining('import again'), findsOneWidget);
+      expect(find.textContaining('has not moved lately'), findsNothing);
+    });
+
     testWidgets('past onyx the card keeps working instead of collapsing', (
       tester,
     ) async {

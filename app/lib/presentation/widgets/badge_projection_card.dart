@@ -224,16 +224,17 @@ class BadgeProjectionCard extends StatelessWidget {
   String _estimate(AppLocalizations l10n, DateFormat dates, DateTime? date) {
     if (date != null) return l10n.projectionDate(dates.format(date));
 
-    // Three different silences now, worth telling apart: nothing is
-    // happening; something is, but the target is out of reach at that rate;
-    // or it is reachable and the window shuts first, which is the one an
-    // agent can still do something about.
+    // Four different silences, worth telling apart: too few snapshots to
+    // measure anything; nothing is happening; something is, but the target is
+    // out of reach at that rate; or it is reachable and the window shuts
+    // first, which is the one an agent can still do something about.
     if (projection.missesDeadline(measuredFrom)) {
       return l10n.projectionAfterDeadline;
     }
 
     final pace = projection.perDay;
-    if (pace == null || pace <= 0) return l10n.projectionNoPace;
+    if (pace == null) return l10n.projectionNoData;
+    if (pace <= 0) return l10n.projectionNoPace;
     return l10n.projectionTooFar;
   }
 

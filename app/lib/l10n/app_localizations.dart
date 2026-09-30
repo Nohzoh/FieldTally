@@ -1216,6 +1216,12 @@ abstract class AppLocalizations {
   /// **'No estimate: this counter has not moved lately.'**
   String get projectionNoPace;
 
+  /// Only one snapshot holds this counter, so no pace can be measured at all. Distinct from projectionNoPace, where a pace was measured and it is zero.
+  ///
+  /// In en, this message translates to:
+  /// **'No estimate yet: import again to measure a pace.'**
+  String get projectionNoData;
+
   /// No description provided for @projectionTooFar.
   ///
   /// In en, this message translates to:
