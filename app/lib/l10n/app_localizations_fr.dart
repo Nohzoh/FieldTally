@@ -728,6 +728,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pas d\'estimation : ce compteur n\'a pas bougé récemment.';
 
   @override
+  String get projectionNoData =>
+      'Pas encore d\'estimation : importe à nouveau pour mesurer un rythme.';
+
+  @override
   String get projectionTooFar =>
       'Pas d\'estimation : trop loin à ton rythme récent.';
 

@@ -628,6 +628,10 @@
     }
   },
   "projectionNoPace": "No estimate: this counter has not moved lately.",
+  "projectionNoData": "No estimate yet: import again to measure a pace.",
+  "@projectionNoData": {
+    "description": "Only one snapshot holds this counter, so no pace can be measured at all. Distinct from projectionNoPace, where a pace was measured and it is zero."
+  },
   "projectionTooFar": "No estimate: too far off at your recent pace.",
   "projectionEnded": "This one can no longer be earned.",
   "@projectionEnded": {

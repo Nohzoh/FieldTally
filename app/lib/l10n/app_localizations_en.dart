@@ -722,6 +722,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'No estimate: this counter has not moved lately.';
 
   @override
+  String get projectionNoData =>
+      'No estimate yet: import again to measure a pace.';
+
+  @override
   String get projectionTooFar =>
       'No estimate: too far off at your recent pace.';
 

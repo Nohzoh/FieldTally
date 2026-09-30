@@ -184,6 +184,7 @@
   "projectionRemainingMultipleSemantics": "{remaining} restants pour atteindre {count} fois {tier}",
   "projectionDate": "Vers le {date} à ton rythme récent",
   "projectionNoPace": "Pas d'estimation : ce compteur n'a pas bougé récemment.",
+  "projectionNoData": "Pas encore d'estimation : importe à nouveau pour mesurer un rythme.",
   "projectionTooFar": "Pas d'estimation : trop loin à ton rythme récent.",
   "projectionEnded": "Celle-ci ne peut plus être obtenue.",
   "projectionAllTiers": "Tous les paliers atteints.",
