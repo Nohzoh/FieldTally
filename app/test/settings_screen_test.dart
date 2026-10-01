@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/build_info.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
+import 'package:fieldtally/data/registry/counter_registry_loader.dart';
+import 'package:fieldtally/domain/models/counter_registry.dart';
 import 'package:fieldtally/domain/repositories/settings_repository.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
 import 'package:fieldtally/presentation/providers/providers.dart';
@@ -15,6 +19,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 import 'support/fake_notification_service.dart';
+import 'support/fixed_registry.dart';
 
 /// The screen carries two switches; these name them rather than repeating the
 /// positional lookup. Getters, not fields: a finder caches what it matched,
@@ -55,6 +60,7 @@ void main() {
     WidgetTester tester, {
     double textScale = 1.0,
     BuildInfo? build = runningBuild,
+    bool registryLoaded = false,
   }) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 3.0;
@@ -70,10 +76,14 @@ void main() {
         if (build != null) buildInfoProvider.overrideWith((ref) async => build),
         // No test touches the real network. This one always fails, which is also
         // the case that must leave the app fully usable.
+        if (registryLoaded) counterRegistryProvider.overrideWith(fixedRegistry),
         counterRegistryServiceProvider.overrideWith(
           (ref) => CounterRegistryService(
             settings: ref.watch(settingsRepositoryProvider),
             client: MockClient((_) async => http.Response('nope', 503)),
+            loader: registryLoaded
+                ? const _DiskSeedLoader()
+                : const CounterRegistryLoader(),
           ),
         ),
       ],
@@ -149,6 +159,26 @@ void main() {
       );
       final toggle = tester.widget<SwitchListTile>(_onlineUpdates);
       expect(toggle.value, isFalse);
+    });
+
+    testWidgets('checking now says when the site cannot be reached', (
+      tester,
+    ) async {
+      await pumpSettings(tester, registryLoaded: true);
+      await tester.tap(find.text('Check now'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Could not reach the project site'), findsOneWidget);
+    });
+
+    testWidgets('checking now is not offered while offline', (tester) async {
+      await pumpSettings(tester, registryLoaded: true);
+      expect(find.text('Check now'), findsOneWidget);
+
+      await tester.tap(_onlineUpdates);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Check now'), findsNothing);
     });
 
     testWidgets('carries the non-affiliation notice', (tester) async {
@@ -485,4 +515,14 @@ void main() {
       expect(find.byType(SwitchListTile), findsWidgets);
     });
   });
+}
+
+/// Reads the seed from disk rather than through rootBundle, whose futures do
+/// not complete under the widget-test clock.
+class _DiskSeedLoader extends CounterRegistryLoader {
+  const _DiskSeedLoader();
+
+  @override
+  Future<CounterRegistry> loadSeed() async =>
+      parse(File(seedAssetPath).readAsStringSync());
 }

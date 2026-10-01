@@ -525,6 +525,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get settingsRegistryCheckNow => 'Check now';
+
+  @override
+  String get settingsRegistryUpdated => 'Counter list updated';
+
+  @override
+  String get settingsRegistryUpToDate => 'Counter list already up to date';
+
+  @override
+  String get settingsRegistryUnreachable => 'Could not reach the project site';
+
+  @override
   String settingsRegistryUpdatedAt(String date) {
     return 'Version $date';
   }

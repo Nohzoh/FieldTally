@@ -529,6 +529,19 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get settingsRegistryCheckNow => 'Vérifier';
+
+  @override
+  String get settingsRegistryUpdated => 'Liste des compteurs mise à jour';
+
+  @override
+  String get settingsRegistryUpToDate => 'Liste des compteurs déjà à jour';
+
+  @override
+  String get settingsRegistryUnreachable =>
+      'Impossible de joindre le site du projet';
+
+  @override
   String settingsRegistryUpdatedAt(String date) {
     return 'Version $date';
   }

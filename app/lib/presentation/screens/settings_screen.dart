@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/build_info.dart';
 import '../../core/router.dart';
+import '../../data/registry/counter_registry_service.dart';
 import '../../domain/models/changelog_release.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../l10n/app_localizations.dart';
@@ -84,6 +85,7 @@ class SettingsScreen extends ConsumerWidget {
               subtitle: registry.updatedAt.isEmpty
                   ? null
                   : Text(l10n.settingsRegistryUpdatedAt(registry.updatedAt)),
+              trailing: enabled ? const _RegistryCheckButton() : null,
             ),
           const Divider(),
           _SectionHeader(title: l10n.settingsNotificationsSection),
@@ -349,6 +351,49 @@ class _SectionHeader extends StatelessWidget {
           color: theme.colorScheme.primary,
         ),
       ),
+    );
+  }
+}
+
+/// Fetches the registry now rather than waiting for the daily refresh, and
+/// says what came of it, including that the site could not be reached.
+class _RegistryCheckButton extends ConsumerStatefulWidget {
+  const _RegistryCheckButton();
+
+  @override
+  ConsumerState<_RegistryCheckButton> createState() =>
+      _RegistryCheckButtonState();
+}
+
+class _RegistryCheckButtonState extends ConsumerState<_RegistryCheckButton> {
+  bool _checking = false;
+
+  Future<void> _check() async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _checking = true);
+
+    final outcome = await ref.read(counterRegistryProvider.notifier).checkNow();
+
+    if (!mounted) return;
+    setState(() => _checking = false);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(switch (outcome) {
+          RegistryCheckOutcome.updated => l10n.settingsRegistryUpdated,
+          RegistryCheckOutcome.upToDate => l10n.settingsRegistryUpToDate,
+          RegistryCheckOutcome.unreachable => l10n.settingsRegistryUnreachable,
+        }),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return TextButton(
+      onPressed: _checking ? null : _check,
+      child: Text(l10n.settingsRegistryCheckNow),
     );
   }
 }

@@ -102,6 +102,15 @@ class CounterRegistryNotifier extends AsyncNotifier<CounterRegistry> {
       state = AsyncData(refreshed);
     }
   }
+
+  /// Fetches now, whatever the interval, and reports what happened.
+  Future<RegistryCheckOutcome> checkNow() async {
+    final check = await ref.read(counterRegistryServiceProvider).checkNow();
+    if (check.outcome == RegistryCheckOutcome.updated) {
+      state = AsyncData(check.registry);
+    }
+    return check.outcome;
+  }
 }
 
 final counterRegistryProvider =

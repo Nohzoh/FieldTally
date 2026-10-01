@@ -429,6 +429,22 @@
       }
     }
   },
+  "settingsRegistryCheckNow": "Check now",
+  "@settingsRegistryCheckNow": {
+    "description": "Settings, registry row: action that fetches the counter registry now"
+  },
+  "settingsRegistryUpdated": "Counter list updated",
+  "@settingsRegistryUpdated": {
+    "description": "Settings, registry row: result when a newer registry was downloaded"
+  },
+  "settingsRegistryUpToDate": "Counter list already up to date",
+  "@settingsRegistryUpToDate": {
+    "description": "Settings, registry row: result when nothing newer was found"
+  },
+  "settingsRegistryUnreachable": "Could not reach the project site",
+  "@settingsRegistryUnreachable": {
+    "description": "Settings, registry row: result when the site could not be reached"
+  },
   "settingsRegistryUpdatedAt": "Version {date}",
   "@settingsRegistryUpdatedAt": {
     "placeholders": {
