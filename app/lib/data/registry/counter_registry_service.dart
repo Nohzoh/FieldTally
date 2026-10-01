@@ -83,7 +83,23 @@ class CounterRegistryService {
   /// network was involved.
   Future<CounterRegistry> refresh() async {
     if (!await _shouldAttempt()) return load();
+    return (await _fetch()).registry;
+  }
 
+  /// Fetches now, ignoring the interval, because the agent asked for it.
+  ///
+  /// Unlike [refresh], the outcome is reported: someone who pressed a button
+  /// is owed an answer, including that the site could not be reached. The
+  /// preference still applies, since the action is only offered while online
+  /// updates are on.
+  Future<RegistryCheck> checkNow() async {
+    if (!await onlineUpdatesEnabled()) {
+      return RegistryCheck(RegistryCheckOutcome.unreachable, await load());
+    }
+    return _fetch();
+  }
+
+  Future<RegistryCheck> _fetch() async {
     // Recorded before the request: an attempt that hangs or fails must still
     // count, otherwise a device with no network retries on every launch.
     await settings.write(
@@ -97,7 +113,7 @@ class CounterRegistryService {
           .get(Uri.parse(endpoint))
           .timeout(const Duration(seconds: 10));
 
-      if (response.statusCode != 200) return await load();
+      if (response.statusCode != 200) return await _unreachable();
 
       final body = utf8.decode(response.bodyBytes);
 
@@ -105,7 +121,7 @@ class CounterRegistryService {
       // replace a good cache. This is the client-side half of the guarantee
       // the CI validation makes on the other end (§7.3).
       final fetched = loader.parse(body);
-      if (fetched.length == 0) return await load();
+      if (fetched.length == 0) return await _unreachable();
 
       // Adopt only what is strictly newer than what the device already has.
       //
@@ -114,21 +130,26 @@ class CounterRegistryService {
       // one, and a plain "different, so take it" would quietly downgrade the
       // app to the older file on Pages.
       final current = await load();
-      if (!_isNewer(fetched.updatedAt, current.updatedAt)) return current;
+      if (!_isNewer(fetched.updatedAt, current.updatedAt)) {
+        return RegistryCheck(RegistryCheckOutcome.upToDate, current);
+      }
 
       await settings.write(SettingKeys.cachedRegistry, body);
       await settings.write(
         SettingKeys.cachedRegistryUpdatedAt,
         fetched.updatedAt,
       );
-      return fetched;
+      return RegistryCheck(RegistryCheckOutcome.updated, fetched);
     } catch (_) {
-      // Silent by design: see rule 2 above.
-      return load();
+      // Silent by design for [refresh]: see rule 2 above.
+      return await _unreachable();
     } finally {
       if (client == null) httpClient.close();
     }
   }
+
+  Future<RegistryCheck> _unreachable() async =>
+      RegistryCheck(RegistryCheckOutcome.unreachable, await load());
 
   /// Dates are ISO `YYYY-MM-DD`, so a plain string comparison orders them.
   /// Anything unparseable is treated as not newer: refusing an update is
@@ -150,4 +171,24 @@ class CounterRegistryService {
 
     return _now().difference(parsed) >= minimumInterval;
   }
+}
+
+/// What [CounterRegistryService.checkNow] found.
+enum RegistryCheckOutcome {
+  /// A newer registry was downloaded and is now the one in use.
+  updated,
+
+  /// The site answered with nothing newer than what the device has.
+  upToDate,
+
+  /// The site could not be reached, or served nothing usable.
+  unreachable,
+}
+
+/// The outcome of a check, with the registry to use afterwards.
+class RegistryCheck {
+  const RegistryCheck(this.outcome, this.registry);
+
+  final RegistryCheckOutcome outcome;
+  final CounterRegistry registry;
 }

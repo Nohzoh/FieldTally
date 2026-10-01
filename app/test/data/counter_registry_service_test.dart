@@ -289,6 +289,80 @@ void main() {
     );
   });
 
+  group('checking now', () {
+    test('ignores the interval', () async {
+      var calls = 0;
+      final client = responding(remoteRegistry(), onCall: () => calls++);
+      final now = DateTime(2026, 1, 1, 12);
+
+      await service(client: client, now: () => now).refresh();
+      final check = await service(
+        client: client,
+        now: () => now.add(const Duration(minutes: 1)),
+      ).checkNow();
+
+      expect(calls, 2);
+      expect(check.outcome, RegistryCheckOutcome.upToDate);
+    });
+
+    test('reports a newer registry and adopts it', () async {
+      final check = await service(
+        client: responding(remoteRegistry()),
+      ).checkNow();
+
+      expect(check.outcome, RegistryCheckOutcome.updated);
+      expect(
+        check.registry.forExportHeader('Hacks')!.label('en'),
+        'Remote Hacks',
+      );
+      expect(
+        await settings.read(SettingKeys.cachedRegistryUpdatedAt),
+        '2099-01-01',
+      );
+    });
+
+    test('reports a registry no newer than the bundled copy', () async {
+      final check = await service(
+        client: responding(remoteRegistry(updatedAt: '2000-01-01')),
+      ).checkNow();
+
+      expect(check.outcome, RegistryCheckOutcome.upToDate);
+      expect(await settings.read(SettingKeys.cachedRegistry), isNull);
+    });
+
+    test('reports a site that cannot be reached', () async {
+      final check = await service(
+        client: MockClient((_) async => throw const SocketException('offline')),
+      ).checkNow();
+
+      expect(check.outcome, RegistryCheckOutcome.unreachable);
+      expect(check.registry.length, greaterThan(50));
+    });
+
+    test('does not touch the network when online updates are off', () async {
+      var calls = 0;
+      final svc = service(
+        client: responding(remoteRegistry(), onCall: () => calls++),
+      );
+      await svc.setOnlineUpdatesEnabled(false);
+
+      final check = await svc.checkNow();
+
+      expect(calls, 0);
+      expect(check.outcome, RegistryCheckOutcome.unreachable);
+    });
+  });
+
+  // Flutter's app template grants INTERNET only to debug and profile builds,
+  // so a release build without it here fails every fetch, silently.
+  test('the release manifest may use the network', () {
+    final manifest = File(
+      'android/app/src/main/AndroidManifest.xml',
+    ).readAsStringSync();
+
+    expect(manifest, contains('android.permission.INTERNET'));
+  });
+
   group('the preference (§3.1.4)', () {
     test('online updates are on by default', () async {
       expect(await service().onlineUpdatesEnabled(), isTrue);

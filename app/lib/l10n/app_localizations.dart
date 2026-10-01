@@ -931,6 +931,30 @@ abstract class AppLocalizations {
   /// **'{count} counters known'**
   String settingsRegistryCounters(int count);
 
+  /// Settings, registry row: action that fetches the counter registry now
+  ///
+  /// In en, this message translates to:
+  /// **'Check now'**
+  String get settingsRegistryCheckNow;
+
+  /// Settings, registry row: result when a newer registry was downloaded
+  ///
+  /// In en, this message translates to:
+  /// **'Counter list updated'**
+  String get settingsRegistryUpdated;
+
+  /// Settings, registry row: result when nothing newer was found
+  ///
+  /// In en, this message translates to:
+  /// **'Counter list already up to date'**
+  String get settingsRegistryUpToDate;
+
+  /// Settings, registry row: result when the site could not be reached
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the project site'**
+  String get settingsRegistryUnreachable;
+
   /// No description provided for @settingsRegistryUpdatedAt.
   ///
   /// In en, this message translates to:

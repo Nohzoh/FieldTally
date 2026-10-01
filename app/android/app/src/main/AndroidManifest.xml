@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fetching the counter registry from the project site (§3.1.4), the
+         app's only network use. Debug and profile builds get it from their
+         own manifests; a release build has only this one. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Android 13 and later require this to be requested at runtime before a
          single notification can be posted (§3.7). Earlier versions grant it at
          install time. -->

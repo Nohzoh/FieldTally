@@ -12,7 +12,8 @@ import 'providers/providers.dart';
 /// Work kicked off once when the app starts.
 ///
 /// Five fire-and-forget tasks kicked off once: refreshing the counter
-/// registry from GitHub Pages (§3.1.4), offering the newer version Play is
+/// registry from GitHub Pages (§3.1.4), which is also tried again whenever the
+/// app returns to the foreground, offering the newer version Play is
 /// holding (#195), re-arming the "nothing recorded lately" reminder (§3.7),
 /// the one-time widget-selection migration, and the removed-instance cleanup
 /// below (#181). Nothing on screen waits for them, and they fail silently,
@@ -31,10 +32,12 @@ class StartupTasks extends ConsumerStatefulWidget {
   ConsumerState<StartupTasks> createState() => _StartupTasksState();
 }
 
-class _StartupTasksState extends ConsumerState<StartupTasks> {
+class _StartupTasksState extends ConsumerState<StartupTasks>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // After the first frame: the registry the app starts with is the local
     // one, and swapping it mid-build would be a wasted rebuild at best.
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -46,6 +49,22 @@ class _StartupTasksState extends ConsumerState<StartupTasks> {
       unawaited(_migrateLegacyWidgetSelection());
       unawaited(_cleanUpRemovedWidgetInstances());
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Android keeps the app in memory between uses, so a cold start can be
+  /// days apart. Coming back to the foreground is also a chance to refresh
+  /// the registry; the service's own interval keeps that to one request a
+  /// day however often it happens.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    unawaited(ref.read(counterRegistryProvider.notifier).refreshFromNetwork());
   }
 
   /// Offers the newer version Play already has (#195).
