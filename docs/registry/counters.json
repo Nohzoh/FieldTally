@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-29",
+  "updated_at": "2026-10-01",
   "_readme": "FieldTally counter enrichment layer (spec §3.1.2, §3.1.4). This is NOT the list of supported counters: the app's registry is derived from actual imports. A counter missing from here is still tracked normally, shown under its raw label in the 'other' category. Adding a counter means one pull request on this single file, with no Dart change. A counter may carry 'tiers' (badge thresholds) and, for a badge that stops being earnable, 'ends_at' — the UTC instant the medal can last be claimed, which is neither the end of the event nor the day the column leaves the export.",
   "categories": [
     {
@@ -1095,6 +1095,30 @@
         }
       ],
       "ends_at": "2026-12-31T23:59:00Z"
+    },
+    "cygnus_battle_beacons": {
+      "export_header": "Cygnus Battle Beacons",
+      "category": "events",
+      "order": 11,
+      "label": {
+        "en": "Cygnus Battle Beacons",
+        "fr": "Battle Beacons Cygnus"
+      },
+      "tiers": [
+        {
+          "name": "bronze",
+          "value": 5
+        },
+        {
+          "name": "silver",
+          "value": 50
+        },
+        {
+          "name": "gold",
+          "value": 200
+        }
+      ],
+      "ends_at": "2026-10-28T18:00:00Z"
     },
     "recursions": {
       "export_header": "Recursions",
