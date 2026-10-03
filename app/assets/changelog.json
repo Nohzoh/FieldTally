@@ -344,5 +344,30 @@
         "Revenir en arrière depuis un compteur ouvert sur le tableau de bord ramène au tableau de bord, sans passer par la liste des compteurs."
       ]
     }
+  },
+  "18": {
+    "version": "1.14.0",
+    "title": {
+      "en": "Badge thresholds now reach your phone",
+      "fr": "Les seuils des médailles arrivent enfin chez toi"
+    },
+    "features": {
+      "en": [
+        "Settings has a Check now button that fetches the latest counter list straight away and tells you whether anything changed."
+      ],
+      "fr": [
+        "Un bouton « Vérifier » dans les Réglages récupère tout de suite la liste des compteurs et te dit si elle a changé."
+      ]
+    },
+    "fixes": {
+      "en": [
+        "The app could never download the counter list, so corrected thresholds and new medals never arrived. It now checks at launch and when you come back to it.",
+        "A counter seen in only one import now asks for another import, instead of saying it has not moved."
+      ],
+      "fr": [
+        "L’app ne pouvait jamais télécharger la liste des compteurs : les seuils corrigés et les nouvelles médailles n’arrivaient pas. Elle vérifie maintenant au lancement et quand tu y reviens.",
+        "Un compteur vu dans un seul import demande un import de plus, au lieu de dire qu’il n’a pas bougé."
+      ]
+    }
   }
 }
