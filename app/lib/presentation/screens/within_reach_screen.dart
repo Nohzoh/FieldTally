@@ -87,7 +87,21 @@ class _BadgeTile extends ConsumerWidget {
     final language = Localizations.localeOf(context).languageCode;
 
     final enrichment = registry?.forExportHeader(badge.exportHeader);
-    final next = badge.projection.next;
+    final projection = badge.projection;
+    // The tier being chased, or past the top one, that same tier once more.
+    final chased = projection.next ?? projection.top;
+    final tier = tierLabel(l10n, chased.name);
+    final multiple = projection.next == null
+        ? projection.target ~/ projection.top.value
+        : null;
+
+    String subtitle(String target) => l10n.withinReachDays(
+      target,
+      // Rounded up, and "about" in the wording: a pace measured over a
+      // month does not support a number to the day, and printing 6.7
+      // would claim a precision the estimate does not have.
+      badge.days.ceil(),
+    );
 
     return ListTile(
       // Straight to the counter, where the projection card says the rest: the
@@ -100,21 +114,20 @@ class _BadgeTile extends ConsumerWidget {
       leading: ExcludeSemantics(
         child: SizedBox.square(
           dimension: 28,
-          child: enrichment == null || next == null
+          child: enrichment == null
               ? null
-              : MedalIcon(counterKey: enrichment.key, tierName: next.name),
+              : MedalIcon(counterKey: enrichment.key, tierName: chased.name),
         ),
       ),
       title: Text(enrichment?.label(language) ?? badge.exportHeader),
-      subtitle: Text(
-        l10n.withinReachDays(
-          next == null ? '' : tierLabel(l10n, next.name),
-          // Rounded up, and "about" in the wording: a pace measured over a
-          // month does not support a number to the day, and printing 6.7
-          // would claim a precision the estimate does not have.
-          badge.days.ceil(),
-        ),
-      ),
+      subtitle: multiple == null
+          ? Text(subtitle(tier))
+          : Text(
+              subtitle(l10n.withinReachMultiple(tier, multiple)),
+              semanticsLabel: subtitle(
+                l10n.withinReachMultipleSemantics(tier, multiple),
+              ),
+            ),
     );
   }
 }

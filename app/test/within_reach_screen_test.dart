@@ -171,6 +171,28 @@ void main() {
       expect(find.textContaining('about 40 days'), findsOneWidget);
     });
 
+    testWidgets('past onyx, names the next multiple as the target', (
+      tester,
+    ) async {
+      // Hacks: onyx at 200 000 in the real registry. 1 580 000 → 1 583 000
+      // over ten days is 300/day: ×7 is held, and ×8 at 1 600 000 is 17 000
+      // away, about 57 days.
+      await pump(
+        tester,
+        history: [
+          at(DateTime(2026, 6, 1), const {'Hacks': 1580000}),
+          at(DateTime(2026, 6, 11), const {'Hacks': 1583000}),
+        ],
+      );
+
+      expect(find.text('Hacks'), findsOneWidget);
+      final subtitle = tester.widget<Text>(
+        find.text('Onyx ×8 · about 57 days'),
+      );
+      // Read aloud without the × sign, which screen readers skip or garble.
+      expect(subtitle.semanticsLabel, 'Onyx, 8 times over · about 57 days');
+    });
+
     testWidgets('tapping a row opens that counter', (tester) async {
       await pump(
         tester,

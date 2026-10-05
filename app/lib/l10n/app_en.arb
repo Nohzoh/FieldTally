@@ -1015,6 +1015,30 @@
       }
     }
   },
+  "withinReachMultiple": "{tier} ×{count}",
+  "@withinReachMultiple": {
+    "description": "Names the target of a counter past its top tier: the next whole multiple of it, as the game prints it beside the medal. Fills the {tier} of withinReachDays.",
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "withinReachMultipleSemantics": "{tier}, {count} times over",
+  "@withinReachMultipleSemantics": {
+    "description": "Spoken form of withinReachMultiple. The × sign is read out inconsistently by screen readers, or skipped entirely, so the multiplier is spelt out in words here (§3.9).",
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "withinReachEmpty": "No badge is within reach at your recent pace.",
   "withinReachEmptyDetail": "A badge appears here once a counter has moved enough lately to support an honest estimate — and stays out when that estimate would be a guess.",
   "withinReachNeedsHistory": "Two snapshots are needed before a pace can be measured.",

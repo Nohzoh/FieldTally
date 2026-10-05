@@ -178,12 +178,19 @@ void main() {
       expect(badges, isEmpty);
     });
 
-    test('a counter already past every named tier', () {
-      // Past the top the game counts in multiples (#87). A multiple is the
-      // same medal counting higher, not a badge left to finish.
+    test('a seasonal ladder climbed to its top', () {
+      // The game stops counting past the top of a ladder that ends, so there
+      // is no multiple to chase, however fast the counter still moves.
       final badges = builder.build(
-        snapshots: tenDays(const {fast: (200, 260)}),
-        registry: twoCounters,
+        snapshots: tenDays(const {'Season': (200, 260)}),
+        registry: registryOf([
+          ladder(
+            header: 'Season',
+            tiers: const [('bronze', 100)],
+            endsAt: DateTime(2026, 12, 31),
+          ),
+        ]),
+        now: DateTime(2026, 6, 11),
       );
 
       expect(badges, isEmpty);
@@ -238,6 +245,42 @@ void main() {
 
       expect(badges.single.projection.next?.name, 'bronze');
       expect(badges.single.date.isAfter(DateTime(2026, 6, 11)), isTrue);
+    });
+  });
+
+  group('past the top tier', () {
+    test('the next whole multiple of it is a target like any tier', () {
+      // 200 → 260 in ten days is 6/day against a top tier of 100: ×2 is held,
+      // ×3 at 300 is forty away, about seven days.
+      final badges = builder.build(
+        snapshots: tenDays(const {fast: (200, 260)}),
+        registry: twoCounters,
+      );
+
+      final badge = badges.single;
+      expect(badge.projection.next, isNull);
+      expect(badge.projection.target, 300);
+      expect(badge.days, closeTo(40 / 6, 1e-9));
+    });
+
+    test('ranks against tiers by time alone', () {
+      // Slow climbs towards bronze at 1/day, fifty days out; Fast is past its
+      // only tier and seven days from the next multiple, so it comes first.
+      final badges = builder.build(
+        snapshots: tenDays(const {fast: (200, 260), slow: (940, 950)}),
+        registry: twoCounters,
+      );
+
+      expect(headersOf(badges), [fast, slow]);
+    });
+
+    test('a multiple too far out at the recent pace stays out', () {
+      final badges = builder.build(
+        snapshots: tenDays(const {slow: (1000, 1001)}),
+        registry: twoCounters,
+      );
+
+      expect(badges, isEmpty);
     });
   });
 

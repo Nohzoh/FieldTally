@@ -1954,6 +1954,18 @@ abstract class AppLocalizations {
   /// **'{tier} · {count, plural, one{about a day} other{about {count} days}}'**
   String withinReachDays(String tier, int count);
 
+  /// Names the target of a counter past its top tier: the next whole multiple of it, as the game prints it beside the medal. Fills the {tier} of withinReachDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{tier} ×{count}'**
+  String withinReachMultiple(String tier, int count);
+
+  /// Spoken form of withinReachMultiple. The × sign is read out inconsistently by screen readers, or skipped entirely, so the multiplier is spelt out in words here (§3.9).
+  ///
+  /// In en, this message translates to:
+  /// **'{tier}, {count} times over'**
+  String withinReachMultipleSemantics(String tier, int count);
+
   /// No description provided for @withinReachEmpty.
   ///
   /// In en, this message translates to:
