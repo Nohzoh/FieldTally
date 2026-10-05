@@ -1212,6 +1212,16 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String withinReachMultiple(String tier, int count) {
+    return '$tier ×$count';
+  }
+
+  @override
+  String withinReachMultipleSemantics(String tier, int count) {
+    return '$tier, $count fois';
+  }
+
+  @override
   String get withinReachEmpty =>
       'Aucune médaille n\'est à portée à ton rythme récent.';
 

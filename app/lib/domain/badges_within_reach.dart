@@ -3,7 +3,8 @@ import 'counter_series.dart';
 import 'models/counter_registry.dart';
 import 'models/stat_snapshot.dart';
 
-/// A badge the recent pace actually reaches, and when (#148).
+/// A badge the recent pace actually reaches, and when: the next tier, or past
+/// the top one, its next whole multiple.
 typedef ReachableBadge = ({
   String exportHeader,
   BadgeProjection projection,
@@ -74,11 +75,10 @@ class WithinReachBuilder {
       );
       if (projection == null) continue;
 
-      // Past the top tier the game counts in multiples (#87). Those are left
-      // out on purpose: a multiple is the same medal counting higher, not a
-      // badge to finish, and this list answers "which one could I finish".
-      if (projection.next == null) continue;
-
+      // Past the top tier the target is the next whole multiple of it, the
+      // number the game prints beside the medal: as much a goal to finish as
+      // a tier is. A seasonal ladder climbed to its top has no such target,
+      // and `daysToNext` already returns null for it.
       final days = projection.daysToNext;
       // `projectedDate` is what decides, and it already refuses every case
       // this list must not invent: a ladder that has closed, a stalled or

@@ -1205,6 +1205,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String withinReachMultiple(String tier, int count) {
+    return '$tier ×$count';
+  }
+
+  @override
+  String withinReachMultipleSemantics(String tier, int count) {
+    return '$tier, $count times over';
+  }
+
+  @override
   String get withinReachEmpty =>
       'No badge is within reach at your recent pace.';
 

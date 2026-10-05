@@ -307,6 +307,8 @@
   "withinReachTitle": "À portée",
   "withinReachWindow": "À ton rythme des 30 derniers jours",
   "withinReachDays": "{tier} · {count, plural, one{environ un jour} other{environ {count} jours}}",
+  "withinReachMultiple": "{tier} ×{count}",
+  "withinReachMultipleSemantics": "{tier}, {count} fois",
   "withinReachEmpty": "Aucune médaille n'est à portée à ton rythme récent.",
   "withinReachEmptyDetail": "Une médaille apparaît ici quand un compteur a assez bougé récemment pour permettre une estimation honnête — et reste dehors quand cette estimation ne serait qu'une supposition.",
   "withinReachNeedsHistory": "Il faut deux relevés pour mesurer un rythme.",
