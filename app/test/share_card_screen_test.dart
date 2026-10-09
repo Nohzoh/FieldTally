@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:drift/native.dart';
 import 'package:fieldtally/core/router.dart';
 import 'package:fieldtally/data/db/database.dart';
-import 'package:fieldtally/domain/counter_series.dart';
+import 'package:fieldtally/domain/share_card.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/l10n/app_localizations.dart';
@@ -151,12 +151,58 @@ void main() {
       // A month back from the newest snapshot covers the whole history here.
       expect(find.text('+8,735'), findsOneWidget);
 
-      container.read(shareCardRangeProvider.notifier).set(ChartRange.week);
+      container.read(shareCardPeriodProvider.notifier).set(SharePeriod.week);
       await tester.pumpAndSettle();
 
       // A week back from 20 January starts at the 15th, not at the 1st.
       expect(find.text('+2,735'), findsOneWidget);
       expect(find.text('+8,735'), findsNothing);
+    });
+
+    testWidgets('the last-snapshot period shows what the newest import added', (
+      tester,
+    ) async {
+      await pumpShareCard(
+        tester,
+        history: [
+          at(DateTime(2026, 1, 1), const {'Hacks': 70000}),
+          at(DateTime(2026, 1, 19), const {'Hacks': 76000}),
+          at(DateTime(2026, 1, 20), const {'Hacks': 78735}),
+        ],
+        pinned: const ['Hacks'],
+      );
+
+      await tester.tap(find.text('Last snapshot'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('+2,735'), findsOneWidget);
+      expect(find.textContaining('Progress since'), findsOneWidget);
+    });
+
+    testWidgets('the last-snapshot period is off with a single snapshot', (
+      tester,
+    ) async {
+      await pumpShareCard(
+        tester,
+        history: [history.first],
+        pinned: const ['Hacks'],
+      );
+
+      final segments = tester
+          .widget<SegmentedButton<SharePeriod>>(
+            find.byType(SegmentedButton<SharePeriod>),
+          )
+          .segments;
+      expect(
+        segments.firstWhere((s) => s.value == SharePeriod.lastSnapshot).enabled,
+        isFalse,
+      );
+      expect(
+        segments
+            .where((s) => s.value != SharePeriod.lastSnapshot)
+            .every((s) => s.enabled),
+        isTrue,
+      );
     });
 
     testWidgets('a single snapshot says there is no progress yet', (

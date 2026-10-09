@@ -1678,6 +1678,12 @@ abstract class AppLocalizations {
   /// **'Share the image'**
   String get shareCardShare;
 
+  /// Share card period: progress between the two most recent snapshots. Shares a phone's width with Week, Month and All, so keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Last snapshot'**
+  String get shareCardLastSnapshot;
+
   /// No description provided for @shareCardSince.
   ///
   /// In en, this message translates to:

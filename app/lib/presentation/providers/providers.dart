@@ -18,7 +18,6 @@ import '../../data/sharing/incoming_share.dart';
 import '../../data/updates/play_update_service.dart';
 import '../../domain/counter_list.dart';
 import '../../domain/counter_pace.dart';
-import '../../domain/counter_series.dart';
 import '../../domain/dashboard.dart';
 import '../../domain/guards/import_guards.dart';
 import '../../domain/models/changelog_release.dart';
@@ -392,16 +391,16 @@ final reminderDaysProvider = StreamProvider<int>(
 
 /// Period the shareable card covers (§3.8). Kept out of the screen so the
 /// choice survives a rebuild, and so a test can set it without tapping.
-class ShareCardRangeNotifier extends Notifier<ChartRange> {
+class ShareCardPeriodNotifier extends Notifier<SharePeriod> {
   @override
-  ChartRange build() => ChartRange.month;
+  SharePeriod build() => SharePeriod.month;
 
-  void set(ChartRange range) => state = range;
+  void set(SharePeriod period) => state = period;
 }
 
-final shareCardRangeProvider =
-    NotifierProvider<ShareCardRangeNotifier, ChartRange>(
-      ShareCardRangeNotifier.new,
+final shareCardPeriodProvider =
+    NotifierProvider<ShareCardPeriodNotifier, SharePeriod>(
+      ShareCardPeriodNotifier.new,
     );
 
 /// The card itself, rebuilt when the history, the pinned selection or the
@@ -418,7 +417,7 @@ final shareCardProvider = Provider<AsyncValue<ShareCardData?>>((ref) {
     (stored) => const ShareCardBuilder().build(
       snapshots: [for (final s in stored) s.snapshot],
       pinned: pinned.asData?.value ?? const [],
-      range: ref.watch(shareCardRangeProvider),
+      period: ref.watch(shareCardPeriodProvider),
     ),
   );
 });
