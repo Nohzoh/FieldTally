@@ -823,6 +823,10 @@
   "shareCardTitle": "Shareable card",
   "shareCardAction": "Share my stats",
   "shareCardShare": "Share the image",
+  "shareCardLastSnapshot": "Last snapshot",
+  "@shareCardLastSnapshot": {
+    "description": "Share card period: progress between the two most recent snapshots. Shares a phone's width with Week, Month and All, so keep it short."
+  },
   "shareCardSince": "Progress since {date}",
   "@shareCardSince": {
     "placeholders": {

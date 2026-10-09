@@ -261,6 +261,7 @@
   "shareCardTitle": "Carte à partager",
   "shareCardAction": "Partager mes stats",
   "shareCardShare": "Partager l'image",
+  "shareCardLastSnapshot": "Dernier relevé",
   "shareCardSince": "Progression depuis le {date}",
   "shareCardNoPeriod": "Un seul relevé pour l'instant — pas encore de progression à montrer.",
   "shareCardFooter": "Réalisé avec FieldTally",

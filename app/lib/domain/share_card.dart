@@ -19,6 +19,26 @@ class ShareCardLine {
   final int? gain;
 }
 
+/// Period the shareable card covers (§3.8).
+///
+/// The chart ranges, plus one only the card needs: what the most recent import
+/// added, which is what an agent posts right after a session.
+enum SharePeriod {
+  lastSnapshot,
+  week,
+  month,
+  all;
+
+  /// The chart range measuring the same thing, or null for [lastSnapshot],
+  /// which counts imports rather than days.
+  ChartRange? get chartRange => switch (this) {
+    SharePeriod.lastSnapshot => null,
+    SharePeriod.week => ChartRange.week,
+    SharePeriod.month => ChartRange.month,
+    SharePeriod.all => ChartRange.all,
+  };
+}
+
 /// Everything the shareable card shows (§3.8).
 ///
 /// Assembled here rather than in the widget so what ends up in a public PNG
@@ -31,7 +51,7 @@ class ShareCardData {
     required this.level,
     required this.recordedAt,
     required this.since,
-    required this.range,
+    required this.period,
     required this.lines,
   });
 
@@ -50,7 +70,7 @@ class ShareCardData {
   /// compare against.
   final DateTime? since;
 
-  final ChartRange range;
+  final SharePeriod period;
 
   final List<ShareCardLine> lines;
 
@@ -69,13 +89,17 @@ class ShareCardBuilder {
   /// Null when there is nothing to show: no snapshot, or none carrying any of
   /// the chosen counters.
   ///
-  /// [range] is measured back from the newest snapshot for the same reason
+  /// [period] is measured back from the newest snapshot for the same reason
   /// every other period in this app is (§3.5): an agent who stopped importing
   /// has not stopped playing, the app stopped hearing about it.
+  ///
+  /// [SharePeriod.lastSnapshot] spans each counter's two most recent values,
+  /// so a counter the previous import did not carry is measured from the last
+  /// import that did, and the footer dates the card from that earlier value.
   ShareCardData? build({
     required List<StatSnapshot> snapshots,
     required List<String> pinned,
-    ChartRange range = ChartRange.month,
+    SharePeriod period = SharePeriod.month,
   }) {
     if (snapshots.isEmpty) return null;
 
@@ -90,11 +114,7 @@ class ShareCardBuilder {
     for (final header in pinned) {
       if (lines.length == maxLines) break;
 
-      final series = builder.series(
-        snapshots: sorted,
-        exportHeader: header,
-        range: range,
-      );
+      final series = _series(builder, sorted, header, period);
       // A counter absent from every import is skipped rather than shown at
       // zero: the agent usually pinned it on a previous phone (§3.1.2).
       if (series.isEmpty) continue;
@@ -124,8 +144,31 @@ class ShareCardBuilder {
       level: latest.level,
       recordedAt: latest.recordedAt,
       since: since,
-      range: range,
+      period: period,
       lines: lines,
+    );
+  }
+
+  CounterSeries _series(
+    CounterSeriesBuilder builder,
+    List<StatSnapshot> sorted,
+    String header,
+    SharePeriod period,
+  ) {
+    final range = period.chartRange;
+    if (range != null) {
+      return builder.series(
+        snapshots: sorted,
+        exportHeader: header,
+        range: range,
+      );
+    }
+
+    final all = builder.series(snapshots: sorted, exportHeader: header);
+    final points = all.points;
+    return CounterSeries(
+      points: points.length > 2 ? points.sublist(points.length - 2) : points,
+      range: all.range,
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:fieldtally/domain/counter_series.dart';
 import 'package:fieldtally/domain/models/stat_snapshot.dart';
 import 'package:fieldtally/domain/models/time_span.dart';
 import 'package:fieldtally/domain/share_card.dart';
@@ -47,7 +46,7 @@ void main() {
           snap(DateTime(2026, 1, 20), const {'Hacks': 400}),
         ],
         pinned: const ['Hacks'],
-        range: ChartRange.month,
+        period: SharePeriod.month,
       );
 
       expect(card!.lines.single.gain, 300);
@@ -159,11 +158,58 @@ void main() {
           snap(DateTime(2026, 1, 5), const {'Hacks': 150}),
         ],
         pinned: const ['Hacks'],
-        range: ChartRange.week,
+        period: SharePeriod.week,
       );
 
       expect(card!.since, DateTime(2026, 1, 1));
       expect(card.lines.single.gain, 50);
+    });
+
+    test('the last-snapshot period spans only the two newest imports', () {
+      // Two imports the same day: a week would reach back to the first one.
+      final card = builder.build(
+        snapshots: [
+          snap(DateTime(2026, 1, 18), const {'Hacks': 100}),
+          snap(DateTime(2026, 1, 20, 8), const {'Hacks': 150}),
+          snap(DateTime(2026, 1, 20, 22), const {'Hacks': 190}),
+        ],
+        pinned: const ['Hacks'],
+        period: SharePeriod.lastSnapshot,
+      );
+
+      expect(card!.lines.single.gain, 40);
+      expect(card.since, DateTime(2026, 1, 20, 8));
+    });
+
+    test('the last-snapshot period measures each counter from its own '
+        'previous value', () {
+      // The previous import did not carry Hacks, so its gain runs from the
+      // import before, and the card is dated from there.
+      final card = builder.build(
+        snapshots: [
+          snap(DateTime(2026, 1, 10), const {'Hacks': 100, 'Lifetime AP': 1}),
+          snap(DateTime(2026, 1, 15), const {'Lifetime AP': 5}),
+          snap(DateTime(2026, 1, 20), const {'Hacks': 130, 'Lifetime AP': 9}),
+        ],
+        pinned: const ['Lifetime AP', 'Hacks'],
+        period: SharePeriod.lastSnapshot,
+      );
+
+      expect(card!.lines.map((line) => line.gain), [4, 30]);
+      expect(card.since, DateTime(2026, 1, 10));
+    });
+
+    test('the last-snapshot period shows no gain with a single import', () {
+      final card = builder.build(
+        snapshots: [
+          snap(DateTime(2026, 1, 20), const {'Hacks': 130}),
+        ],
+        pinned: const ['Hacks'],
+        period: SharePeriod.lastSnapshot,
+      );
+
+      expect(card!.lines.single.gain, isNull);
+      expect(card.since, isNull);
     });
   });
 }

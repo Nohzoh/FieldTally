@@ -11,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/router.dart';
-import '../../domain/counter_series.dart';
+import '../../domain/share_card.dart';
 import '../../l10n/app_localizations.dart';
 import '../providers/providers.dart';
 import '../widgets/share_card.dart';
@@ -41,7 +41,9 @@ class _ShareCardScreenState extends ConsumerState<ShareCardScreen> {
     final language = Localizations.localeOf(context).languageCode;
     final card = ref.watch(shareCardProvider);
     final registry = ref.watch(counterRegistryProvider).asData?.value;
-    final range = ref.watch(shareCardRangeProvider);
+    final period = ref.watch(shareCardPeriodProvider);
+    // The last-snapshot period needs an earlier import to measure from.
+    final snapshotCount = ref.watch(snapshotsProvider).asData?.value.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -62,24 +64,32 @@ class _ShareCardScreenState extends ConsumerState<ShareCardScreen> {
             : ListView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
                 children: [
-                  SegmentedButton<ChartRange>(
+                  // No check mark: four segments share the width of a phone,
+                  // and the room goes to the labels instead.
+                  SegmentedButton<SharePeriod>(
+                    showSelectedIcon: false,
                     segments: [
                       ButtonSegment(
-                        value: ChartRange.week,
+                        value: SharePeriod.lastSnapshot,
+                        label: Text(l10n.shareCardLastSnapshot),
+                        enabled: (snapshotCount ?? 0) > 1,
+                      ),
+                      ButtonSegment(
+                        value: SharePeriod.week,
                         label: Text(l10n.rangeWeek),
                       ),
                       ButtonSegment(
-                        value: ChartRange.month,
+                        value: SharePeriod.month,
                         label: Text(l10n.rangeMonth),
                       ),
                       ButtonSegment(
-                        value: ChartRange.all,
+                        value: SharePeriod.all,
                         label: Text(l10n.rangeAll),
                       ),
                     ],
-                    selected: {range},
+                    selected: {period},
                     onSelectionChanged: (selection) => ref
-                        .read(shareCardRangeProvider.notifier)
+                        .read(shareCardPeriodProvider.notifier)
                         .set(selection.first),
                   ),
                   const SizedBox(height: 20),

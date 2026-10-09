@@ -1004,6 +1004,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareCardShare => 'Partager l\'image';
 
   @override
+  String get shareCardLastSnapshot => 'Dernier relevé';
+
+  @override
   String shareCardSince(String date) {
     return 'Progression depuis le $date';
   }
