@@ -369,5 +369,22 @@
         "Un compteur vu dans un seul import demande un import de plus, au lieu de dire qu’il n’a pas bougé."
       ]
     }
+  },
+  "19": {
+    "version": "1.15.0",
+    "title": {
+      "en": "Share your last session, and aim past onyx",
+      "fr": "Partage ta dernière session, et vise au-delà d’onyx"
+    },
+    "features": {
+      "en": [
+        "The share card has a Last snapshot period: what you gained since your previous import.",
+        "Within reach now includes counters past onyx, with the next multiple as the target, such as Onyx ×8."
+      ],
+      "fr": [
+        "La carte de partage propose « Dernier relevé » : ce que tu as gagné depuis ton import précédent.",
+        "« À portée » inclut maintenant les compteurs au-delà d’onyx, avec le multiple suivant comme objectif, par exemple Onyx ×8."
+      ]
+    }
   }
 }
