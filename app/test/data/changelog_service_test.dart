@@ -63,7 +63,18 @@ void main() {
       final unseen = await service().checkForUpdate(3);
 
       expect(unseen.map((r) => r.versionCode), [3]);
-      expect(await lastSeen(), '3');
+    });
+
+    test('notes not yet dismissed are offered again', () async {
+      // The launch that showed them ended before they were closed, as when
+      // Android restarts the app right after an in-app update.
+      await settings.write(SettingKeys.changelogLastSeenBuild, '2');
+      expect(await service().checkForUpdate(3), isNotEmpty);
+      expect(await lastSeen(), '2');
+
+      final again = await service().checkForUpdate(3);
+
+      expect(again.map((r) => r.versionCode), [3]);
     });
 
     test('skipping a version shows both sets of notes', () async {
@@ -74,11 +85,22 @@ void main() {
       expect(unseen.map((r) => r.versionCode), [2, 3]);
     });
 
-    test('a second launch on the same build shows nothing again', () async {
+    test('dismissed notes are not shown again on the same build', () async {
       await settings.write(SettingKeys.changelogLastSeenBuild, '2');
       expect(await service().checkForUpdate(3), isNotEmpty);
 
+      await service().markSeen(3);
+
       expect(await service().checkForUpdate(3), isEmpty);
+      expect(await lastSeen(), '3');
+    });
+
+    test('a build with no notes of its own is recorded at once', () async {
+      // Nothing to show means nothing to wait for.
+      await settings.write(SettingKeys.changelogLastSeenBuild, '3');
+
+      expect(await service().checkForUpdate(4), isEmpty);
+      expect(await lastSeen(), '4');
     });
 
     test('an unreadable stored value is treated as a fresh install', () async {

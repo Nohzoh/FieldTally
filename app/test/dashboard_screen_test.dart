@@ -35,6 +35,7 @@ StatSnapshot at(DateTime date, Map<String, int> counters) => StatSnapshot(
 void main() {
   late FieldTallyDatabase db;
   late ProviderContainer container;
+  late int changelogMarkedSeen;
 
   Future<void> pumpDashboard(
     WidgetTester tester, {
@@ -50,6 +51,7 @@ void main() {
     addTearDown(tester.view.reset);
 
     db = FieldTallyDatabase(NativeDatabase.memory());
+    changelogMarkedSeen = 0;
     container = ProviderContainer(
       overrides: [
         databaseProvider.overrideWithValue(db),
@@ -61,6 +63,9 @@ void main() {
         // Nothing unseen unless a test says otherwise: the real check reads
         // PackageInfo, which no widget test has.
         changelogCheckProvider.overrideWith((ref) async => changelog),
+        changelogSeenProvider.overrideWithValue(
+          () async => changelogMarkedSeen++,
+        ),
       ],
     );
     // Dispose the container before closing the database: Drift hangs on close
@@ -131,6 +136,35 @@ void main() {
         findsNothing,
         reason: 'the notes belong to Settings, which was asked for',
       );
+    });
+
+    testWidgets('the notes count as seen only once the dialog is closed', (
+      tester,
+    ) async {
+      // Android can restart the app under the dialog right after an in-app
+      // update. Recording the build before it is closed would lose the notes.
+      await pumpDashboard(
+        tester,
+        changelog: [
+          ChangelogRelease(
+            versionCode: 2,
+            version: '1.1.0',
+            titles: const {'en': 'Your language, and what changed'},
+            featureNotes: const {
+              'en': ['Pick your language'],
+            },
+            fixNotes: const {},
+          ),
+        ],
+      );
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(changelogMarkedSeen, 0);
+
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(changelogMarkedSeen, 1);
     });
 
     testWidgets('nothing unseen leaves the dashboard alone', (tester) async {
