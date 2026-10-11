@@ -172,7 +172,7 @@ void main() {
         pinned: const ['Hacks'],
       );
 
-      await tester.tap(find.text('Last snapshot'));
+      await tester.tap(find.text('Latest'));
       await tester.pumpAndSettle();
 
       expect(find.text('+2,735'), findsOneWidget);
@@ -296,6 +296,31 @@ void main() {
         );
 
         expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('every period label stays on one line at $scale', (
+        tester,
+      ) async {
+        await pumpShareCard(
+          tester,
+          history: history,
+          pinned: const ['Hacks'],
+          textScale: scale,
+        );
+
+        for (final label in ['Latest', 'Week', 'Month', 'All']) {
+          final paragraph = tester.renderObject<RenderParagraph>(
+            find.text(label),
+          );
+          // A label given less than its one-line width has wrapped or been cut.
+          expect(
+            paragraph.size.width,
+            greaterThanOrEqualTo(
+              paragraph.getMaxIntrinsicWidth(double.infinity) - 0.5,
+            ),
+            reason: label,
+          );
+        }
       });
     }
 

@@ -996,7 +996,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareCardShare => 'Share the image';
 
   @override
-  String get shareCardLastSnapshot => 'Last snapshot';
+  String get shareCardLastSnapshot => 'Latest';
 
   @override
   String shareCardSince(String date) {

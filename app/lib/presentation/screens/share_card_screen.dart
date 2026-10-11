@@ -71,20 +71,20 @@ class _ShareCardScreenState extends ConsumerState<ShareCardScreen> {
                     segments: [
                       ButtonSegment(
                         value: SharePeriod.lastSnapshot,
-                        label: Text(l10n.shareCardLastSnapshot),
+                        label: _SegmentLabel(l10n.shareCardLastSnapshot),
                         enabled: (snapshotCount ?? 0) > 1,
                       ),
                       ButtonSegment(
                         value: SharePeriod.week,
-                        label: Text(l10n.rangeWeek),
+                        label: _SegmentLabel(l10n.rangeWeek),
                       ),
                       ButtonSegment(
                         value: SharePeriod.month,
-                        label: Text(l10n.rangeMonth),
+                        label: _SegmentLabel(l10n.rangeMonth),
                       ),
                       ButtonSegment(
                         value: SharePeriod.all,
-                        label: Text(l10n.rangeAll),
+                        label: _SegmentLabel(l10n.rangeAll),
                       ),
                     ],
                     selected: {period},
@@ -198,4 +198,18 @@ class _Empty extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A period label that stays on one line: a large system text size shrinks it
+/// to the segment's width rather than breaking the word across lines.
+class _SegmentLabel extends StatelessWidget {
+  const _SegmentLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => FittedBox(
+    fit: BoxFit.scaleDown,
+    child: Text(text, maxLines: 1, softWrap: false),
+  );
 }
