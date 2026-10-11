@@ -492,15 +492,28 @@ final changelogServiceProvider = Provider<ChangelogService>(
 );
 
 /// Release notes introduced since this device last recorded a seen build
-/// (§9). A one-shot check: it also records the running build as seen, so it
-/// must only ever be read once per app session — the dashboard does that, on
-/// its first frame.
+/// (§9). Records nothing while there are notes to show: the dashboard calls
+/// [changelogSeenProvider] once they have been dismissed.
 final changelogCheckProvider = FutureProvider<List<ChangelogRelease>>((
   ref,
 ) async {
-  final build = await ref.watch(buildInfoProvider.future);
-  final versionCode = int.tryParse(build.build);
+  final versionCode = await _installedVersionCode(ref);
   if (versionCode == null) return const [];
 
   return ref.watch(changelogServiceProvider).checkForUpdate(versionCode);
 });
+
+/// Records the running build's notes as seen, once they have been read.
+final changelogSeenProvider = Provider<Future<void> Function()>(
+  (ref) => () async {
+    final versionCode = await _installedVersionCode(ref);
+    if (versionCode == null) return;
+
+    await ref.read(changelogServiceProvider).markSeen(versionCode);
+  },
+);
+
+Future<int?> _installedVersionCode(Ref ref) async {
+  final build = await ref.read(buildInfoProvider.future);
+  return int.tryParse(build.build);
+}

@@ -13,9 +13,14 @@ class ChangelogService {
   final SettingsRepository settings;
   final ChangelogLoader loader;
 
-  /// Releases introduced since this device last recorded a seen build,
-  /// recording [installedVersionCode] as seen in the process — a look that is
-  /// only ever taken once per build, whether or not it turns anything up.
+  /// Releases introduced since this device last recorded a seen build.
+  ///
+  /// When there is nothing to show, [installedVersionCode] is recorded as
+  /// seen straight away. When there is, nothing is recorded: the caller does
+  /// that with [markSeen] once the notes have actually been dismissed. A
+  /// launch that ends before then, because the process was killed or the
+  /// activity recreated under the dialog, shows the same notes again on the
+  /// next one instead of losing them.
   ///
   /// A fresh install — nothing stored yet — records the current build and
   /// returns nothing: there is no "before" to compare against.
@@ -25,20 +30,24 @@ class ChangelogService {
     final stored = await settings.read(SettingKeys.changelogLastSeenBuild);
     final lastSeen = stored == null ? null : int.tryParse(stored);
 
-    await settings.write(
-      SettingKeys.changelogLastSeenBuild,
-      '$installedVersionCode',
-    );
+    final unseen = lastSeen == null
+        ? const <ChangelogRelease>[]
+        : unseenReleases(
+            all: await loader.loadAll(),
+            installedVersionCode: installedVersionCode,
+            lastSeenVersionCode: lastSeen,
+          );
 
-    if (lastSeen == null) return const [];
-
-    final all = await loader.loadAll();
-    return unseenReleases(
-      all: all,
-      installedVersionCode: installedVersionCode,
-      lastSeenVersionCode: lastSeen,
-    );
+    if (unseen.isEmpty) await markSeen(installedVersionCode);
+    return unseen;
   }
+
+  /// Records [installedVersionCode] as seen, so its notes are not offered
+  /// again on a later launch.
+  Future<void> markSeen(int installedVersionCode) => settings.write(
+    SettingKeys.changelogLastSeenBuild,
+    '$installedVersionCode',
+  );
 
   /// The notes for exactly the running build, regardless of what has already
   /// been seen — for "Settings > About > What's new", reachable at any time so

@@ -42,6 +42,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     try {
       final releases = await ref.read(changelogCheckProvider.future);
       if (!mounted || releases.isEmpty) return;
+      // Read now: the dashboard may no longer be mounted by the time the
+      // dialog closes.
+      final markSeen = ref.read(changelogSeenProvider);
 
       final languageCode = Localizations.localeOf(context).languageCode;
       // Headlines only: this one interrupts an agent who opened the app to
@@ -53,6 +56,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         languageCode: languageCode,
         detail: ChangelogDetail.headlines,
       );
+      // Only once it is closed. Right after an in-app update, Android can
+      // tear the first launch down under the dialog; recording the build up
+      // front would lose the notes with it.
+      await markSeen();
     } catch (_) {
       // Silent by design, like the other startup tasks: a changelog that
       // could not be checked is not worth interrupting anyone over.
